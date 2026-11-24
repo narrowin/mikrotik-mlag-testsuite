@@ -44,6 +44,7 @@ Resets the data bridge on all four CHRs over management SSH with protocol-mode=r
 | Baseline | Both pairs are connected and each presents its MLAG primary's bridge ID: pair A 0x2000.02:00:00:21:00:11, pair B 0x4000.02:00:00:21:00:12. | no loss | ✅ PASS · no loss |
 
 - **Baseline:** Both pairs are connected and each presents its MLAG primary's bridge ID: pair A 0x2000.02:00:00:21:00:11, pair B 0x4000.02:00:00:21:00:12. All four CHRs report root 0x2000.02:00:00:21:00:11; pair A wins on priority 0x2000 against 0x4000. Every member of the inter-pair bond and both host bonds is synchronized, collecting and distributing, RSTP BPDUs from the root reach pair B, and all four streams deliver with zero loss. [Source](https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/)
+- **MikroTik fixes this case checks:** Packets looped back to a dual-connected bond ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); LACP system ID not synchronised when bonds are created before MLAG ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); MLAG peer stuck in the disabled state after config changes ([7.25](https://cdn.mikrotik.com/routeros/7.25/CHANGELOG)); MLAG state permanently disabled after changing bridge settings ([7.22](https://cdn.mikrotik.com/routeros/7.22/CHANGELOG)); Priority setting to elect the MLAG primary ([7.17](https://cdn.mikrotik.com/routeros/7.17/CHANGELOG))
 
 - Run 1 (✅ PASS): [verdict](01-two-pair-field-baseline/result.json) · [timeline](01-two-pair-field-baseline/timeline.tsv) · [CHR 1 config](01-two-pair-field-baseline/config-p1.txt) · [CHR 2 config](01-two-pair-field-baseline/config-p2.txt) · [CHR 3 config](01-two-pair-field-baseline/config-q1.txt) · [CHR 4 config](01-two-pair-field-baseline/config-q2.txt)
 
@@ -56,6 +57,7 @@ After the bridge reset (bridge priority 0x2000 on pair A and 0x4000 on pair B, t
 | One-way bypass cut | The filter drops only stream 301's echo requests at host 2's bypass port, outside both MLAG pairs. | gap encloses the cut | ✅ PASS · 1.99 to 2.19 s (20 probes) for a 2.00 s cut (accepted 1.9 to 2.3 s) |
 
 - **One-way bypass cut:** The filter drops only stream 301's echo requests at host 2's bypass port, outside both MLAG pairs. Stream 301 shows exactly one gap, with every request sent, and the gap's bounds enclose the measured 1.9–2.3 s filter interval. The reverse bypass and both VLAN 110 directions lose nothing. (lab target)
+- **MikroTik fixes this case checks:** Packets looped back to a dual-connected bond ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); LACP system ID not synchronised when bonds are created before MLAG ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG))
 
 - Run 1 (✅ PASS): [verdict](01-two-pair-field-calibrate/result.json) · [timeline](01-two-pair-field-calibrate/timeline.tsv) · [CHR 1 config](01-two-pair-field-calibrate/config-p1.txt) · [CHR 2 config](01-two-pair-field-calibrate/config-p2.txt) · [CHR 3 config](01-two-pair-field-calibrate/config-q1.txt) · [CHR 4 config](01-two-pair-field-calibrate/config-q2.txt)
 
@@ -65,11 +67,12 @@ Resets the data bridge on all four CHRs over management SSH with protocol-mode=r
 
 | Phase | Expected | Limit | Run 1 |
 | --- | --- | --- | --- |
-| Pair A primary down | Even if CHR 2 presents its own bridge ID 0x2000.02:00:00:21:00:14, it still beats pair B's 0x4000, so the root stays on pair A. | ≤ 5 s | ❌ FAIL · 16.29 to 16.50 s · [failed check](01-two-pair-field-reboot-a-primary/result.json#L324) |
+| Pair A primary down | Even if CHR 2 presents its own bridge ID 0x2000.02:00:00:21:00:14, it still beats pair B's 0x4000, so the root stays on pair A. | ≤ 5 s | ❌ FAIL · 16.29 to 16.50 s · [failed check](01-two-pair-field-reboot-a-primary/result.json#L378) |
 | Pair A primary back | CHR 1 rejoins as MLAG primary and pair A presents 0x2000.02:00:00:21:00:11 again. | ≤ 5 s | ✅ PASS · 4.60 to 4.81 s |
 
 - **Pair A primary down:** Even if CHR 2 presents its own bridge ID 0x2000.02:00:00:21:00:14, it still beats pair B's 0x4000, so the root stays on pair A. This is what the field per-pair priority is meant to guarantee. The case passes only if CHR 2, CHR 3 and CHR 4 keep root 0x2000.02:00:00:21:00:11 while the switch is away and each VLAN direction loses at most 5 s. [Source](https://forum.mikrotik.com/t/mlag-between-crs326-24s-2q-rm-with-more-than-1-000-hosts-macs/269294)
 - **Pair A primary back:** CHR 1 rejoins as MLAG primary and pair A presents 0x2000.02:00:00:21:00:11 again. CHR 2, CHR 3 and CHR 4 must keep root 0x2000.02:00:00:21:00:11 throughout, and each VLAN direction loses at most 5 s. [Source](https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/)
+- **MikroTik fixes this case checks:** Dual-bond hosts dropped when an MLAG peer is lost ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); Packets looped back to a dual-connected bond ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); LACP system ID not synchronised when bonds are created before MLAG ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); New settings mlag-lacp-fallback and mlag-init-delay ([7.25](https://cdn.mikrotik.com/routeros/7.25/CHANGELOG)); STP, BPDU and topology-change handling with MLAG; dual-connected port STP state in sync with the MLAG peer ([7.24](https://cdn.mikrotik.com/routeros/7.24/CHANGELOG))
 
 - Run 1 (❌ FAIL): [verdict](01-two-pair-field-reboot-a-primary/result.json) · [timeline](01-two-pair-field-reboot-a-primary/timeline.tsv) · [CHR 1 config](01-two-pair-field-reboot-a-primary/config-p1.txt) · [CHR 2 config](01-two-pair-field-reboot-a-primary/config-p2.txt) · [CHR 3 config](01-two-pair-field-reboot-a-primary/config-q1.txt) · [CHR 4 config](01-two-pair-field-reboot-a-primary/config-q2.txt)
 
@@ -80,10 +83,11 @@ Resets the data bridge on all four CHRs over management SSH with protocol-mode=r
 | Phase | Expected | Limit | Run 1 |
 | --- | --- | --- | --- |
 | Pair A secondary down | CHR 1 keeps pair A's bridge ID, so the root does not change. | ≤ 5 s | ⚠️ INVALID · no loss |
-| Pair A secondary back | CHR 2 rejoins as MLAG secondary under pair A's unchanged ID. | ≤ 5 s | ⚠️ INVALID · no loss · [failed check](01-two-pair-field-reboot-a-secondary/result.json#L223) |
+| Pair A secondary back | CHR 2 rejoins as MLAG secondary under pair A's unchanged ID. | ≤ 5 s | ⚠️ INVALID · no loss · [failed check](01-two-pair-field-reboot-a-secondary/result.json#L265) |
 
 - **Pair A secondary down:** CHR 1 keeps pair A's bridge ID, so the root does not change. The case passes only if CHR 1, CHR 3 and CHR 4 keep root 0x2000.02:00:00:21:00:11 while the switch is away and each VLAN direction loses at most 5 s. [Source](https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/)
 - **Pair A secondary back:** CHR 2 rejoins as MLAG secondary under pair A's unchanged ID. CHR 1, CHR 3 and CHR 4 must keep root 0x2000.02:00:00:21:00:11 throughout, and each VLAN direction loses at most 5 s. [Source](https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/)
+- **MikroTik fixes this case checks:** Dual-bond hosts dropped when an MLAG peer is lost ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); Packets looped back to a dual-connected bond ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); LACP system ID not synchronised when bonds are created before MLAG ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); New settings mlag-lacp-fallback and mlag-init-delay ([7.25](https://cdn.mikrotik.com/routeros/7.25/CHANGELOG)); STP, BPDU and topology-change handling with MLAG; dual-connected port STP state in sync with the MLAG peer ([7.24](https://cdn.mikrotik.com/routeros/7.24/CHANGELOG))
 
 - Run 1 (⚠️ INVALID): [verdict](01-two-pair-field-reboot-a-secondary/result.json) · [timeline](01-two-pair-field-reboot-a-secondary/timeline.tsv) · [CHR 1 config](01-two-pair-field-reboot-a-secondary/config-p1.txt) · [CHR 2 config](01-two-pair-field-reboot-a-secondary/config-p2.txt) · [CHR 3 config](01-two-pair-field-reboot-a-secondary/config-q1.txt) · [CHR 4 config](01-two-pair-field-reboot-a-secondary/config-q2.txt) Other failed checks: 2, first: [p2 did not prove a new guest boot within 90 s](01-two-pair-field-reboot-a-secondary/result.json#L8).
 

@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite name="mikrotik-mlag-medium" tests="4" errors="0" failures="1" skipped="0">
+<testsuite name="mikrotik-mlag-medium" tests="4" errors="0" failures="2" skipped="0">
   <testcase name="01-medium-pair-root-baseline" classname="mikrotik.mlag.medium">
     <properties>
       <property name="lab" value="Medium lab" />
@@ -14,12 +14,14 @@
     <properties>
       <property name="lab" value="Medium lab" />
     </properties>
+    <failure>Withdrawal: 1 reflected unicast sequences, limit 0; 201 request at source: sequences [343]</failure>
   </testcase>
   <testcase name="01-medium-pair-root-reboot-primary" classname="mikrotik.mlag.medium">
     <properties>
       <property name="lab" value="Medium lab" />
     </properties>
-    <failure>101 withdrawal loss ≥ 10.515 s exceeds 5 s
+    <failure>Withdrawal: 1 reflected unicast sequences, limit 0; 201 request at source: sequences [315]
+101 withdrawal loss ≥ 10.515 s exceeds 5 s
 101 restoration loss overlaps the 5 s threshold
 201 withdrawal loss ≥ 11.010 s exceeds 5 s
 201 restoration loss overlaps the 5 s threshold</failure>

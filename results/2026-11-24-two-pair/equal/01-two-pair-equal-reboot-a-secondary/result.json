@@ -203,6 +203,60 @@
       "detail": "p2 emitted the post-observation syslog rebind marker"
     },
     {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: 0 reflected unicast sequences, limit 0",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: 0 reflected unicast sequences, limit 0",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Bridge host table after recovery: every traffic host MAC on its expected port",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:db:0b:03, eth2 65535/52:54:00:db:0b:03",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Both MLAG peers present one LACP system ID on the client 1 bond: eth1 65535/52:54:00:db:0d:03, eth2 65535/52:54:00:db:0d:03",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Both MLAG peers present one LACP system ID on the pair A inter-pair bond, seen by pair B: q1:ether3 65535/52:54:00:db:0b:02, q2:ether3 65535/52:54:00:db:0b:02",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Both MLAG peers present one LACP system ID on the pair B inter-pair bond, seen by pair A: p1:ether3 65535/52:54:00:db:0d:02, p2:ether3 65535/52:54:00:db:0d:02",
+      "phase": "baseline"
+    },
+    {
       "level": "error",
       "ok": true,
       "detail": "101 at least 30 emits and cadence within 450 ms"
@@ -841,10 +895,16 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.111477,
+      "send_pauses": [],
       "baseline_good": 49,
       "recovery_good": 30,
       "baseline_missed": 0,
       "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.111477,
+        "longest_pause": null,
+        "rule_applied": false
+      },
       "phase_gaps_s": {
         "withdrawal": [],
         "restoration": []
@@ -860,10 +920,16 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.111364,
+      "send_pauses": [],
       "baseline_good": 50,
       "recovery_good": 29,
       "baseline_missed": 0,
       "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.111364,
+        "longest_pause": null,
+        "rule_applied": false
+      },
       "phase_gaps_s": {
         "withdrawal": [],
         "restoration": []
@@ -879,10 +945,16 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.11046,
+      "send_pauses": [],
       "baseline_good": 49,
       "recovery_good": 29,
       "baseline_missed": 0,
-      "stable_recovery": true
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.11046,
+        "longest_pause": null,
+        "rule_applied": false
+      }
     },
     "303": {
       "description": "bypass reverse",
@@ -892,11 +964,171 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.110585,
+      "send_pauses": [],
       "baseline_good": 49,
       "recovery_good": 29,
       "baseline_missed": 0,
-      "stable_recovery": true
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.110585,
+        "longest_pause": null,
+        "rule_applied": false
+      }
     }
+  },
+  "forwarding": {
+    "phases_s": {
+      "baseline": [
+        0.0,
+        5.086621
+      ],
+      "withdrawal": [
+        5.086621,
+        22.988731
+      ],
+      "restoration": [
+        22.988731,
+        43.766748
+      ]
+    },
+    "outside_delivery": {
+      "status": "not applicable: the two-pair lab has no host outside the conversation"
+    },
+    "reflected_copies": {
+      "member_points": {
+        "101": [
+          "c1-bond0",
+          "c2-bond0"
+        ],
+        "201": [
+          "c2-bond0",
+          "c1-bond0"
+        ]
+      },
+      "findings": []
+    },
+    "host_table": {
+      "window_s": [
+        40.764605,
+        43.766748
+      ],
+      "peers": {
+        "p1": {
+          "sample_s": 43.605345,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "interpair",
+              "expected": "interpair",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "client2",
+              "expected": "client2",
+              "bond_member": "ether4",
+              "member_up": true
+            }
+          }
+        },
+        "p2": {
+          "sample_s": 43.393419,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "interpair",
+              "expected": "interpair",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "client2",
+              "expected": "client2",
+              "bond_member": "ether4",
+              "member_up": true
+            }
+          }
+        },
+        "q1": {
+          "sample_s": 43.611302,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "client1",
+              "expected": "client1",
+              "bond_member": "ether4",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "interpair",
+              "expected": "interpair",
+              "bond_member": "ether3",
+              "member_up": true
+            }
+          }
+        },
+        "q2": {
+          "sample_s": 43.605432,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "client1",
+              "expected": "client1",
+              "bond_member": "ether4",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "interpair",
+              "expected": "interpair",
+              "bond_member": "ether3",
+              "member_up": true
+            }
+          }
+        }
+      },
+      "wrong": []
+    },
+    "sync_warnings": {
+      "counts": {
+        "p1": {},
+        "p2": {},
+        "q1": {},
+        "q2": {}
+      },
+      "first_lines": []
+    }
+  },
+  "lacp_system_ids": {
+    "client 2 bond": {
+      "members": {
+        "eth1": "65535/52:54:00:db:0b:03",
+        "eth2": "65535/52:54:00:db:0b:03"
+      },
+      "same": true
+    },
+    "client 1 bond": {
+      "members": {
+        "eth1": "65535/52:54:00:db:0d:03",
+        "eth2": "65535/52:54:00:db:0d:03"
+      },
+      "same": true
+    },
+    "pair A inter-pair bond, seen by pair B": {
+      "members": {
+        "q1:ether3": "65535/52:54:00:db:0b:02",
+        "q2:ether3": "65535/52:54:00:db:0b:02"
+      },
+      "same": true
+    },
+    "pair B inter-pair bond, seen by pair A": {
+      "members": {
+        "p1:ether3": "65535/52:54:00:db:0d:02",
+        "p2:ether3": "65535/52:54:00:db:0d:02"
+      },
+      "same": true
+    }
+  },
+  "sender_pause_rule": {
+    "101": false,
+    "201": false,
+    "301": false,
+    "303": false
   },
   "restored_bpdus": {
     "roots": {

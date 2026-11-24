@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<testsuite name="mikrotik-mlag-mlags" tests="5" errors="2" failures="0" skipped="1">
+<testsuite name="mikrotik-mlag-mlags" tests="5" errors="1" failures="1" skipped="1">
   <testcase name="01-two-pair-stp-off-baseline" classname="mikrotik.mlag.mlags">
     <properties>
       <property name="lab" value="MLAG labs" />
@@ -14,9 +14,8 @@
     <properties>
       <property name="lab" value="MLAG labs" />
     </properties>
-    <error>201 at least 30 emits and cadence within 450 ms
-101 withdrawal loss ≥ 19.668 s exceeds 5 s
-201 withdrawal loss ≥ 19.294 s exceeds 5 s</error>
+    <failure>101 withdrawal loss ≥ 19.668 s exceeds 5 s
+201 withdrawal loss ≥ 19.294 s exceeds 5 s</failure>
   </testcase>
   <testcase name="01-two-pair-stp-off-reboot-a-secondary" classname="mikrotik.mlag.mlags">
     <properties>

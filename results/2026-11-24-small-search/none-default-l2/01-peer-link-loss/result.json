@@ -118,6 +118,54 @@
       "detail": "Syslog end markers from both peers"
     },
     {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 unicast frames at a host outside the conversation, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: 0 reflected unicast sequences, limit 0",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: 0 reflected unicast sequences, limit 0",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Bridge host table after recovery: every traffic host MAC on its expected port",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+      "phase": "baseline"
+    },
+    {
       "level": "error",
       "ok": true,
       "detail": "101 has usable baseline cadence"
@@ -399,6 +447,7 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.112076,
+      "send_pauses": [],
       "baseline_good": 39,
       "recovery_good": 29
     },
@@ -410,6 +459,7 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.112693,
+      "send_pauses": [],
       "baseline_good": 39,
       "recovery_good": 28
     },
@@ -421,6 +471,7 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.112906,
+      "send_pauses": [],
       "baseline_good": 39,
       "recovery_good": 28
     },
@@ -432,6 +483,7 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.112246,
+      "send_pauses": [],
       "baseline_good": 39,
       "recovery_good": 29
     },
@@ -443,6 +495,7 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.112061,
+      "send_pauses": [],
       "baseline_good": 39,
       "recovery_good": 29
     },
@@ -454,6 +507,7 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.111778,
+      "send_pauses": [],
       "baseline_good": 39,
       "recovery_good": 28
     },
@@ -465,10 +519,118 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.113341,
+      "send_pauses": [],
       "baseline_good": 39,
       "recovery_good": 28
     }
   },
+  "forwarding": {
+    "phases_s": {
+      "baseline": [
+        0.0,
+        4.002593
+      ],
+      "withdrawal": [
+        4.002593,
+        19.083415
+      ],
+      "restoration": [
+        19.083415,
+        87.139124
+      ]
+    },
+    "outside_delivery": {
+      "points": {
+        "101": [
+          "c2-bond0"
+        ],
+        "201": [
+          "c2-bond0"
+        ],
+        "102": [
+          "c1-eth1",
+          "c1-eth2"
+        ],
+        "202": [
+          "c1-eth1",
+          "c1-eth2"
+        ],
+        "302": [
+          "p1-tap4",
+          "p2-tap4",
+          "mobile-bond0"
+        ]
+      },
+      "findings": []
+    },
+    "reflected_copies": {
+      "member_points": {
+        "101": [
+          "c1-bond0",
+          "mobile-bond0"
+        ],
+        "102": [
+          "mobile-bond0"
+        ],
+        "201": [
+          "mobile-bond0",
+          "c1-bond0"
+        ],
+        "202": [
+          "mobile-bond0"
+        ],
+        "302": [
+          "c1-bond0"
+        ]
+      },
+      "findings": []
+    },
+    "host_table": {
+      "window_s": [
+        84.137535,
+        87.139124
+      ],
+      "peers": {
+        "p1": {
+          "sample_s": 86.969015,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "client1",
+              "expected": "client1",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:50": {
+              "on_interface": "ether5"
+            }
+          }
+        },
+        "p2": {
+          "sample_s": 86.9694,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "client1",
+              "expected": "client1",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:50": {
+              "on_interface": "ether2"
+            }
+          }
+        }
+      },
+      "wrong": []
+    },
+    "sync_warnings": {
+      "counts": {
+        "p1": {},
+        "p2": {}
+      },
+      "first_lines": []
+    }
+  },
+  "lacp_system_ids": "not available: the run saved no baseline bond state",
   "down_observation_bound_s": 0.077935904,
   "up_observation_bound_s": 0.052246229,
   "mlag_state": {
@@ -496,6 +658,7 @@
       "final": "connected"
     }
   },
+  "floods": "not available",
   "bridge_mode": "none",
   "status": "pass",
   "phases": [

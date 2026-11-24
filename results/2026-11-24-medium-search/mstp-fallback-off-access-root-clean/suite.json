@@ -167,6 +167,36 @@
           "detail": "Management UDP syslog end markers from required observers"
         },
         {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:da:0b:03, eth2 65535/52:54:00:da:0b:03",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the access-uplink, seen by the access switch: witness:ether2 65535/52:54:00:da:0b:02, witness:ether3 65535/52:54:00:da:0b:02",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+          "phase": "baseline"
+        },
+        {
           "level": "error",
           "ok": true,
           "detail": "101 at least 30 emits and cadence within 450 ms"
@@ -606,10 +636,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.109947,
+          "send_pauses": [],
           "baseline_good": 43,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.109947,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "201": {
           "description": "client B to client A",
@@ -619,10 +655,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.110389,
+          "send_pauses": [],
           "baseline_good": 43,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.110389,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "301": {
           "description": "bypass forward",
@@ -632,10 +674,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.108382,
+          "send_pauses": [],
           "baseline_good": 42,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.108382,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "303": {
           "description": "bypass reverse",
@@ -645,11 +693,102 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.106534,
+          "send_pauses": [],
           "baseline_good": 42,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.106534,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         }
+      },
+      "forwarding": {
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.330439
+          ]
+        },
+        "outside_delivery": {
+          "status": "not applicable: the Medium lab has no host outside the conversation"
+        },
+        "reflected_copies": {
+          "member_points": {
+            "101": [
+              "c2-bond0"
+            ],
+            "201": [
+              "c2-bond0"
+            ]
+          },
+          "findings": []
+        },
+        "host_table": {
+          "status": "not available: no fault was executed, so there is no recovery window"
+        },
+        "sync_warnings": {
+          "counts": {
+            "p1": {},
+            "p2": {},
+            "witness": {}
+          },
+          "first_lines": []
+        }
+      },
+      "lacp_system_ids": {
+        "client 2 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:da:0b:03",
+            "eth2": "65535/52:54:00:da:0b:03"
+          },
+          "same": true
+        },
+        "access-uplink, seen by the access switch": {
+          "members": {
+            "witness:ether2": "65535/52:54:00:da:0b:02",
+            "witness:ether3": "65535/52:54:00:da:0b:02"
+          },
+          "same": true
+        }
+      },
+      "access_bpdus": {
+        "captures": [
+          "c2-eth1",
+          "c2-eth2",
+          "c2-bond0",
+          "p1-tap3",
+          "p2-tap3"
+        ],
+        "sender_bridge_mac": "02:00:00:21:00:13",
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.330439
+          ]
+        },
+        "by_phase": {
+          "baseline": {
+            "count": 0,
+            "first": []
+          },
+          "withdrawal": {
+            "count": 0,
+            "first": []
+          },
+          "restoration": {
+            "count": 0,
+            "first": []
+          }
+        }
+      },
+      "sender_pause_rule": {
+        "101": false,
+        "201": false,
+        "301": false,
+        "303": false
       },
       "bridge_mode": "mstp",
       "status": "pass",
@@ -832,6 +971,66 @@
           "level": "error",
           "ok": true,
           "detail": "Management UDP syslog end markers from required observers"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Withdrawal: 0 reflected unicast sequences, limit 0",
+          "phase": "withdrawal"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Restoration: 0 reflected unicast sequences, limit 0",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Bridge host table after recovery: every traffic host MAC on its expected port",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:da:0b:03, eth2 65535/52:54:00:da:0b:03",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the access-uplink, seen by the access switch: witness:ether2 65535/52:54:00:da:0b:02, witness:ether3 65535/52:54:00:da:0b:02",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Withdrawal: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+          "phase": "withdrawal"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Restoration: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+          "phase": "restoration"
         },
         {
           "level": "error",
@@ -1327,10 +1526,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.111373,
+          "send_pauses": [],
           "baseline_good": 47,
           "recovery_good": 29,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.111373,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "201": {
           "description": "client B to client A",
@@ -1340,10 +1545,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.109852,
+          "send_pauses": [],
           "baseline_good": 47,
           "recovery_good": 30,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.109852,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "301": {
           "description": "bypass forward",
@@ -1932,10 +2143,16 @@
           ],
           "capture_mismatches": [],
           "max_send_interval_s": 0.107994,
+          "send_pauses": [],
           "baseline_good": 45,
           "recovery_good": 28,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.107994,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "303": {
           "description": "bypass reverse",
@@ -1945,11 +2162,158 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.110232,
+          "send_pauses": [],
           "baseline_good": 45,
           "recovery_good": 29,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.110232,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         }
+      },
+      "forwarding": {
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.76999
+          ],
+          "withdrawal": [
+            4.76999,
+            6.77437
+          ],
+          "restoration": [
+            6.77437,
+            12.779499
+          ]
+        },
+        "outside_delivery": {
+          "status": "not applicable: the Medium lab has no host outside the conversation"
+        },
+        "reflected_copies": {
+          "member_points": {
+            "101": [
+              "c2-bond0"
+            ],
+            "201": [
+              "c2-bond0"
+            ]
+          },
+          "findings": []
+        },
+        "host_table": {
+          "window_s": [
+            9.776216,
+            12.779499
+          ],
+          "peers": {
+            "p1": {
+              "sample_s": 12.586009,
+              "hosts": {
+                "02:00:00:11:00:11": {
+                  "on_interface": "access-uplink",
+                  "expected": "access-uplink",
+                  "bond_member": "ether3",
+                  "member_up": true
+                },
+                "02:00:00:11:00:12": {
+                  "on_interface": "client2",
+                  "expected": "client2",
+                  "bond_member": "ether4",
+                  "member_up": true
+                }
+              }
+            },
+            "p2": {
+              "sample_s": 12.590335,
+              "hosts": {
+                "02:00:00:11:00:11": {
+                  "on_interface": "access-uplink",
+                  "expected": "access-uplink",
+                  "bond_member": "ether3",
+                  "member_up": true
+                },
+                "02:00:00:11:00:12": {
+                  "on_interface": "client2",
+                  "expected": "client2",
+                  "bond_member": "ether4",
+                  "member_up": true
+                }
+              }
+            }
+          },
+          "wrong": []
+        },
+        "sync_warnings": {
+          "counts": {
+            "p1": {},
+            "p2": {},
+            "witness": {}
+          },
+          "first_lines": []
+        }
+      },
+      "lacp_system_ids": {
+        "client 2 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:da:0b:03",
+            "eth2": "65535/52:54:00:da:0b:03"
+          },
+          "same": true
+        },
+        "access-uplink, seen by the access switch": {
+          "members": {
+            "witness:ether2": "65535/52:54:00:da:0b:02",
+            "witness:ether3": "65535/52:54:00:da:0b:02"
+          },
+          "same": true
+        }
+      },
+      "access_bpdus": {
+        "captures": [
+          "c2-eth1",
+          "c2-eth2",
+          "c2-bond0",
+          "p1-tap3",
+          "p2-tap3"
+        ],
+        "sender_bridge_mac": "02:00:00:21:00:13",
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.76999
+          ],
+          "withdrawal": [
+            4.76999,
+            6.77437
+          ],
+          "restoration": [
+            6.77437,
+            12.779499
+          ]
+        },
+        "by_phase": {
+          "baseline": {
+            "count": 0,
+            "first": []
+          },
+          "withdrawal": {
+            "count": 0,
+            "first": []
+          },
+          "restoration": {
+            "count": 0,
+            "first": []
+          }
+        }
+      },
+      "sender_pause_rule": {
+        "101": false,
+        "201": false,
+        "301": false,
+        "303": false
       },
       "restored_bpdus": {
         "roots": {
@@ -2160,6 +2524,42 @@
           "level": "error",
           "ok": false,
           "detail": "Management UDP syslog end markers from required observers"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": false,
+          "detail": "Withdrawal: 1 reflected unicast sequences, limit 0; 201 request at source: sequences [250]",
+          "phase": "withdrawal"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:da:0b:03, eth2 65535/52:54:00:da:0b:03",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the access-uplink, seen by the access switch: witness:ether2 65535/52:54:00:da:0b:02, witness:ether3 65535/52:54:00:da:0b:02",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+          "phase": "baseline"
         },
         {
           "level": "error",
@@ -2639,10 +3039,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.110614,
+          "send_pauses": [],
           "baseline_good": 42,
           "recovery_good": 0,
           "baseline_missed": 0,
           "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.110614,
+            "longest_pause": null,
+            "rule_applied": false
+          },
           "phase_gaps_s": {
             "withdrawal": [],
             "restoration": []
@@ -2658,10 +3064,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.110226,
+          "send_pauses": [],
           "baseline_good": 43,
           "recovery_good": 0,
           "baseline_missed": 0,
           "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.110226,
+            "longest_pause": null,
+            "rule_applied": false
+          },
           "phase_gaps_s": {
             "withdrawal": [],
             "restoration": []
@@ -2677,10 +3089,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.106513,
+          "send_pauses": [],
           "baseline_good": 42,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.106513,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "303": {
           "description": "bypass reverse",
@@ -2690,11 +3108,125 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.1076,
+          "send_pauses": [],
           "baseline_good": 42,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.1076,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         }
+      },
+      "forwarding": {
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.775583
+          ],
+          "withdrawal": [
+            4.775583,
+            95.502357
+          ]
+        },
+        "outside_delivery": {
+          "status": "not applicable: the Medium lab has no host outside the conversation"
+        },
+        "reflected_copies": {
+          "member_points": {
+            "101": [
+              "c2-bond0"
+            ],
+            "201": [
+              "c2-bond0"
+            ]
+          },
+          "findings": [
+            {
+              "stream": 201,
+              "kind": "request at source",
+              "phase": "withdrawal",
+              "sequences": 1,
+              "first_seqs": [
+                250
+              ]
+            }
+          ]
+        },
+        "host_table": {
+          "status": "not available: the run stopped before the recovery window"
+        },
+        "sync_warnings": {
+          "counts": {
+            "p1": {
+              "withdrawal": 1
+            },
+            "p2": {},
+            "witness": {}
+          },
+          "first_lines": [
+            {
+              "node": "p1",
+              "phase": "withdrawal",
+              "time_s": 22.398217,
+              "line": "<28>Nov 24 13:40:05 dc1-core-mlag1 bridge,warning MLAG: remote heartbeat timeout"
+            }
+          ]
+        }
+      },
+      "lacp_system_ids": {
+        "client 2 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:da:0b:03",
+            "eth2": "65535/52:54:00:da:0b:03"
+          },
+          "same": true
+        },
+        "access-uplink, seen by the access switch": {
+          "members": {
+            "witness:ether2": "65535/52:54:00:da:0b:02",
+            "witness:ether3": "65535/52:54:00:da:0b:02"
+          },
+          "same": true
+        }
+      },
+      "access_bpdus": {
+        "captures": [
+          "c2-eth1",
+          "c2-eth2",
+          "c2-bond0",
+          "p1-tap3",
+          "p2-tap3"
+        ],
+        "sender_bridge_mac": "02:00:00:21:00:13",
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.775583
+          ]
+        },
+        "by_phase": {
+          "baseline": {
+            "count": 0,
+            "first": []
+          },
+          "withdrawal": {
+            "count": 0,
+            "first": []
+          },
+          "restoration": {
+            "count": 0,
+            "first": []
+          }
+        }
+      },
+      "sender_pause_rule": {
+        "101": false,
+        "201": false,
+        "301": false,
+        "303": false
       },
       "bridge_mode": "mstp",
       "status": "error",
@@ -2713,7 +3245,9 @@
           "worst_loss_s": null,
           "loss_s": {},
           "control_loss_s": {},
-          "failed_checks": []
+          "failed_checks": [
+            "Withdrawal: 1 reflected unicast sequences, limit 0; 201 request at source: sequences [250]"
+          ]
         },
         {
           "key": "restoration",

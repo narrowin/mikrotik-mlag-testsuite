@@ -35,9 +35,10 @@ Resets the data bridge on all four CHRs over management SSH with protocol-mode=n
 
 | Phase | Expected | Limit | Run 1 |
 | --- | --- | --- | --- |
-| Baseline | Both pairs are connected, with CHR 1 and CHR 3 as MLAG primaries. | no loss | ⚠️ INVALID · no loss · [failed check](01-two-pair-stp-off-baseline/result.json#L283) |
+| Baseline | Both pairs are connected, with CHR 1 and CHR 3 as MLAG primaries. | no loss | ⚠️ INVALID · no loss · [failed check](01-two-pair-stp-off-baseline/result.json#L295) |
 
 - **Baseline:** Both pairs are connected, with CHR 1 and CHR 3 as MLAG primaries. With protocol-mode=none no bridge sends or forwards BPDUs. Every member of the inter-pair bond and both host bonds is synchronized, collecting and distributing, and all four streams deliver with zero loss. [Source](https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/)
+- **MikroTik fixes this case checks:** Packets looped back to a dual-connected bond ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); BPDUs leaking to the wrong dual-connected bond (introduced in 7.24) ([7.24.6](https://cdn.mikrotik.com/routeros/7.24.6/CHANGELOG)); LACP system ID not synchronised when bonds are created before MLAG ([7.25.2](https://cdn.mikrotik.com/routeros/7.25.2/CHANGELOG)); MLAG peer stuck in the disabled state after config changes ([7.25](https://cdn.mikrotik.com/routeros/7.25/CHANGELOG)); MLAG state permanently disabled after changing bridge settings ([7.22](https://cdn.mikrotik.com/routeros/7.22/CHANGELOG)); Priority setting to elect the MLAG primary ([7.17](https://cdn.mikrotik.com/routeros/7.17/CHANGELOG))
 
 - Run 1 (⚠️ INVALID): [verdict](01-two-pair-stp-off-baseline/result.json) · [timeline](01-two-pair-stp-off-baseline/timeline.tsv) · [CHR 1 config](01-two-pair-stp-off-baseline/config-p1.txt) · [CHR 2 config](01-two-pair-stp-off-baseline/config-p2.txt) · [CHR 3 config](01-two-pair-stp-off-baseline/config-q1.txt) · [CHR 4 config](01-two-pair-stp-off-baseline/config-q2.txt)
 

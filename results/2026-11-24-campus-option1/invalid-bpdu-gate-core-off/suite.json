@@ -1,6 +1,6 @@
 {
-  "errors": 1,
-  "failures": 1,
+  "errors": 2,
+  "failures": 0,
   "results": [
     {
       "run": "01-medium-core-off-baseline",
@@ -13,8 +13,8 @@
         },
         {
           "level": "fail",
-          "ok": false,
-          "detail": "Baseline BPDU coverage missing ['access uplink'], unexpected []"
+          "ok": true,
+          "detail": "Baseline BPDU coverage missing [], unexpected []"
         },
         {
           "level": "error",
@@ -177,6 +177,24 @@
           "detail": "Management UDP syslog end markers from required observers"
         },
         {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+          "phase": "baseline"
+        },
+        {
           "level": "error",
           "ok": true,
           "detail": "101 at least 30 emits and cadence within 450 ms"
@@ -255,6 +273,11 @@
           "level": "error",
           "ok": true,
           "detail": "303 duplicate-free"
+        },
+        {
+          "level": "error",
+          "ok": false,
+          "detail": "Live baseline gate withheld the fault despite the closed captures: [\"Baseline BPDU coverage missing ['access uplink'], unexpected []\"]"
         }
       ],
       "name": "medium-core-off-baseline",
@@ -531,9 +554,7 @@
       },
       "baseline_bpdus": {
         "roots": {},
-        "missing": [
-          "access uplink"
-        ],
+        "missing": [],
         "unexpected": []
       },
       "bpdus_during_scoring": {},
@@ -595,10 +616,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.107906,
+          "send_pauses": [],
           "baseline_good": 42,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.107906,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "201": {
           "description": "client B to client A",
@@ -608,10 +635,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.104226,
+          "send_pauses": [],
           "baseline_good": 43,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.104226,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "301": {
           "description": "bypass forward",
@@ -621,10 +654,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.11043,
+          "send_pauses": [],
           "baseline_good": 41,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.11043,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "303": {
           "description": "bypass reverse",
@@ -634,14 +673,90 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.108995,
+          "send_pauses": [],
           "baseline_good": 41,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.108995,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         }
       },
+      "forwarding": {
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.316632
+          ]
+        },
+        "outside_delivery": {
+          "status": "not applicable: the Medium lab has no host outside the conversation"
+        },
+        "reflected_copies": {
+          "member_points": {
+            "101": [
+              "c2-bond0"
+            ],
+            "201": [
+              "c2-bond0"
+            ]
+          },
+          "findings": []
+        },
+        "host_table": {
+          "status": "not available: no fault was executed, so there is no recovery window"
+        },
+        "sync_warnings": {
+          "counts": {
+            "p1": {},
+            "p2": {},
+            "witness": {}
+          },
+          "first_lines": []
+        }
+      },
+      "lacp_system_ids": "not available: the run saved no baseline bond state",
+      "access_bpdus": {
+        "captures": [
+          "c2-eth1",
+          "c2-eth2",
+          "c2-bond0",
+          "p1-tap3",
+          "p2-tap3"
+        ],
+        "sender_bridge_mac": "02:00:00:21:00:13",
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.316632
+          ]
+        },
+        "by_phase": {
+          "baseline": {
+            "count": 0,
+            "first": []
+          },
+          "withdrawal": {
+            "count": 0,
+            "first": []
+          },
+          "restoration": {
+            "count": 0,
+            "first": []
+          }
+        }
+      },
+      "sender_pause_rule": {
+        "101": false,
+        "201": false,
+        "301": false,
+        "303": false
+      },
       "bridge_mode": "none",
-      "status": "fail",
+      "status": "error",
       "phases": [
         {
           "key": "baseline",
@@ -650,12 +765,12 @@
           "source": "https://manual.mikrotik.com/docs/bridging-and-switching/user-guides/spanning-tree-protocol/",
           "limit_s": 0.0,
           "window_s": null,
-          "verdict": "fail",
+          "verdict": "error",
           "worst_loss_s": null,
           "loss_s": {},
           "control_loss_s": {},
           "failed_checks": [
-            "Baseline BPDU coverage missing ['access uplink'], unexpected []"
+            "Live baseline gate withheld the fault despite the closed captures: [\"Baseline BPDU coverage missing ['access uplink'], unexpected []\"]"
           ]
         }
       ]

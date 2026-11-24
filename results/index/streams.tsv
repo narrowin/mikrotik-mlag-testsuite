@@ -32,7 +32,7 @@ campaign	suite	run	case	bridge_mode	status	phase	phase_start_s	phase_end_s	limit
 2026-11-24-campus-option1	core-off-power-loss-primary-repeat	01-medium-core-off-power-loss-primary	medium-core-off-power-loss-primary	none	pass	Primary off	8.353765	44.73226	5.0	pass			0	0	0
 2026-11-24-campus-option1	core-off-power-loss-primary-repeat	01-medium-core-off-power-loss-primary	medium-core-off-power-loss-primary	none	pass	Primary back	44.73226	61.761546	5.0	pass	101	graded	0.20874	0.415547	
 2026-11-24-campus-option1	core-off-power-loss-primary-repeat	01-medium-core-off-power-loss-primary	medium-core-off-power-loss-primary	none	pass	Primary back	44.73226	61.761546	5.0	pass	201	graded	0.208675	0.418261	
-2026-11-24-campus-option1	invalid-bpdu-gate-core-off	01-medium-core-off-baseline	medium-core-off-baseline	none	fail	Baseline			0.0	fail			0	0	0
+2026-11-24-campus-option1	invalid-bpdu-gate-core-off	01-medium-core-off-baseline	medium-core-off-baseline	none	error	Baseline			0.0	error			0	0	0
 2026-11-24-forwarding-checks	debian-two-pair-stp-off-flap-once	01-two-pair-stp-off-interpair-member-flap	two-pair-stp-off-interpair-member-flap	none	pass	Inter-pair member down	9.16554	17.457506	3.0	pass	101	graded	0.212446	0.417557	3
 2026-11-24-forwarding-checks	debian-two-pair-stp-off-flap-once	01-two-pair-stp-off-interpair-member-flap	two-pair-stp-off-interpair-member-flap	none	pass	Inter-pair member down	9.16554	17.457506	3.0	pass	201	graded	0.10276	0.306119	2
 2026-11-24-forwarding-checks	debian-two-pair-stp-off-flap-once	01-two-pair-stp-off-interpair-member-flap	two-pair-stp-off-interpair-member-flap	none	pass	Inter-pair member back	17.457506	25.719921	3.0	pass	101	graded	0.104226	0.309517	2
@@ -325,39 +325,39 @@ campaign	suite	run	case	bridge_mode	status	phase	phase_start_s	phase_end_s	limit
 2026-11-24-medium-search	mstp-region-msti-fallback-off-pair-root-run2	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	23.488596	40.580072	5.0	pass	201	graded	0	0.211027	
 2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-baseline	medium-mstp-pair-root-baseline	mstp	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-calibrate	medium-mstp-pair-root-calibrate	mstp	pass	One-way bypass cut				pass	301	graded	1.975944	2.184097	20
-2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	fail	Primary down	4.842205	23.849337	5.0	fail	101	graded	12.827898	13.037205	170
-2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	fail	Primary down	4.842205	23.849337	5.0	fail	201	graded	12.874009	13.08425	172
-2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	fail	Primary back	23.849337	41.657515	5.0	pass	101	graded	2.684375	2.896017	151
-2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	fail	Primary back	23.849337	41.657515	5.0	pass	201	graded	2.72386	2.93564	152
-2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.781851	22.797501	5.0	pass	101	graded	1.985912	2.194198	20
-2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.781851	22.797501	5.0	pass	201	graded	1.987744	2.195301	20
-2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	22.797501	40.237878	5.0	pass	101	graded	0.102561	0.309889	2
-2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	22.797501	40.237878	5.0	pass	201	graded	0	0.208964	1
+2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	fail	Primary down	4.842205	23.849337	5.0	fail	101	graded	12.827898	13.037205	
+2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	fail	Primary down	4.842205	23.849337	5.0	fail	201	graded	12.874009	13.08425	
+2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	fail	Primary back	23.849337	41.657515	5.0	pass	101	graded	2.684375	2.896017	
+2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	fail	Primary back	23.849337	41.657515	5.0	pass	201	graded	2.72386	2.93564	
+2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.781851	22.797501	5.0	pass	101	graded	1.985912	2.194198	
+2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.781851	22.797501	5.0	pass	201	graded	1.987744	2.195301	
+2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	22.797501	40.237878	5.0	pass	101	graded	0.102561	0.309889	
+2026-11-24-medium-search	mstp-region-msti-pair-root	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	22.797501	40.237878	5.0	pass	201	graded	0	0.208964	
 2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-baseline	medium-mstp-pair-root-baseline	mstp	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-calibrate	medium-mstp-pair-root-calibrate	mstp	pass	One-way bypass cut				pass	301	graded	1.875059	2.078936	19
 2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	5.373326	24.106132	5.0	pass	101	graded	2.704943	2.910103	
 2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	5.373326	24.106132	5.0	pass	201	graded	2.714945	2.922976	
 2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary back	24.106132	41.332136	5.0	pass			0	0	0
-2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.954366	23.855513	5.0	pass	101	graded	2.396087	2.601273	
-2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.954366	23.855513	5.0	pass	201	graded	2.495483	2.708219	
-2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	23.855513	41.543042	5.0	pass			0	0	0
+2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary down	4.954366	23.855513	5.0	fail	101	graded	2.396087	2.601273	
+2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary down	4.954366	23.855513	5.0	fail	201	graded	2.495483	2.708219	
+2026-11-24-medium-search	mstp-split-root-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary back	23.855513	41.543042	5.0	pass			0	0	0
 2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-baseline	medium-mstp-pair-root-baseline	mstp	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-calibrate	medium-mstp-pair-root-calibrate	mstp	pass	One-way bypass cut				pass	301	graded	1.874107	2.078563	19
 2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	4.805997	22.429472	5.0	pass	101	graded	2.915481	3.121524	
 2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	4.805997	22.429472	5.0	pass	201	graded	3.020023	3.227185	
 2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary back	22.429472	39.983217	5.0	pass	101	graded	0.106515	0.310128	
 2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary back	22.429472	39.983217	5.0	pass	201	graded	0.108067	0.315138	
-2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.868099	22.775175	5.0	pass	101	graded	2.818589	3.023624	
-2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.868099	22.775175	5.0	pass	201	graded	2.815159	3.021741	
-2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	22.775175	40.309643	5.0	pass	201	graded	0	0.141122	
+2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary down	4.868099	22.775175	5.0	fail	101	graded	2.818589	3.023624	
+2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary down	4.868099	22.775175	5.0	fail	201	graded	2.815159	3.021741	
+2026-11-24-medium-search	mstp-split-root-fallback-off	02-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary back	22.775175	40.309643	5.0	pass	201	graded	0	0.141122	
 2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-baseline	medium-mstp-pair-root-baseline	mstp	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-calibrate	medium-mstp-pair-root-calibrate	mstp	pass	One-way bypass cut				pass	301	graded	1.919191	2.121191	19
-2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	error	Primary down	6.202534	30.94991	5.0	error	101	graded	2.647306	2.850155	
-2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	error	Primary down	6.202534	30.94991	5.0	error	201	graded	2.655238	2.864517	
-2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	error	Primary back	30.94991	48.614701	5.0	error	201	graded	0	0.202666	
-2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	5.389554	40.398008	5.0	pass	101	graded	2.297988	2.504384	
-2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	5.389554	40.398008	5.0	pass	201	graded	2.30191	2.507525	
-2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	40.398008	60.874301	5.0	pass			0	0	0
+2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	6.202534	30.94991	5.0	pass	101	graded	2.647306	2.850155	
+2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	6.202534	30.94991	5.0	pass	201	graded	2.655238	2.864517	
+2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary back	30.94991	48.614701	5.0	pass	201	graded	0	0.202666	
+2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary down	5.389554	40.398008	5.0	fail	101	graded	2.297988	2.504384	
+2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary down	5.389554	40.398008	5.0	fail	201	graded	2.30191	2.507525	
+2026-11-24-medium-search	mstp-split-root-fallback-on	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary back	40.398008	60.874301	5.0	pass			0	0	0
 2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	01-medium-mstp-pair-root-baseline	medium-mstp-pair-root-baseline	mstp	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	01-medium-mstp-pair-root-calibrate	medium-mstp-pair-root-calibrate	mstp	pass	One-way bypass cut				pass	301	graded	1.871659	2.085279	19
 2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	4.759229	22.32199	5.0	pass	101	graded	2.498427	2.701042	
@@ -379,9 +379,9 @@ campaign	suite	run	case	bridge_mode	status	phase	phase_start_s	phase_end_s	limit
 2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	02-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	22.884358	40.537205	5.0	pass			0	0	0
 2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-baseline	medium-mstp-pair-root-baseline	mstp	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-calibrate	medium-mstp-pair-root-calibrate	mstp	pass	One-way bypass cut				pass	301	graded	1.872035	2.079008	19
-2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	error	Primary down	4.905595	23.342651	5.0	error	101	graded	2.087003	2.290724	
-2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	error	Primary down	4.905595	23.342651	5.0	error	201	graded	2.0819	2.287587	
-2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	error	Primary back	23.342651	40.314753	5.0	error			0	0	0
+2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	4.905595	23.342651	5.0	pass	101	graded	2.087003	2.290724	
+2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	4.905595	23.342651	5.0	pass	201	graded	2.0819	2.287587	
+2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary back	23.342651	40.314753	5.0	pass			0	0	0
 2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.795054	23.475555	5.0	pass	101	graded	2.079905	2.284361	
 2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.795054	23.475555	5.0	pass	201	graded	2.087368	2.29238	
 2026-11-24-medium-search	mstp-split-root-fallback-on-repeat	03-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	23.475555	41.230259	5.0	pass	101	graded	0	0.206353	
@@ -391,10 +391,10 @@ campaign	suite	run	case	bridge_mode	status	phase	phase_start_s	phase_end_s	limit
 2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	4.937135	23.567411	5.0	pass	101	graded	2.182208	2.3904	
 2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	4.937135	23.567411	5.0	pass	201	graded	2.184388	2.391447	
 2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary back	23.567411	40.622144	5.0	pass			0	0	0
-2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.923366	24.281964	5.0	pass	101	graded	2.494985	2.704627	
-2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary down	4.923366	24.281964	5.0	pass	201	graded	2.504124	2.708106	
-2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	24.281964	41.609293	5.0	pass	101	graded	0	0.207531	
-2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	pass	Secondary back	24.281964	41.609293	5.0	pass	201	graded	0	0.206213	
+2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary down	4.923366	24.281964	5.0	fail	101	graded	2.494985	2.704627	
+2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary down	4.923366	24.281964	5.0	fail	201	graded	2.504124	2.708106	
+2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary back	24.281964	41.609293	5.0	pass	101	graded	0	0.207531	
+2026-11-24-medium-search	mstp-split-root-named-fallback-off	01-medium-mstp-pair-root-reboot-secondary	medium-mstp-pair-root-reboot-secondary	mstp	fail	Secondary back	24.281964	41.609293	5.0	pass	201	graded	0	0.206213	
 2026-11-24-medium-search	mstp-split-root-named-fallback-off-repeat	01-medium-mstp-pair-root-baseline	medium-mstp-pair-root-baseline	mstp	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-medium-search	mstp-split-root-named-fallback-off-repeat	01-medium-mstp-pair-root-calibrate	medium-mstp-pair-root-calibrate	mstp	pass	One-way bypass cut				pass	301	graded	1.869639	2.08133	19
 2026-11-24-medium-search	mstp-split-root-named-fallback-off-repeat	01-medium-mstp-pair-root-reboot-primary	medium-mstp-pair-root-reboot-primary	mstp	pass	Primary down	4.758074	23.173284	5.0	pass	101	graded	2.82289	3.034328	
@@ -423,28 +423,28 @@ campaign	suite	run	case	bridge_mode	status	phase	phase_start_s	phase_end_s	limit
 2026-11-24-medium-search	rstp-fallback-off-pair-root-run2	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary down	4.77971	22.818987	5.0	fail	201	graded	11.009915	11.220915	
 2026-11-24-medium-search	rstp-fallback-off-pair-root-run2	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary back	22.818987	40.092881	5.0	error	101	graded	4.884245	5.095914	
 2026-11-24-medium-search	rstp-fallback-off-pair-root-run2	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary back	22.818987	40.092881	5.0	error	201	graded	4.916557	5.128907	
-2026-11-24-medium-search	rstp-fallback-off-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	pass	Secondary down	4.869314	23.036212	5.0	pass	101	graded	3.028023	3.235106	
-2026-11-24-medium-search	rstp-fallback-off-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	pass	Secondary down	4.869314	23.036212	5.0	pass	201	graded	3.028454	3.232019	
-2026-11-24-medium-search	rstp-fallback-off-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	pass	Secondary back	23.036212	40.4502	5.0	pass			0	0	0
+2026-11-24-medium-search	rstp-fallback-off-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	fail	Secondary down	4.869314	23.036212	5.0	fail	101	graded	3.028023	3.235106	
+2026-11-24-medium-search	rstp-fallback-off-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	fail	Secondary down	4.869314	23.036212	5.0	fail	201	graded	3.028454	3.232019	
+2026-11-24-medium-search	rstp-fallback-off-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	fail	Secondary back	23.036212	40.4502	5.0	pass			0	0	0
 2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-baseline	medium-pair-root-baseline	rstp	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-calibrate	medium-pair-root-calibrate	rstp	pass	One-way bypass cut				pass	301	graded	1.872094	2.082055	19
 2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary down	4.735022	21.743088	5.0	fail	101	graded	10.494037	10.711026	
 2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary down	4.735022	21.743088	5.0	fail	201	graded	9.991072	10.196619	
 2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary back	21.743088	39.311544	5.0	fail	101	graded	6.995796	7.209314	
 2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary back	21.743088	39.311544	5.0	fail	201	graded	7.005663	7.217623	
-2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	pass	Secondary down	4.666831	21.921631	5.0	pass	101	graded	1.773738	1.979431	
-2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	pass	Secondary down	4.666831	21.921631	5.0	pass	201	graded	1.76896	1.977997	
-2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	pass	Secondary back	21.921631	39.3039	5.0	pass	201	graded	0	0.144002	
+2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	fail	Secondary down	4.666831	21.921631	5.0	fail	101	graded	1.773738	1.979431	
+2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	fail	Secondary down	4.666831	21.921631	5.0	fail	201	graded	1.76896	1.977997	
+2026-11-24-medium-search	rstp-lacp-strict-pair-root	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	fail	Secondary back	21.921631	39.3039	5.0	pass	201	graded	0	0.144002	
 2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-baseline	medium-pair-root-baseline	rstp	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-calibrate	medium-pair-root-calibrate	rstp	pass	One-way bypass cut				pass	301	graded	1.976443	2.188033	20
 2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary down	4.855802	22.99796	5.0	fail	101	graded	11.439484	11.646562	
 2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary down	4.855802	22.99796	5.0	fail	201	graded	11.342395	11.549529	
 2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary back	22.99796	40.453117	5.0	fail	101	graded	6.770981	6.982296	
 2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-primary	medium-pair-root-reboot-primary	rstp	fail	Primary back	22.99796	40.453117	5.0	fail	201	graded	6.763644	6.976367	
-2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	pass	Secondary down	4.837729	23.02473	5.0	pass	101	graded	1.87638	2.084516	
-2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	pass	Secondary down	4.837729	23.02473	5.0	pass	201	graded	1.874283	2.078464	
-2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	pass	Secondary back	23.02473	40.065915	5.0	pass	101	graded	0	0.205788	
-2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	pass	Secondary back	23.02473	40.065915	5.0	pass	201	graded	0.108698	0.312642	
+2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	fail	Secondary down	4.837729	23.02473	5.0	fail	101	graded	1.87638	2.084516	
+2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	fail	Secondary down	4.837729	23.02473	5.0	fail	201	graded	1.874283	2.078464	
+2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	fail	Secondary back	23.02473	40.065915	5.0	pass	101	graded	0	0.205788	
+2026-11-24-medium-search	rstp-pair-root-run2	01-medium-pair-root-reboot-secondary	medium-pair-root-reboot-secondary	rstp	fail	Secondary back	23.02473	40.065915	5.0	pass	201	graded	0.108698	0.312642	
 2026-11-24-medium-search	stp-off	01-medium-stp-off-baseline	medium-stp-off-baseline	none	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-medium-search	stp-off	01-medium-stp-off-calibrate	medium-stp-off-calibrate	none	pass	One-way bypass cut				pass	301	graded	1.882424	2.086205	19
 2026-11-24-medium-search	stp-off	01-medium-stp-off-reboot-primary	medium-stp-off-reboot-primary	none	pass	Primary down	8.195192	25.179606	5.0	pass	101	graded	1.980901	2.191478	
@@ -491,10 +491,10 @@ campaign	suite	run	case	bridge_mode	status	phase	phase_start_s	phase_end_s	limit
 2026-11-24-small-search	mstp-default-l2	01-peer-link-loss	peer-link-loss	mstp	pass	Peer link down	4.001068	19.069241	5.0	pass			0	0	0
 2026-11-24-small-search	mstp-default-l2	01-peer-link-loss	peer-link-loss	mstp	pass	Peer link back	19.069241	84.130421	5.0	pass			0	0	0
 2026-11-24-small-search	mstp-default-reboot	01-baseline	baseline	mstp	pass	Steady state			0.0	pass			0	0	0
-2026-11-24-small-search	mstp-default-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary down	4.465159	21.445247	5.0	pass	101	graded	1.984405	2.189742	20
-2026-11-24-small-search	mstp-default-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary down	4.465159	21.445247	5.0	pass	201	graded	1.985487	2.195527	20
-2026-11-24-small-search	mstp-default-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary back	21.445247	38.949839	5.0	pass	101	graded	0	0.212692	1
-2026-11-24-small-search	mstp-default-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary back	21.445247	38.949839	5.0	pass	201	graded	0	0.20657	1
+2026-11-24-small-search	mstp-default-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary down	4.465159	21.445247	5.0	pass	101	graded	1.984405	2.189742	
+2026-11-24-small-search	mstp-default-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary down	4.465159	21.445247	5.0	pass	201	graded	1.985487	2.195527	
+2026-11-24-small-search	mstp-default-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary back	21.445247	38.949839	5.0	pass	101	graded	0	0.212692	
+2026-11-24-small-search	mstp-default-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary back	21.445247	38.949839	5.0	pass	201	graded	0	0.20657	
 2026-11-24-small-search	mstp-default-reboot	01-reboot-calibration	reboot-calibration	mstp	pass	2 s one-way cut				pass	301	graded	1.873556	2.080998	19
 2026-11-24-small-search	mstp-default-reboot	01-secondary-reboot	secondary-reboot	mstp	pass	Secondary down	4.540436	21.414907	5.0	pass			0	0	0
 2026-11-24-small-search	mstp-default-reboot	01-secondary-reboot	secondary-reboot	mstp	pass	Secondary back	21.414907	38.996992	5.0	pass			0	0	0
@@ -517,10 +517,10 @@ campaign	suite	run	case	bridge_mode	status	phase	phase_start_s	phase_end_s	limit
 2026-11-24-small-search	mstp-fallback-off-l2-run2	01-peer-link-loss	peer-link-loss	mstp	pass	Peer link down	4.003786	19.131943	5.0	pass			0	0	0
 2026-11-24-small-search	mstp-fallback-off-l2-run2	01-peer-link-loss	peer-link-loss	mstp	pass	Peer link back	19.131943	84.202498	5.0	pass			0	0	0
 2026-11-24-small-search	mstp-fallback-off-reboot	01-baseline	baseline	mstp	pass	Steady state			0.0	pass			0	0	0
-2026-11-24-small-search	mstp-fallback-off-reboot	01-primary-reboot	primary-reboot	mstp	error	Primary down	4.664008	22.656745	5.0	error	101	graded	2.815985	3.02745	
-2026-11-24-small-search	mstp-fallback-off-reboot	01-primary-reboot	primary-reboot	mstp	error	Primary down	4.664008	22.656745	5.0	error	201	graded	2.920697	3.135087	
-2026-11-24-small-search	mstp-fallback-off-reboot	01-primary-reboot	primary-reboot	mstp	error	Primary back	22.656745	40.366845	5.0	error	101	graded	0.075925	0.286115	
-2026-11-24-small-search	mstp-fallback-off-reboot	01-primary-reboot	primary-reboot	mstp	error	Primary back	22.656745	40.366845	5.0	error	201	graded	0	0.205509	
+2026-11-24-small-search	mstp-fallback-off-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary down	4.664008	22.656745	5.0	pass	101	graded	2.815985	3.02745	
+2026-11-24-small-search	mstp-fallback-off-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary down	4.664008	22.656745	5.0	pass	201	graded	2.920697	3.135087	
+2026-11-24-small-search	mstp-fallback-off-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary back	22.656745	40.366845	5.0	pass	101	graded	0.075925	0.286115	
+2026-11-24-small-search	mstp-fallback-off-reboot	01-primary-reboot	primary-reboot	mstp	pass	Primary back	22.656745	40.366845	5.0	pass	201	graded	0.29329	0.39936	
 2026-11-24-small-search	mstp-fallback-off-reboot	01-reboot-calibration	reboot-calibration	mstp	pass	2 s one-way cut				pass	301	graded	1.87202	2.081623	19
 2026-11-24-small-search	mstp-fallback-off-reboot	01-secondary-reboot	secondary-reboot	mstp	pass	Secondary down	4.603579	22.478687	5.0	pass			0	0	0
 2026-11-24-small-search	mstp-fallback-off-reboot	01-secondary-reboot	secondary-reboot	mstp	pass	Secondary back	22.478687	39.885747	5.0	pass			0	0	0
@@ -557,10 +557,10 @@ campaign	suite	run	case	bridge_mode	status	phase	phase_start_s	phase_end_s	limit
 2026-11-24-small-search	none-default-l2	01-peer-link-loss	peer-link-loss	none	pass	Peer link down	4.002593	19.083415	5.0	pass			0	0	0
 2026-11-24-small-search	none-default-l2	01-peer-link-loss	peer-link-loss	none	pass	Peer link back	19.083415	84.137535	5.0	pass			0	0	0
 2026-11-24-small-search	none-default-reboot	01-baseline	baseline	none	pass	Steady state			0.0	pass			0	0	0
-2026-11-24-small-search	none-default-reboot	01-primary-reboot	primary-reboot	none	pass	Primary down	4.472616	21.290931	5.0	pass	101	graded	2.71224	2.92672	27
-2026-11-24-small-search	none-default-reboot	01-primary-reboot	primary-reboot	none	pass	Primary down	4.472616	21.290931	5.0	pass	201	graded	2.715149	2.925519	27
-2026-11-24-small-search	none-default-reboot	01-primary-reboot	primary-reboot	none	pass	Primary back	21.290931	38.947629	5.0	pass	101	graded	0	0.208961	1
-2026-11-24-small-search	none-default-reboot	01-primary-reboot	primary-reboot	none	pass	Primary back	21.290931	38.947629	5.0	pass	201	graded	0	0.209601	1
+2026-11-24-small-search	none-default-reboot	01-primary-reboot	primary-reboot	none	pass	Primary down	4.472616	21.290931	5.0	pass	101	graded	2.71224	2.92672	
+2026-11-24-small-search	none-default-reboot	01-primary-reboot	primary-reboot	none	pass	Primary down	4.472616	21.290931	5.0	pass	201	graded	2.715149	2.925519	
+2026-11-24-small-search	none-default-reboot	01-primary-reboot	primary-reboot	none	pass	Primary back	21.290931	38.947629	5.0	pass	101	graded	0	0.208961	
+2026-11-24-small-search	none-default-reboot	01-primary-reboot	primary-reboot	none	pass	Primary back	21.290931	38.947629	5.0	pass	201	graded	0	0.209601	
 2026-11-24-small-search	none-default-reboot	01-reboot-calibration	reboot-calibration	none	pass	2 s one-way cut				pass	301	graded	1.874517	2.079938	19
 2026-11-24-small-search	none-default-reboot	01-secondary-reboot	secondary-reboot	none	pass	Secondary down	4.534557	21.20647	5.0	pass			0	0	0
 2026-11-24-small-search	none-default-reboot	01-secondary-reboot	secondary-reboot	none	pass	Secondary back	21.20647	38.930384	5.0	pass			0	0	0
@@ -642,13 +642,14 @@ campaign	suite	run	case	bridge_mode	status	phase	phase_start_s	phase_end_s	limit
 2026-11-24-small-search	rstp-default-peer	01-peer-link-loss	peer-link-loss	rstp	pass	Peer link down	4.002584	19.061825	5.0	pass			0	0	0
 2026-11-24-small-search	rstp-default-peer	01-peer-link-loss	peer-link-loss	rstp	pass	Peer link back	19.061825	84.119226	5.0	pass			0	0	0
 2026-11-24-small-search	rstp-default-primary-repeat	01-baseline	baseline	rstp	pass	Steady state			0.0	pass			0	0	0
-2026-11-24-small-search	rstp-default-primary-repeat	01-primary-reboot	primary-reboot	rstp	pass	Primary down	4.773004	22.39471	5.0	pass	101	graded	2.816447	3.023922	31
-2026-11-24-small-search	rstp-default-primary-repeat	01-primary-reboot	primary-reboot	rstp	pass	Primary down	4.773004	22.39471	5.0	pass	201	graded	2.910955	3.123138	33
-2026-11-24-small-search	rstp-default-primary-repeat	01-primary-reboot	primary-reboot	rstp	pass	Primary back	22.39471	40.352907	5.0	pass	101	graded	0	0.20724	1
+2026-11-24-small-search	rstp-default-primary-repeat	01-primary-reboot	primary-reboot	rstp	pass	Primary down	4.773004	22.39471	5.0	pass	101	graded	2.816447	3.023922	
+2026-11-24-small-search	rstp-default-primary-repeat	01-primary-reboot	primary-reboot	rstp	pass	Primary down	4.773004	22.39471	5.0	pass	201	graded	2.910955	3.123138	
+2026-11-24-small-search	rstp-default-primary-repeat	01-primary-reboot	primary-reboot	rstp	pass	Primary back	22.39471	40.352907	5.0	pass	101	graded	0	0.20724	
 2026-11-24-small-search	rstp-default-reboot	01-baseline	baseline	rstp	pass	Steady state			0.0	pass			0	0	0
-2026-11-24-small-search	rstp-default-reboot	01-primary-reboot	primary-reboot	rstp	error	Primary down	4.612438	22.834548	5.0	error	101	graded	2.809513	3.015127	33
-2026-11-24-small-search	rstp-default-reboot	01-primary-reboot	primary-reboot	rstp	error	Primary down	4.612438	22.834548	5.0	error	201	graded	2.809356	3.01986	30
-2026-11-24-small-search	rstp-default-reboot	01-primary-reboot	primary-reboot	rstp	error	Primary back	22.834548	40.016611	5.0	error	101	graded	0	0.177589	5
+2026-11-24-small-search	rstp-default-reboot	01-primary-reboot	primary-reboot	rstp	pass	Primary down	4.612438	22.834548	5.0	pass	101	graded	2.809513	3.015127	
+2026-11-24-small-search	rstp-default-reboot	01-primary-reboot	primary-reboot	rstp	pass	Primary down	4.612438	22.834548	5.0	pass	201	graded	2.809356	3.01986	
+2026-11-24-small-search	rstp-default-reboot	01-primary-reboot	primary-reboot	rstp	pass	Primary back	22.834548	40.016611	5.0	pass	101	graded	0	0.177589	
+2026-11-24-small-search	rstp-default-reboot	01-primary-reboot	primary-reboot	rstp	pass	Primary back	22.834548	40.016611	5.0	pass	201	graded	0.059776	0.16922	
 2026-11-24-small-search	rstp-default-reboot	01-reboot-calibration	reboot-calibration	rstp	pass	2 s one-way cut				pass	301	graded	1.873768	2.079673	19
 2026-11-24-small-search	rstp-default-reboot	01-secondary-reboot	secondary-reboot	rstp	pass	Secondary down	4.571908	22.612209	5.0	pass			0	0	0
 2026-11-24-small-search	rstp-default-reboot	01-secondary-reboot	secondary-reboot	rstp	pass	Secondary back	22.612209	40.269953	5.0	pass			0	0	0
@@ -724,9 +725,9 @@ campaign	suite	run	case	bridge_mode	status	phase	phase_start_s	phase_end_s	limit
 2026-11-24-two-pair	invalid-priority-gate-stp-off	01-two-pair-stp-off-baseline	two-pair-stp-off-baseline	none	error	Baseline			0.0	error			0	0	0
 2026-11-24-two-pair	stp-off	01-two-pair-stp-off-baseline	two-pair-stp-off-baseline	none	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-two-pair	stp-off	01-two-pair-stp-off-calibrate	two-pair-stp-off-calibrate	none	pass	One-way bypass cut				pass	301	graded	1.889029	2.100212	19
-2026-11-24-two-pair	stp-off	01-two-pair-stp-off-reboot-a-primary	two-pair-stp-off-reboot-a-primary	none	error	Pair A primary down	6.954012	28.927837	5.0	error	101	graded	19.667817	19.876877	
-2026-11-24-two-pair	stp-off	01-two-pair-stp-off-reboot-a-primary	two-pair-stp-off-reboot-a-primary	none	error	Pair A primary down	6.954012	28.927837	5.0	error	201	graded	19.294478	19.505976	
-2026-11-24-two-pair	stp-off	01-two-pair-stp-off-reboot-a-primary	two-pair-stp-off-reboot-a-primary	none	error	Pair A primary back	28.927837	47.778936	5.0	error			0	0	0
+2026-11-24-two-pair	stp-off	01-two-pair-stp-off-reboot-a-primary	two-pair-stp-off-reboot-a-primary	none	fail	Pair A primary down	6.954012	28.927837	5.0	fail	101	graded	19.667817	19.876877	
+2026-11-24-two-pair	stp-off	01-two-pair-stp-off-reboot-a-primary	two-pair-stp-off-reboot-a-primary	none	fail	Pair A primary down	6.954012	28.927837	5.0	fail	201	graded	19.294478	19.505976	
+2026-11-24-two-pair	stp-off	01-two-pair-stp-off-reboot-a-primary	two-pair-stp-off-reboot-a-primary	none	fail	Pair A primary back	28.927837	47.778936	5.0	pass			0	0	0
 2026-11-24-two-pair	stp-off-strict	01-two-pair-stp-off-strict-baseline	two-pair-stp-off-strict-baseline	none	pass	Baseline			0.0	pass			0	0	0
 2026-11-24-two-pair	stp-off-strict	01-two-pair-stp-off-strict-reboot-a-primary	two-pair-stp-off-strict-reboot-a-primary	none	error	Pair A primary down	6.336551	9.65773	5.0	error	101	graded	1.841834	2.521895	
 2026-11-24-two-pair	stp-off-strict	01-two-pair-stp-off-strict-reboot-a-primary	two-pair-stp-off-strict-reboot-a-primary	none	error	Pair A primary down	6.336551	9.65773	5.0	error	201	graded	1.912816	2.591661	

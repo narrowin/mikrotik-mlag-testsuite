@@ -183,6 +183,66 @@
       "detail": "p1 emitted the post-observation syslog rebind marker"
     },
     {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: 0 reflected unicast sequences, limit 0",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: 0 reflected unicast sequences, limit 0",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Bridge host table after recovery: every traffic host MAC on its expected port",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:da:0b:03, eth2 65535/52:54:00:da:0b:03",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Both MLAG peers present one LACP system ID on the access-uplink, seen by the access switch: witness:ether2 65535/52:54:00:da:0b:02, witness:ether3 65535/52:54:00:da:0b:02",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+      "phase": "restoration"
+    },
+    {
       "level": "error",
       "ok": true,
       "detail": "101 at least 30 emits and cadence within 450 ms"
@@ -210,8 +270,8 @@
     },
     {
       "level": "error",
-      "ok": false,
-      "detail": "201 at least 30 emits and cadence within 450 ms"
+      "ok": true,
+      "detail": "201 at least 30 emits and cadence within 450 ms; sender on the LACP bond paused 0.511 s during the fault, bypass streams kept their pace, the pause counts as outage"
     },
     {
       "level": "error",
@@ -3708,10 +3768,16 @@
       ],
       "capture_mismatches": [],
       "max_send_interval_s": 0.182553,
+      "send_pauses": [],
       "baseline_good": 61,
       "recovery_good": 29,
       "baseline_missed": 0,
       "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.182553,
+        "longest_pause": null,
+        "rule_applied": false
+      },
       "phase_gaps_s": {
         "withdrawal": [
           {
@@ -4870,8 +4936,7 @@
                 "reply": []
               }
             }
-          },
-          "stable_before_target_return": false
+          }
         },
         {
           "first_seq": 324,
@@ -4983,10 +5048,38 @@
       ],
       "capture_mismatches": [],
       "max_send_interval_s": 0.511037,
+      "send_pauses": [
+        {
+          "from_s": 30.225142,
+          "to_s": 30.736179,
+          "gap_s": 0.511037,
+          "after_seq": 318,
+          "before_seq": 319,
+          "last_good_s": 30.123968,
+          "last_good_seq": 317,
+          "first_good_s": 30.944327,
+          "first_good_seq": 321
+        }
+      ],
       "baseline_good": 61,
       "recovery_good": 30,
       "baseline_missed": 0,
       "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.511037,
+        "longest_pause": {
+          "from_s": 30.225142,
+          "to_s": 30.736179,
+          "gap_s": 0.511037,
+          "after_seq": 318,
+          "before_seq": 319,
+          "last_good_s": 30.123968,
+          "last_good_seq": 317,
+          "first_good_s": 30.944327,
+          "first_good_seq": 321
+        },
+        "rule_applied": true
+      },
       "phase_gaps_s": {
         "withdrawal": [
           {
@@ -4996,18 +5089,20 @@
             "upper_s": 2.864517
           },
           {
-            "first_seq": 318,
-            "last_seq": 320,
-            "lower_s": 0.615122,
-            "upper_s": 0.820359
+            "first_seq": 317,
+            "last_seq": 321,
+            "lower_s": 0.716296,
+            "upper_s": 0.820359,
+            "sender_pause_s": 0.511037
           }
         ],
         "restoration": [
           {
-            "first_seq": 318,
-            "last_seq": 320,
+            "first_seq": 317,
+            "last_seq": 321,
             "lower_s": 0,
-            "upper_s": 0.104063
+            "upper_s": 0.104063,
+            "sender_pause_s": 0.511037
           },
           {
             "first_seq": 324,
@@ -5028,10 +5123,16 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.192633,
+      "send_pauses": [],
       "baseline_good": 59,
       "recovery_good": 29,
       "baseline_missed": 0,
-      "stable_recovery": true
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.192633,
+        "longest_pause": null,
+        "rule_applied": false
+      }
     },
     "303": {
       "description": "bypass reverse",
@@ -5041,11 +5142,173 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.210613,
+      "send_pauses": [],
       "baseline_good": 59,
       "recovery_good": 29,
       "baseline_missed": 0,
-      "stable_recovery": true
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.210613,
+        "longest_pause": null,
+        "rule_applied": false
+      }
     }
+  },
+  "forwarding": {
+    "phases_s": {
+      "baseline": [
+        0.0,
+        6.202534
+      ],
+      "withdrawal": [
+        6.202534,
+        30.94991
+      ],
+      "restoration": [
+        30.94991,
+        51.617172
+      ]
+    },
+    "outside_delivery": {
+      "status": "not applicable: the Medium lab has no host outside the conversation"
+    },
+    "reflected_copies": {
+      "member_points": {
+        "101": [
+          "c2-bond0"
+        ],
+        "201": [
+          "c2-bond0"
+        ]
+      },
+      "findings": []
+    },
+    "host_table": {
+      "window_s": [
+        48.614701,
+        51.617172
+      ],
+      "peers": {
+        "p1": {
+          "sample_s": 51.214415,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "access-uplink",
+              "expected": "access-uplink",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "client2",
+              "expected": "client2",
+              "bond_member": "ether4",
+              "member_up": true
+            }
+          }
+        },
+        "p2": {
+          "sample_s": 51.181258,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "access-uplink",
+              "expected": "access-uplink",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "client2",
+              "expected": "client2",
+              "bond_member": "ether4",
+              "member_up": true
+            }
+          }
+        }
+      },
+      "wrong": []
+    },
+    "sync_warnings": {
+      "counts": {
+        "p1": {},
+        "p2": {
+          "withdrawal": 2
+        },
+        "witness": {}
+      },
+      "first_lines": [
+        {
+          "node": "p2",
+          "phase": "withdrawal",
+          "time_s": 22.424725,
+          "line": "<28>Nov 24 14:02:04 dc1-core-mlag2 bridge,warning MLAG: remote heartbeat timeout"
+        },
+        {
+          "node": "p2",
+          "phase": "withdrawal",
+          "time_s": 27.439809,
+          "line": "<28>Nov 24 14:02:09 dc1-core-mlag2 bridge,warning MLAG: remote heartbeat timeout"
+        }
+      ]
+    }
+  },
+  "lacp_system_ids": {
+    "client 2 bond": {
+      "members": {
+        "eth1": "65535/52:54:00:da:0b:03",
+        "eth2": "65535/52:54:00:da:0b:03"
+      },
+      "same": true
+    },
+    "access-uplink, seen by the access switch": {
+      "members": {
+        "witness:ether2": "65535/52:54:00:da:0b:02",
+        "witness:ether3": "65535/52:54:00:da:0b:02"
+      },
+      "same": true
+    }
+  },
+  "access_bpdus": {
+    "captures": [
+      "c2-eth1",
+      "c2-eth2",
+      "c2-bond0",
+      "p1-tap3",
+      "p2-tap3"
+    ],
+    "sender_bridge_mac": "02:00:00:21:00:13",
+    "phases_s": {
+      "baseline": [
+        0.0,
+        6.202534
+      ],
+      "withdrawal": [
+        6.202534,
+        30.94991
+      ],
+      "restoration": [
+        30.94991,
+        51.617172
+      ]
+    },
+    "by_phase": {
+      "baseline": {
+        "count": 0,
+        "first": []
+      },
+      "withdrawal": {
+        "count": 0,
+        "first": []
+      },
+      "restoration": {
+        "count": 0,
+        "first": []
+      }
+    }
+  },
+  "sender_pause_rule": {
+    "101": false,
+    "201": true,
+    "301": false,
+    "303": false
   },
   "restored_bpdus": {
     "roots": {
@@ -5064,7 +5327,7 @@
     "unexpected": []
   },
   "bridge_mode": "mstp",
-  "status": "error",
+  "status": "pass",
   "phases": [
     {
       "key": "withdrawal",
@@ -5076,7 +5339,7 @@
         6.202534,
         30.94991
       ],
-      "verdict": "error",
+      "verdict": "pass",
       "worst_loss_s": {
         "lower_s": 2.655238,
         "upper_s": 2.864517,
@@ -5110,7 +5373,7 @@
         30.94991,
         48.614701
       ],
-      "verdict": "error",
+      "verdict": "pass",
       "worst_loss_s": {
         "lower_s": 0,
         "upper_s": 0.202666,

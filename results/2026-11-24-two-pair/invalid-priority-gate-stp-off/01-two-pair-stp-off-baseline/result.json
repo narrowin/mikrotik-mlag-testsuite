@@ -198,6 +198,18 @@
       "detail": "Management UDP syslog end markers from required observers"
     },
     {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+      "phase": "baseline"
+    },
+    {
       "level": "error",
       "ok": true,
       "detail": "101 at least 30 emits and cadence within 450 ms"
@@ -686,10 +698,16 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.110976,
+      "send_pauses": [],
       "baseline_good": 44,
       "recovery_good": 0,
       "baseline_missed": 0,
-      "stable_recovery": false
+      "stable_recovery": false,
+      "sender_pause": {
+        "longest_send_gap_s": 0.110976,
+        "longest_pause": null,
+        "rule_applied": false
+      }
     },
     "201": {
       "description": "client B to client A",
@@ -699,10 +717,16 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.107146,
+      "send_pauses": [],
       "baseline_good": 45,
       "recovery_good": 0,
       "baseline_missed": 0,
-      "stable_recovery": false
+      "stable_recovery": false,
+      "sender_pause": {
+        "longest_send_gap_s": 0.107146,
+        "longest_pause": null,
+        "rule_applied": false
+      }
     },
     "301": {
       "description": "bypass forward",
@@ -712,10 +736,16 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.113583,
+      "send_pauses": [],
       "baseline_good": 44,
       "recovery_good": 0,
       "baseline_missed": 0,
-      "stable_recovery": false
+      "stable_recovery": false,
+      "sender_pause": {
+        "longest_send_gap_s": 0.113583,
+        "longest_pause": null,
+        "rule_applied": false
+      }
     },
     "303": {
       "description": "bypass reverse",
@@ -725,11 +755,60 @@
       "gaps": [],
       "capture_mismatches": [],
       "max_send_interval_s": 0.109048,
+      "send_pauses": [],
       "baseline_good": 44,
       "recovery_good": 0,
       "baseline_missed": 0,
-      "stable_recovery": false
+      "stable_recovery": false,
+      "sender_pause": {
+        "longest_send_gap_s": 0.109048,
+        "longest_pause": null,
+        "rule_applied": false
+      }
     }
+  },
+  "forwarding": {
+    "phases_s": {
+      "baseline": [
+        0.0,
+        4.559484
+      ]
+    },
+    "outside_delivery": {
+      "status": "not applicable: the two-pair lab has no host outside the conversation"
+    },
+    "reflected_copies": {
+      "member_points": {
+        "101": [
+          "c1-bond0",
+          "c2-bond0"
+        ],
+        "201": [
+          "c2-bond0",
+          "c1-bond0"
+        ]
+      },
+      "findings": []
+    },
+    "host_table": {
+      "status": "not available: no fault was executed, so there is no recovery window"
+    },
+    "sync_warnings": {
+      "counts": {
+        "p1": {},
+        "p2": {},
+        "q1": {},
+        "q2": {}
+      },
+      "first_lines": []
+    }
+  },
+  "lacp_system_ids": "not available: the run saved no baseline bond state",
+  "sender_pause_rule": {
+    "101": false,
+    "201": false,
+    "301": false,
+    "303": false
   },
   "bridge_mode": "none",
   "status": "error",

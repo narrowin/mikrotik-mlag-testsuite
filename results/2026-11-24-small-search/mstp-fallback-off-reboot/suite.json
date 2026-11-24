@@ -1,5 +1,5 @@
 {
-  "errors": 1,
+  "errors": 0,
   "failures": 0,
   "results": [
     {
@@ -155,6 +155,36 @@
           "level": "error",
           "ok": true,
           "detail": "Management UDP syslog end markers from required observers"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 unicast frames at a host outside the conversation, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:d7:0b:03, eth2 65535/52:54:00:d7:0b:03",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 1 bond: eth1 65535/52:54:00:d7:0b:02, eth2 65535/52:54:00:d7:0b:02",
+          "phase": "baseline"
         },
         {
           "level": "error",
@@ -535,10 +565,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.11175,
+          "send_pauses": [],
           "baseline_good": 41,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.11175,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "201": {
           "description": "client B to client A",
@@ -548,10 +584,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.111611,
+          "send_pauses": [],
           "baseline_good": 41,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.111611,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "301": {
           "description": "bypass forward",
@@ -561,10 +603,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.108195,
+          "send_pauses": [],
           "baseline_good": 42,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.108195,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "303": {
           "description": "bypass reverse",
@@ -574,12 +622,89 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.108925,
+          "send_pauses": [],
           "baseline_good": 42,
           "recovery_good": 0,
           "baseline_missed": 0,
-          "stable_recovery": false
+          "stable_recovery": false,
+          "sender_pause": {
+            "longest_send_gap_s": 0.108925,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         }
       },
+      "forwarding": {
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.311056
+          ]
+        },
+        "outside_delivery": {
+          "points": {
+            "101": [
+              "mobile-eth1",
+              "mobile-eth2",
+              "p1-tap4",
+              "p2-tap4"
+            ],
+            "201": [
+              "mobile-eth1",
+              "mobile-eth2",
+              "p1-tap4",
+              "p2-tap4"
+            ]
+          },
+          "findings": []
+        },
+        "reflected_copies": {
+          "member_points": {
+            "101": [
+              "c1-bond0",
+              "c2-bond0"
+            ],
+            "201": [
+              "c2-bond0",
+              "c1-bond0"
+            ]
+          },
+          "findings": []
+        },
+        "host_table": {
+          "status": "not available: no fault was executed, so there is no recovery window"
+        },
+        "sync_warnings": {
+          "counts": {
+            "p1": {},
+            "p2": {}
+          },
+          "first_lines": []
+        }
+      },
+      "lacp_system_ids": {
+        "client 2 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:d7:0b:03",
+            "eth2": "65535/52:54:00:d7:0b:03"
+          },
+          "same": true
+        },
+        "client 1 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:d7:0b:02",
+            "eth2": "65535/52:54:00:d7:0b:02"
+          },
+          "same": true
+        }
+      },
+      "sender_pause_rule": {
+        "101": false,
+        "201": false,
+        "301": false,
+        "303": false
+      },
+      "floods": "not available",
       "bridge_mode": "mstp",
       "status": "pass",
       "phases": [
@@ -751,6 +876,66 @@
           "level": "error",
           "ok": true,
           "detail": "Management UDP syslog end markers from required observers"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 unicast frames at a host outside the conversation, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Withdrawal: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+          "phase": "withdrawal"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Restoration: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Withdrawal: 0 reflected unicast sequences, limit 0",
+          "phase": "withdrawal"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Restoration: 0 reflected unicast sequences, limit 0",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Bridge host table after recovery: every traffic host MAC on its expected port",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:d7:0b:03, eth2 65535/52:54:00:d7:0b:03",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 1 bond: eth1 65535/52:54:00:d7:0b:02, eth2 65535/52:54:00:d7:0b:02",
+          "phase": "baseline"
         },
         {
           "level": "error",
@@ -1179,10 +1364,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.111282,
+          "send_pauses": [],
           "baseline_good": 45,
           "recovery_good": 28,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.111282,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "201": {
           "description": "client B to client A",
@@ -1192,10 +1383,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.11103,
+          "send_pauses": [],
           "baseline_good": 45,
           "recovery_good": 29,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.11103,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "301": {
           "description": "bypass forward",
@@ -1757,10 +1954,16 @@
           ],
           "capture_mismatches": [],
           "max_send_interval_s": 0.108911,
+          "send_pauses": [],
           "baseline_good": 45,
           "recovery_good": 29,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.108911,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "303": {
           "description": "bypass reverse",
@@ -1770,16 +1973,141 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.109846,
+          "send_pauses": [],
           "baseline_good": 45,
           "recovery_good": 29,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.109846,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         }
+      },
+      "forwarding": {
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.668653
+          ],
+          "withdrawal": [
+            4.668653,
+            6.672687
+          ],
+          "restoration": [
+            6.672687,
+            12.675751
+          ]
+        },
+        "outside_delivery": {
+          "points": {
+            "101": [
+              "mobile-eth1",
+              "mobile-eth2",
+              "p1-tap4",
+              "p2-tap4"
+            ],
+            "201": [
+              "mobile-eth1",
+              "mobile-eth2",
+              "p1-tap4",
+              "p2-tap4"
+            ]
+          },
+          "findings": []
+        },
+        "reflected_copies": {
+          "member_points": {
+            "101": [
+              "c1-bond0",
+              "c2-bond0"
+            ],
+            "201": [
+              "c2-bond0",
+              "c1-bond0"
+            ]
+          },
+          "findings": []
+        },
+        "host_table": {
+          "window_s": [
+            9.67453,
+            12.675751
+          ],
+          "peers": {
+            "p1": {
+              "sample_s": 12.396162,
+              "hosts": {
+                "02:00:00:11:00:11": {
+                  "on_interface": "client1",
+                  "expected": "client1",
+                  "bond_member": "ether3",
+                  "member_up": true
+                },
+                "02:00:00:11:00:12": {
+                  "on_interface": "client2",
+                  "expected": "client2",
+                  "bond_member": "ether4",
+                  "member_up": true
+                }
+              }
+            },
+            "p2": {
+              "sample_s": 12.392865,
+              "hosts": {
+                "02:00:00:11:00:11": {
+                  "on_interface": "client1",
+                  "expected": "client1",
+                  "bond_member": "ether3",
+                  "member_up": true
+                },
+                "02:00:00:11:00:12": {
+                  "on_interface": "client2",
+                  "expected": "client2",
+                  "bond_member": "ether4",
+                  "member_up": true
+                }
+              }
+            }
+          },
+          "wrong": []
+        },
+        "sync_warnings": {
+          "counts": {
+            "p1": {},
+            "p2": {}
+          },
+          "first_lines": []
+        }
+      },
+      "lacp_system_ids": {
+        "client 2 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:d7:0b:03",
+            "eth2": "65535/52:54:00:d7:0b:03"
+          },
+          "same": true
+        },
+        "client 1 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:d7:0b:02",
+            "eth2": "65535/52:54:00:d7:0b:02"
+          },
+          "same": true
+        }
+      },
+      "sender_pause_rule": {
+        "101": false,
+        "201": false,
+        "301": false,
+        "303": false
       },
       "injected_s": [
         2.00218,
         2.005477
       ],
+      "floods": "not available",
       "bridge_mode": "mstp",
       "status": "pass",
       "phases": [
@@ -1983,6 +2311,66 @@
           "level": "error",
           "ok": true,
           "detail": "p2 emitted the post-observation syslog rebind marker"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 unicast frames at a host outside the conversation, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Withdrawal: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+          "phase": "withdrawal"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Restoration: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Withdrawal: 0 reflected unicast sequences, limit 0",
+          "phase": "withdrawal"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Restoration: 0 reflected unicast sequences, limit 0",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Bridge host table after recovery: every traffic host MAC on its expected port",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:d7:0b:03, eth2 65535/52:54:00:d7:0b:03",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 1 bond: eth1 65535/52:54:00:d7:0b:02, eth2 65535/52:54:00:d7:0b:02",
+          "phase": "baseline"
         },
         {
           "level": "error",
@@ -2471,10 +2859,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.111242,
+          "send_pauses": [],
           "baseline_good": 44,
           "recovery_good": 29,
           "baseline_missed": 0,
           "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.111242,
+            "longest_pause": null,
+            "rule_applied": false
+          },
           "phase_gaps_s": {
             "withdrawal": [],
             "restoration": []
@@ -2490,10 +2884,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.112179,
+          "send_pauses": [],
           "baseline_good": 44,
           "recovery_good": 29,
           "baseline_missed": 0,
           "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.112179,
+            "longest_pause": null,
+            "rule_applied": false
+          },
           "phase_gaps_s": {
             "withdrawal": [],
             "restoration": []
@@ -2509,10 +2909,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.113505,
+          "send_pauses": [],
           "baseline_good": 44,
           "recovery_good": 29,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.113505,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "303": {
           "description": "bypass reverse",
@@ -2522,12 +2928,137 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.11108,
+          "send_pauses": [],
           "baseline_good": 44,
           "recovery_good": 29,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.11108,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         }
       },
+      "forwarding": {
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.603579
+          ],
+          "withdrawal": [
+            4.603579,
+            22.478687
+          ],
+          "restoration": [
+            22.478687,
+            42.888526
+          ]
+        },
+        "outside_delivery": {
+          "points": {
+            "101": [
+              "mobile-eth1",
+              "mobile-eth2",
+              "p1-tap4",
+              "p2-tap4"
+            ],
+            "201": [
+              "mobile-eth1",
+              "mobile-eth2",
+              "p1-tap4",
+              "p2-tap4"
+            ]
+          },
+          "findings": []
+        },
+        "reflected_copies": {
+          "member_points": {
+            "101": [
+              "c1-bond0",
+              "c2-bond0"
+            ],
+            "201": [
+              "c2-bond0",
+              "c1-bond0"
+            ]
+          },
+          "findings": []
+        },
+        "host_table": {
+          "window_s": [
+            39.885747,
+            42.888526
+          ],
+          "peers": {
+            "p1": {
+              "sample_s": 42.626048,
+              "hosts": {
+                "02:00:00:11:00:11": {
+                  "on_interface": "client1",
+                  "expected": "client1",
+                  "bond_member": "ether3",
+                  "member_up": true
+                },
+                "02:00:00:11:00:12": {
+                  "on_interface": "client2",
+                  "expected": "client2",
+                  "bond_member": "ether4",
+                  "member_up": true
+                }
+              }
+            },
+            "p2": {
+              "sample_s": 42.524633,
+              "hosts": {
+                "02:00:00:11:00:11": {
+                  "on_interface": "client1",
+                  "expected": "client1",
+                  "bond_member": "ether3",
+                  "member_up": true
+                },
+                "02:00:00:11:00:12": {
+                  "on_interface": "client2",
+                  "expected": "client2",
+                  "bond_member": "ether4",
+                  "member_up": true
+                }
+              }
+            }
+          },
+          "wrong": []
+        },
+        "sync_warnings": {
+          "counts": {
+            "p1": {},
+            "p2": {}
+          },
+          "first_lines": []
+        }
+      },
+      "lacp_system_ids": {
+        "client 2 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:d7:0b:03",
+            "eth2": "65535/52:54:00:d7:0b:03"
+          },
+          "same": true
+        },
+        "client 1 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:d7:0b:02",
+            "eth2": "65535/52:54:00:d7:0b:02"
+          },
+          "same": true
+        }
+      },
+      "sender_pause_rule": {
+        "101": false,
+        "201": false,
+        "301": false,
+        "303": false
+      },
+      "floods": "not available",
       "bridge_mode": "mstp",
       "status": "pass",
       "phases": [
@@ -2740,6 +3271,66 @@
           "detail": "p1 emitted the post-observation syslog rebind marker"
         },
         {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 unicast frames at a host outside the conversation, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Withdrawal: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+          "phase": "withdrawal"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Restoration: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Withdrawal: 0 reflected unicast sequences, limit 0",
+          "phase": "withdrawal"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Restoration: 0 reflected unicast sequences, limit 0",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Bridge host table after recovery: every traffic host MAC on its expected port",
+          "phase": "restoration"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:d7:0b:03, eth2 65535/52:54:00:d7:0b:03",
+          "phase": "baseline"
+        },
+        {
+          "level": "fail",
+          "ok": true,
+          "detail": "Both MLAG peers present one LACP system ID on the client 1 bond: eth1 65535/52:54:00:d7:0b:02, eth2 65535/52:54:00:d7:0b:02",
+          "phase": "baseline"
+        },
+        {
           "level": "error",
           "ok": true,
           "detail": "101 at least 30 emits and cadence within 450 ms"
@@ -2767,8 +3358,8 @@
         },
         {
           "level": "error",
-          "ok": false,
-          "detail": "201 at least 30 emits and cadence within 450 ms"
+          "ok": true,
+          "detail": "201 at least 30 emits and cadence within 450 ms; sender on the LACP bond paused 0.713 s during the fault, bypass streams kept their pace, the pause counts as outage"
         },
         {
           "level": "error",
@@ -4613,10 +5204,16 @@
           ],
           "capture_mismatches": [],
           "max_send_interval_s": 0.11116,
+          "send_pauses": [],
           "baseline_good": 45,
           "recovery_good": 29,
           "baseline_missed": 0,
           "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.11116,
+            "longest_pause": null,
+            "rule_applied": false
+          },
           "phase_gaps_s": {
             "withdrawal": [
               {
@@ -6139,8 +6736,7 @@
                     ]
                   }
                 }
-              },
-              "stable_before_target_return": false
+              }
             },
             {
               "first_seq": 234,
@@ -6334,10 +6930,38 @@
           ],
           "capture_mismatches": [],
           "max_send_interval_s": 0.713065,
+          "send_pauses": [
+            {
+              "from_s": 22.23697,
+              "to_s": 22.950035,
+              "gap_s": 0.713065,
+              "after_seq": 220,
+              "before_seq": 221,
+              "last_good_s": 22.024396,
+              "last_good_seq": 218,
+              "first_good_s": 22.950035,
+              "first_good_seq": 221
+            }
+          ],
           "baseline_good": 45,
           "recovery_good": 28,
           "baseline_missed": 0,
           "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.713065,
+            "longest_pause": {
+              "from_s": 22.23697,
+              "to_s": 22.950035,
+              "gap_s": 0.713065,
+              "after_seq": 220,
+              "before_seq": 221,
+              "last_good_s": 22.024396,
+              "last_good_seq": 218,
+              "first_good_s": 22.950035,
+              "first_good_seq": 221
+            },
+            "rule_applied": true
+          },
           "phase_gaps_s": {
             "withdrawal": [
               {
@@ -6347,13 +6971,21 @@
                 "upper_s": 3.135087
               },
               {
-                "first_seq": 219,
-                "last_seq": 220,
-                "lower_s": 0.104449,
-                "upper_s": 0.632349
+                "first_seq": 218,
+                "last_seq": 221,
+                "lower_s": 0.526279,
+                "upper_s": 0.632349,
+                "sender_pause_s": 0.713065
               }
             ],
             "restoration": [
+              {
+                "first_seq": 218,
+                "last_seq": 221,
+                "lower_s": 0.29329,
+                "upper_s": 0.39936,
+                "sender_pause_s": 0.713065
+              },
               {
                 "first_seq": 234,
                 "last_seq": 234,
@@ -6373,10 +7005,16 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.110741,
+          "send_pauses": [],
           "baseline_good": 45,
           "recovery_good": 28,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.110741,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         },
         "303": {
           "description": "bypass reverse",
@@ -6386,14 +7024,148 @@
           "gaps": [],
           "capture_mismatches": [],
           "max_send_interval_s": 0.110001,
+          "send_pauses": [],
           "baseline_good": 45,
           "recovery_good": 28,
           "baseline_missed": 0,
-          "stable_recovery": true
+          "stable_recovery": true,
+          "sender_pause": {
+            "longest_send_gap_s": 0.110001,
+            "longest_pause": null,
+            "rule_applied": false
+          }
         }
       },
+      "forwarding": {
+        "phases_s": {
+          "baseline": [
+            0.0,
+            4.664008
+          ],
+          "withdrawal": [
+            4.664008,
+            22.656745
+          ],
+          "restoration": [
+            22.656745,
+            43.368655
+          ]
+        },
+        "outside_delivery": {
+          "points": {
+            "101": [
+              "mobile-eth1",
+              "mobile-eth2",
+              "p1-tap4",
+              "p2-tap4"
+            ],
+            "201": [
+              "mobile-eth1",
+              "mobile-eth2",
+              "p1-tap4",
+              "p2-tap4"
+            ]
+          },
+          "findings": []
+        },
+        "reflected_copies": {
+          "member_points": {
+            "101": [
+              "c1-bond0",
+              "c2-bond0"
+            ],
+            "201": [
+              "c2-bond0",
+              "c1-bond0"
+            ]
+          },
+          "findings": []
+        },
+        "host_table": {
+          "window_s": [
+            40.366845,
+            43.368655
+          ],
+          "peers": {
+            "p1": {
+              "sample_s": 42.978317,
+              "hosts": {
+                "02:00:00:11:00:11": {
+                  "on_interface": "client1",
+                  "expected": "client1",
+                  "bond_member": "ether3",
+                  "member_up": true
+                },
+                "02:00:00:11:00:12": {
+                  "on_interface": "client2",
+                  "expected": "client2",
+                  "bond_member": "ether4",
+                  "member_up": true
+                }
+              }
+            },
+            "p2": {
+              "sample_s": 42.975887,
+              "hosts": {
+                "02:00:00:11:00:11": {
+                  "on_interface": "client1",
+                  "expected": "client1",
+                  "bond_member": "ether3",
+                  "member_up": true
+                },
+                "02:00:00:11:00:12": {
+                  "on_interface": "client2",
+                  "expected": "client2",
+                  "bond_member": "ether4",
+                  "member_up": true
+                }
+              }
+            }
+          },
+          "wrong": []
+        },
+        "sync_warnings": {
+          "counts": {
+            "p1": {},
+            "p2": {
+              "withdrawal": 1
+            }
+          },
+          "first_lines": [
+            {
+              "node": "p2",
+              "phase": "withdrawal",
+              "time_s": 19.007497,
+              "line": "<28>Nov 24 13:45:10 dc1-core-mlag2 bridge,warning MLAG: remote heartbeat timeout"
+            }
+          ]
+        }
+      },
+      "lacp_system_ids": {
+        "client 2 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:d7:0b:03",
+            "eth2": "65535/52:54:00:d7:0b:03"
+          },
+          "same": true
+        },
+        "client 1 bond": {
+          "members": {
+            "eth1": "65535/52:54:00:d7:0b:02",
+            "eth2": "65535/52:54:00:d7:0b:02"
+          },
+          "same": true
+        }
+      },
+      "sender_pause_rule": {
+        "101": false,
+        "201": true,
+        "301": false,
+        "303": false
+      },
+      "floods": "not available",
       "bridge_mode": "mstp",
-      "status": "error",
+      "status": "pass",
       "phases": [
         {
           "key": "withdrawal",
@@ -6405,7 +7177,7 @@
             4.664008,
             22.656745
           ],
-          "verdict": "error",
+          "verdict": "pass",
           "worst_loss_s": {
             "lower_s": 2.920697,
             "upper_s": 3.135087,
@@ -6439,10 +7211,10 @@
             22.656745,
             40.366845
           ],
-          "verdict": "error",
+          "verdict": "pass",
           "worst_loss_s": {
-            "lower_s": 0.075925,
-            "upper_s": 0.286115,
+            "lower_s": 0.29329,
+            "upper_s": 0.39936,
             "lost_probes": null,
             "spans_both_phases": false
           },
@@ -6454,8 +7226,8 @@
               "spans_both_phases": false
             },
             "201": {
-              "lower_s": 0,
-              "upper_s": 0.205509,
+              "lower_s": 0.29329,
+              "upper_s": 0.39936,
               "lost_probes": null,
               "spans_both_phases": false
             }
