@@ -8,6 +8,7 @@ none failed and every case it attempted has a valid run.
 
 import json
 from datetime import date
+from functools import cache
 from html import escape
 from pathlib import Path
 
@@ -22,6 +23,26 @@ VALID = ("pass", "fail")
 SURFACE, BORDER, INK, INK_2, MUTED, GRID = "#fcfcfb", "#e1e0d9", "#0b0b0b", "#52514e", "#898781", "#e1e0d9"
 GOOD, CRITICAL = "#0ca30c", "#d03b3b"
 FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif'
+# Failed checks that mean a frame came back to its sender or reached a host twice, not lost traffic.
+LOOP_CHECKS = ("second sighting", "second copy", "reflected")
+LOOP_TEXT = "frames looped back to the sender"
+UNCHECKED_TEXT = "not tested for looped-back frames"
+
+
+@cache
+def flood_streams(result_file):
+    """True when the run sent the numbered broadcast and unknown-unicast streams that show looped-back frames."""
+    try:
+        floods = json.loads(Path(result_file).read_text()).get("floods")
+    except (OSError, ValueError):
+        return False
+    return isinstance(floods, dict) and any(ident in floods for ident in ("501", "502"))
+
+
+def looped(rows):
+    """True when a failed check in these rows is a looped-back or duplicated frame."""
+    return any(any(text in str(check) for text in LOOP_CHECKS)
+               for row in rows if row.get("verdict") == "fail" for check in row.get("failed_checks") or [])
 
 
 def group_label(setup, run_dir):
@@ -46,8 +67,9 @@ def group_label(setup, run_dir):
 
 
 def is_reboot(row):
+    """Any MLAG peer reboot case, including the two-pair reboots of either pair; not the calibration before reboots."""
     case = row.get("case") or ""
-    return case in ("primary-reboot", "secondary-reboot") or case.endswith(("-reboot-primary", "-reboot-secondary"))
+    return "reboot" in case and "calibrat" not in case
 
 
 def upper(row):
@@ -98,6 +120,8 @@ def build_groups(rows, results):
             dark = [row for row in valid if never_forwarded(row)]
             worst = (None, dark[0]) if dark else None
         reboots = [row for row in graded if is_reboot(row)]
+        paths = lambda chosen: {row["evidence"]["path"] for row in chosen if (row.get("evidence") or {}).get("path")}
+        flooded = lambda chosen: any(flood_streams(results.parent / path / "result.json") for path in paths(chosen))
         out.append({
             "lab": lab, "label": label,
             "result": "fail" if failed else "pass" if attempted <= covered else "incomplete",
@@ -106,7 +130,19 @@ def build_groups(rows, results):
             "suites": group["suites"], "dark": group["dark"], "worst": worst,
             "reboot": max(map(upper, reboots)) if reboots else None,
             "reboot_fail": any(row["verdict"] == "fail" for row in reboots),
+            "loop_fail": looped(valid), "reboot_loop": looped(reboots),
+            "flood": flooded(valid), "reboot_flood": flooded(reboots),
+            "unchecked": False, "reboot_unchecked": False,
         })
+    # Compare like with like: a setup that never ran the looped-back-frame check cannot pass against a setup
+    # in the same lab that did run it. It is incomplete until it runs the same checks.
+    for g in out:
+        others = [o for o in out if o["lab"] == g["lab"]]
+        if g["result"] == "pass" and not g["flood"] and any(o["flood"] for o in others):
+            g["result"], g["unchecked"] = "incomplete", True
+        # The chart compares reboots only, so it needs the same rule for the reboot runs.
+        g["reboot_unchecked"] = (g["reboot"] is not None and not g["reboot_fail"] and not g["reboot_flood"]
+                                 and any(o["reboot_flood"] for o in others))
     order = {"pass": 0, "incomplete": 1, "fail": 2}
     key = lambda g: (g["lab"], order[g["result"]], g["worst"][0] if g["worst"] and g["worst"][0] is not None else 99)
     return sorted(out, key=key), unrecorded
@@ -115,6 +151,15 @@ def build_groups(rows, results):
 def dark_note(g):
     """Say how many suites never forwarded VLAN traffic, when only some of them did not."""
     return f"VLAN never forwarded in {g['dark']} of {g['suites']} suites" if 0 < g["dark"] < g["suites"] else ""
+
+
+def chart_note(g, limit):
+    """The reason under a setup's label when its bar alone would mislead."""
+    if g["reboot_unchecked"]:
+        return UNCHECKED_TEXT
+    if g["reboot_loop"] and g["reboot"] is not None and g["reboot"] <= limit:
+        return f"loss within limit; {LOOP_TEXT}"
+    return dark_note(g)
 
 
 def chart_svg(groups):
@@ -135,7 +180,7 @@ def chart_svg(groups):
         first = y
         for g in shown[lab]:
             mid = y + row_h / 2
-            note = dark_note(g)
+            note = chart_note(g, limit)
             texts.append(f'<text x="{left - 12}" y="{mid + (0 if note else 4.5)}" font-size="13" fill="{INK_2}" '
                          f'text-anchor="end">{escape(g["label"])}</text>')
             if note:
@@ -147,9 +192,10 @@ def chart_svg(groups):
                 fail = g["reboot_fail"] or g["reboot"] > limit
                 end = x(g["reboot"])
                 r = min(4, end - left)
+                colour = CRITICAL if fail else MUTED if g["reboot_unchecked"] else GOOD
                 bars.append(f'<path d="M{left},{mid - bar_h / 2} H{end - r} a{r},{r} 0 0 1 {r},{r} V{mid + bar_h / 2 - r} '
-                             f'a{r},{r} 0 0 1 -{r},{r} H{left} Z" fill="{CRITICAL if fail else GOOD}"/>')
-                value = f'{"✗" if fail else "✓"} {g["reboot"]:.2f} s'
+                             f'a{r},{r} 0 0 1 -{r},{r} H{left} Z" fill="{colour}"/>')
+                value = f'{"✗" if fail else "?" if g["reboot_unchecked"] else "✓"} {g["reboot"]:.2f} s'
                 texts.append(f'<text x="{value_x}" y="{mid + 4.5}" font-size="13" font-weight="600" fill="{INK}" text-anchor="end" '
                              f'style="font-variant-numeric: tabular-nums">{value}</text>')
             y += row_h
@@ -164,7 +210,8 @@ def chart_svg(groups):
     head = (f'<text x="24" y="34" font-size="18" font-weight="700" fill="{INK}">How long traffic stops when one MLAG switch reboots</text>'
             f'<text x="24" y="58" font-size="13" fill="{INK_2}">Each bar is the longest stop in any valid run, counting both the primary '
             f'and the secondary reboot.</text>'
-            f'<text x="24" y="76" font-size="13" fill="{INK_2}">The dashed line marks the 5 s limit.</text>'
+            f'<text x="24" y="76" font-size="13" fill="{INK_2}">The dashed line marks the 5 s limit. Red: a check failed. '
+            f'Grey: not tested for looped-back frames.</text>'
             f'<text x="{x(limit) + 6}" y="98" font-size="12" fill="{INK}">limit 5 s</text>')
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" '
             f'font-family=\'{FONT}\' role="img" aria-label="Traffic stop during an MLAG peer reboot per setup">'
@@ -183,7 +230,14 @@ def runs_text(g):
 
 def longest_text(g):
     note = dark_note(g)
-    return f"{note}. Where it forwarded: {worst_text(g['worst'])}" if note else worst_text(g["worst"])
+    text = f"{note}. Where it forwarded: {worst_text(g['worst'])}" if note else worst_text(g["worst"])
+    worst = g["worst"]
+    within = worst and worst[0] is not None and worst[1].get("limit_s") and worst[0] <= worst[1]["limit_s"]
+    if g["result"] == "fail" and g["loop_fail"] and within:
+        return f"Failed: {LOOP_TEXT}. Loss within limit: {text}"
+    if g["unchecked"]:
+        return f"{text}. {UNCHECKED_TEXT.capitalize()}"
+    return text
 
 
 def section(groups, unrecorded, rows, results):
@@ -210,7 +264,9 @@ def section(groups, unrecorded, rows, results):
             lines.append(f"| {ICONS[g['result']]} | {g['label']} | {runs_text(g)} | {longest_text(g)} |")
         lines += ["", f"The [{lab} results]({results.name}/README.md#{anchor}) list every setup variant and run.", ""]
     lines.append("A setup fails if any valid run failed. It passes when none failed and every case it attempted has a valid run. "
-                 "Otherwise it is incomplete. Invalid runs, such as runs with a paused probe sender, count as neither pass nor fail.")
+                 "Otherwise it is incomplete. Invalid runs, such as runs with a paused probe sender, count as neither pass nor fail. "
+                 "A setup that was never tested for looped-back frames, while another setup in the same lab was, is incomplete: "
+                 "its green result would only mean the check did not run.")
     lines += ["", ("Suites marked invalid" + (f" and {unrecorded} suites that did not record their bridge mode" if unrecorded else "")
                    + f" appear only in the [results overview]({results.name}/README.md). It also gives the recommendation and "
                    "the limit for each case."), "", RESULTS_END]

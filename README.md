@@ -22,7 +22,7 @@ Tested on RouterOS 7.26beta7 (`mikrotik/chr:7.26beta7`) with Containerlab 0.83.0
 | Result | Setup | Runs | Longest interruption |
 | --- | --- | --- | --- |
 | ✅ PASS | STP off on the pair, RSTP on the access switch | 25 passed, 0 failed, 1 invalid or not reached | MLAG secondary reboot, Secondary down: 3.02–3.23 s (limit 5 s) |
-| ❌ FAIL | MSTP, access switch is root of VLAN 110 only | 32 passed, 4 failed | MLAG secondary reboot, Secondary down: 2.82–3.02 s (limit 5 s) |
+| ❌ FAIL | MSTP, access switch is root of VLAN 110 only | 32 passed, 4 failed | Failed: frames looped back to the sender. Loss within limit: MLAG secondary reboot, Secondary down: 2.82–3.02 s (limit 5 s) |
 | ❌ FAIL | MSTP, access switch is root of the default instance | 5 passed, 5 failed, 14 invalid or not reached | VLAN never forwarded in 4 of 6 suites. Where it forwarded: MLAG secondary reboot, Secondary down: 11.35–11.55 s (limit 5 s) |
 | ❌ FAIL | MSTP, MLAG pair is root | 13 passed, 4 failed, 11 invalid or not reached | MLAG primary reboot, Primary down: 12.87–13.08 s (limit 5 s) |
 | ❌ FAIL | RSTP, MLAG pair is root | 12 passed, 8 failed, 1 invalid or not reached | Pair A primary reboot, Pair A primary down: 17.38–17.59 s (limit 5 s) |
@@ -36,12 +36,12 @@ The [Medium lab results](results/README.md#medium-lab) list every setup variant 
 | Result | Setup | Runs | Longest interruption |
 | --- | --- | --- | --- |
 | ⚠️ INCOMPLETE | MSTP, MLAG pair is root | 25 passed, 0 failed, 29 invalid or not reached | LACP partner timeout and return, LACPDUs blocked: 3.23–3.44 s (limit 4 s) |
-| ❌ FAIL | STP off | 42 passed, 12 failed, 12 invalid or not reached | MLAG primary reboot, Primary down: 2.61–2.81 s (limit 5 s) |
+| ❌ FAIL | STP off | 42 passed, 12 failed, 12 invalid or not reached | Failed: frames looped back to the sender. Loss within limit: MLAG primary reboot, Primary down: 2.61–2.81 s (limit 5 s) |
 | ❌ FAIL | RSTP, MLAG pair is root | 35 passed, 1 failed, 16 invalid or not reached | MLAG bond member loss and return, Member down: 10.63–10.84 s (limit 3 s) |
 
 The [Small lab results](results/README.md#small-lab) list every setup variant and run.
 
-A setup fails if any valid run failed. It passes when none failed and every case it attempted has a valid run. Otherwise it is incomplete. Invalid runs, such as runs with a paused probe sender, count as neither pass nor fail.
+A setup fails if any valid run failed. It passes when none failed and every case it attempted has a valid run. Otherwise it is incomplete. Invalid runs, such as runs with a paused probe sender, count as neither pass nor fail. A setup that was never tested for looped-back frames, while another setup in the same lab was, is incomplete: its green result would only mean the check did not run.
 
 Suites marked invalid and 6 suites that did not record their bridge mode appear only in the [results overview](results/README.md). It also gives the recommendation and the limit for each case.
 
