@@ -12,6 +12,10 @@ from .two_pair_topology import (
 )
 
 
+# The inter-pair member flap also counts each CHR's bridge host table entries.
+HOST_COUNT = (':put ("host-entries=" . [:len [/interface bridge host find]])',)
+
+
 class TwoPairLab(BridgeComparisonLab):
     name = TWO_PAIR_LAB
     device_names = {**RootLab.device_names, **TWO_PAIR_DEVICES}
@@ -24,9 +28,11 @@ class TwoPairLab(BridgeComparisonLab):
     management_probes = TWO_PAIR_PROBES
     log_dir = "two-pair-logs"
     client1_probe_port = "bond0"
+    count_hosts = False
 
     def read_router(self, peer):
-        return observe_ports(self, peer, (2, 3, 4), ("interpair", CLIENT_BONDS[peer]))
+        return observe_ports(self, peer, (2, 3, 4), ("interpair", CLIENT_BONDS[peer]),
+                             HOST_COUNT if self.count_hosts else ())
 
     def readiness(self):
         state = super().readiness()
@@ -47,6 +53,7 @@ class TwoPairLab(BridgeComparisonLab):
 
     @contextmanager
     def case_mode(self, name):
+        self.count_hosts = name.endswith("-interpair-member-flap")
         priorities, mode, strict = SETUPS[two_pair_setup(name)], two_pair_mode(name), two_pair_lacp_strict(name)
         for node in self.peers:
             reply = self.ros(node, f"/interface bonding set [find where name=interpair] lacp-strict={strict}")

@@ -17,11 +17,14 @@ from threading import Event
 import time
 from datetime import datetime, timezone
 
+from .cases import FLAP_CYCLES, FLAP_DOWN_S, FLAP_UP_S, MAC_AGE_DEFAULT, MAC_AGE_RETURN_S, MAC_AGE_SILENCE_S, MAC_AGE_TIME
 from .direct_topology import DIRECT_CASES
 from .evaluate import analyze
 from .evidence import seal_captures
 from .external_topology import EXTERNAL_CASES
 from .legacy import CASES, CAPTURES, FLOWS, PEER_LINK_PORTS, case_captures, case_name
+from .legacy import FLOOD_FLOWS, FLOOD_NEIGHBOUR
+from .legacy import CLIENT_MAC, MOBILE_MAC
 from .report import write_suite
 from .root_state import uptime
 from .root_topology import MEDIUM_TARGETS, ROOT_CASES
@@ -43,6 +46,7 @@ STATE = ";".join((
     "/interface/bridge/monitor bridge once",
     "/interface/bridge/port/monitor [find where bridge=bridge] once",
     "/interface/bridge/host/print detail without-paging where mac-address=02:00:00:11:00:11",
+    "/interface/bridge/host/print detail without-paging where mac-address=02:00:00:11:00:12",
     "/interface/bridge/host/print detail without-paging where mac-address=02:00:00:11:00:50",
 ))
 # The peer-link case also polls the peer port and each MLAG bond's LACP system ID.
@@ -52,6 +56,14 @@ PEER_LINK_STATE = ";".join((
     "/interface/bonding/monitor client1 once",
     "/interface/bonding/monitor client2 once",
 ))
+# The repeated member flap also polls client 2's bridge host table entry on both MLAG peers.
+FLAP_STATE = ";".join((
+    STATE,
+    "/interface/bridge/host/print detail without-paging where mac-address=02:00:00:11:00:12",
+))
+# Permanent neighbour entries for the MAC-move host's silence, so no host falls back to ARP while it lasts.
+PINNED_NEIGHBOURS = (("c1", "10.110.0.50", MOBILE_MAC), ("c2", "10.110.0.50", MOBILE_MAC),
+                     ("mobile", "10.110.0.11", CLIENT_MAC), ("mobile", "10.110.0.12", "02:00:00:11:00:12"))
 # Three 5 s mlag-heartbeat intervals, the manual's threshold for reporting missed heartbeats.
 PEER_LINK_HOLD_S = 15
 # mlag-init-delay (default 1 min) bounds how long MLAG bond members stay out of the bond on rejoin.
@@ -507,6 +519,106 @@ def move_mobile(capture):
         capture.mark("up_applied")
 
 
+def flap_member(capture):
+    """Flap client 1's member to CHR 1 FLAP_CYCLES times; every down is followed by an up, also on an error."""
+    for cycle in range(FLAP_CYCLES):
+        if cycle:
+            time.sleep(FLAP_UP_S)
+        try:
+            carrier(capture, up=False)
+            time.sleep(FLAP_DOWN_S)
+        finally:
+            carrier(capture, up=True)
+
+
+def bridge_ageing(capture, value, label):
+    """Set ageing-time on both MLAG peers' bridges and read it back; a failure on one peer does not skip the other."""
+    lab = capture.lab
+    replies, readback = {}, {}
+    for peer in PEERS:
+        try:
+            replies[peer] = lab.ros(peer, f"{SET_BRIDGE}ageing-time={value}")
+            raw = lab.ros(peer, "/interface bridge print detail without-paging where name=bridge")
+            match = re.search(r"\bageing-time=(\S+)", raw)
+            readback[peer] = match[1] if match else None
+        except (RuntimeError, OSError, subprocess.SubprocessError) as error:
+            replies[peer], readback[peer] = f"error: {error}", None
+    capture.mark(label, value=value, replies=replies, readback=readback)
+    if any(found != value for found in readback.values()):
+        raise RuntimeError(f"Bridges did not read back ageing-time={value}: {readback}")
+
+
+def pin_neighbours(capture):
+    lab = capture.lab
+    entries = {}
+    for node, address, mac in PINNED_NEIGHBOURS:
+        run(lab.ns(node, "ip", "neigh", "replace", address, "lladdr", mac, "nud", "permanent", "dev", "bond0"))
+        entries[f"{node}:{address}"] = run(lab.ns(node, "ip", "neigh", "show", address, "dev", "bond0")).strip()
+    capture.mark("neighbours_pinned", entries=entries)
+
+
+def restore_mac_age(capture):
+    """Restore the default ageing-time and remove the pinned neighbour entries; each step runs even if one fails."""
+    try:
+        bridge_ageing(capture, MAC_AGE_DEFAULT, "bridge_ageing_restored")
+    finally:
+        removed = {}
+        for node, address, _ in PINNED_NEIGHBOURS:
+            try:
+                done = subprocess.run(capture.lab.ns(node, "ip", "neigh", "del", address, "dev", "bond0"),
+                                      capture_output=True, text=True, timeout=12)
+                removed[f"{node}:{address}"] = {"returncode": done.returncode, "stderr": done.stderr.strip()}
+            except (OSError, subprocess.SubprocessError) as error:
+                removed[f"{node}:{address}"] = {"error": str(error)}
+        capture.mark("neighbours_unpinned", entries=removed)
+
+
+def silence_mobile(capture):
+    """Drop every frame the MAC-move host sends, on egress of both bond members.
+
+    The filter sits on the members, not on bond0: tc egress on bond0 would drop frames before the bond0 capture
+    sees them, and the probe scoring needs every request the host sends.
+    """
+    lab = capture.lab
+    rule = ("egress", "protocol", "all", "pref", "43", "flower", "action", "drop")
+    with owned_filter(lab, "mobile", "eth1", rule) as (tc, first), owned_filter(lab, "mobile", "eth2", rule) as (_, second):
+        capture.mark("down_start")
+        run([*tc, "filter", "add", *first])
+        run([*tc, "filter", "add", *second])
+        capture.mark("down_applied")
+        time.sleep(MAC_AGE_SILENCE_S)
+        counters = {port: run([*tc, "-s", "filter", "show", "dev", port, "egress"]) for port in ("eth1", "eth2")}
+        capture.mark("up_start", counters=counters)
+    capture.mark("up_applied")
+
+
+def start_floods(capture, floods=FLOOD_FLOWS):
+    """Start the flood streams from traffic host 1 after a permanent neighbour entry for the unknown-unicast target."""
+    lab = capture.lab
+    address, mac = FLOOD_NEIGHBOUR
+    # replace is idempotent, so a lab deployed before the flood streams needs no redeploy.
+    run(lab.ns("c1", "ip", "neigh", "replace", address, "lladdr", mac, "nud", "permanent", "dev", "bond0"))
+    capture.mark("flood_neighbour_set", address=address, mac=mac,
+                 readback=run(lab.ns("c1", "ip", "neigh", "show", address, "dev", "bond0")).strip())
+    for ident, (source, dest, _) in floods.items():
+        node, port = source.split("-", 1)
+        broadcast = ("-b",) if dest == "10.110.0.255" else ()
+        capture.launch(lab.ns(node, "ping", "-n", "-D", "-O", *broadcast, "-i", "0.1", "-e", str(ident),
+                              "-I", port, dest), capture.path / "probes" / f"{ident}.log")
+
+
+def remove_flood_neighbour(capture):
+    """Remove the neighbour entry once the flood streams have stopped; a missing entry is recorded, not raised."""
+    address, _ = FLOOD_NEIGHBOUR
+    try:
+        removed = subprocess.run(capture.lab.ns("c1", "ip", "neigh", "del", address, "dev", "bond0"),
+                                 capture_output=True, text=True, timeout=12)
+        capture.mark("flood_neighbour_removed", address=address, returncode=removed.returncode,
+                     stderr=removed.stderr.strip())
+    except (OSError, subprocess.SubprocessError) as error:
+        capture.mark("flood_neighbour_removed", address=address, error=str(error))
+
+
 def run_case(lab, path, name, changes, hold=8):
     path.mkdir()
     manifest = {"case": name, "name": case_name(name), "bridge_mode": changes["bridge_mode"]}
@@ -515,6 +627,7 @@ def run_case(lab, path, name, changes, hold=8):
     capture.mark("configuration_applied", replies=changes)
     captures = case_captures(name)
     peer_case = name == "peer-link-loss"
+    mac_age = name == "silent-mobile"
     syslog = lab.topology.parent / "logs" / "routeros.jsonl"
     with syslog.open() as feed:
         feed.seek(0, os.SEEK_END)
@@ -524,10 +637,11 @@ def run_case(lab, path, name, changes, hold=8):
                 capture.observe(captures, PEER_LINK_PORTS, named_ports=True)
             else:
                 capture.observe()
+            start_floods(capture)
             with ThreadPoolExecutor(max_workers=3) as workers:
                 for peer in PEERS:
                     workers.submit(poll_peer, lab, peer, path / f"state-{peer}.jsonl", stop,
-                                   PEER_LINK_STATE if peer_case else STATE)
+                                   PEER_LINK_STATE if peer_case else FLAP_STATE if name == "carrier-flap" else STATE)
                 if peer_case:
                     def bonds():
                         return {node: run(lab.ns(node, "cat", "/proc/net/bonding/bond0")) for node in ("c1", "c2")}
@@ -535,6 +649,9 @@ def run_case(lab, path, name, changes, hold=8):
                 try:
                     for peer in PEERS:
                         lab.ros(peer, f':log info "mlag-suite-{path.name}-begin"')
+                    if mac_age:
+                        pin_neighbours(capture)
+                        bridge_ageing(capture, MAC_AGE_TIME, "bridge_ageing_set")
                     config = {peer: lab.ros(peer, CONFIG) for peer in PEERS}
                     (path / "effective-config.json").write_text(json.dumps(config, indent=2) + "\n")
                     # Allow neighbor discovery and establish a separate quiet baseline.
@@ -545,6 +662,10 @@ def run_case(lab, path, name, changes, hold=8):
                         probe = path / "probes" / f"{ident}.log"
                         if probe.read_text().count("bytes from") < 30:
                             raise RuntimeError(f"Probe {ident} did not establish baseline delivery")
+                    # Each host bond's view of the LACP system ID both MLAG peers present, for the baseline check.
+                    capture.mark("baseline_bonds", bonds={
+                        f"client {node[1]} bond": run(lab.ns(node, "cat", "/proc/net/bonding/bond0"))
+                        for node in ("c1", "c2")})
                     if name == "carrier" or peer_case:
                         cut = peer_link if peer_case else carrier
                         try:
@@ -554,12 +675,18 @@ def run_case(lab, path, name, changes, hold=8):
                             cut(capture, up=True)
                     elif name == "mobile-move":
                         move_mobile(capture)
+                    elif name == "carrier-flap":
+                        flap_member(capture)
+                    elif mac_age:
+                        silence_mobile(capture)
                     else:
                         filter_fault(capture, silent=name == "silent-lacp")
                     if peer_case:
                         time.sleep(PEER_LINK_RECOVERY_S)
+                    elif mac_age:
+                        time.sleep(MAC_AGE_RETURN_S)
                     else:
-                        time.sleep(hold if name in ("carrier", "silent-lacp") else 3)
+                        time.sleep(hold if name in ("carrier", "silent-lacp", "carrier-flap") else 3)
                     capture.mark("recovery_start")
                     time.sleep(3)
                     capture.mark("recovery_end")
@@ -569,10 +696,13 @@ def run_case(lab, path, name, changes, hold=8):
                     time.sleep(2)
                 finally:
                     stop.set()
+                    if mac_age:
+                        restore_mac_age(capture)
         except (RuntimeError, subprocess.SubprocessError, OSError, KeyError, ValueError) as error:
             capture.mark("runner_error", detail=str(error), stderr=getattr(error, "stderr", None))
         finally:
             capture.stop()
+            remove_flood_neighbour(capture)
             (path / "syslog.jsonl").write_text(feed.read())
     if all((path / "captures" / f"{point}.pcap").is_file() for point in captures):
         seal_captures(path, captures)
@@ -724,6 +854,16 @@ def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp"):
                         if timing := result.get("initial_validation_s"):
                             print(f"  {lab.name} initial validation (reset to verdict): "
                                   f"{timing['reset_to_verdict']:.2f} s", flush=True)
+                        if result["status"] == "error" and not INTERRUPTED and not item["run"].endswith("-retry"):
+                            # An invalid measurement gets one more attempt in its own folder once the lab
+                            # is ready again; the loop reaches the inserted entry next. The errored folder stays.
+                            lab.wait_ready()
+                            lab.check_logins()
+                            retry = {**item, "run": f"{item['run']}-retry"}
+                            schedule.insert(schedule.index(item) + 1, retry)
+                            (output / "schedule.json").write_text(json.dumps(schedule, indent=2) + "\n")
+                            print(f"{case.name}: repeating once as {retry['run']}", flush=True)
+                            continue
                         if result["status"] == "error" or (
                             (is_medium or is_direct) and result["status"] == "fail" and (
                                 name.endswith("-baseline") or "baseline_rejected" in (case / "events.jsonl").read_text()
@@ -742,7 +882,13 @@ def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp"):
     return write_suite(output)
 
 
+# Set by interrupt(), so an operator's Ctrl-C or SIGTERM stops the suite instead of starting a retry.
+INTERRUPTED = False
+
+
 def interrupt(_sig, _frame):
+    global INTERRUPTED
+    INTERRUPTED = True
     raise RuntimeError("Run interrupted")
 
 

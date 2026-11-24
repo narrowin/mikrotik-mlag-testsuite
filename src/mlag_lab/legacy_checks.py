@@ -3,11 +3,22 @@
 import re
 
 from .cases import CALIBRATION_CUT_S
+from .cases import FLAP_CYCLES, MAC_AGE_DEFAULT, MAC_AGE_TIME, RELEARN_LIMIT_S
 from .evidence import load_jsonl
 from .legacy import CLIENT_MAC
+from .legacy import FLOWS, MOBILE_MAC
 from .measure import number, seconds, within
 
 MOVES = (("to-p2", "withdrawal", "p1-tap4", "p2-tap4"), ("to-p1", "restoration", "p2-tap4", "p1-tap4"))
+CLIENT2_MAC = "02:00:00:11:00:12"
+# mac-age-relearn: where each stream to the MAC-move host shows up when both peers flood it to the other traffic
+# host, and the host's own frames at the CHR TAPs that prove it sends again.
+RELEARN_FLOODS = {101: ("c2-bond0",), 102: ("c1-eth1", "c1-eth2")}
+HOST_FRAMES = ((201, 8), (202, 8), (101, 0), (102, 0))
+HOST_TAPS = ("p1-tap4", "p2-tap4")
+# A frame already on the wire when the filter went in may reach a TAP just after the mark.
+FILTER_SETTLE_NS = 50_000_000
+FLAP_HOSTS = {"client 2": CLIENT2_MAC, "MAC-move host": MOBILE_MAC}
 
 
 def check_calibration(spec, marks, flows, result, check):
@@ -133,3 +144,179 @@ def check_peer_link(spec, path, marks, start, down, up, end, flows, result, chec
                 elif upper is not None and upper > limit:
                     check("error", False, f"{ident} {phase} loss {lower:.3f}–{upper:.3f} s "
                           f"straddles {limit:.1f} s target", phase)
+
+
+def sends(icmp, ident, start, end):
+    """Send time of each numbered request of one stream at its source capture."""
+    return {seq: frames[0] for (i, kind, seq), frames in icmp[FLOWS[ident][0]].items()
+            if i == ident and kind == 8 and within(frames[0], start, end)}
+
+
+def gap_bounds(window, gap):
+    """First and last missed send and the surrounding good sends of one gap; None where the window has none."""
+    missing = [seq for seq in range(gap["first_seq"], gap["last_seq"] + 1) if seq in window]
+    return (window[missing[0]] if missing else None, window[missing[-1]] if missing else None,
+            window.get(gap["first_seq"] - 1), window.get(gap["last_seq"] + 1))
+
+
+def host_entries(path, peer, mac, start, end):
+    """Sample start times and whether the peer's bridge host table held an entry for mac."""
+    return [(sample["started_ns"], f"mac-address={mac}" in sample["raw"])
+            for sample in load_jsonl(path / f"state-{peer}.jsonl")
+            if "raw" in sample and within(sample["started_ns"], start, end)]
+
+
+def check_mac_age(spec, path, marks, packets, start, down, up, end, flows, result, check):
+    """MAC-move host silent past bridge ageing: flooding is recorded; relearn and delivery after its first frame."""
+    icmp = packets.icmp
+    measured = result["mac_age"] = {}
+    for label, value in (("bridge_ageing_set", MAC_AGE_TIME), ("bridge_ageing_restored", MAC_AGE_DEFAULT)):
+        readback = marks.get(label, {}).get("readback")
+        measured[label] = readback
+        check("error", readback == {"p1": value, "p2": value}, f"Both MLAG peers read back ageing-time={value}: {readback}")
+    check("error", "neighbours_pinned" in marks and "neighbours_unpinned" in marks,
+          "Neighbour entries were pinned for the silence and removed afterwards")
+    counters = marks["up_start"].get("counters", {})
+    dropped = {port: int(match[1]) if (match := re.search(r"\(dropped (\d+)", text)) else None
+               for port, text in counters.items()}
+    measured["filter_drops"] = dropped
+    check("error", (dropped.get("eth1") or 0) > 0, f"The filter dropped the host's frames on its active member: {dropped}")
+    frames = sorted(stamp for tap in HOST_TAPS for (ident, kind, _), stamps in icmp[tap].items()
+                    if (ident, kind) in HOST_FRAMES for stamp in stamps)
+    leaked = [stamp for stamp in frames if within(stamp, number(marks, "down_applied") + FILTER_SETTLE_NS, up)]
+    check("error", not leaked, f"No frame from the host reached a CHR TAP while it was silent ({len(leaked)} seen)",
+          "withdrawal")
+    first = next((stamp for stamp in frames if stamp >= up), None)
+    measured["first_host_frame_s"] = seconds(first - start) if first is not None else None
+    check("error", first is not None, "A frame from the host reached a CHR TAP after the filter was removed",
+          "restoration")
+
+    tables = measured["host_table"] = {}
+    for peer in ("p1", "p2"):
+        samples = host_entries(path, peer, MOBILE_MAC, start, end)
+        aged = next((stamp for stamp, present in samples if not present and within(stamp, down, up)), None)
+        back = next((stamp for stamp, present in samples if present and first is not None and stamp >= first), None)
+        tables[peer] = {"aged_out_s": seconds(aged - start) if aged is not None else None,
+                        "back_s": seconds(back - start) if back is not None else None}
+        check("error", aged is not None, f"{peer} aged the host MAC out of its bridge host table while it was silent",
+              "withdrawal")
+    if first is None:
+        return
+
+    floods = measured["flooding"] = {}
+    for ident, points in RELEARN_FLOODS.items():
+        seen = sorted(stamp for point in points for (i, kind, _), stamps in icmp[point].items()
+                      if i == ident and kind == 8 for stamp in stamps if within(stamp, start, end))
+        silent = [stamp for stamp in seen if within(stamp, down, up)]
+        after = [stamp for stamp in seen if stamp >= first]
+        stopped = seconds(after[-1] - first) if after else 0.0
+        floods[ident] = {"captures": list(points), "baseline_frames": sum(stamp < down for stamp in seen),
+                         "silent_frames": len(silent),
+                         "silent_first_s": seconds(silent[0] - start) if silent else None,
+                         "silent_last_s": seconds(silent[-1] - start) if silent else None,
+                         "after_first_frame": len(after), "stopped_after_first_frame_s": stopped}
+        check("fail", stopped <= RELEARN_LIMIT_S, f"{ident} stopped flooding to the other traffic host {stopped:.3f} s "
+              f"after the host's first frame, target {RELEARN_LIMIT_S:.1f} s", "restoration")
+
+    resumed = measured["delivered_after_first_frame_s"] = {}
+    for ident in spec.graded_flows:
+        flow, window = flows[ident], sends(icmp, ident, start, end)
+        silence = [gap for gap in flow["gaps"] if "withdrawal" in gap["phases"]]
+        # The silence is the fault: split its outage at the filter removal, so each phase shows its own part.
+        split = {"withdrawal": [], "restoration": []}
+        for gap in flow["gaps"]:
+            if silence and gap is silence[-1]:
+                first_miss, last_miss, prev, nxt = gap_bounds(window, gap)
+                both = prev is not None and nxt is not None
+                parts = (("withdrawal", min(up, last_miss or up) - max(down, first_miss or up),
+                          min(up, nxt) - max(down, prev) if both else None),
+                         ("restoration", (last_miss or up) - max(up, first_miss or up),
+                          nxt - max(up, prev) if both else None))
+                for phase, lower, upper in parts:
+                    if phase not in gap["phases"]:
+                        continue
+                    split[phase].append({"first_seq": gap["first_seq"], "last_seq": gap["last_seq"],
+                                         "lower_s": seconds(max(0, lower)),
+                                         "upper_s": seconds(max(0, upper)) if upper is not None else None})
+            else:
+                for phase in gap["phases"]:
+                    split[phase].append({key: gap[key] for key in ("first_seq", "last_seq", "lower_s", "upper_s")})
+        flow["phase_gaps_s"] = split
+        check("error", bool(silence), f"{ident} lost the probes sent while the host was silent", "withdrawal")
+        if not silence:
+            continue
+        good = silence[-1]["last_seq"] + 1
+        reply = icmp[FLOWS[ident][0]].get((ident, 0, good)) if good in window else None
+        latency = seconds(reply[0] - first) if reply else None
+        resumed[ident] = latency
+        check("fail", latency is not None and latency <= RELEARN_LIMIT_S,
+              f"{ident} delivered again {latency if latency is not None else 'never'} s after the host's first frame, "
+              f"target {RELEARN_LIMIT_S:.1f} s", "restoration")
+        later = [gap["first_seq"] for gap in flow["gaps"] if gap["first_seq"] > silence[-1]["last_seq"]]
+        check("fail", not later, f"{ident} lost no probe after it delivered again"
+              + (f", lost from seq {later}" if later else ""), "restoration")
+    for phase in ("withdrawal", "restoration"):
+        lost = [ident for ident in spec.control_flows
+                if any(phase in gap["phases"] for gap in flows[ident]["gaps"])]
+        check("fail", not lost, f"Stream 302 and both bypass directions stay up during {phase}"
+              + (f", lost on {lost}" if lost else ""), phase)
+
+
+def check_member_flaps(spec, path, events, packets, start, up, recovery, end, flows, result, check):
+    """Five member flaps: loss per flap within the member limit, client 2 and bypass clean, host entries kept."""
+    downs = [event for event in events if event["name"] == "down_start"]
+    check("error", len(downs) == FLAP_CYCLES == sum(event["name"] == "up_start" for event in events),
+          f"{FLAP_CYCLES} member flaps were applied")
+    if not downs:
+        return
+    cycle = 0
+    for event in events:
+        cycle += event["name"] == "down_start"
+        if event["name"] in ("down_observed", "up_observed"):
+            change = event["name"].split("_")[0]
+            bound = event["max_latency_s"]
+            check("error", event["confirmed"] == ["guest", "linux"] and bound <= 0.5,
+                  f"Flap {cycle} {change} observed at both drivers within 0.5 s",
+                  "restoration" if change == "up" and cycle == FLAP_CYCLES else "withdrawal")
+    # Flap N runs from its down to the next flap's down; the last one runs to the recovery window.
+    bounds = [event["epoch_ns"] for event in downs[1:]] + [recovery]
+    flaps = result["flaps"] = [{"flap": index + 1, "down_s": seconds(event["epoch_ns"] - start), "loss_s": {}}
+                               for index, event in enumerate(downs)]
+    for ident in (*spec.graded_flows, *spec.control_flows):
+        window = sends(packets.icmp, ident, start, end)
+        for gap in flows[ident]["gaps"]:
+            first_miss, _, prev, _ = gap_bounds(window, gap)
+            at = first_miss if first_miss is not None else prev if prev is not None else start
+            index = next((n for n, bound in enumerate(bounds) if at < bound), len(bounds) - 1)
+            flaps[index]["loss_s"].setdefault(str(ident), []).append(
+                {key: gap[key] for key in ("first_seq", "last_seq", "failed_probes", "lower_s", "upper_s")})
+            if ident not in spec.graded_flows:
+                continue
+            for phase in gap["phases"]:
+                limit = spec.limit(phase)
+                lower, upper = gap["lower_s"], gap["upper_s"]
+                if lower > limit:
+                    check("fail", False, f"{ident} flap {index + 1} loss lasted at least {lower:.3f} s "
+                          f"against {limit:.1f} s target", phase)
+                elif upper is not None and upper > limit:
+                    check("error", False, f"{ident} flap {index + 1} loss {lower:.3f}–{upper:.3f} s "
+                          f"straddles {limit:.1f} s target", phase)
+    for phase in ("withdrawal", "restoration"):
+        lost = [ident for ident in spec.control_flows
+                if any(phase in gap["phases"] for gap in flows[ident]["gaps"])]
+        check("fail", not lost, f"Client 2 and both bypass directions stay up during {phase}"
+              + (f", lost on {lost}" if lost else ""), phase)
+    windows = {"withdrawal": (downs[0]["epoch_ns"], up), "restoration": (up, end)}
+    tables = result["host_table"] = {}
+    for peer in ("p1", "p2"):
+        for host, mac in FLAP_HOSTS.items():
+            samples = host_entries(path, peer, mac, downs[0]["epoch_ns"], end)
+            missing = [stamp for stamp, present in samples if not present]
+            tables.setdefault(peer, {})[host] = {
+                "mac": mac, "samples": len(samples), "missing_samples": len(missing),
+                "first_missing_s": seconds(missing[0] - start) if missing else None}
+            check("error", bool(samples), f"{peer} bridge host table for {host} was sampled during the flaps")
+            for phase, (low, high) in windows.items():
+                gone = [stamp for stamp in missing if within(stamp, low, high)]
+                check("fail", not gone, f"{peer} kept the bridge host table entry for {host} ({mac}) during {phase}"
+                      + (f", missing in {len(gone)} samples from {seconds(gone[0] - start)} s" if gone else ""), phase)

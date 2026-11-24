@@ -16,7 +16,22 @@ LAB_TARGET = "lab target"
 # the LACP timeout itself 4 s, and reboots and the peer link 5 s.
 # A calibration is valid only when the applied one-way cut lies inside this window.
 CALIBRATION_CUT_S = (1.9, 2.3)
+# Longest time a unicast stream may reach an unrelated host after a fault: the M1 lab budget of 1 s in
+# docs/reference/protocol-cases.md.
+FLOOD_LIMIT_S = 1.0
 PHASE_KEYS = ("baseline", "calibration", "withdrawal", "restoration")
+BRIDGE_MANUAL = "https://manual.mikrotik.com/docs/cli-reference/interface/bridge/"
+# M2: unicast flooded to unrelated hosts while the bridge host tables looked right.
+FLOODING_REPORT = "https://forum.mikrotik.com/t/strange-traffic-flooding-in-mlag-setup/271419"
+# M4: one member of the bond between two MLAG pairs flapped and unrelated MACs moved to the peer port.
+FOUR_SWITCH_REPORT = "https://forum.mikrotik.com/t/7-25-1-stable-is-released/274226/22"
+# mac-age-relearn: ageing-time while the MAC-move host is silent, the RouterOS default it returns to, a silence of
+# more than twice the ageing time, the return window and the relearn target from the host's first frame.
+MAC_AGE_TIME, MAC_AGE_DEFAULT = "10s", "5m"
+MAC_AGE_SILENCE_S, MAC_AGE_RETURN_S = 25, 5
+RELEARN_LIMIT_S = 1.0
+# member-flap-repeat: five cycles of 1 s down and 3 s up.
+FLAP_CYCLES, FLAP_DOWN_S, FLAP_UP_S = 5, 1, 3
 
 
 @dataclass(frozen=True)
@@ -38,6 +53,9 @@ class Case:
     graded_flows: tuple[int, ...]
     control_flows: tuple[int, ...]
     phases: tuple[Phase, ...]
+    # MikroTik fixes this case checks: (RouterOS version, MikroTik's changelog wording, changelog link).
+    # Filled from docs/reference/mlag-fixes.md, rows in state Checked or Indirect only.
+    fixes: tuple[tuple[str, str, str], ...] = ()
 
     def limit(self, key):
         return next(phase.limit_s for phase in self.phases if phase.key == key)
@@ -458,6 +476,47 @@ CASES = (
           Phase("restoration", "Peer link back",
                 "ICCP returns to mlag-state connected on both peers and the secondary takes the shared system ID "
                 "again. The clients renegotiate LACP with brief loss.", 5.0, MLAG_MANUAL))),
+    Case("mac-age-relearn", "Small", "Silent host past bridge ageing, then relearn",
+         "Sets ageing-time=10s on the bridge of both MLAG peers and reads it back, and pins permanent neighbour "
+         "entries between the MAC-move host and both traffic hosts, so no host needs ARP while one side is silent. "
+         "After the baseline it drops every frame the MAC-move host sends for 25 s, with a tc filter on egress of "
+         "both its bond members, then removes the filter and watches 5 s of return plus a 3 s recovery window. "
+         "Afterwards it restores ageing-time=5m, reads it back and removes the pinned neighbour entries.",
+         ("silent-mobile",), (101, 102, 201, 202), (301, 302, 303),
+         (Phase("withdrawal", "Host silent",
+                "Nothing from the MAC-move host reaches either MLAG peer. After the 10 s ageing time both peers "
+                "remove the host MAC from the bridge host table: CHR 1 its entry on ether5, CHR 2 its entry on the "
+                "peer port ether2. Frames to the host MAC are then unknown unicast, so both peers flood streams 101 "
+                "and 102 to the other traffic host as well. This is correct bridge behaviour and is recorded, not "
+                "failed. Every stream to or from the host loses probes for the whole silence; that loss is the fault "
+                "itself, so the limit is the 25 s silence plus the 1 s relearn target. Stream 302 and both bypass "
+                "streams lose nothing.", 26.0, BRIDGE_MANUAL),
+          Phase("restoration", "Host sends again",
+                "The host's first frame enters CHR 1 on ether5, so CHR 1 learns the host MAC on ether5 and CHR 2 on "
+                "the peer port. Lab target, measured from the host's first frame at a CHR TAP: flooding of streams "
+                "101 and 102 to the other traffic host stops within 1.0 s, streams 101, 102, 201 and 202 deliver "
+                "again within 1.0 s and lose nothing afterwards. The field report saw this flooding continue while "
+                "both bridge host tables showed the right port. Stream 302 and both bypass streams lose nothing.",
+                RELEARN_LIMIT_S, FLOODING_REPORT))),
+    Case("member-flap-repeat", "Small", "Repeated MLAG bond member flap",
+         "Takes client 1's bond member to CHR 1 (ether3) down at both ends for 1 s and back up for 3 s, five times, "
+         "then watches 8 s of return plus a 3 s recovery window. Both MLAG peers' bridge host table entries for "
+         "client 2 and the MAC-move host are sampled every 0.35 s throughout.",
+         ("carrier-flap",), (101, 201, 302), (102, 202, 301, 303),
+         (Phase("withdrawal", "Five member flaps",
+                "Each flap removes ether3 from CHR 1's MLAG bond client1 and adds it back once LACP renegotiates. "
+                "While the member is down, CHR 1 forwards traffic for client 1 over the peer link to CHR 2, with "
+                "brief loss. This phase runs from the first flap to the fifth return, so it holds four complete flaps "
+                "and the fifth down; result.json lists the loss of every flap separately. Each loss of streams 101, "
+                "201 and 302 may last at most 3 s, the member limit per flap. Streams 102 and 202 never touch client "
+                "1 and lose nothing, and the bridge host table entries for client 2 and the MAC-move host stay on "
+                "both MLAG peers. The field report saw unrelated MACs move to the peer port after a member flap.",
+                3.0, FOUR_SWITCH_REPORT),
+          Phase("restoration", "Member back after the fifth flap",
+                "Carrier returns for the last time and LACP renegotiates ether3 with client 1 until it shows "
+                "synchronization, collecting and distributing (S, C, D). Loss of streams 101, 201 and 302 lasts at "
+                "most 3 s. Streams 102 and 202 and both bypass streams lose nothing, and the host entries for client "
+                "2 and the MAC-move host stay present.", 3.0, BOND_FLAGS))),
     # Planned: listed in the case index, not yet runnable.
 
     Case("primary-pause", "Small", "MLAG primary held stopped with carrier up",
@@ -672,6 +731,82 @@ for _setup, (_label, _priorities, _a, _b, _winner) in TWO_PAIR_SETUPS.items():
                    f"{_back.format(a=_a, b=_b)} {_others} must keep root {_a} throughout, and each VLAN direction "
                    "loses at most 5 s.", 5.0, MLAG_MANUAL)),
         ),)
+# The four-switch report's trigger on every two-pair setup: one inter-pair bond member down and up.
+_flap_setups = {
+    **{setup: (label, f"protocol-mode=rstp and {priorities}", root)
+       for setup, (label, priorities, root, _b, _winner) in TWO_PAIR_SETUPS.items()},
+    "stp-off": ("spanning tree off", "protocol-mode=none", None),
+    "stp-off-strict": ("spanning tree off, lacp-strict=yes on the inter-pair bond",
+                       "protocol-mode=none, after setting lacp-strict=yes on the inter-pair bond of all four CHRs", None),
+}
+for _setup, (_label, _settings, _root) in _flap_setups.items():
+    _kept = (f"The inter-pair bond stays one bridge port on each pair, so all four CHRs keep root {_root}."
+             if _root else "No bridge sends or forwards BPDUs.")
+    CASES += (Case(
+        f"two-pair-{_setup}-interpair-member-flap", "Medium", f"Inter-pair bond member flap · two MLAG pairs, {_label}",
+        f"Resets the data bridge on all four CHRs over management SSH with {_settings}. {TWO_PAIR_WIRING} It requires "
+        "a loss-free baseline" + (f" with root {_root} on all four CHRs" if _root else "") + ". It then takes the "
+        "inter-pair bond member between CHR 1 ether3 and CHR 3 ether3 down at both ends (both container veths and "
+        "both QEMU NICs), holds it down for 8 s, brings both ends back up and watches 8 s of return plus a 3 s "
+        "recovery window. The bridge host table size and the topology-change counter of every CHR are sampled "
+        "throughout.",
+        (f"two-pair-{_setup}-interpair-member-flap",), (101, 201), (301, 303),
+        (Phase("withdrawal", "Inter-pair member down",
+               "CHR 1 and CHR 3 each lose their only member of the inter-pair MLAG bond (mlag-id 11 on pair A, 21 on "
+               "pair B). The bond keeps forwarding over its other member between CHR 2 and CHR 4, and traffic that "
+               f"reaches CHR 1 or CHR 3 crosses its pair's peer port. Streams 101 and 201 lose at most 3 s. {_kept} "
+               "The field report saw unrelated MACs move to the peer port and the host table shrink after this flap; "
+               "the host table size and topology-change counter of every CHR are recorded for comparison.",
+               3.0, FOUR_SWITCH_REPORT),
+         Phase("restoration", "Inter-pair member back",
+               "Carrier returns at both ends and LACP adds ether3 back to the inter-pair bond on CHR 1 and CHR 3 "
+               "once it shows synchronization, collecting and distributing (S, C, D). Streams 101 and 201 lose at "
+               f"most 3 s. {_kept}", 3.0, BOND_FLAGS)),
+    ),)
+
+def _changelog(version):
+    return f"https://cdn.mikrotik.com/routeros/{version}/CHANGELOG"
+
+
+def _reboot(name):
+    return ("reboot" in name or "power-loss" in name) and "calibrat" not in name
+
+
+def _baseline(name):
+    return name.endswith("-baseline") or name == "baseline"
+
+
+_STP_REBOOT = ("medium-pair-root-reboot-", "medium-access-root-reboot-", "medium-mstp-pair-root-reboot-",
+               "medium-mstp-access-root-reboot-", "reboot-primary", "reboot-secondary", "two-pair-equal-reboot-",
+               "two-pair-field-reboot-")
+# Each row of docs/reference/mlag-fixes.md in state Checked or Indirect, with the cases that grade it.
+FIXES = (
+    ("7.25.2", "Dual-bond hosts dropped when an MLAG peer is lost", _reboot),
+    ("7.25.2", "Packets looped back to a dual-connected bond", lambda name: True),
+    ("7.24.6", "BPDUs leaking to the wrong dual-connected bond (introduced in 7.24)",
+     lambda name: not name.startswith("two-pair-") or name.startswith("two-pair-stp-off-")),
+    ("7.25.2", "LACP system ID not synchronised when bonds are created before MLAG", lambda name: True),
+    ("7.25", "New settings mlag-lacp-fallback and mlag-init-delay",
+     lambda name: _reboot(name) or name == "peer-link-loss"),
+    ("7.25", "MLAG peer stuck in the disabled state after config changes", _baseline),
+    ("7.26beta4", "New setting lacp-strict for 802.3ad bonds", lambda name: name.startswith("two-pair-stp-off-strict-")),
+    ("7.24", "STP, BPDU and topology-change handling with MLAG; dual-connected port STP state in sync with the "
+     "MLAG peer", lambda name: name.startswith(_STP_REBOOT)),
+    ("7.24", "MLAG MAC address handling for ageing, flushing and moving", lambda name: name == "mac-move"),
+    ("7.22", "MAC moving between regular ports and bonds", lambda name: name == "mac-move"),
+    ("7.22", "MLAG state permanently disabled after changing bridge settings", _baseline),
+    ("7.18", "mlag-heartbeat; no peer port reset on heartbeat timeout, a warning is logged",
+     lambda name: name in ("peer-link-loss", "primary-sustained-stop")),
+    ("7.14", "MLAG connection after a peer link flap (introduced in 7.13)", lambda name: name == "peer-link-loss"),
+    ("7.14", "MLAG with MSTP: support and stability", lambda name: name.startswith("medium-mstp-")),
+    ("7.17", "Priority setting to elect the MLAG primary", _baseline),
+)
+# The BPDU fix only on the Medium lab and the two-pair deployment: the Small lab has no BPDU check on a bond.
+CASES = tuple(replace(case, fixes=tuple(
+    (version, wording, _changelog(version)) for version, wording, applies in FIXES
+    if case.selectors and applies(case.name)
+    and not (wording.startswith("BPDUs leaking") and case.lab != "Medium"))) for case in CASES)
+
 
 def _index(cases):
     index = {}
@@ -735,17 +870,20 @@ def phase_results(spec, result, checks):
     """Measured loss and a verdict for each phase of one attempt.
 
     A phase fails on a failed check tagged with it; any untagged evidence error invalidates every phase.
-    A single-phase case takes every check as its own.
+    A single-phase case takes every check as its own. A check tagged with a phase the case lacks, such as a
+    baseline flood in a fault case, counts against every phase, even one whose fault was withheld.
     """
     single = len(spec.phases) == 1
     executed = result.get("fault_executed", True)
     flows = result.get("flows", {})
     run_error = any(not c["ok"] and c["level"] in ("error", "inconclusive") and "phase" not in c for c in checks)
+    keys = {phase.key for phase in spec.phases}
+    stray = [c for c in checks if not c["ok"] and "phase" in c and c["phase"] not in keys]
     summary = []
     for phase in spec.phases:
-        own = checks if single else [c for c in checks if c.get("phase") == phase.key]
+        own = checks if single else [c for c in checks if c.get("phase") == phase.key] + stray
         failed = {c["level"] for c in own if not c["ok"]}
-        if phase.key != "baseline" and not executed:
+        if phase.key != "baseline" and not executed and not stray:
             verdict = "skipped"
         elif run_error or failed & {"error", "inconclusive"}:
             verdict = "error"

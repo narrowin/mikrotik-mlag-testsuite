@@ -112,6 +112,29 @@ The runner sets RSTP on both CHRs before each direct-client case. It selects the
 
 Use `--case direct-baseline` immediately before each original Small lab case. It performs the management reset and verifies the direct-client state and packet paths. Run the original selector only after the gate passes. Save each gate and fault under its own evidence directory.
 
+## Run one campaign per machine
+
+[`labs/campaign.sh`](../labs/campaign.sh) runs a list of suites on one lab inside one OrbStack machine. It copies `labs/` to the machine's own disk (`/var/tmp/mlag-labs`, or `MLAG_LABS_COPY`), because Containerlab writes `clab-<name>/` and the syslog feed next to the topology file. It deploys the lab from that copy with the image in `labs/campaign-image.txt` only if the lab is not running. It runs every suite with `--lab-dir` pointing at the copy and a machine-local `UV_PROJECT_ENVIRONMENT`. It never destroys a lab.
+
+The runner accepts only a deployment whose topology file is the one under `--lab-dir`. If the lab in that machine was deployed from another path, for example the shared checkout, the script names that path and stops. Run against that deployment directly, or remove it yourself first.
+
+Start one campaign per machine from the Mac, with one bridge mode per machine. Each suite spec is `<sub-folder>:<mlag-lab run arguments>`. Replace the machine names with your own.
+
+```sh
+cd ~/git/narrowin/mikrotik-mlag-testsuite
+l2="--case calibration --case bond-member-loss --case lacp-timeout --case mac-move --case peer-link-loss"
+campaign="test-results/$(date -u +%Y%m%dT%H%M%SZ)-parallel"
+mkdir -p "$campaign"
+for pair in rstp:mlag-lab-a none:mlag-lab-b mstp:mlag-lab-c; do
+  mode=${pair%%:*} machine=${pair#*:}
+  orb -m "$machine" labs/campaign.sh small "$campaign/$mode" "$mode-l2:--bridge-mode $mode $l2" \
+    > "$campaign/$mode.log" 2>&1 &
+done
+wait
+```
+
+The script prints the start time, end time and exit code of each suite, and exits with the highest suite exit code. The safe number of labs at once is measured in package 3 of the [forwarding checks plan](plans/forwarding-checks-and-speed-plan.md#package-3-run-labs-in-parallel) and recorded here afterwards.
+
 ## Collect a Networka checkpoint
 
 ### Execute a command on the Medium lab

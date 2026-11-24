@@ -1,0 +1,47 @@
+{
+  "run": "01-mac-move-retry",
+  "case": "mobile-move",
+  "checks": [
+    {
+      "level": "error",
+      "ok": false,
+      "detail": "Expected mobile on eth1. Restore the baseline before starting."
+    }
+  ],
+  "name": "mac-move",
+  "lab": "Small lab",
+  "title": "MAC move between MLAG peers and back",
+  "action": "Switches the MAC-move host's active-backup bond from its link to CHR 1 to its link to CHR 2, keeping the same MAC and IP address, then switches it back after 4 s.",
+  "forwarding": {
+    "status": "not available: evaluation stopped before the streams were scored"
+  },
+  "status": "error",
+  "phases": [
+    {
+      "key": "withdrawal",
+      "name": "Move to CHR 2",
+      "expected": "The host's gratuitous ARP enters CHR 2 on ether5, a regular bridge port without mlag-id. CHR 2 moves the host MAC to ether5 in its bridge host table and floods the broadcast to its local ports and over the peer port; CHR 1 floods it only to its regular port ether5 and moves the MAC to the peer port ether2. Lab target: no probe to or from the host is lost, and once the gratuitous ARP reaches CHR 2, no frame addressed to the host MAC leaves CHR 1 on ether5.",
+      "source": "lab target",
+      "limit_s": 0.0,
+      "window_s": null,
+      "verdict": "error",
+      "worst_loss_s": null,
+      "loss_s": {},
+      "control_loss_s": {},
+      "failed_checks": []
+    },
+    {
+      "key": "restoration",
+      "name": "Move back to CHR 1",
+      "expected": "The host's gratuitous ARP enters CHR 1 on ether5. CHR 1 moves the host MAC back to ether5 and floods the broadcast to its local ports and over the peer port; CHR 2 floods it only to its regular port ether5 and moves the MAC to the peer port ether2. Lab target: no probe to or from the host is lost, and from the moment the gratuitous ARP reaches CHR 1 to the end of the recovery window, no frame addressed to the host MAC leaves CHR 2 on ether5.",
+      "source": "lab target",
+      "limit_s": 0.0,
+      "window_s": null,
+      "verdict": "error",
+      "worst_loss_s": null,
+      "loss_s": {},
+      "control_loss_s": {},
+      "failed_checks": []
+    }
+  ]
+}

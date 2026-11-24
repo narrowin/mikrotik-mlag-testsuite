@@ -9,7 +9,7 @@ import json
 import re
 import subprocess
 
-from .legacy import CAPTURES, CLIENT_MAC, FLOWS, MOBILE_MAC, NS
+from .legacy import CAPTURES, CLIENT_MAC, FLOOD_FLOWS, FLOWS, MOBILE_MAC, NS
 from .measure import seconds, within
 
 FIELDS = (
@@ -75,6 +75,8 @@ def read_legacy_packets(path, check, timeline, captures=CAPTURES):
                 data[int(ident), int(kind), int(seq)].append(stamp)
                 if dst == CLIENT_MAC:
                     client_icmp[cap].append(stamp)
+            elif ident and int(ident) in FLOOD_FLOWS and kind == "8":
+                data[int(ident), 8, int(seq)].append(stamp)
             if dst == MOBILE_MAC:
                 mobile_unicast[cap].append(stamp)
             if src == MOBILE_MAC and arp_src == arp_dst == "10.110.0.50":

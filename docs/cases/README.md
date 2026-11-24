@@ -15,6 +15,9 @@ CLI selectors map each case to the existing runner and archived evidence. Pendin
 | SMALL-05 | MAC move and relearning | `mobile-move` |
 | SMALL-06 | Secondary core reboot | `direct-reboot-secondary` |
 | SMALL-07 | Primary core reboot | `direct-reboot-primary` |
+| SMALL-08 | Peer link loss and return | `peer-link-loss` |
+| SMALL-09 | Silent host past bridge ageing, then relearn (catalogue M2) | `silent-mobile` (`mac-age-relearn`) |
+| SMALL-10 | Repeated MLAG bond member flap (catalogue M4, one pair) | `carrier-flap` (`member-flap-repeat`) |
 
 The current Small lab selectors use RSTP. The matching STP-disabled campaign remains pending.
 
@@ -31,6 +34,8 @@ The current Small lab selectors use RSTP. The matching STP-disabled campaign rem
 | MEDIUM-07 | Both cores down and return | Planned | Planned | Planned |
 
 MEDIUM-08 uses a separate two-pair deployment: two MLAG pairs joined by one distributed bond, with equal bridge priorities and with the field per-pair priorities. [Why, setup and commands](medium-two-pair-root.md)
+
+MEDIUM-08 also has the step `interpair-member-flap` for every two-pair setup, for example `two-pair-equal-interpair-member-flap`. It takes the inter-pair bond member between CHR 1 and CHR 3 down for 8 s and up again, the trigger of the four-switch report (catalogue M4).
 
 MEDIUM-05 and MEDIUM-06 identify the archived single-homed root attachment experiments. [Wiring and root placement](medium-spanning-tree.md) · [Commands](../operator-guide.md#introduce-rstp-after-the-all-bridges-off-run) · [Archived results](medium-spanning-tree.md#archived-diagnostics)
 

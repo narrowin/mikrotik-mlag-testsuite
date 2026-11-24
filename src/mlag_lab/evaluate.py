@@ -5,12 +5,16 @@ import re
 import subprocess
 
 from .cases import BY_NAME, case_spec, phase_results
-from .direct_topology import DIRECT_CASES
+from .direct_topology import DIRECT_CASES, DIRECT_NODES
 from .evidence import load_jsonl, read_legacy_packets, read_legacy_state
 from .external_evaluate import evaluate_external
 from .external_topology import EXTERNAL_CASES
-from .legacy import CASES, case_captures
+from .flood_checks import check_floods
+from .forwarding_checks import SMALL_HOSTS, SMALL_OUTSIDE, forwarding, grade, grade_system_ids, lacp_system_ids
+from .legacy import CASES, FLOWS, case_captures
+from .legacy import FLOOD_FLOWS, FLOOD_RECEIVERS, FLOOD_SENDER_MEMBERS
 from .legacy_checks import check_calibration, check_member, check_mobile_move, check_peer_link
+from .legacy_checks import check_mac_age, check_member_flaps, sends
 from .measure import number, score_flows, seconds
 from .readme import write_readme
 from .report import write_timeline, write_result, write_suite
@@ -25,7 +29,7 @@ def case_id(path):
     if manifest.exists():
         name = json.loads(manifest.read_text())["case"]
     else:
-        match = re.fullmatch(r"[0-9]+-(.+)", path.name)
+        match = re.fullmatch(r"[0-9]+-(.+?)(?:-retry)?", path.name)
         name = match[1] if match else None
     if name in BY_NAME:
         name = BY_NAME[name].selectors[0]
@@ -46,6 +50,9 @@ def evaluate_legacy(path, name, checks, result):
     start = number(marks, "baseline_start")
     end = number(marks, "recovery_end")
     down = number(marks, "down_start")
+    if name == "carrier-flap":
+        # Five flaps repeat the carrier marks: withdrawal runs from the first down to the last up.
+        down = next(event["epoch_ns"] for event in events if event["name"] == "down_start")
     up = number(marks, "up_start")
     recovery = number(marks, "recovery_start")
     def check(level, ok, message, phase=None):
@@ -61,10 +68,22 @@ def evaluate_legacy(path, name, checks, result):
 
     flows = score_flows(packets.icmp, start, end, actions, timeline)
     result["flows"] = flows
+    result["forwarding"] = forwarding(path, packets.icmp, FLOWS, start, down, up, end, outside=SMALL_OUTSIDE,
+                                      hosts=SMALL_HOSTS, nodes=DIRECT_NODES, recovery=recovery)
+    # While the MAC-move host is silent past bridge ageing, both peers flood streams 101 and 102 on purpose.
+    grade(result["forwarding"], check, {"withdrawal": (101, 102)} if name == "silent-mobile" else None)
+    result["lacp_system_ids"] = lacp_system_ids(marks)
+    grade_system_ids(result["lacp_system_ids"], check)
     for ident, flow in flows.items():
         check("error", flow["baseline_good"] >= 30, f"{ident} has usable baseline cadence")
-        check("error", flow["max_send_interval_s"] <= 0.45,
-              f"{ident} consecutive sends stayed within 450 ms")
+        pace = flow["max_send_interval_s"]
+        if name == "silent-mobile" and FLOWS[ident][0] == "mobile-bond0":
+            # The filter drops the silent host's sends before its bond0 capture; judge the pace outside the silence.
+            stamps = sorted(sends(packets.icmp, ident, start, end).values())
+            pace = seconds(max((b - a for a, b in zip(stamps, stamps[1:]) if b <= down or a >= up), default=0))
+        check("error", pace <= 0.45,
+              f"{ident} consecutive sends stayed within 450 ms"
+              + (" outside the silence" if pace != flow["max_send_interval_s"] else ""))
         check("error", not any(not gap["phases"] for gap in flow["gaps"]),
               f"{ident} has no separate loss away from the fault")
         check("error", not flow["capture_mismatches"], f"{ident} reply paths agree across endpoint captures")
@@ -78,8 +97,14 @@ def evaluate_legacy(path, name, checks, result):
         check_mobile_move(spec, packets, down, up, end, flows, result, check)
     elif name == "peer-link-loss":
         check_peer_link(spec, path, marks, start, down, up, end, flows, result, check)
+    elif name == "silent-mobile":
+        check_mac_age(spec, path, marks, packets, start, down, up, end, flows, result, check)
+    elif name == "carrier-flap":
+        check_member_flaps(spec, path, events, packets, start, up, recovery, end, flows, result, check)
     else:
         check_member(spec, name, marks, packets, link_events, start, down, up, end, flows, result, check)
+    result["floods"] = check_floods(path, spec, packets.icmp, start, end, actions, FLOOD_RECEIVERS,
+                                    FLOOD_SENDER_MEMBERS, FLOOD_FLOWS, timeline, check)
     write_timeline(path, start, timeline)
 
 
@@ -134,6 +159,7 @@ def analyze(path):
         write_configs(path, checks)
     except (OSError, ValueError, KeyError, RuntimeError, subprocess.SubprocessError) as error:
         checks.append({"level": "error", "ok": False, "detail": str(error)})
+    result.setdefault("forwarding", {"status": "not available: evaluation stopped before the streams were scored"})
     failures = {check["level"] for check in checks if not check["ok"]}
     if "error" in failures:
         result["status"] = "error"

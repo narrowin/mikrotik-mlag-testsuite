@@ -10,6 +10,7 @@ from threading import Event
 import time
 
 from .direct_topology import DIRECT_CAPTURES, DIRECT_FLOWS, DIRECT_LINKS, DIRECT_NODES, DIRECT_PORTS
+from .direct_topology import DIRECT_FLOOD_FLOWS
 from .evaluate import analyze
 from .evidence import packets, seal_captures
 from .external_evaluate import baseline_issues, bpdu_coverage, broadcast_counts, direct_baseline_issues
@@ -19,12 +20,13 @@ from .root_run import (
     CONFIG, STATE, RootLab, power_loss, rebind_syslog, reboot_guest, sample_loop, verify_live_collectors,
     verify_live_delivery,
 )
+from .root_run import confirm_carrier
 from .root_topology import (
     ACCESS_ROOT_ID, MANAGEMENT_PROBES, MEDIUM_CORE_OFF_CASES, MEDIUM_NODES, MEDIUM_STP_OFF_CASES, MEDIUM_TARGETS,
     ROOT_CAPTURES, ROOT_FLOWS, ROOT_LINKS, ROOT_PORTS, medium_mode, medium_root_id,
 )
 from .root_state import ACCESS_GUARDS_READBACK, access_guards, router_state
-from .run import Capture, filter_fault, run
+from .run import Capture, filter_fault, remove_flood_neighbour, run, start_floods
 
 # Access switch port settings per Medium family, applied in every bridge reset so none leaks into the next.
 ACCESS_GUARDS = {
@@ -39,12 +41,18 @@ ACCESS_GUARDS = {
             "/interface bridge port set [find interface=ether4] edge=yes bpdu-guard=no;"
             "/interface ethernet set ether4 loop-protect=default"),
 }
+# The two-pair inter-pair bond member between CHR 1 and CHR 3. Container eth2 is the veth behind tap2,
+# QEMU NIC 2 and RouterOS ether3, the only local member of each CHR's inter-pair bond.
+INTERPAIR_MEMBER = (("p1", "eth2"), ("q1", "eth2"))
+INTERPAIR_NIC, INTERPAIR_ETHER = 2, "ether3"
+INTERPAIR_HOLD_S, INTERPAIR_RETURN_S = 8, 8
 # The Medium families without spanning tree on the MLAG pair; the broadcast check proves they form no loop.
 MEDIUM_PAIR_STP_OFF = (*MEDIUM_STP_OFF_CASES, *MEDIUM_CORE_OFF_CASES)
 
 
 class BridgeComparisonLab(RootLab):
     flows = ROOT_FLOWS
+    flood_flows = {}
     management_probes = MANAGEMENT_PROBES
     log_dir = "logs"
     settle_timeout_s = 32
@@ -165,6 +173,7 @@ class DirectLab(BridgeComparisonLab):
     ports = DIRECT_PORTS
     captures = DIRECT_CAPTURES
     flows = DIRECT_FLOWS
+    flood_flows = DIRECT_FLOOD_FLOWS
     log_dir = "logs"
     settle_timeout_s = 12
     client1_probe_port = "bond0"
@@ -202,16 +211,44 @@ class DirectLab(BridgeComparisonLab):
         yield self.apply_bridge_mode(self.bridge_mode)
 
 
-def observe_ports(lab, peer, ports, bonds):
+def observe_ports(lab, peer, ports, bonds, extra=()):
     command = (STATE[0], *(f"/interface ethernet monitor ether{port} once" for port in ports), *STATE[4:],
-               *(f"/interface bonding monitor-slaves bond={bond} once=yes" for bond in bonds))
+               *(f"/interface bonding monitor-slaves bond={bond} once=yes" for bond in bonds), *extra)
     return lab.ros(peer, ";".join(command))
+
+
+def interpair_member(capture, up):
+    """Set the inter-pair member down or up at both CHRs: both container veths and both QEMU NICs, as peer_link does."""
+    lab = capture.lab
+    phase = "up" if up else "down"
+    start = capture.mark(f"{phase}_start", link=[f"{node}:{port}" for node, port in INTERPAIR_MEMBER])
+    with ThreadPoolExecutor(max_workers=2 * len(INTERPAIR_MEMBER)) as jobs:
+        # Submit every action before waiting, so a failed restore on one end still restores the other.
+        linux = [jobs.submit(run, lab.ns(node, "ip", "link", "set", "dev", port, phase))
+                 for node, port in INTERPAIR_MEMBER]
+        guest = {node: jobs.submit(lab.qmp_action, node, phase, f"nic{INTERPAIR_NIC}") for node, _ in INTERPAIR_MEMBER}
+        for job in linux:
+            job.result()
+        qmp = {node: job.result() for node, job in guest.items()}
+    capture.mark(f"{phase}_applied", qmp=qmp)
+    (target, port), far = INTERPAIR_MEMBER
+    confirm_carrier(capture, phase, start, target, [port], [far],
+                    [(node, INTERPAIR_ETHER) for node, _ in INTERPAIR_MEMBER], up)
 
 
 def run_fault(capture, name, target, before, samples):
     if name.endswith("-calibrate"):
         filter_fault(capture, silent=False)
         time.sleep(3)
+    elif name.endswith("-interpair-member-flap"):
+        for node, _ in INTERPAIR_MEMBER:
+            capture.lab.verify_qemu(node, (INTERPAIR_NIC,))
+        try:
+            interpair_member(capture, up=False)
+            time.sleep(INTERPAIR_HOLD_S)
+        finally:
+            interpair_member(capture, up=True)
+        time.sleep(INTERPAIR_RETURN_S)
     else:
         fault = power_loss if "-power-loss-" in name else reboot_guest
         fault(capture, target, before, samples)
@@ -274,6 +311,8 @@ def external_attempt(lab, path, name, build_hash, changes):
             feed.seek(0, os.SEEK_END)
             try:
                 capture.observe(lab.captures, lab.ports, lab.flows, named_ports=True, immediate=True)
+                if lab.flood_flows:
+                    start_floods(capture, lab.flood_flows)
                 for peer, ident in lab.management_probes.items():
                     capture.launch(["ping", "-n", "-D", "-O", "-i", "0.1", "-e", str(ident), lab.peers[peer]],
                                    path / "probes" / f"{ident}.log")
@@ -362,6 +401,8 @@ def external_attempt(lab, path, name, build_hash, changes):
         capture.mark("runner_error", detail=str(error), stderr=getattr(error, "stderr", None))
     finally:
         capture.stop()
+        if lab.flood_flows:
+            remove_flood_neighbour(capture)
         if all((path / "captures" / f"{point}.pcap").is_file() for point in lab.captures):
             seal_captures(path, lab.captures)
     return analyze(path)

@@ -4,14 +4,17 @@ import json
 import re
 
 from .evidence import load_jsonl
+from .forwarding_checks import MEDIUM_HOSTS, MEDIUM_OUTSIDE, MEDIUM_PARTNER_BONDS, forwarding, grade
+from .forwarding_checks import access_bpdus, grade_access_bpdus, grade_system_ids, lacp_system_ids
 from .cases import case_spec
 from .legacy_checks import check_calibration
 from .measure import number, score_flows, seconds
-from .reboot_checks import check_reboot_flows, guest_window, peer_observations
+from .reboot_checks import cadence_ok, cadence_text, check_reboot_flows, guest_window, peer_observations
+from .reboot_checks import sender_pause_rule
 from .report import write_timeline
 from .root_evidence import read_root_packets, read_root_state, read_root_syslog
 from .root_state import verify_root
-from .root_topology import ROOT_CAPTURES, ROOT_CAPTURES_V1, ROOT_FLOWS, ROOT_ID, target_for
+from .root_topology import ROOT_CAPTURES, ROOT_CAPTURES_V1, ROOT_FLOWS, ROOT_ID, ROOT_NODES, target_for
 
 
 def evaluate_root(path, name, checks, result):
@@ -32,7 +35,8 @@ def evaluate_root(path, name, checks, result):
     manifest = json.loads((path / "attempt.json").read_text())
     captures = ROOT_CAPTURES_V1 if manifest["schema"] == 1 else ROOT_CAPTURES
     target = target_for(name)
-    icmp, frames, legs, iccp = read_root_packets(path, captures, start, down, check, timeline)
+    bpdus = []
+    icmp, frames, legs, iccp = read_root_packets(path, captures, start, down, check, timeline, bpdus=bpdus)
     if target:
         if manifest["target"] != target or marks["down_start"]["target"] != target:
             raise ValueError("Guest target disagrees with the selected case")
@@ -97,10 +101,19 @@ def evaluate_root(path, name, checks, result):
               f"{target} emitted the verification marker after the post-observation syslog rebind")
     flows = score_flows(icmp, start, end, actions, timeline, definitions=ROOT_FLOWS, detailed=True)
     result["flows"] = flows
+    result["forwarding"] = forwarding(path, icmp, ROOT_FLOWS, start, down, up, end, outside=MEDIUM_OUTSIDE,
+                                      hosts=MEDIUM_HOSTS, nodes=ROOT_NODES, recovery=recovery)
+    grade(result["forwarding"], check)
+    result["lacp_system_ids"] = lacp_system_ids(marks, MEDIUM_PARTNER_BONDS)
+    grade_system_ids(result["lacp_system_ids"], check)
+    result["access_bpdus"] = access_bpdus(bpdus, start, down, up, end)
+    grade_access_bpdus(result["access_bpdus"], check)
+    result["sender_pause_rule"] = sender_pause_rule(name, flows, ROOT_FLOWS, seconds(down - start),
+                                                    seconds(end - start))
     for ident, flow in flows.items():
         check("error", flow["baseline_good"] >= 30 and not flow["baseline_missed"],
               f"{ident} has a clean baseline with at least 30 successful probes")
-        check("error", flow["max_send_interval_s"] <= 0.45, f"{ident} send cadence stayed within 450 ms")
+        check("error", cadence_ok(flow), f"{ident} send cadence stayed within 450 ms{cadence_text(flow)}")
         check("error", not flow["capture_mismatches"], f"{ident} request and reply captures agree")
         check("fail" if target and ident in (101, 201) else "error", not flow["duplicates"],
               f"{ident} duplicate-free")

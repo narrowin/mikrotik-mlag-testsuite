@@ -1,0 +1,728 @@
+{
+  "run": "01-calibration",
+  "case": "calibrate",
+  "checks": [
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Host wall clock and monotonic clock agree within 50 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "All capture and probe processes stayed up"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-bond0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-eth1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-eth2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-eth3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-bond0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-eth3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "mobile-bond0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-eth2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap4 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap4 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "PCAP hashes match the saved manifest"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1 complete state samples no more than 1.5 s apart"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2 complete state samples no more than 1.5 s apart"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Syslog begin markers from both peers"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Syslog end markers from both peers"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 unicast frames at a host outside the conversation, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: 0 reflected unicast sequences, limit 0",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: 0 reflected unicast sequences, limit 0",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Bridge host table after recovery: every traffic host MAC on its expected port",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 has usable baseline cadence"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 consecutive sends stayed within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 has no separate loss away from the fault"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 reply paths agree across endpoint captures"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 recovered delivery within the observation window",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "101 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "102 has usable baseline cadence"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "102 consecutive sends stayed within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "102 has no separate loss away from the fault"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "102 reply paths agree across endpoint captures"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "102 recovered delivery within the observation window",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "102 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 has usable baseline cadence"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 consecutive sends stayed within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 has no separate loss away from the fault"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 reply paths agree across endpoint captures"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 recovered delivery within the observation window",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "201 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "202 has usable baseline cadence"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "202 consecutive sends stayed within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "202 has no separate loss away from the fault"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "202 reply paths agree across endpoint captures"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "202 recovered delivery within the observation window",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "202 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 has usable baseline cadence"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 consecutive sends stayed within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 has no separate loss away from the fault"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 reply paths agree across endpoint captures"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 recovered delivery within the observation window",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "301 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "302 has usable baseline cadence"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "302 consecutive sends stayed within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "302 has no separate loss away from the fault"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "302 reply paths agree across endpoint captures"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "302 recovered delivery within the observation window",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "302 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 has usable baseline cadence"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 consecutive sends stayed within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 has no separate loss away from the fault"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 reply paths agree across endpoint captures"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 recovered delivery within the observation window",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "303 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Measured one-way gap encloses the two-second injection",
+      "phase": "calibration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Source emitted all numbered calibration requests",
+      "phase": "calibration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Reverse bypass and VLAN flows were unaffected by calibration",
+      "phase": "calibration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "501 broadcast from client 1 was sent with consecutive sends within 450 ms"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "501 broadcast from client 1: each receiving capture got one copy and the sender's bond members showed one frame in the baseline"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "502 unknown unicast from client 1 was sent with consecutive sends within 450 ms"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "502 unknown unicast from client 1: each receiving capture got one copy and the sender's bond members showed one frame in the baseline"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Both MLAG peers ran protocol-mode=mstp: {'p1': 'mstp', 'p2': 'mstp'}"
+    }
+  ],
+  "name": "calibration",
+  "lab": "Small lab",
+  "title": "Calibration",
+  "action": "Drops the forward bypass pings at client 2 for 2 s with a tc filter while seven numbered ping streams run, then removes the filter.",
+  "phases_s": {
+    "withdrawal": [
+      4.013604,
+      6.025107
+    ],
+    "restoration": [
+      6.025107,
+      9.027695
+    ]
+  },
+  "flows": {
+    "101": {
+      "description": "client 1 to mobile",
+      "sent": 116,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.111597,
+      "send_pauses": [],
+      "baseline_good": 39,
+      "recovery_good": 29
+    },
+    "102": {
+      "description": "client 2 to mobile",
+      "sent": 116,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.1116,
+      "send_pauses": [],
+      "baseline_good": 39,
+      "recovery_good": 29
+    },
+    "201": {
+      "description": "mobile to client 1",
+      "sent": 116,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.110857,
+      "send_pauses": [],
+      "baseline_good": 39,
+      "recovery_good": 28
+    },
+    "202": {
+      "description": "mobile to client 2",
+      "sent": 116,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.112419,
+      "send_pauses": [],
+      "baseline_good": 39,
+      "recovery_good": 29
+    },
+    "301": {
+      "description": "bypass forward",
+      "sent": 116,
+      "missed": 19,
+      "duplicates": [],
+      "gaps": [
+        {
+          "first_seq": 62,
+          "last_seq": 80,
+          "failed_probes": 19,
+          "absent_at_source": 0,
+          "lower_s": 1.878433,
+          "upper_s": 2.086028,
+          "phases": [
+            "withdrawal",
+            "restoration"
+          ],
+          "trace_seq": 62,
+          "trace_s": {
+            "c1-eth3": {
+              "8": [
+                4.097428
+              ],
+              "0": []
+            },
+            "c2-eth3": {
+              "8": [
+                4.09743
+              ],
+              "0": []
+            }
+          },
+          "where": [
+            "reply absent at destination"
+          ]
+        }
+      ],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.108425,
+      "send_pauses": [],
+      "baseline_good": 39,
+      "recovery_good": 29
+    },
+    "302": {
+      "description": "client 1 to client 2 on VLAN 110",
+      "sent": 115,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.111808,
+      "send_pauses": [],
+      "baseline_good": 39,
+      "recovery_good": 28
+    },
+    "303": {
+      "description": "bypass reverse",
+      "sent": 116,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.10781,
+      "send_pauses": [],
+      "baseline_good": 39,
+      "recovery_good": 29
+    }
+  },
+  "forwarding": {
+    "phases_s": {
+      "baseline": [
+        0.0,
+        4.013604
+      ],
+      "withdrawal": [
+        4.013604,
+        6.025107
+      ],
+      "restoration": [
+        6.025107,
+        12.028223
+      ]
+    },
+    "outside_delivery": {
+      "points": {
+        "101": [
+          "c2-bond0"
+        ],
+        "201": [
+          "c2-bond0"
+        ],
+        "102": [
+          "c1-eth1",
+          "c1-eth2"
+        ],
+        "202": [
+          "c1-eth1",
+          "c1-eth2"
+        ],
+        "302": [
+          "p1-tap4",
+          "p2-tap4",
+          "mobile-bond0"
+        ]
+      },
+      "findings": []
+    },
+    "reflected_copies": {
+      "member_points": {
+        "101": [
+          "c1-bond0",
+          "mobile-bond0"
+        ],
+        "102": [
+          "mobile-bond0"
+        ],
+        "201": [
+          "mobile-bond0",
+          "c1-bond0"
+        ],
+        "202": [
+          "mobile-bond0"
+        ],
+        "302": [
+          "c1-bond0"
+        ]
+      },
+      "findings": []
+    },
+    "host_table": {
+      "window_s": [
+        9.027695,
+        12.028223
+      ],
+      "peers": {
+        "p1": {
+          "sample_s": 11.803839,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "client1",
+              "expected": "client1",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "client2",
+              "expected": "client2",
+              "bond_member": "ether4",
+              "member_up": true
+            },
+            "02:00:00:11:00:50": {
+              "on_interface": "ether2"
+            }
+          }
+        },
+        "p2": {
+          "sample_s": 11.803399,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "client1",
+              "expected": "client1",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "client2",
+              "expected": "client2",
+              "bond_member": "ether4",
+              "member_up": true
+            },
+            "02:00:00:11:00:50": {
+              "on_interface": "ether5"
+            }
+          }
+        }
+      },
+      "wrong": []
+    },
+    "sync_warnings": {
+      "counts": {
+        "p1": {},
+        "p2": {}
+      },
+      "first_lines": []
+    }
+  },
+  "lacp_system_ids": "not available: the run saved no baseline bond state",
+  "injected_s": [
+    2.008662,
+    2.01301
+  ],
+  "floods": {
+    "501": {
+      "description": "broadcast from client 1",
+      "sent": 115,
+      "max_send_interval_s": 0.117407,
+      "baseline_exceptions": [],
+      "sender_repeats": [],
+      "receivers": {},
+      "sender_pause": {
+        "longest_send_gap_s": 0.117407,
+        "rule_applied": false
+      }
+    },
+    "502": {
+      "description": "unknown unicast from client 1",
+      "sent": 116,
+      "max_send_interval_s": 0.110114,
+      "baseline_exceptions": [],
+      "sender_repeats": [],
+      "receivers": {},
+      "sender_pause": {
+        "longest_send_gap_s": 0.110114,
+        "rule_applied": false
+      }
+    }
+  },
+  "bridge_mode": "mstp",
+  "status": "pass",
+  "phases": [
+    {
+      "key": "calibration",
+      "name": "2 s one-way cut",
+      "expected": "Only the bypass stream between the two clients loses probes, and its measured gap contains the applied 1.9\u20132.3 s cut. The bypass does not cross the MLAG peers, so every other stream loses nothing.",
+      "source": "lab target",
+      "limit_s": null,
+      "window_s": null,
+      "verdict": "pass",
+      "worst_loss_s": {
+        "lower_s": 1.878433,
+        "upper_s": 2.086028,
+        "lost_probes": 19,
+        "spans_both_phases": false
+      },
+      "loss_s": {
+        "301": {
+          "lower_s": 1.878433,
+          "upper_s": 2.086028,
+          "lost_probes": 19,
+          "spans_both_phases": false
+        }
+      },
+      "control_loss_s": {},
+      "failed_checks": []
+    }
+  ]
+}

@@ -5,9 +5,11 @@ import re
 
 from .cases import case_spec
 from .evidence import load_jsonl, packets
+from .forwarding_checks import TWO_PAIR_HOSTS, TWO_PAIR_OUTSIDE, TWO_PAIR_PARTNER_BONDS, forwarding, grade
+from .forwarding_checks import grade_system_ids, lacp_system_ids
 from .legacy_checks import check_calibration
 from .measure import number, score_flows, seconds, within
-from .reboot_checks import check_reboot_flows, guest_window
+from .reboot_checks import cadence_ok, cadence_text, check_reboot_flows, guest_window, sender_pause_rule
 from .report import write_timeline
 from .root_evidence import read_root_packets, read_root_state, read_root_syslog, summarize_router
 from .root_state import linux_members, router_members, router_state
@@ -129,6 +131,55 @@ def roots_between(path, node, low, high):
     } - {None}
 
 
+def fdb_counters(path, node, low, high):
+    """Bridge host table size and bridge topology-change counter in the samples between low and high."""
+    entries, changes = [], []
+    for sample in load_jsonl(path / f"state-{node}.jsonl"):
+        if "raw" not in sample or not low <= sample["started_ns"] < high:
+            continue
+        if count := re.search(r"^host-entries=(\d+)", sample["raw"], re.M):
+            entries.append(int(count[1]))
+        if (counter := router_state(sample["raw"])[0].get("topology-changes", "")).isdigit():
+            changes.append(int(counter))
+    return {"samples_with_host_count": len(entries),
+            "host_entries_min_max": [min(entries), max(entries)] if entries else None,
+            "topology_changes_first_last": [changes[0], changes[-1]] if changes else None}
+
+
+def check_interpair_flap(spec, path, marks, flows, start, down, up, end, stp, root_id, result, check):
+    """One inter-pair bond member down and up: service within the member limit, root unchanged, FDB counters recorded."""
+    for event_name, phase in (("down_observed", "withdrawal"), ("up_observed", "restoration")):
+        event = marks.get(event_name, {})
+        bound = event.get("max_latency_s")
+        check("error", bool(event) and not event["missing"] and bound is not None and bound <= 2,
+              f"Inter-pair member {event_name.split('_')[0]} at both CHRs and both veths within 2 s", phase)
+    hold = seconds(marks["up_start"]["mono_ns"] - marks["down_applied"]["mono_ns"]) if "down_applied" in marks else None
+    windows = {"before": (start, down), "during": (down, up), "after": (up, end)}
+    result["interpair_flap"] = {"hold_s": hold, "fdb": {node: {label: fdb_counters(path, node, low, high)
+                                                               for label, (low, high) in windows.items()}
+                                                        for node in TWO_PAIR_NODES}}
+    for ident, flow in flows.items():
+        if ident in spec.control_flows:
+            check("error", not flow["gaps"], f"{ident} independent bypass stayed clean")
+            continue
+        for gap in flow["gaps"]:
+            for phase in gap["phases"]:
+                limit = spec.limit(phase)
+                lower, upper = gap["lower_s"], gap["upper_s"]
+                if lower > limit:
+                    check("fail", False, f"{ident} {phase} loss ≥ {lower:.3f} s exceeds {limit:g} s", phase)
+                elif upper is None or upper > limit:
+                    check("inconclusive", False, f"{ident} {phase} loss overlaps the {limit:g} s threshold", phase)
+    result["root_history"] = root_history(path, start, end)
+    if not stp:
+        return
+    for node in TWO_PAIR_NODES:
+        for phase, low, high in (("withdrawal", down, up), ("restoration", up, end)):
+            observed = roots_between(path, node, low, high)
+            check("fail", observed == {root_id}, f"{node} kept root {root_id} during {phase}; observed {sorted(observed)}",
+                  phase)
+
+
 def evaluate_two_pair(path, name, checks, result):
     spec = case_spec(name)
 
@@ -195,10 +246,19 @@ def evaluate_two_pair(path, name, checks, result):
                   f"{target} emitted the post-observation syslog rebind marker")
         flows = score_flows(icmp, start, end, actions, timeline, definitions=TWO_PAIR_FLOWS, detailed=True)
         result["flows"] = flows
+        result["forwarding"] = forwarding(path, icmp, TWO_PAIR_FLOWS, start, down, up, end, outside=TWO_PAIR_OUTSIDE,
+                                          hosts=TWO_PAIR_HOSTS, nodes=TWO_PAIR_NODES,
+                                          recovery=recovery if executed else None, stopped=stopped["epoch_ns"]
+                                          if executed and "recovery_end" not in marks else None)
+        grade(result["forwarding"], check)
+        result["lacp_system_ids"] = lacp_system_ids(marks, TWO_PAIR_PARTNER_BONDS)
+        grade_system_ids(result["lacp_system_ids"], check)
+        result["sender_pause_rule"] = sender_pause_rule(name if executed else "", flows, TWO_PAIR_FLOWS,
+                                                        seconds(down - start), seconds(end - start))
         for ident, flow in flows.items():
             bypass = ident in (301, 303)
-            check("error", flow["sent"] >= 30 and flow["max_send_interval_s"] <= 0.45,
-                  f"{ident} at least 30 emits and cadence within 450 ms")
+            check("error", flow["sent"] >= 30 and cadence_ok(flow),
+                  f"{ident} at least 30 emits and cadence within 450 ms{cadence_text(flow)}")
             check("error", not flow["capture_mismatches"], f"{ident} endpoint capture agreement")
             check("error" if bypass else "fail", flow["baseline_good"] >= 30 and not flow["baseline_missed"],
                   f"{ident} baseline loss-free, {flow['baseline_good']} delivered, {flow['baseline_missed']} missed")
@@ -229,6 +289,9 @@ def evaluate_two_pair(path, name, checks, result):
             check("fail", not scoring, f"No spanning-tree frames throughout the scoring window: {scoring}")
         if name.endswith("-calibrate"):
             check_calibration(spec, marks, flows, result, check)
+            return
+        if name.endswith("-interpair-member-flap"):
+            check_interpair_flap(spec, path, marks, flows, start, down, up, end, stp, root_id, result, check)
             return
         check_reboot_flows(spec, flows, icmp, start, seconds(down - start), seconds(first_miss - start),
                            seconds(last_miss - start), seconds(up - start), seconds(end - start), check,

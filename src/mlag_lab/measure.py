@@ -4,6 +4,9 @@ import json
 
 from .legacy import FLOWS, NS
 
+# Longest gap between two sends of one stream that still counts as a steady sender.
+SEND_GAP_LIMIT_NS = 450_000_000
+
 
 def number(table, name):
     return table[name]["epoch_ns"]
@@ -97,10 +100,28 @@ def score_flows(icmp, start, end, actions, timeline, *, definitions=FLOWS, detai
                 timeline.append((falls_after, f"icmp-{ident}", json.dumps(gap, sort_keys=True)))
         ordered = [start, *sorted(window.values()), end]
         max_send_interval = max(b - a for a, b in zip(ordered, ordered[1:]))
+        # Every send gap above the 450 ms cadence limit, with the good sends that bracket it.
+        by_time = sorted((stamp, seq) for seq, stamp in window.items())
+        bounds = [(start, None), *by_time, (end, None)]
+        send_pauses = []
+        for (a, before), (b, after) in zip(bounds, bounds[1:]):
+            if b - a <= SEND_GAP_LIMIT_NS:
+                continue
+            last_good = max(((window[q], q) for q in good if window[q] <= a), default=None)
+            first_good = min(((window[q], q) for q in good if window[q] >= b), default=None)
+            send_pauses.append({
+                "from_s": seconds(a - start), "to_s": seconds(b - start), "gap_s": seconds(b - a),
+                "after_seq": before, "before_seq": after,
+                "last_good_s": seconds(last_good[0] - start) if last_good else None,
+                "last_good_seq": last_good[1] if last_good else None,
+                "first_good_s": seconds(first_good[0] - start) if first_good else None,
+                "first_good_seq": first_good[1] if first_good else None,
+            })
         flows[ident] = {"description": name, "sent": len(window), "missed": len(bad),
                         "duplicates": duplicates, "gaps": gaps,
                         "capture_mismatches": capture_mismatches,
                         "max_send_interval_s": seconds(max_send_interval),
+                        "send_pauses": send_pauses,
                         "baseline_good": sum(window[q] < actions[0][1] for q in good),
                         "recovery_good": sum(window[q] >= actions[-1][2] for q in good)}
         if detailed:

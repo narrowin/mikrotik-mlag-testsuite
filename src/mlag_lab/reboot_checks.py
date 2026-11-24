@@ -92,6 +92,73 @@ def peer_observations(path, target, start, first_miss, last_miss, end, check, ti
             "routeros_carrier_while_absent": guest_carrier}
 
 
+def pause_case(name):
+    """The sender pause rule covers the reboot and power-loss cases only."""
+    return "reboot" in name or "power-loss" in name
+
+
+def bypass_kept_pace(flows, bypass=(301, 303)):
+    """Both bypass streams exist and kept every send gap at or below 450 ms."""
+    return all(ident in flows and not flows[ident]["send_pauses"] for ident in bypass)
+
+
+def sender_pause_rule(name, flows, definitions, down, end, *, bypass=(301, 303)):
+    """Decide per stream whether a send gap above 450 ms is fault outage rather than a broken sender.
+
+    The rule applies only in reboot and power-loss cases, to a stream sent through an LACP bond, when every
+    gap of that stream lies inside the fault or return phase, both bypass streams kept every gap at or below
+    450 ms, the stream's baseline is clean and good sends bracket each gap. Times are seconds from the
+    baseline start. The result is stored on each flow as ``sender_pause``.
+    """
+    fault_case = pause_case(name)
+    bypass_steady = bypass_kept_pace(flows, bypass)
+    for ident, flow in flows.items():
+        pauses = flow["send_pauses"]
+        longest = max(pauses, key=lambda pause: pause["gap_s"], default=None)
+        bonded = definitions[ident][0].endswith("-bond0")
+        applied = bool(
+            pauses and fault_case and bonded and ident not in bypass and bypass_steady
+            and flow["baseline_good"] >= 30 and not flow.get("baseline_missed")
+            and all(down <= pause["from_s"] and pause["to_s"] <= end
+                    and pause["last_good_s"] is not None and pause["first_good_s"] is not None for pause in pauses))
+        flow["sender_pause"] = {"longest_send_gap_s": flow["max_send_interval_s"],
+                                "longest_pause": longest, "rule_applied": applied}
+    return {ident: flow["sender_pause"]["rule_applied"] for ident, flow in flows.items()}
+
+
+def cadence_ok(flow):
+    """The 450 ms send cadence held, or a bonded sender paused only as part of the fault."""
+    return flow["max_send_interval_s"] <= 0.45 or flow.get("sender_pause", {}).get("rule_applied", False)
+
+
+def cadence_text(flow):
+    pause = flow.get("sender_pause", {})
+    if flow["max_send_interval_s"] > 0.45 and pause.get("rule_applied"):
+        return (f"; sender on the LACP bond paused {flow['max_send_interval_s']:.3f} s during the fault, "
+                f"bypass streams kept their pace, the pause counts as outage")
+    return ""
+
+
+def graded_gaps(flow):
+    """Loss gaps to grade, with each sender pause under the rule merged into one outage.
+
+    The outage spans from the last good send before the pause to the first good send after it.
+    """
+    gaps = [gap for gap in flow["gaps"] if gap.get("misses")]
+    if not flow.get("sender_pause", {}).get("rule_applied"):
+        return gaps
+    for pause in flow["send_pauses"]:
+        low, high = pause["last_good_s"], pause["first_good_s"]
+        absorbed = [gap for gap in gaps if low <= gap["first_miss_s"] and gap["last_miss_s"] <= high]
+        gaps = [gap for gap in gaps if gap not in absorbed]
+        stable = max((gap["stable_window_end_s"] for gap in absorbed if gap["stable_window_end_s"] is not None),
+                     default=None)
+        gaps.append({"first_seq": pause["last_good_seq"], "last_seq": pause["first_good_seq"],
+                     "first_miss_s": low, "last_miss_s": high, "previous_good_s": low, "first_good_s": high,
+                     "stable_window_end_s": stable, "sender_pause_s": pause["gap_s"]})
+    return sorted(gaps, key=lambda gap: gap["first_miss_s"])
+
+
 def check_reboot_flows(spec, flows, icmp, start, down, first_miss, last_miss, returned, end, check, *,
                        definitions=ROOT_FLOWS):
     for ident, flow in flows.items():
@@ -101,9 +168,7 @@ def check_reboot_flows(spec, flows, icmp, start, down, first_miss, last_miss, re
         if ident not in spec.graded_flows:
             raise ValueError(f"{spec.id} grades neither as service nor control flow: {ident}")
         gap_phases = {"withdrawal": [], "restoration": []}
-        for gap in flow["gaps"]:
-            if not gap.get("misses"):
-                continue
+        for gap in graded_gaps(flow):
             stable = gap["stable_window_end_s"]
             gap["stable_before_target_return"] = stable is not None and stable <= last_miss
             for phase, (sure_start, sure_end), (may_start, may_end) in (
@@ -119,7 +184,8 @@ def check_reboot_flows(spec, flows, icmp, start, down, first_miss, last_miss, re
                 upper = max(0, min(may_end, nxt) - max(may_start, prev)) if prev is not None and nxt is not None else None
                 gap_phases[phase].append({"first_seq": gap["first_seq"], "last_seq": gap["last_seq"],
                                           "lower_s": round(lower, 6),
-                                          "upper_s": round(upper, 6) if upper is not None else None})
+                                          "upper_s": round(upper, 6) if upper is not None else None}
+                                         | ({"sender_pause_s": gap["sender_pause_s"]} if "sender_pause_s" in gap else {}))
                 limit = spec.limit(phase)
                 if lower > limit:
                     check("fail", False, f"{ident} {phase} loss ≥ {lower:.3f} s exceeds {limit:g} s", phase)

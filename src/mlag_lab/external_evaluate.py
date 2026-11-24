@@ -4,6 +4,7 @@ import json
 import re
 
 from .direct_topology import DIRECT_CAPTURES, DIRECT_CASES, DIRECT_FLOWS, DIRECT_NODES
+from .direct_topology import DIRECT_FLOOD_FLOWS, DIRECT_FLOOD_RECEIVERS
 from .evidence import load_jsonl, packets
 from .external_topology import (
     ALL_STP_OFF_CASES, ARCHIVED_EXTERNAL_MANAGEMENT, EXTERNAL_CAPTURES, EXTERNAL_LAB_NAME,
@@ -11,9 +12,15 @@ from .external_topology import (
     ROOT_ATTACHMENTS, ROOT_MACS, election_ids, preferred_root,
 )
 from .cases import case_spec
+from .flood_checks import check_floods
+from .forwarding_checks import DIRECT_OUTSIDE, MEDIUM_HOSTS, MEDIUM_OUTSIDE, SMALL_HOSTS, forwarding, grade
+from .forwarding_checks import MEDIUM_PARTNER_BONDS, grade_system_ids, lacp_system_ids
+from .forwarding_checks import access_bpdus, grade_access_bpdus
+from .legacy import FLOOD_SENDER_MEMBERS
 from .legacy_checks import check_calibration
 from .measure import number, score_flows, seconds, within
-from .reboot_checks import check_power_loss, check_reboot_flows, guest_window, peer_observations
+from .reboot_checks import cadence_ok, cadence_text, check_power_loss, check_reboot_flows, guest_window
+from .reboot_checks import bypass_kept_pace, pause_case, peer_observations, sender_pause_rule
 from .report import write_timeline
 from .root_evidence import read_root_packets, read_root_state, read_root_syslog, summarize_router
 from .root_state import access_guards, linux_members, router_members, router_state, uptime
@@ -347,8 +354,10 @@ def evaluate_external(path, name, checks, result):
         down = next((marks[key] for key in faults if key in marks), before)["epoch_ns"]
         recovery = marks.get("recovery_start", before)["epoch_ns"]
         end = marks.get("recovery_end", before)["epoch_ns"]
+        bpdus = []
         icmp, frames, _, _ = read_root_packets(path, captures, start, down, check, timeline,
-                                             reference_root=False)
+                                             reference_root=False, floods=DIRECT_FLOOD_FLOWS if direct else (),
+                                             bpdus=bpdus)
         if name in MEDIUM_CORE_OFF_CASES:
             scoring = pair_bpdus(path, start, end)
             result["bpdus_during_scoring"] = scoring["roots"]
@@ -392,10 +401,22 @@ def evaluate_external(path, name, checks, result):
                   f"{target} emitted the post-observation syslog rebind marker")
         flows = score_flows(icmp, start, end, actions, timeline, definitions=definitions, detailed=True)
         result["flows"] = flows
+        result["forwarding"] = forwarding(
+            path, icmp, definitions, start, down, up, end, outside=DIRECT_OUTSIDE if direct else MEDIUM_OUTSIDE,
+            hosts=SMALL_HOSTS if direct else MEDIUM_HOSTS, nodes=nodes, recovery=recovery if executed else None,
+            stopped=stopped["epoch_ns"] if executed and "recovery_end" not in marks else None)
+        grade(result["forwarding"], check)
+        result["lacp_system_ids"] = lacp_system_ids(marks, None if direct else MEDIUM_PARTNER_BONDS)
+        grade_system_ids(result["lacp_system_ids"], check)
+        if not direct:
+            result["access_bpdus"] = access_bpdus(bpdus, start, down, up, end)
+            grade_access_bpdus(result["access_bpdus"], check)
+        result["sender_pause_rule"] = sender_pause_rule(name if executed else "", flows, definitions,
+                                                        seconds(down - start), seconds(end - start))
         for ident, flow in flows.items():
             bypass = ident in (301, 303)
-            check("error", flow["sent"] >= 30 and flow["max_send_interval_s"] <= 0.45,
-                  f"{ident} at least 30 emits and cadence within 450 ms")
+            check("error", flow["sent"] >= 30 and cadence_ok(flow),
+                  f"{ident} at least 30 emits and cadence within 450 ms{cadence_text(flow)}")
             check("error", not flow["capture_mismatches"], f"{ident} endpoint capture agreement")
             check("error" if bypass else "fail", flow["baseline_good"] >= 30 and not flow["baseline_missed"],
                   f"{ident} baseline loss-free, {flow['baseline_good']} delivered, {flow['baseline_missed']} missed")
@@ -466,5 +487,10 @@ def evaluate_external(path, name, checks, result):
             for bond in ("client1", "client2"):
                 check("fail", all(ports.get(bond, {}).get("forwarding") == "yes" for ports in observations),
                       f"{survivor}:{bond} stayed forwarding while {target} was absent", "withdrawal")
+        if direct:
+            result["floods"] = check_floods(path, spec, icmp, start, end, actions, DIRECT_FLOOD_RECEIVERS,
+                                            FLOOD_SENDER_MEMBERS, DIRECT_FLOOD_FLOWS, timeline, check,
+                                            pause_window=(down, end) if executed and pause_case(name)
+                                            and bypass_kept_pace(flows) else None)
     finally:
         write_timeline(path, start, timeline)

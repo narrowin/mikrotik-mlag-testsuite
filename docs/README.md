@@ -29,6 +29,7 @@ Pick the page by what you need to do. New here? Start with the [quick start](../
 | [Primary reboot plan](plans/primary-reboot-plan.md) | Why does losing the MLAG primary stop traffic longer while the pair is the STP root? |
 | [Member failure diagnosis](plans/member-failure-diagnosis.md) | What else is needed to explain the client-link loss result? |
 | [Report generation plan](plans/report-generation-plan.md) | How do runs write their own reports? |
+| [Forwarding checks and speed plan](plans/forwarding-checks-and-speed-plan.md) | How do we check where frames went, cover the forum forwarding-table faults and run campaigns faster? |
 
 ## Reference
 
@@ -39,5 +40,6 @@ Pick the page by what you need to do. New here? Start with the [quick start](../
 | [Site cases](reference/site-cases.md) | Which site, hardware and optional-service tests apply? |
 | [Topologies](reference/topologies.md) | Why these lab topologies, in this order? |
 | [Research](reference/research.md) | Which sources and test methods back the plan? |
+| [MLAG fixes](reference/mlag-fixes.md) | Which MikroTik changelog fixes does each test check, and which have no test? |
 
 Results live in [results/](../results/), one dated folder per campaign. [Report template](../results/REPORT-TEMPLATE.md)

@@ -1,0 +1,47 @@
+{
+  "run": "01-peer-link-loss",
+  "case": "peer-link-loss",
+  "checks": [
+    {
+      "level": "error",
+      "ok": false,
+      "detail": "Run interrupted"
+    }
+  ],
+  "name": "peer-link-loss",
+  "lab": "Small lab",
+  "title": "Peer link loss and return",
+  "action": "Cuts the peer link (ether2) at both MLAG peers, holds it down for 15 s, restores it and watches 65 s of return.",
+  "forwarding": {
+    "status": "not available: evaluation stopped before the streams were scored"
+  },
+  "status": "error",
+  "phases": [
+    {
+      "key": "withdrawal",
+      "name": "Peer link down",
+      "expected": "Both MLAG peers lose ICCP and leave mlag-state connected. With mlag-lacp-fallback=yes the MLAG secondary stops using the shared system ID, so the clients renegotiate LACP and keep their member to the primary, with brief loss.",
+      "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
+      "limit_s": 5.0,
+      "window_s": null,
+      "verdict": "error",
+      "worst_loss_s": null,
+      "loss_s": {},
+      "control_loss_s": {},
+      "failed_checks": []
+    },
+    {
+      "key": "restoration",
+      "name": "Peer link back",
+      "expected": "ICCP returns to mlag-state connected on both peers and the secondary takes the shared system ID again. The clients renegotiate LACP with brief loss.",
+      "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
+      "limit_s": 5.0,
+      "window_s": null,
+      "verdict": "error",
+      "worst_loss_s": null,
+      "loss_s": {},
+      "control_loss_s": {},
+      "failed_checks": []
+    }
+  ]
+}

@@ -22,7 +22,8 @@ ROOT_FIELDS = ("frame.time_epoch", *FRAME, *LACP, *STP, *ARP)
 
 
 def read_root_packets(path, captures, start, down, check, timeline, *, reference_root=True,
-                      probes=MANAGEMENT_PROBES):
+                      probes=MANAGEMENT_PROBES, floods=(), bpdus=None):
+    """Decode every capture. bpdus, when given, collects (capture, time, sender bridge MAC) for each BPDU."""
     manifest = (path / "pcap.sha256").read_text()
     if manifest != capture_hashes(path, captures):
         raise ValueError("PCAP hashes differ from saved manifest")
@@ -49,8 +50,12 @@ def read_root_packets(path, captures, start, down, check, timeline, *, reference
                 })
             elif ident and int(ident) in probes.values():
                 data[int(ident), int(fields["icmp.type"]), int(fields["icmp.seq"])].append(stamp)
+            elif ident and int(ident) in floods and fields["icmp.type"] == "8":
+                data[int(ident), 8, int(fields["icmp.seq"])].append(stamp)
             if fields["stp.version"]:
                 bpdu = {field: fields[field] for field in (*STP, "eth.src")}
+                if bpdus is not None:
+                    bpdus.append((cap, stamp, fields["stp.bridge.hw"].lower()))
                 timeline.append((stamp, f"bpdu-{cap}", json.dumps(bpdu, sort_keys=True)))
                 if fields["stp.root.prio"] and fields["stp.root.ext"]:
                     priority = int(fields["stp.root.prio"], 0) + int(fields["stp.root.ext"], 0)

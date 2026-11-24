@@ -9,7 +9,7 @@ import os
 import re
 from pathlib import Path
 
-from .cases import CASES
+from .cases import CASES, case_spec
 
 
 DEVICES = {
@@ -124,8 +124,15 @@ def group_runs(runs):
                                                           item[0][2] != "STP off")))
 
 
+def counted(runs):
+    """Leave out an errored run that was repeated as <run>-retry; it stays evidence but counts as neither pass nor fail."""
+    retried = {(run.suite, run.directory.name.removesuffix("-retry")) for run in runs
+               if run.directory.name.endswith("-retry")}
+    return [run for run in runs if not (run.status == "error" and (run.suite, run.directory.name) in retried)]
+
+
 def group_status(runs):
-    statuses = {run.status for run in runs}
+    statuses = {run.status for run in counted(runs)}
     for status in ("fail", "error"):
         if status in statuses:
             return status
@@ -133,7 +140,7 @@ def group_status(runs):
 
 
 def phase_summary(runs, index):
-    phases = [run.phases[index] for run in runs if len(run.phases) > index]
+    phases = [run.phases[index] for run in counted(runs) if len(run.phases) > index]
     losses = [phase["worst_loss_s"] for phase in phases if phase["worst_loss_s"]]
     worst = None
     if losses:
@@ -171,6 +178,7 @@ def tldr_line(key, runs):
     _, title, mode = key
     status = group_status(runs)
     passed = sum(run.status == "pass" for run in runs)
+    runs = counted(runs)
     head = f"**{ICONS[status]} · {title} · {mode}**"
     if status == "pass":
         worst = [w for i in range(len(runs[0].phases)) if (w := phase_summary(runs, i)[2])]
@@ -287,7 +295,7 @@ def write_readme(path, title=None):
                            f"{ICONS[verdict].split(' ')[0]} {phase['name']}: {limit_text(phase)} → {loss_text(worst)}")
         passed = sum(run.status == "pass" for run in group)
         lines.append(f"| {ICONS[group_status(group)]} | [{case_title}](#{slug(heading)}) | {mode} | "
-                     f"{columns[0]} | {columns[1]} | {passed} of {len(group)} |")
+                     f"{columns[0]} | {columns[1]} | {passed} of {len(counted(group))} |")
     lines += ["", "## Cases", ""]
     for key, group in groups.items():
         _, case_title, mode = key
@@ -306,6 +314,8 @@ def write_readme(path, title=None):
             lines.append(f"| {phase['name']} | {short} | {limit_text(phase)} | "
                          + " | ".join(cell(run, i, path) for run in group) + " |")
             details.append(f"- **{phase['name']}:** {phase['expected']}{source}")
+        if fixes := fixes_text(command):
+            details.append(f"- **MikroTik fixes this case checks:** {fixes}")
         lines += ["", *details, ""]
         for run, label in zip(group, labels):
             files = [link("verdict", run.file, path)]
@@ -355,6 +365,15 @@ TEST_ORDER = (
 )
 
 
+def fixes_text(selector):
+    """The MikroTik changelog lines a case checks, each linked to its changelog."""
+    try:
+        fixes = case_spec(selector).fixes
+    except ValueError:
+        return ""
+    return "; ".join(f"{wording} ([{version}]({link}))" for version, wording, link in fixes)
+
+
 def phase_cell(phase):
     limit = "" if phase.key == "calibration" else f" Limit: {'no loss' if phase.limit_s == 0 else f'{phase.limit_s:g} s'}."
     return f"**{phase.name}.** {phase.expected}{limit}"
@@ -367,11 +386,12 @@ def write_case_index(path, cases):
     for lab in ("Small", "Medium", "Large"):
         rows = [case for case in cases if case.lab == lab]
         lines += ["", f"## {lab} lab", "",
-                  "| Case | What the runner does | First phase | Second phase | Command name |",
-                  "| --- | --- | --- | --- | --- |"]
+                  "| Case | What the runner does | First phase | Second phase | MikroTik fixes checked | Command name |",
+                  "| --- | --- | --- | --- | --- | --- |"]
         for case in rows:
             phases = [phase_cell(phase) for phase in case.phases] + ["—"] * (2 - len(case.phases))
             command = f"`{case.name}`" if case.selectors else "Planned"
-            lines.append(f"| {case.title} | {case.action} | {phases[0]} | {phases[1]} | {command} |")
+            fixes = fixes_text(case.name) or "—"
+            lines.append(f"| {case.title} | {case.action} | {phases[0]} | {phases[1]} | {fixes} | {command} |")
     path.write_text("\n".join(lines) + "\n")
     return path

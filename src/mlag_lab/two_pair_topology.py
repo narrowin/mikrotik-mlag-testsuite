@@ -32,7 +32,8 @@ SETUPS = {
 MODES = {"equal": "rstp", "field": "rstp", "stp-off": "none", "stp-off-strict": "none"}
 STRICT_SETUPS = ("stp-off-strict",)
 TWO_PAIR_STEPS = (("baseline", None), ("calibrate", None), ("reboot-a-primary", "p1"),
-                  ("reboot-a-secondary", "p2"), ("reboot-b-primary", "q1"), ("reboot-b-secondary", "q2"))
+                  ("reboot-a-secondary", "p2"), ("reboot-b-primary", "q1"), ("reboot-b-secondary", "q2"),
+                  ("interpair-member-flap", None))
 TWO_PAIR_TARGETS = {f"two-pair-{setup}-{step}": target for setup in SETUPS for step, target in TWO_PAIR_STEPS}
 
 TWO_PAIR_LINKS = (

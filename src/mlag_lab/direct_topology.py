@@ -1,5 +1,6 @@
 """The existing small lab with both client bonds terminating on Linux hosts."""
 
+from .legacy import FLOOD_FLOWS
 from .root_topology import ROOT_FLOWS
 
 DIRECT_CASES = ("direct-baseline", "direct-calibrate", "direct-reboot-secondary", "direct-reboot-primary",
@@ -26,3 +27,6 @@ DIRECT_CAPTURES = (
     "p1-tap0", "p1-tap1", "p1-tap2", "p1-tap3", "p1-tap4",
     "p2-tap0", "p2-tap1", "p2-tap2", "p2-tap3", "p2-tap4",
 )
+# The same flood streams as the original small lab. The MAC-move host is captured per bond member here.
+DIRECT_FLOOD_FLOWS = FLOOD_FLOWS
+DIRECT_FLOOD_RECEIVERS = {"client 2": ("c2-bond0",), "MAC-move host": ("mobile-eth1", "mobile-eth2")}
