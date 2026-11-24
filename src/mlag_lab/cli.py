@@ -88,6 +88,22 @@ def evaluate(evidence: Annotated[Path, typer.Argument(help="Evidence suite or on
 
 
 @app.command()
+def verify(
+    results: Annotated[Path, typer.Argument(help="results/ folder with one folder per campaign.")] = Path("results"),
+    jobs: Annotated[int, typer.Option(min=1, help="Parallel workers. The default of 4 leaves cores for live labs.")] = 4,
+):
+    """Replay every campaign with saved packet evidence and list each run whose verdict or checks changed."""
+    from .verify import verify as replay_all
+    try:
+        changed, lines = replay_all(results, jobs)
+    except (OSError, ValueError) as error:
+        typer.echo(str(error), err=True)
+        raise typer.Exit(2)
+    typer.echo("\n".join(lines))
+    raise typer.Exit(1 if changed else 0)
+
+
+@app.command()
 def export(
     results: Annotated[Path, typer.Argument(help="results/ folder with one folder per campaign.")] = Path("results"),
     output: Annotated[Path | None, typer.Option(help="Output folder. Defaults to <results>/index.")] = None,

@@ -4,7 +4,10 @@ from collections import defaultdict
 from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
+import functools
 import hashlib
+import os
+from pathlib import Path
 import json
 import re
 import subprocess
@@ -46,12 +49,36 @@ def load_jsonl(path):
     return [json.loads(line) for line in path.read_text().splitlines() if line]
 
 
+CACHE = Path(os.environ.get("MLAG_TSHARK_CACHE", Path.home() / ".cache" / "mlag-lab" / "tshark"))
+
+
+@functools.cache
+def tshark_version():
+    return subprocess.check_output(["tshark", "--version"], text=True, timeout=25).splitlines()[0]
+
+
+def tshark_fields(path, args):
+    """TShark's field output for one pcap, saved under the pcap's SHA-256 so an unchanged capture is decoded once."""
+    with path.open("rb") as stream:
+        digest = hashlib.file_digest(stream, "sha256").hexdigest()
+    query = hashlib.sha256("\0".join((tshark_version(), *args)).encode()).hexdigest()
+    cached = CACHE / digest[:2] / f"{digest}-{query[:16]}.txt"
+    if cached.exists():
+        return cached.read_text(encoding="utf-8")
+    output = subprocess.check_output(["tshark", "-n", "-r", str(path), *args], text=True, stderr=subprocess.PIPE,
+                                     timeout=25)
+    cached.parent.mkdir(parents=True, exist_ok=True)
+    partial = cached.with_name(f"{cached.name}.{os.getpid()}")
+    partial.write_text(output, encoding="utf-8")
+    partial.replace(cached)
+    return output
+
+
 def packets(path, fields=FIELDS, display_filter="icmp || arp || lacp"):
-    args = ["tshark", "-n", "-r", str(path), "-Y", display_filter,
-            "-T", "fields", "-E", "occurrence=f"]
+    args = ["-Y", display_filter, "-T", "fields", "-E", "occurrence=f"]
     for field in fields:
         args.extend(("-e", field))
-    for line in subprocess.check_output(args, text=True, stderr=subprocess.PIPE, timeout=25).splitlines():
+    for line in tshark_fields(path, args).splitlines():
         stamp, *fields = line.split("\t")
         yield int(Decimal(stamp) * NS), fields
 

@@ -1,5 +1,6 @@
 """Select the case evaluator and score a saved attempt."""
 
+from concurrent.futures import ProcessPoolExecutor
 import json
 import re
 import subprocess
@@ -175,19 +176,48 @@ def analyze(path):
     return result
 
 
-def replay(path):
-    if not path.is_dir():
-        raise ValueError(f"Evidence directory does not exist: {path}")
-    if any((path / name).exists() for name in ("events.jsonl", "attempt.json", "captures")):
-        return {"pass": 0, "fail": 1, "error": 2}[analyze(path)["status"]]
+def is_attempt(path):
+    return any((path / name).exists() for name in ("events.jsonl", "attempt.json", "captures"))
+
+
+def layout(path):
+    """Attempt folders and suite folders directly below a suite or campaign folder."""
     attempts = [child for child in sorted(path.iterdir()) if child.is_dir() and (
         re.match(r"[0-9]+-", child.name) or (child / "attempt.json").exists() or (child / "events.jsonl").exists())]
     suites = [child for child in sorted(path.iterdir()) if child.is_dir() and (
         (child / "schedule.json").exists() or (child / "suite.json").exists())]
+    return attempts, suites
+
+
+def attempt_folders(path):
+    if is_attempt(path):
+        return [path]
+    attempts, suites = layout(path)
     if suites and not attempts:
-        status = max(replay(suite) for suite in suites)
+        return [run for suite in suites for run in attempt_folders(suite)]
+    return attempts
+
+
+def write_summaries(path):
+    """Suite verdicts and READMEs from the result.json files the attempts already wrote."""
+    attempts, suites = layout(path)
+    if suites and not attempts:
+        status = max(write_summaries(suite) for suite in suites)
         write_readme(path)
         return status
-    for child in attempts:
-        analyze(child)
     return write_suite(path)
+
+
+def analyze_all(runs, jobs=None):
+    """Score attempts in parallel; each worker writes only inside its own attempt folder."""
+    with ProcessPoolExecutor(jobs) as pool:
+        return dict(zip(runs, pool.map(analyze, runs, chunksize=1)))
+
+
+def replay(path, jobs=None):
+    if not path.is_dir():
+        raise ValueError(f"Evidence directory does not exist: {path}")
+    if is_attempt(path):
+        return {"pass": 0, "fail": 1, "error": 2}[analyze(path)["status"]]
+    analyze_all(attempt_folders(path), jobs)
+    return write_summaries(path)
