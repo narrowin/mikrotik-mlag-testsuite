@@ -21,12 +21,12 @@ Tested on RouterOS 7.26beta7 (`mikrotik/chr:7.26beta7`) with Containerlab 0.83.0
 
 | Result | Setup | Runs | Longest interruption |
 | --- | --- | --- | --- |
-| ✅ PASS | STP off on the pair, RSTP on the access switch | 13 passed, 0 failed, 1 invalid or not reached | MLAG secondary reboot, Secondary down: 2.72–2.93 s (limit 5 s) |
 | ✅ PASS | MSTP, access switch is root of VLAN 110 only | 34 passed, 0 failed, 2 invalid or not reached | MLAG primary reboot, Primary down: 3.02–3.23 s (limit 5 s) |
-| ⚠️ INCOMPLETE | STP off | 13 passed, 0 failed, 4 invalid or not reached | MLAG secondary reboot, Secondary down: 2.52–2.73 s (limit 5 s) |
+| ✅ PASS | STP off on the pair, RSTP on the access switch | 25 passed, 0 failed, 1 invalid or not reached | MLAG secondary reboot, Secondary down: 3.02–3.23 s (limit 5 s) |
 | ❌ FAIL | MSTP, access switch is root of the default instance | 5 passed, 5 failed, 14 invalid or not reached | VLAN never forwarded in 4 of 6 suites. Where it forwarded: MLAG secondary reboot, Secondary down: 11.35–11.55 s (limit 5 s) |
 | ❌ FAIL | MSTP, MLAG pair is root | 13 passed, 4 failed, 11 invalid or not reached | MLAG primary reboot, Primary down: 12.87–13.08 s (limit 5 s) |
 | ❌ FAIL | RSTP, MLAG pair is root | 15 passed, 5 failed, 1 invalid or not reached | Pair A primary reboot, Pair A primary down: 17.38–17.59 s (limit 5 s) |
+| ❌ FAIL | STP off | 36 passed, 4 failed, 4 invalid or not reached | Pair A primary reboot, Pair A primary down: 23.14–23.34 s (limit 5 s) |
 | ❌ FAIL | RSTP, access switch is root | 0 passed, 1 failed, 3 invalid or not reached | Baseline: VLAN traffic did not forward |
 
 The [Medium lab results](results/README.md#medium-lab) list every setup variant and run.
@@ -35,15 +35,15 @@ The [Medium lab results](results/README.md#medium-lab) list every setup variant 
 
 | Result | Setup | Runs | Longest interruption |
 | --- | --- | --- | --- |
-| ✅ PASS | MSTP, MLAG pair is root | 19 passed, 0 failed, 8 invalid or not reached | LACP partner timeout and return, LACPDUs blocked: 3.23–3.44 s (limit 4 s) |
-| ✅ PASS | STP off | 21 passed, 0 failed | LACP partner timeout and return, LACPDUs blocked: 3.25–3.46 s (limit 4 s) |
-| ❌ FAIL | RSTP, MLAG pair is root | 33 passed, 1 failed, 6 invalid or not reached | MLAG bond member loss and return, Member down: 10.63–10.84 s (limit 3 s) |
+| ⚠️ INCOMPLETE | MSTP, MLAG pair is root | 24 passed, 0 failed, 30 invalid or not reached | LACP partner timeout and return, LACPDUs blocked: 3.23–3.44 s (limit 4 s) |
+| ❌ FAIL | STP off | 42 passed, 12 failed, 12 invalid or not reached | MLAG primary reboot, Primary down: 2.61–2.81 s (limit 5 s) |
+| ❌ FAIL | RSTP, MLAG pair is root | 34 passed, 1 failed, 17 invalid or not reached | MLAG bond member loss and return, Member down: 10.63–10.84 s (limit 3 s) |
 
 The [Small lab results](results/README.md#small-lab) list every setup variant and run.
 
 A setup fails if any valid run failed. It passes when none failed and every case it attempted has a valid run. Otherwise it is incomplete. Invalid runs, such as runs with a paused probe sender, count as neither pass nor fail.
 
-Suites marked invalid and 5 suites that did not record their bridge mode appear only in the [results overview](results/README.md). It also gives the recommendation and the limit for each case.
+Suites marked invalid and 6 suites that did not record their bridge mode appear only in the [results overview](results/README.md). It also gives the recommendation and the limit for each case.
 
 <!-- results:end -->
 

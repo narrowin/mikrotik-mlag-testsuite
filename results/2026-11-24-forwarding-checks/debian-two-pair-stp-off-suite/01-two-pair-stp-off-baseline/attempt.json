@@ -1,0 +1,66 @@
+{
+  "schema": 2,
+  "case": "two-pair-stp-off-baseline",
+  "name": "two-pair-stp-off-baseline",
+  "topology": "mlag-medium-two-pair",
+  "builds_sha256": "8d7ba048362ac2c9dd3e0b36ee53986256a2d4a986fb246fba45ee66aa23f2b6",
+  "target": null,
+  "devices": {
+    "p1": {
+      "name": "dc1-core-mlag1",
+      "container": "clab-mlag-medium-two-pair-dc1-core-mlag1",
+      "management_ip": "172.30.219.11",
+      "role": "MLAG pair A switch 1, intended STP root pair",
+      "runtime": "RouterOS CHR guest",
+      "host": "debian-clab"
+    },
+    "p2": {
+      "name": "dc1-core-mlag2",
+      "container": "clab-mlag-medium-two-pair-dc1-core-mlag2",
+      "management_ip": "172.30.219.12",
+      "role": "MLAG pair A switch 2, intended STP root pair",
+      "runtime": "RouterOS CHR guest",
+      "host": "debian-clab"
+    },
+    "q1": {
+      "name": "dc1-access-mlag1",
+      "container": "clab-mlag-medium-two-pair-dc1-access-mlag1",
+      "management_ip": "172.30.219.13",
+      "role": "MLAG pair B switch 1",
+      "runtime": "RouterOS CHR guest",
+      "host": "debian-clab"
+    },
+    "q2": {
+      "name": "dc1-access-mlag2",
+      "container": "clab-mlag-medium-two-pair-dc1-access-mlag2",
+      "management_ip": "172.30.219.14",
+      "role": "MLAG pair B switch 2",
+      "runtime": "RouterOS CHR guest",
+      "host": "debian-clab"
+    },
+    "c1": {
+      "name": "dc1-traffic-host1",
+      "container": "clab-mlag-medium-two-pair-dc1-traffic-host1",
+      "management_ip": "172.30.219.16",
+      "role": "Linux VLAN 110 and bypass probe host 1, bonded to MLAG pair B",
+      "runtime": "Linux container",
+      "host": "debian-clab"
+    },
+    "c2": {
+      "name": "dc1-traffic-host2",
+      "container": "clab-mlag-medium-two-pair-dc1-traffic-host2",
+      "management_ip": "172.30.219.17",
+      "role": "Linux VLAN 110 and bypass probe host 2, bonded to MLAG pair A",
+      "runtime": "Linux container",
+      "host": "debian-clab"
+    },
+    "syslog": {
+      "name": "dc1-syslog-collector",
+      "container": "clab-mlag-medium-two-pair-dc1-syslog-collector",
+      "management_ip": "172.30.219.20",
+      "role": "Management network syslog collector",
+      "runtime": "Linux container",
+      "host": "debian-clab"
+    }
+  }
+}

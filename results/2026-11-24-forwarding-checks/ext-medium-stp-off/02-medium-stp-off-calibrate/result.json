@@ -1,0 +1,1522 @@
+{
+  "run": "02-medium-stp-off-calibrate",
+  "case": "medium-stp-off-calibrate",
+  "checks": [
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline BPDU coverage missing [], unexpected []"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Each of three broadcast requests per direction crossed once: {'c1': [3, 3], 'c2': [3, 3]}"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Host clocks agreed within 50 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "All capture and probe collectors stayed up"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-eth1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-eth3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-bond0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-eth1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-eth2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-eth3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness-eth1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness-eth2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness-eth3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness-tap1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness-tap2 captured with zero kernel drops"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "No spanning-tree frames throughout the scoring window: []"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1 state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1 independent observer had complete state at intervals within 1.5 s"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2 state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2 independent observer had complete state at intervals within 1.5 s"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness independent observer had complete state at intervals within 1.5 s"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "host state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "host independent observer had complete state at intervals within 1.5 s"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Management UDP syslog begin markers from required observers"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Management UDP syslog end markers from required observers"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: 0 reflected unicast sequences, limit 0",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: 0 reflected unicast sequences, limit 0",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Bridge host table after recovery: every traffic host MAC on its expected port",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:da:0b:03, eth2 65535/52:54:00:da:0b:03",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Both MLAG peers present one LACP system ID on the access-uplink, seen by the access switch: witness:ether2 65535/52:54:00:da:0b:02, witness:ether3 65535/52:54:00:da:0b:02",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: 0 BPDUs from the access switch (02:00:00:21:00:13) on the traffic host's MLAG bond, limit 0",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 endpoint capture agreement"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "101 baseline loss-free, 91 delivered, 0 missed"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "101 duplicate-free"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "101 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 endpoint capture agreement"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "201 baseline loss-free, 91 delivered, 0 missed"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "201 duplicate-free"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "201 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 endpoint capture agreement"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 baseline loss-free, 88 delivered, 0 missed"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 endpoint capture agreement"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 baseline loss-free, 88 delivered, 0 missed"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Restore state was captured",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restored BPDU coverage missing [], unexpected []",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Measured one-way gap encloses the two-second injection",
+      "phase": "calibration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Source emitted all numbered calibration requests",
+      "phase": "calibration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Reverse bypass and VLAN flows were unaffected by calibration",
+      "phase": "calibration"
+    }
+  ],
+  "name": "medium-stp-off-calibrate",
+  "lab": "Medium lab",
+  "title": "One-way calibration \u00b7 all bridges STP off",
+  "action": "After the protocol-mode=none bridge reset and baseline gate, the runner adds a tc ingress filter on host 2's eth3 that drops bypass-forward echo requests (stream 301) for 2 s. It then removes the filter and observes 3 s of settling and a 3 s recovery window.",
+  "devices": {
+    "p1": {
+      "name": "dc1-core-mlag1",
+      "container": "clab-mlag-medium-dc1-core-mlag1",
+      "management_ip": "172.30.218.11",
+      "role": "MLAG core switch 1",
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "p2": {
+      "name": "dc1-core-mlag2",
+      "container": "clab-mlag-medium-dc1-core-mlag2",
+      "management_ip": "172.30.218.12",
+      "role": "MLAG core switch 2",
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "witness": {
+      "name": "dc1-access-switch1",
+      "container": "clab-mlag-medium-dc1-access-switch1",
+      "management_ip": "172.30.218.13",
+      "role": "Dual-attached access switch and external RSTP root candidate",
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "c1": {
+      "name": "dc1-traffic-host1",
+      "container": "clab-mlag-medium-dc1-traffic-host1",
+      "management_ip": "172.30.218.16",
+      "role": "Linux VLAN 110 and bypass probe host 1",
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    },
+    "c2": {
+      "name": "dc1-traffic-host2",
+      "container": "clab-mlag-medium-dc1-traffic-host2",
+      "management_ip": "172.30.218.17",
+      "role": "Linux VLAN 110 and bypass probe host 2",
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    },
+    "syslog": {
+      "name": "dc1-syslog-collector",
+      "container": "clab-mlag-medium-dc1-syslog-collector",
+      "management_ip": "172.30.218.20",
+      "role": "Management network syslog collector",
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    }
+  },
+  "initial_validation_s": {
+    "management_reset": 2.610097,
+    "settle_and_start_observers": 1.20918,
+    "probe_window_and_readback": 4.503542,
+    "check_wire_links_and_delivery": 4.7193,
+    "reset_to_verdict": 13.04212
+  },
+  "bridge_modes": {
+    "p1": "none",
+    "p2": "none",
+    "witness": "none"
+  },
+  "baseline_state": {
+    "p1": {
+      "bridge": {
+        "bridge-id": "0x1000.02:00:00:21:00:11",
+        "root-bridge": "yes",
+        "root-bridge-id": "0x8000.00:00:00:00:00:00",
+        "root-port": "none",
+        "mlag-state": "connected",
+        "mlag-active-role": "primary"
+      },
+      "ports": {
+        "ether2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "access-uplink": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "client2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes"
+        }
+      },
+      "carrier": {
+        "ether2": "link-ok",
+        "ether3": "link-ok",
+        "ether4": "link-ok"
+      },
+      "lacp": {
+        "ether3": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "52:54:00:DA:0D:01"
+        },
+        "ether4": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "02:00:00:11:00:12"
+        }
+      },
+      "fdb": [
+        {
+          "mac": "02:00:00:11:00:11",
+          "vid": 110,
+          "interface": "access-uplink",
+          "on_interface": "access-uplink"
+        },
+        {
+          "mac": "02:00:00:11:00:12",
+          "vid": 110,
+          "interface": "client2",
+          "on_interface": "client2"
+        }
+      ]
+    },
+    "p2": {
+      "bridge": {
+        "bridge-id": "0x1000.02:00:00:21:00:11",
+        "root-bridge": "yes",
+        "root-bridge-id": "0x8000.00:00:00:00:00:00",
+        "root-port": "none",
+        "mlag-state": "connected",
+        "mlag-active-role": "secondary"
+      },
+      "ports": {
+        "ether2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "access-uplink": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "client2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes"
+        }
+      },
+      "carrier": {
+        "ether2": "link-ok",
+        "ether3": "link-ok",
+        "ether4": "link-ok"
+      },
+      "lacp": {
+        "ether3": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "52:54:00:DA:0D:01"
+        },
+        "ether4": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "02:00:00:11:00:12"
+        }
+      },
+      "fdb": [
+        {
+          "mac": "02:00:00:11:00:11",
+          "vid": 110,
+          "interface": "access-uplink",
+          "on_interface": "access-uplink"
+        },
+        {
+          "mac": "02:00:00:11:00:12",
+          "vid": 110,
+          "interface": "client2",
+          "on_interface": "client2"
+        }
+      ]
+    },
+    "witness": {
+      "bridge": {
+        "bridge-id": "0x8000.02:00:00:21:00:13",
+        "root-bridge": "yes",
+        "root-bridge-id": "0x8000.00:00:00:00:00:00",
+        "root-port": "none"
+      },
+      "ports": {
+        "uplink": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "ether4": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes"
+        }
+      },
+      "carrier": {
+        "ether2": "link-ok",
+        "ether3": "link-ok",
+        "ether4": "link-ok"
+      },
+      "lacp": {
+        "ether2": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "52:54:00:DA:0B:02"
+        },
+        "ether3": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "52:54:00:DA:0B:02"
+        }
+      },
+      "fdb": [
+        {
+          "mac": "02:00:00:11:00:11",
+          "vid": 110,
+          "interface": "ether4",
+          "on_interface": "ether4"
+        },
+        {
+          "mac": "02:00:00:11:00:12",
+          "vid": 110,
+          "interface": "uplink",
+          "on_interface": "uplink"
+        }
+      ]
+    }
+  },
+  "baseline_bpdus": {
+    "roots": {},
+    "missing": [],
+    "unexpected": []
+  },
+  "broadcast_requests_at_endpoints": {
+    "c1": [
+      3,
+      3
+    ],
+    "c2": [
+      3,
+      3
+    ]
+  },
+  "stp_frames_during_scoring": [],
+  "fault_executed": true,
+  "phases_s": {
+    "withdrawal": [
+      9.227595,
+      11.230724
+    ],
+    "restoration": [
+      11.230724,
+      14.233742
+    ]
+  },
+  "sampling": {
+    "p1": {
+      "complete": 54,
+      "incomplete": 0,
+      "max_start_interval_s": 0.354139,
+      "max_poll_duration_s": 0.253897
+    },
+    "p2": {
+      "complete": 54,
+      "incomplete": 0,
+      "max_start_interval_s": 0.355907,
+      "max_poll_duration_s": 0.224283
+    },
+    "witness": {
+      "complete": 54,
+      "incomplete": 0,
+      "max_start_interval_s": 0.354056,
+      "max_poll_duration_s": 0.191339
+    },
+    "host": {
+      "complete": 54,
+      "incomplete": 0,
+      "max_start_interval_s": 0.359094,
+      "max_poll_duration_s": 0.022
+    }
+  },
+  "syslog": {
+    "begin": [
+      "172.30.218.11",
+      "172.30.218.12",
+      "172.30.218.13"
+    ],
+    "end": [
+      "172.30.218.11",
+      "172.30.218.12",
+      "172.30.218.13"
+    ]
+  },
+  "flows": {
+    "101": {
+      "description": "client A to client B",
+      "sent": 170,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.106,
+      "send_pauses": [],
+      "baseline_good": 91,
+      "recovery_good": 30,
+      "baseline_missed": 0,
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.106,
+        "longest_pause": null,
+        "rule_applied": false
+      }
+    },
+    "201": {
+      "description": "client B to client A",
+      "sent": 170,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.107823,
+      "send_pauses": [],
+      "baseline_good": 91,
+      "recovery_good": 30,
+      "baseline_missed": 0,
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.107823,
+        "longest_pause": null,
+        "rule_applied": false
+      }
+    },
+    "301": {
+      "description": "bypass forward",
+      "sent": 165,
+      "missed": 20,
+      "duplicates": [],
+      "gaps": [
+        {
+          "first_seq": 99,
+          "last_seq": 118,
+          "failed_probes": 20,
+          "absent_at_source": 0,
+          "lower_s": 1.978936,
+          "upper_s": 2.183955,
+          "phases": [
+            "withdrawal",
+            "restoration"
+          ],
+          "trace_seq": 99,
+          "trace_s": {
+            "c1-eth3": {
+              "8": [
+                9.241843
+              ],
+              "0": []
+            },
+            "c2-eth3": {
+              "8": [
+                9.241848
+              ],
+              "0": []
+            }
+          },
+          "where": [
+            "reply absent at destination"
+          ],
+          "first_miss_s": 9.241843,
+          "last_miss_s": 11.220779,
+          "previous_good_s": 9.141307,
+          "first_good_s": 11.325262,
+          "stable_delivery_s": 11.325262,
+          "stable_window_end_s": 12.261286,
+          "misses": {
+            "99": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 9.241843,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 9.241848,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "100": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 9.349256,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 9.349257,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "101": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 9.45228,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 9.452285,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "102": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 9.55629,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 9.556296,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "103": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 9.661406,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 9.66141,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "104": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 9.764268,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 9.764272,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "105": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 9.868251,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 9.868253,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "106": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 9.972494,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 9.972497,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "107": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 10.078669,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 10.078672,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "108": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 10.181962,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 10.181964,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "109": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 10.284309,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 10.284312,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "110": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 10.390477,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 10.390483,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "111": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 10.493173,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 10.493179,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "112": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 10.597608,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 10.597612,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "113": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 10.702788,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 10.702795,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "114": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 10.804674,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 10.804678,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "115": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 10.910372,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 10.910382,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "116": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 11.012251,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 11.012256,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "117": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 11.116241,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 11.116246,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "118": {
+              "where": "reply absent at destination",
+              "request": [
+                "c1-eth3",
+                "c2-eth3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 11.220779,
+                    "point": "c1-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 11.220781,
+                    "point": "c2-eth3",
+                    "src": "aa:c1:ab:32:5f:a4",
+                    "dst": "aa:c1:ab:62:d6:b5",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            }
+          }
+        }
+      ],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.1099,
+      "send_pauses": [],
+      "baseline_good": 88,
+      "recovery_good": 29,
+      "baseline_missed": 0,
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.1099,
+        "longest_pause": null,
+        "rule_applied": false
+      }
+    },
+    "303": {
+      "description": "bypass reverse",
+      "sent": 165,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.109934,
+      "send_pauses": [],
+      "baseline_good": 88,
+      "recovery_good": 29,
+      "baseline_missed": 0,
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.109934,
+        "longest_pause": null,
+        "rule_applied": false
+      }
+    }
+  },
+  "forwarding": {
+    "phases_s": {
+      "baseline": [
+        0.0,
+        9.227595
+      ],
+      "withdrawal": [
+        9.227595,
+        11.230724
+      ],
+      "restoration": [
+        11.230724,
+        17.234313
+      ]
+    },
+    "outside_delivery": {
+      "status": "not applicable: the Medium lab has no host outside the conversation"
+    },
+    "reflected_copies": {
+      "member_points": {
+        "101": [
+          "c2-bond0"
+        ],
+        "201": [
+          "c2-bond0"
+        ]
+      },
+      "findings": []
+    },
+    "host_table": {
+      "window_s": [
+        14.233742,
+        17.234313
+      ],
+      "peers": {
+        "p1": {
+          "sample_s": 16.930466,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "access-uplink",
+              "expected": "access-uplink",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "client2",
+              "expected": "client2",
+              "bond_member": "ether4",
+              "member_up": true
+            }
+          }
+        },
+        "p2": {
+          "sample_s": 16.935444,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "access-uplink",
+              "expected": "access-uplink",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "client2",
+              "expected": "client2",
+              "bond_member": "ether4",
+              "member_up": true
+            }
+          }
+        }
+      },
+      "wrong": []
+    },
+    "sync_warnings": {
+      "counts": {
+        "p1": {},
+        "p2": {},
+        "witness": {}
+      },
+      "first_lines": []
+    }
+  },
+  "lacp_system_ids": {
+    "client 2 bond": {
+      "members": {
+        "eth1": "65535/52:54:00:da:0b:03",
+        "eth2": "65535/52:54:00:da:0b:03"
+      },
+      "same": true
+    },
+    "access-uplink, seen by the access switch": {
+      "members": {
+        "witness:ether2": "65535/52:54:00:da:0b:02",
+        "witness:ether3": "65535/52:54:00:da:0b:02"
+      },
+      "same": true
+    }
+  },
+  "access_bpdus": {
+    "captures": [
+      "c2-eth1",
+      "c2-eth2",
+      "c2-bond0",
+      "p1-tap3",
+      "p2-tap3"
+    ],
+    "sender_bridge_mac": "02:00:00:21:00:13",
+    "phases_s": {
+      "baseline": [
+        0.0,
+        9.227595
+      ],
+      "withdrawal": [
+        9.227595,
+        11.230724
+      ],
+      "restoration": [
+        11.230724,
+        17.234313
+      ]
+    },
+    "by_phase": {
+      "baseline": {
+        "count": 0,
+        "first": []
+      },
+      "withdrawal": {
+        "count": 0,
+        "first": []
+      },
+      "restoration": {
+        "count": 0,
+        "first": []
+      }
+    }
+  },
+  "sender_pause_rule": {
+    "101": false,
+    "201": false,
+    "301": false,
+    "303": false
+  },
+  "restored_bpdus": {
+    "roots": {},
+    "missing": [],
+    "unexpected": []
+  },
+  "injected_s": [
+    2.001675,
+    2.006016
+  ],
+  "bridge_mode": "none",
+  "status": "pass",
+  "phases": [
+    {
+      "key": "calibration",
+      "name": "One-way bypass cut",
+      "expected": "The filter drops only stream 301's echo requests at host 2's bypass port, outside the MLAG fabric. Stream 301 shows exactly one gap, with every request sent, and the gap's bounds enclose the measured 1.9\u20132.3 s filter interval. The reverse bypass and both VLAN 110 directions lose nothing.",
+      "source": "lab target",
+      "limit_s": null,
+      "window_s": null,
+      "verdict": "pass",
+      "worst_loss_s": {
+        "lower_s": 1.978936,
+        "upper_s": 2.183955,
+        "lost_probes": 20,
+        "spans_both_phases": false
+      },
+      "loss_s": {
+        "301": {
+          "lower_s": 1.978936,
+          "upper_s": 2.183955,
+          "lost_probes": 20,
+          "spans_both_phases": false
+        }
+      },
+      "control_loss_s": {},
+      "failed_checks": []
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="mikrotik-mlag-small" tests="12" errors="0" failures="6" skipped="0">
+  <testcase name="01-baseline" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+  </testcase>
+  <testcase name="01-reboot-calibration" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+  </testcase>
+  <testcase name="01-secondary-reboot" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+    <failure>501 broadcast from client 1: no second sighting at the sender's bond members during withdrawal, seq [399, 400, 401, 402, 403, 404, 405, 406, 407, 408]
+502 unknown unicast from client 1: no second sighting at the sender's bond members during withdrawal, seq [399, 400, 401, 402, 403, 404, 405, 406, 407, 408]</failure>
+  </testcase>
+  <testcase name="01-primary-reboot" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+    <failure>502 unknown unicast from client 1: client 2 got no second copy during withdrawal, seq [348]</failure>
+  </testcase>
+  <testcase name="01-secondary-power-loss" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+    <failure>501 broadcast from client 1: no second sighting at the sender's bond members during withdrawal, seq [477]
+502 unknown unicast from client 1: no second sighting at the sender's bond members during withdrawal, seq [477]</failure>
+  </testcase>
+  <testcase name="01-primary-power-loss" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+  </testcase>
+  <testcase name="02-baseline" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+  </testcase>
+  <testcase name="02-reboot-calibration" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+  </testcase>
+  <testcase name="02-secondary-reboot" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+    <failure>501 broadcast from client 1: no second sighting at the sender's bond members during withdrawal, seq [274]</failure>
+  </testcase>
+  <testcase name="02-primary-reboot" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+    <failure>501 broadcast from client 1: client 2 got no second copy during withdrawal, seq [263]
+502 unknown unicast from client 1: client 2 got no second copy during withdrawal, seq [263]</failure>
+  </testcase>
+  <testcase name="02-secondary-power-loss" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+    <failure>501 broadcast from client 1: no second sighting at the sender's bond members during withdrawal, seq [438, 442]
+502 unknown unicast from client 1: no second sighting at the sender's bond members during withdrawal, seq [438, 442]</failure>
+  </testcase>
+  <testcase name="02-primary-power-loss" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+  </testcase>
+</testsuite>

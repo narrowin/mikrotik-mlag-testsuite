@@ -1,0 +1,3542 @@
+{
+  "run": "02-primary-reboot",
+  "case": "direct-reboot-primary",
+  "checks": [
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Host clocks agreed within 50 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "All capture and probe collectors stayed up"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-bond0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-eth1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-eth2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-eth3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-bond0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-eth1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-eth2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-eth3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "mobile-eth1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "mobile-eth2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap4 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap4 captured with zero kernel drops"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "No spanning-tree frames throughout the scoring window: []"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1 management TAP shows one closed guest absence"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2 supplied MLAG and root state while p1 was absent"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Observed carrier independently at the surviving ends and CHR TAPs"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Recorded RouterOS carrier at surviving linked guest ports"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1 state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2 state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2 independent observer had complete state at intervals within 1.5 s"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "host state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "host independent observer had complete state at intervals within 1.5 s"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Management UDP syslog begin markers from required observers"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Management UDP syslog end markers from required observers"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1 emitted the post-observation syslog rebind marker"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 unicast frames at a host outside the conversation, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: unicast at a host outside the conversation for 0.000 s, limit 1 s",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 reflected unicast sequences, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Withdrawal: 0 reflected unicast sequences, limit 0",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restoration: 0 reflected unicast sequences, limit 0",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Bridge host table after recovery: every traffic host MAC on its expected port",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline: 0 MLAG sync or heartbeat warnings in syslog, limit 0",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Both MLAG peers present one LACP system ID on the client 2 bond: eth1 65535/52:54:00:d7:0b:03, eth2 65535/52:54:00:d7:0b:03",
+      "phase": "baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Both MLAG peers present one LACP system ID on the client 1 bond: eth1 65535/52:54:00:d7:0b:02, eth2 65535/52:54:00:d7:0b:02",
+      "phase": "baseline"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 at least 30 emits and cadence within 450 ms; sender on the LACP bond paused 0.513 s during the fault, bypass streams kept their pace, the pause counts as outage"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 endpoint capture agreement"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "101 baseline loss-free, 46 delivered, 0 missed"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "101 duplicate-free"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "101 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 endpoint capture agreement"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "201 baseline loss-free, 46 delivered, 0 missed"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "201 duplicate-free"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "201 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 endpoint capture agreement"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 baseline loss-free, 45 delivered, 0 missed"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 endpoint capture agreement"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 baseline loss-free, 45 delivered, 0 missed"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Restore state was captured",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 independent bypass stayed clean"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 independent bypass stayed clean"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2 supplied direct-edge port state during the guest absence",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "p2:client1 stayed forwarding while p1 was absent",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "p2:client2 stayed forwarding while p1 was absent",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "501 broadcast from client 1 was sent with consecutive sends within 450 ms; sender on the LACP bond paused 0.504 s during the fault, bypass streams kept their pace, the pause counts as outage"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "501 broadcast from client 1: each receiving capture got one copy and the sender's bond members showed one frame in the baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "501 broadcast from client 1: no second sighting at the sender's bond members during withdrawal",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "501 broadcast from client 1: no second sighting at the sender's bond members during restoration",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": false,
+      "detail": "501 broadcast from client 1: client 2 got no second copy during withdrawal, seq [263]",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "501 broadcast from client 1: client 2 got no second copy during restoration",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "501 broadcast from client 1: MAC-move host got no second copy during withdrawal",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "501 broadcast from client 1: MAC-move host got no second copy during restoration",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "502 unknown unicast from client 1 was sent with consecutive sends within 450 ms; sender on the LACP bond paused 0.504 s during the fault, bypass streams kept their pace, the pause counts as outage"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "502 unknown unicast from client 1: each receiving capture got one copy and the sender's bond members showed one frame in the baseline"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "502 unknown unicast from client 1: no second sighting at the sender's bond members during withdrawal",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "502 unknown unicast from client 1: no second sighting at the sender's bond members during restoration",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": false,
+      "detail": "502 unknown unicast from client 1: client 2 got no second copy during withdrawal, seq [263]",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "502 unknown unicast from client 1: client 2 got no second copy during restoration",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "502 unknown unicast from client 1: MAC-move host got no second copy during withdrawal",
+      "phase": "withdrawal"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "502 unknown unicast from client 1: MAC-move host got no second copy during restoration",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Both MLAG peers ran protocol-mode=none: {'p1': 'none', 'p2': 'none'}"
+    }
+  ],
+  "name": "primary-reboot",
+  "lab": "Small lab",
+  "title": "MLAG primary reboot",
+  "action": "Resets the bridge on CHR 1 and CHR 2 over management SSH with the bridge mode of the run, picks the MLAG peer that reports mlag-state connected as primary, and after a loss-free baseline reboots it with `/system reboot` (1 s delay). The runner waits for the guest uptime to reset, then keeps probing for 16 s plus a 3 s recovery window.",
+  "devices": {
+    "p1": {
+      "name": "dc1-core-mlag1",
+      "container": "clab-mlag-small-dc1-core-mlag1",
+      "management_ip": "172.30.215.11",
+      "role": null,
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-validation"
+    },
+    "p2": {
+      "name": "dc1-core-mlag2",
+      "container": "clab-mlag-small-dc1-core-mlag2",
+      "management_ip": "172.30.215.12",
+      "role": null,
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-validation"
+    },
+    "c1": {
+      "name": "dc1-traffic-host1",
+      "container": "clab-mlag-small-dc1-traffic-host1",
+      "management_ip": "172.30.215.2",
+      "role": null,
+      "runtime": "Linux container",
+      "host": "mlag-validation"
+    },
+    "c2": {
+      "name": "dc1-traffic-host2",
+      "container": "clab-mlag-small-dc1-traffic-host2",
+      "management_ip": "172.30.215.3",
+      "role": null,
+      "runtime": "Linux container",
+      "host": "mlag-validation"
+    },
+    "mobile": {
+      "name": "dc1-mac-move-host",
+      "container": "clab-mlag-small-dc1-mac-move-host",
+      "management_ip": "172.30.215.4",
+      "role": null,
+      "runtime": "Linux container",
+      "host": "mlag-validation"
+    },
+    "syslog": {
+      "name": "dc1-syslog-collector",
+      "container": "clab-mlag-small-dc1-syslog-collector",
+      "management_ip": "172.30.215.20",
+      "role": null,
+      "runtime": "Linux container",
+      "host": "mlag-validation"
+    }
+  },
+  "initial_validation_s": {
+    "management_reset": 2.575754,
+    "settle_and_start_observers": 1.36939,
+    "probe_window_and_readback": 4.320892,
+    "check_wire_links_and_delivery": 0.42513,
+    "reset_to_verdict": 8.691166
+  },
+  "bridge_modes": {
+    "cores": "none",
+    "clients": "direct-host-lag"
+  },
+  "baseline_state": {
+    "p1": {
+      "bridge": {
+        "bridge-id": "0x1000.52:54:00:d7:0b:01",
+        "root-bridge": "yes",
+        "root-bridge-id": "0x8000.00:00:00:00:00:00",
+        "root-port": "none",
+        "mlag-state": "connected",
+        "mlag-active-role": "primary"
+      },
+      "ports": {
+        "ether2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "client1": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "client2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "ether5": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes"
+        }
+      },
+      "carrier": {
+        "ether2": "link-ok",
+        "ether3": "link-ok",
+        "ether4": "link-ok",
+        "ether5": "link-ok"
+      },
+      "lacp": {
+        "ether3": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "02:00:00:11:00:11"
+        },
+        "ether4": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "02:00:00:11:00:12"
+        }
+      },
+      "fdb": [
+        {
+          "mac": "02:00:00:11:00:11",
+          "vid": 110,
+          "interface": "client1",
+          "on_interface": "client1"
+        },
+        {
+          "mac": "02:00:00:11:00:12",
+          "vid": 110,
+          "interface": "client2",
+          "on_interface": "client2"
+        }
+      ]
+    },
+    "p2": {
+      "bridge": {
+        "bridge-id": "0x1000.52:54:00:d7:0b:01",
+        "root-bridge": "yes",
+        "root-bridge-id": "0x8000.00:00:00:00:00:00",
+        "root-port": "none",
+        "mlag-state": "connected",
+        "mlag-active-role": "secondary"
+      },
+      "ports": {
+        "ether2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "client1": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "client2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes"
+        },
+        "ether5": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes"
+        }
+      },
+      "carrier": {
+        "ether2": "link-ok",
+        "ether3": "link-ok",
+        "ether4": "link-ok",
+        "ether5": "link-ok"
+      },
+      "lacp": {
+        "ether3": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "02:00:00:11:00:11"
+        },
+        "ether4": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "02:00:00:11:00:12"
+        }
+      },
+      "fdb": [
+        {
+          "mac": "02:00:00:11:00:11",
+          "vid": 110,
+          "interface": "client1",
+          "on_interface": "client1"
+        },
+        {
+          "mac": "02:00:00:11:00:12",
+          "vid": 110,
+          "interface": "client2",
+          "on_interface": "client2"
+        }
+      ]
+    }
+  },
+  "stp_frames_during_scoring": [],
+  "fault_executed": true,
+  "peer": {
+    "survivor": "p2",
+    "mlag_transitions": [
+      {
+        "mlag_state": "connected",
+        "active_role": "secondary",
+        "root_id": "0x8000.00:00:00:00:00:00",
+        "before_s": -0.156432,
+        "by_s": 0.046683
+      }
+    ],
+    "while_absent": [
+      {
+        "mlag_state": "connected",
+        "active_role": "secondary",
+        "root_id": "0x8000.00:00:00:00:00:00"
+      }
+    ],
+    "linux_carrier_while_absent": {
+      "p2:eth1": [
+        true
+      ],
+      "c1:eth1": [
+        true
+      ],
+      "c2:eth1": [
+        true
+      ],
+      "p1:tap1": [
+        true
+      ],
+      "p1:tap2": [
+        true
+      ],
+      "p1:tap3": [
+        true
+      ]
+    },
+    "routeros_carrier_while_absent": {
+      "p2:ether2": [
+        "link-ok"
+      ]
+    }
+  },
+  "guest_absence_s": [
+    6.18576,
+    27.096779,
+    27.204653
+  ],
+  "phases_s": {
+    "withdrawal": [
+      4.746078,
+      27.204653
+    ],
+    "restoration": [
+      27.204653,
+      44.934312
+    ]
+  },
+  "sampling": {
+    "p1": {
+      "complete": 76,
+      "incomplete": 5,
+      "max_start_interval_s": 21.787545,
+      "max_poll_duration_s": 6.024443
+    },
+    "p2": {
+      "complete": 141,
+      "incomplete": 0,
+      "max_start_interval_s": 0.35497,
+      "max_poll_duration_s": 0.221009
+    },
+    "host": {
+      "complete": 141,
+      "incomplete": 0,
+      "max_start_interval_s": 0.356667,
+      "max_poll_duration_s": 0.039452
+    }
+  },
+  "syslog": {
+    "begin": [
+      "172.30.215.11",
+      "172.30.215.12"
+    ],
+    "end": [
+      "172.30.215.12"
+    ],
+    "target_end_received": false,
+    "target_after_rebind_received": true
+  },
+  "flows": {
+    "101": {
+      "description": "client A to client B",
+      "sent": 459,
+      "missed": 26,
+      "duplicates": [],
+      "gaps": [
+        {
+          "first_seq": 70,
+          "last_seq": 93,
+          "failed_probes": 24,
+          "absent_at_source": 0,
+          "lower_s": 2.393343,
+          "upper_s": 2.598916,
+          "phases": [
+            "withdrawal"
+          ],
+          "trace_seq": 70,
+          "trace_s": {
+            "c1-bond0": {
+              "8": [
+                6.264439
+              ],
+              "0": []
+            },
+            "c1-eth1": {
+              "8": [
+                6.264445
+              ],
+              "0": []
+            },
+            "p1-tap2": {
+              "8": [
+                6.264453
+              ],
+              "0": []
+            }
+          },
+          "where": [
+            "reply absent at source",
+            "request absent at destination"
+          ],
+          "first_miss_s": 6.264439,
+          "last_miss_s": 8.657782,
+          "previous_good_s": 6.163845,
+          "first_good_s": 8.762761,
+          "stable_delivery_s": 8.762761,
+          "stable_window_end_s": 9.692005,
+          "misses": {
+            "70": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.264439,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.264445,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.264453,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "71": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.369763,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.369769,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.369778,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "72": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.472818,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.472823,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.47283,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "73": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.576808,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.576814,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.576823,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "74": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.682088,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.682094,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.682109,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "75": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.78478,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.784794,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.784804,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "76": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.889657,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.889662,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.889671,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "77": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.993753,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.99376,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.993767,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "78": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.09691,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.096914,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.096922,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "79": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.200778,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.200788,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.200801,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "80": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.305235,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.305241,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.305248,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "81": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.40985,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.409855,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.409862,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "82": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.513179,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.513187,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.513196,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "83": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.620591,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.620597,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.620603,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "84": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.724048,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.724051,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.724058,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "85": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.82482,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.824826,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.824836,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "86": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.929848,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.929852,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.92987,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "87": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.036111,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.036119,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.036131,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "88": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.138009,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.138017,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.138031,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "89": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.243046,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.243051,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.243062,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "90": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.345874,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.345882,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.345891,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "91": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "p1-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.448783,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.448791,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.448802,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "92": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-bond0",
+                "c1-eth2",
+                "c2-bond0",
+                "c2-eth2",
+                "p2-tap2",
+                "p2-tap3"
+              ],
+              "reply": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.554807,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.554812,
+                    "point": "c1-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.556413,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.556413,
+                    "point": "c2-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.554845,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.556399,
+                    "point": "p2-tap3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 8.556431,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.556434,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.556439,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "93": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-bond0",
+                "c1-eth2",
+                "c2-bond0",
+                "c2-eth2",
+                "p2-tap2",
+                "p2-tap3"
+              ],
+              "reply": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.657782,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.657788,
+                    "point": "c1-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.658758,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.658758,
+                    "point": "c2-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.6578,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.658743,
+                    "point": "p2-tap3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 8.658779,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.658781,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.658788,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            }
+          },
+          "stable_before_target_return": true
+        },
+        {
+          "first_seq": 263,
+          "last_seq": 264,
+          "failed_probes": 2,
+          "absent_at_source": 0,
+          "lower_s": 0.512781,
+          "upper_s": 0.722383,
+          "phases": [
+            "withdrawal"
+          ],
+          "trace_seq": 263,
+          "trace_s": {
+            "c1-bond0": {
+              "8": [
+                26.272796,
+                26.376113,
+                26.477843,
+                26.578286,
+                26.681257
+              ],
+              "0": []
+            },
+            "c1-eth2": {
+              "8": [
+                26.681269
+              ],
+              "0": []
+            },
+            "p2-tap2": {
+              "8": [
+                26.681285
+              ],
+              "0": []
+            }
+          },
+          "where": [
+            "reply absent at source",
+            "request absent at destination"
+          ],
+          "first_miss_s": 26.272796,
+          "last_miss_s": 26.785577,
+          "previous_good_s": 26.16751,
+          "first_good_s": 26.889893,
+          "stable_delivery_s": 26.889893,
+          "stable_window_end_s": 27.813168,
+          "misses": {
+            "263": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-bond0",
+                "c1-eth2",
+                "p2-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 26.272796,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.376113,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.477843,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.578286,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.681257,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.681269,
+                    "point": "c1-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.681285,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "264": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-bond0",
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth2",
+                "p1-tap1",
+                "p1-tap2",
+                "p2-tap1",
+                "p2-tap3"
+              ],
+              "reply": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 26.785577,
+                    "point": "c1-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.785585,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.787566,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.787566,
+                    "point": "c2-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.78656,
+                    "point": "p1-tap1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": 110
+                  },
+                  {
+                    "time_s": 26.785597,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.786579,
+                    "point": "p2-tap1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": 110
+                  },
+                  {
+                    "time_s": 26.787548,
+                    "point": "p2-tap3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 26.787594,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.787598,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.78761,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.512781,
+      "send_pauses": [
+        {
+          "from_s": 26.272796,
+          "to_s": 26.785577,
+          "gap_s": 0.512781,
+          "after_seq": 263,
+          "before_seq": 264,
+          "last_good_s": 26.16751,
+          "last_good_seq": 262,
+          "first_good_s": 26.889893,
+          "first_good_seq": 265
+        }
+      ],
+      "baseline_good": 46,
+      "recovery_good": 29,
+      "baseline_missed": 0,
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.512781,
+        "longest_pause": {
+          "from_s": 26.272796,
+          "to_s": 26.785577,
+          "gap_s": 0.512781,
+          "after_seq": 263,
+          "before_seq": 264,
+          "last_good_s": 26.16751,
+          "last_good_seq": 262,
+          "first_good_s": 26.889893,
+          "first_good_seq": 265
+        },
+        "rule_applied": true
+      },
+      "phase_gaps_s": {
+        "withdrawal": [
+          {
+            "first_seq": 70,
+            "last_seq": 93,
+            "lower_s": 2.393343,
+            "upper_s": 2.598916
+          },
+          {
+            "first_seq": 262,
+            "last_seq": 265,
+            "lower_s": 0.722383,
+            "upper_s": 0.722383,
+            "sender_pause_s": 0.512781
+          }
+        ],
+        "restoration": []
+      },
+      "good_while_target_absent": 171,
+      "stable_while_target_absent": true
+    },
+    "201": {
+      "description": "client B to client A",
+      "sent": 460,
+      "missed": 27,
+      "duplicates": [],
+      "gaps": [
+        {
+          "first_seq": 70,
+          "last_seq": 93,
+          "failed_probes": 24,
+          "absent_at_source": 0,
+          "lower_s": 2.394459,
+          "upper_s": 2.60105,
+          "phases": [
+            "withdrawal"
+          ],
+          "trace_seq": 70,
+          "trace_s": {
+            "c2-bond0": {
+              "8": [
+                6.263423
+              ],
+              "0": []
+            },
+            "c2-eth1": {
+              "8": [
+                6.263431
+              ],
+              "0": []
+            },
+            "p1-tap3": {
+              "8": [
+                6.263445
+              ],
+              "0": []
+            }
+          },
+          "where": [
+            "request absent at destination"
+          ],
+          "first_miss_s": 6.263423,
+          "last_miss_s": 8.657882,
+          "previous_good_s": 6.161786,
+          "first_good_s": 8.762836,
+          "stable_delivery_s": 8.762836,
+          "stable_window_end_s": 9.688986,
+          "misses": {
+            "70": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.263423,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.263431,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.263445,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "71": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.368817,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.368822,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.368837,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "72": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.472777,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.472783,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.472795,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "73": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.576848,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.576854,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.576862,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "74": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.681765,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.681773,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.681782,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "75": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.784831,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.784842,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.784849,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "76": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.889346,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.889353,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.889362,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "77": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.993202,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.993209,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.993217,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "78": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.096807,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.096814,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.096821,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "79": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.200823,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.200828,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.200835,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "80": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.304814,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.30482,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.304828,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "81": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.409767,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.409773,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.409782,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "82": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.51322,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.513224,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.51323,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "83": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.620137,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.620142,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.62015,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "84": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.723925,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.723931,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.723939,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "85": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.824859,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.824863,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.824869,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "86": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.929762,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.929768,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.929777,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "87": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.036042,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.036048,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.036055,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "88": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.137765,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.137771,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.137779,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "89": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.240803,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.240815,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.240824,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "90": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.345799,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.34581,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.345822,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "91": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.448862,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.448869,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.448876,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "92": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.554766,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.554772,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.554781,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "93": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.657882,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.657888,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.657897,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            }
+          },
+          "stable_before_target_return": true
+        },
+        {
+          "first_seq": 263,
+          "last_seq": 265,
+          "failed_probes": 3,
+          "absent_at_source": 0,
+          "lower_s": 0.511581,
+          "upper_s": 0.721016,
+          "phases": [
+            "withdrawal"
+          ],
+          "trace_seq": 263,
+          "trace_s": {
+            "c2-bond0": {
+              "8": [
+                26.241447,
+                26.342802,
+                26.442972,
+                26.543757
+              ],
+              "0": []
+            },
+            "c2-eth2": {
+              "8": [
+                26.543764
+              ],
+              "0": []
+            },
+            "p2-tap3": {
+              "8": [
+                26.543774
+              ],
+              "0": []
+            }
+          },
+          "where": [
+            "request absent at destination"
+          ],
+          "first_miss_s": 26.241447,
+          "last_miss_s": 26.753028,
+          "previous_good_s": 26.136764,
+          "first_good_s": 26.85778,
+          "stable_delivery_s": 26.85778,
+          "stable_window_end_s": 27.771011,
+          "misses": {
+            "263": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth2",
+                "p2-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 26.241447,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.342802,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.442972,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.543757,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.543764,
+                    "point": "c2-eth2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.543774,
+                    "point": "p2-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "264": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth2",
+                "p2-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 26.652171,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.652177,
+                    "point": "c2-eth2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.652185,
+                    "point": "p2-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "265": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap3"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 26.753028,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.753034,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 26.753046,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            }
+          },
+          "stable_before_target_return": false
+        }
+      ],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.410724,
+      "send_pauses": [],
+      "baseline_good": 46,
+      "recovery_good": 29,
+      "baseline_missed": 0,
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.410724,
+        "longest_pause": null,
+        "rule_applied": false
+      },
+      "phase_gaps_s": {
+        "withdrawal": [
+          {
+            "first_seq": 70,
+            "last_seq": 93,
+            "lower_s": 2.394459,
+            "upper_s": 2.60105
+          },
+          {
+            "first_seq": 263,
+            "last_seq": 265,
+            "lower_s": 0.511581,
+            "upper_s": 0.721016
+          }
+        ],
+        "restoration": []
+      },
+      "good_while_target_absent": 172,
+      "stable_while_target_absent": true
+    },
+    "301": {
+      "description": "bypass forward",
+      "sent": 461,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.108662,
+      "send_pauses": [],
+      "baseline_good": 45,
+      "recovery_good": 29,
+      "baseline_missed": 0,
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.108662,
+        "longest_pause": null,
+        "rule_applied": false
+      }
+    },
+    "303": {
+      "description": "bypass reverse",
+      "sent": 460,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.111907,
+      "send_pauses": [],
+      "baseline_good": 45,
+      "recovery_good": 28,
+      "baseline_missed": 0,
+      "stable_recovery": true,
+      "sender_pause": {
+        "longest_send_gap_s": 0.111907,
+        "longest_pause": null,
+        "rule_applied": false
+      }
+    }
+  },
+  "forwarding": {
+    "phases_s": {
+      "baseline": [
+        0.0,
+        4.746078
+      ],
+      "withdrawal": [
+        4.746078,
+        27.204653
+      ],
+      "restoration": [
+        27.204653,
+        47.935503
+      ]
+    },
+    "outside_delivery": {
+      "points": {
+        "101": [
+          "mobile-eth1",
+          "mobile-eth2",
+          "p1-tap4",
+          "p2-tap4"
+        ],
+        "201": [
+          "mobile-eth1",
+          "mobile-eth2",
+          "p1-tap4",
+          "p2-tap4"
+        ]
+      },
+      "findings": []
+    },
+    "reflected_copies": {
+      "member_points": {
+        "101": [
+          "c1-bond0",
+          "c2-bond0"
+        ],
+        "201": [
+          "c2-bond0",
+          "c1-bond0"
+        ]
+      },
+      "findings": []
+    },
+    "host_table": {
+      "window_s": [
+        44.934312,
+        47.935503
+      ],
+      "peers": {
+        "p1": {
+          "sample_s": 47.53881,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "client1",
+              "expected": "client1",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "client2",
+              "expected": "client2",
+              "bond_member": "ether4",
+              "member_up": true
+            }
+          }
+        },
+        "p2": {
+          "sample_s": 47.607758,
+          "hosts": {
+            "02:00:00:11:00:11": {
+              "on_interface": "client1",
+              "expected": "client1",
+              "bond_member": "ether3",
+              "member_up": true
+            },
+            "02:00:00:11:00:12": {
+              "on_interface": "client2",
+              "expected": "client2",
+              "bond_member": "ether4",
+              "member_up": true
+            }
+          }
+        }
+      },
+      "wrong": []
+    },
+    "sync_warnings": {
+      "counts": {
+        "p1": {},
+        "p2": {
+          "withdrawal": 1
+        }
+      },
+      "first_lines": [
+        {
+          "node": "p2",
+          "phase": "withdrawal",
+          "time_s": 23.65885,
+          "line": "<28>Nov 24 19:53:35 dc1-core-mlag2 bridge,warning MLAG: remote heartbeat timeout"
+        }
+      ]
+    }
+  },
+  "lacp_system_ids": {
+    "client 2 bond": {
+      "members": {
+        "eth1": "65535/52:54:00:d7:0b:03",
+        "eth2": "65535/52:54:00:d7:0b:03"
+      },
+      "same": true
+    },
+    "client 1 bond": {
+      "members": {
+        "eth1": "65535/52:54:00:d7:0b:02",
+        "eth2": "65535/52:54:00:d7:0b:02"
+      },
+      "same": true
+    }
+  },
+  "sender_pause_rule": {
+    "101": true,
+    "201": false,
+    "301": false,
+    "303": false
+  },
+  "floods": {
+    "501": {
+      "description": "broadcast from client 1",
+      "sent": 457,
+      "max_send_interval_s": 0.503961,
+      "baseline_exceptions": [],
+      "sender_repeats": [],
+      "receivers": {
+        "client 2": {
+          "captures": [
+            "c2-bond0"
+          ],
+          "delivered": 433,
+          "duplicates": [
+            {
+              "seq": 263,
+              "time_s": 26.809785,
+              "phase": "withdrawal",
+              "copies": {
+                "c2-bond0": 2
+              }
+            }
+          ],
+          "gaps": [
+            {
+              "first_seq": 69,
+              "last_seq": 91,
+              "from_s": 6.208788,
+              "missed": 23,
+              "absent_at_source": 0,
+              "lower_s": 2.289292,
+              "upper_s": 2.496004,
+              "phases": [
+                "withdrawal"
+              ]
+            },
+            {
+              "first_seq": 261,
+              "last_seq": 263,
+              "from_s": 26.201006,
+              "missed": 1,
+              "absent_at_source": 0,
+              "lower_s": 0.608779,
+              "upper_s": 0.608779,
+              "sender_pause_s": 0.503961,
+              "phases": [
+                "withdrawal"
+              ]
+            }
+          ]
+        },
+        "MAC-move host": {
+          "captures": [
+            "mobile-eth1",
+            "mobile-eth2"
+          ],
+          "delivered": 433,
+          "duplicates": [],
+          "gaps": [
+            {
+              "first_seq": 69,
+              "last_seq": 91,
+              "from_s": 6.208788,
+              "missed": 23,
+              "absent_at_source": 0,
+              "lower_s": 2.289292,
+              "upper_s": 2.496004,
+              "phases": [
+                "withdrawal"
+              ]
+            },
+            {
+              "first_seq": 261,
+              "last_seq": 263,
+              "from_s": 26.201006,
+              "missed": 1,
+              "absent_at_source": 0,
+              "lower_s": 0.608779,
+              "upper_s": 0.608779,
+              "sender_pause_s": 0.503961,
+              "phases": [
+                "withdrawal"
+              ]
+            }
+          ]
+        }
+      },
+      "sender_pause": {
+        "longest_send_gap_s": 0.503961,
+        "rule_applied": true
+      }
+    },
+    "502": {
+      "description": "unknown unicast from client 1",
+      "sent": 456,
+      "max_send_interval_s": 0.504392,
+      "baseline_exceptions": [],
+      "sender_repeats": [],
+      "receivers": {
+        "client 2": {
+          "captures": [
+            "c2-bond0"
+          ],
+          "delivered": 432,
+          "duplicates": [
+            {
+              "seq": 263,
+              "time_s": 26.801202,
+              "phase": "withdrawal",
+              "copies": {
+                "c2-bond0": 2
+              }
+            }
+          ],
+          "gaps": [
+            {
+              "first_seq": 69,
+              "last_seq": 91,
+              "from_s": 6.209113,
+              "missed": 23,
+              "absent_at_source": 0,
+              "lower_s": 2.287672,
+              "upper_s": 2.495079,
+              "phases": [
+                "withdrawal"
+              ]
+            },
+            {
+              "first_seq": 261,
+              "last_seq": 263,
+              "from_s": 26.193933,
+              "missed": 1,
+              "absent_at_source": 0,
+              "lower_s": 0.607269,
+              "upper_s": 0.607269,
+              "sender_pause_s": 0.504392,
+              "phases": [
+                "withdrawal"
+              ]
+            }
+          ]
+        },
+        "MAC-move host": {
+          "captures": [
+            "mobile-eth1",
+            "mobile-eth2"
+          ],
+          "delivered": 432,
+          "duplicates": [],
+          "gaps": [
+            {
+              "first_seq": 69,
+              "last_seq": 91,
+              "from_s": 6.209113,
+              "missed": 23,
+              "absent_at_source": 0,
+              "lower_s": 2.287672,
+              "upper_s": 2.495079,
+              "phases": [
+                "withdrawal"
+              ]
+            },
+            {
+              "first_seq": 261,
+              "last_seq": 263,
+              "from_s": 26.193933,
+              "missed": 1,
+              "absent_at_source": 0,
+              "lower_s": 0.607269,
+              "upper_s": 0.607269,
+              "sender_pause_s": 0.504392,
+              "phases": [
+                "withdrawal"
+              ]
+            }
+          ]
+        }
+      },
+      "sender_pause": {
+        "longest_send_gap_s": 0.504392,
+        "rule_applied": true
+      }
+    }
+  },
+  "bridge_mode": "none",
+  "status": "fail",
+  "phases": [
+    {
+      "key": "withdrawal",
+      "name": "Primary down",
+      "expected": "The MLAG secondary reverts its MLAG bonds to its own LACP system ID (mlag-lacp-fallback=yes) and both traffic hosts renegotiate LACP, with brief loss. The virtual links keep carrier, so each host drops its member to the primary only at the LACP short timeout (3 \u00d7 1 s). The secondary's edge MLAG bonds keep forwarding throughout.",
+      "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
+      "limit_s": 5.0,
+      "window_s": [
+        4.746078,
+        27.204653
+      ],
+      "verdict": "fail",
+      "worst_loss_s": {
+        "lower_s": 2.394459,
+        "upper_s": 2.60105,
+        "lost_probes": null,
+        "spans_both_phases": false
+      },
+      "loss_s": {
+        "101": {
+          "lower_s": 2.393343,
+          "upper_s": 2.598916,
+          "lost_probes": null,
+          "spans_both_phases": false
+        },
+        "201": {
+          "lower_s": 2.394459,
+          "upper_s": 2.60105,
+          "lost_probes": null,
+          "spans_both_phases": false
+        }
+      },
+      "control_loss_s": {},
+      "failed_checks": [
+        "501 broadcast from client 1: client 2 got no second copy during withdrawal, seq [263]",
+        "502 unknown unicast from client 1: client 2 got no second copy during withdrawal, seq [263]"
+      ]
+    },
+    {
+      "key": "restoration",
+      "name": "Primary back",
+      "expected": "The rebooted peer keeps its bond members out of the bond until the MLAG system ID syncs (mlag-init-delay), rejoins as MLAG primary and restores the shared system ID. Both traffic hosts renegotiate LACP to the shared system ID, with brief loss.",
+      "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
+      "limit_s": 5.0,
+      "window_s": [
+        27.204653,
+        44.934312
+      ],
+      "verdict": "pass",
+      "worst_loss_s": null,
+      "loss_s": {},
+      "control_loss_s": {},
+      "failed_checks": []
+    }
+  ]
+}
