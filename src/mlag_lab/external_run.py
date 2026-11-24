@@ -45,6 +45,7 @@ MEDIUM_PAIR_STP_OFF = (*MEDIUM_STP_OFF_CASES, *MEDIUM_CORE_OFF_CASES)
 
 class BridgeComparisonLab(RootLab):
     flows = ROOT_FLOWS
+    management_probes = MANAGEMENT_PROBES
     log_dir = "logs"
     settle_timeout_s = 32
     management_timeout_s = 30
@@ -273,7 +274,7 @@ def external_attempt(lab, path, name, build_hash, changes):
             feed.seek(0, os.SEEK_END)
             try:
                 capture.observe(lab.captures, lab.ports, lab.flows, named_ports=True, immediate=True)
-                for peer, ident in MANAGEMENT_PROBES.items():
+                for peer, ident in lab.management_probes.items():
                     capture.launch(["ping", "-n", "-D", "-O", "-i", "0.1", "-e", str(ident), lab.peers[peer]],
                                    path / "probes" / f"{ident}.log")
                 with ThreadPoolExecutor(max_workers=len(lab.peers) + 1) as workers:

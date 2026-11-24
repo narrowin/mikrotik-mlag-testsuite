@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="mikrotik-mlag-mlags" tests="4" errors="2" failures="0" skipped="1">
+  <testcase name="01-two-pair-stp-off-strict-baseline" classname="mikrotik.mlag.mlags">
+    <properties>
+      <property name="lab" value="MLAG labs" />
+    </properties>
+  </testcase>
+  <testcase name="01-two-pair-stp-off-strict-reboot-a-primary" classname="mikrotik.mlag.mlags">
+    <properties>
+      <property name="lab" value="MLAG labs" />
+    </properties>
+    <error>p1 management TAP shows one closed guest absence
+p2 independent observer had complete state at intervals within 1.5 s
+q1 independent observer had complete state at intervals within 1.5 s
+q2 independent observer had complete state at intervals within 1.5 s
+host independent observer had complete state at intervals within 1.5 s
+101 restoration loss ≥ 16.448 s exceeds 5 s
+201 restoration loss ≥ 16.133 s exceeds 5 s</error>
+  </testcase>
+  <testcase name="01-two-pair-stp-off-strict-reboot-a-secondary" classname="mikrotik.mlag.mlags">
+    <properties>
+      <property name="lab" value="MLAG labs" />
+    </properties>
+    <skipped message="Attempt did not reach evaluation" />
+  </testcase>
+  <testcase name="runner" classname="mikrotik.mlag.mlags">
+    <properties>
+      <property name="lab" value="MLAG labs" />
+    </properties>
+    <error>1 scheduled attempts did not reach evaluation</error>
+  </testcase>
+</testsuite>

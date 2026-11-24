@@ -30,6 +30,8 @@ The current Small lab selectors use RSTP. The matching STP-disabled campaign rem
 | MEDIUM-04 | Primary reboot | `medium-stp-off-reboot-primary` | `medium-pair-root-reboot-primary` | `medium-access-root-reboot-primary` |
 | MEDIUM-07 | Both cores down and return | Planned | Planned | Planned |
 
+MEDIUM-08 uses a separate two-pair deployment: two MLAG pairs joined by one distributed bond, with equal bridge priorities and with the field per-pair priorities. [Why, setup and commands](medium-two-pair-root.md)
+
 MEDIUM-05 and MEDIUM-06 identify the archived single-homed root attachment experiments. [Wiring and root placement](medium-spanning-tree.md) · [Commands](../operator-guide.md#introduce-rstp-after-the-all-bridges-off-run) · [Archived results](medium-spanning-tree.md#archived-diagnostics)
 
 ## Large lab

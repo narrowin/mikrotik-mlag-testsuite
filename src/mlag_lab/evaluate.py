@@ -16,6 +16,8 @@ from .readme import write_readme
 from .report import write_timeline, write_result, write_suite
 from .root_evaluate import evaluate_root
 from .root_topology import MEDIUM_TARGETS, ROOT_CASES
+from .two_pair_evaluate import evaluate_two_pair
+from .two_pair_topology import TWO_PAIR_TARGETS
 
 
 def case_id(path):
@@ -28,7 +30,7 @@ def case_id(path):
     if name in BY_NAME:
         name = BY_NAME[name].selectors[0]
     if name not in CASES and not (
-        manifest.exists() and name in (*ROOT_CASES, *EXTERNAL_CASES, *DIRECT_CASES, *MEDIUM_TARGETS)
+        manifest.exists() and name in (*ROOT_CASES, *EXTERNAL_CASES, *DIRECT_CASES, *MEDIUM_TARGETS, *TWO_PAIR_TARGETS)
     ):
         raise ValueError(f"Unknown case ID: {name!r} in {path}")
     return name
@@ -121,7 +123,9 @@ def analyze(path):
         result["case"] = name
         spec = case_spec(name)
         result.update(name=spec.name, lab=f"{spec.lab} lab", title=spec.title, action=spec.action)
-        if name in (*EXTERNAL_CASES, *DIRECT_CASES, *MEDIUM_TARGETS):
+        if name in TWO_PAIR_TARGETS:
+            evaluator = evaluate_two_pair
+        elif name in (*EXTERNAL_CASES, *DIRECT_CASES, *MEDIUM_TARGETS):
             evaluator = evaluate_external
         else:
             evaluator = evaluate_root if name in ROOT_CASES else evaluate_legacy

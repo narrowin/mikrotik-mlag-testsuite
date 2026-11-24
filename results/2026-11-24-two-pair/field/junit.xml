@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="mikrotik-mlag-medium" tests="4" errors="1" failures="1" skipped="0">
+  <testcase name="01-two-pair-field-baseline" classname="mikrotik.mlag.medium">
+    <properties>
+      <property name="lab" value="Medium lab" />
+    </properties>
+  </testcase>
+  <testcase name="01-two-pair-field-calibrate" classname="mikrotik.mlag.medium">
+    <properties>
+      <property name="lab" value="Medium lab" />
+    </properties>
+  </testcase>
+  <testcase name="01-two-pair-field-reboot-a-primary" classname="mikrotik.mlag.medium">
+    <properties>
+      <property name="lab" value="Medium lab" />
+    </properties>
+    <failure>101 withdrawal loss ≥ 16.290 s exceeds 5 s
+201 withdrawal loss ≥ 16.229 s exceeds 5 s
+q1 kept root 0x2000.02:00:00:21:00:11 while p1 was absent; observed ['0x2000.02:00:00:21:00:11', '0x4000.02:00:00:21:00:12']
+q2 kept root 0x2000.02:00:00:21:00:11 while p1 was absent; observed ['0x2000.02:00:00:21:00:11', '0x4000.02:00:00:21:00:12']</failure>
+  </testcase>
+  <testcase name="01-two-pair-field-reboot-a-secondary" classname="mikrotik.mlag.medium">
+    <properties>
+      <property name="lab" value="Medium lab" />
+    </properties>
+    <error>p2 did not prove a new guest boot within 90 s
+Management UDP syslog end markers from required observers
+101 delivered ten consecutive probes after recovery
+201 delivered ten consecutive probes after recovery
+301 delivered ten consecutive probes after recovery
+303 delivered ten consecutive probes after recovery
+Restore state was captured</error>
+  </testcase>
+</testsuite>

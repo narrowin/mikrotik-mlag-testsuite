@@ -503,6 +503,176 @@ CASES += tuple(
             selectors=tuple(s.replace("medium-", "medium-mstp-", 1) for s in case.selectors))
     for case in CASES if case.name.startswith(("medium-pair-root-", "medium-access-root-")))
 
+# Two MLAG pairs in one Layer 2 domain. Pair A (CHR 1 primary, CHR 2 secondary) is the intended root,
+# pair B (CHR 3 primary, CHR 4 secondary) hangs off it on one distributed LACP bond. "equal" puts every
+# switch on 0x8000, as in the field report where pairs with the same priority fought over the root.
+# "field" is the deployed field design: the same priority inside a pair and a lower value on the root pair.
+ROOT_FIGHT_REPORT = "https://forum.mikrotik.com/t/mlag-between-crs326-24s-2q-rm-with-more-than-1-000-hosts-macs/269294"
+TWO_PAIR_SETUPS = {
+    "equal": ("equal bridge priority 0x8000", "bridge priority 0x8000 on all four CHRs, as in the field report "
+              "where every MLAG pair kept the same priority", "0x8000.02:00:00:21:00:11", "0x8000.02:00:00:21:00:12",
+              "the lower bridge MAC, because all priorities are equal"),
+    "field": ("field priorities, pair A 0x2000, pair B 0x4000", "bridge priority 0x2000 on pair A and 0x4000 on pair B, "
+            "the field design with one priority per pair", "0x2000.02:00:00:21:00:11", "0x4000.02:00:00:21:00:12",
+            "priority 0x2000 against 0x4000"),
+}
+TWO_PAIR_WIRING = ("Pair A (CHR 1 MLAG primary, CHR 2 MLAG secondary) and pair B (CHR 3 MLAG primary, CHR 4 MLAG "
+                   "secondary) are joined by one distributed LACP bond, mlag-id 11 on pair A and 21 on pair B. "
+                   "Host 1 bonds to pair B and host 2 to pair A, so both VLAN 110 streams cross both pairs.")
+TWO_PAIR_REBOOTS = {
+    "reboot-a-primary": ("p1", "Pair A primary reboot", "CHR 1 (pair A's MLAG primary)",
+                         "CHR 2, CHR 3 and CHR 4", "CHR 1 rejoins as MLAG primary and pair A presents {a} again."),
+    "reboot-a-secondary": ("p2", "Pair A secondary reboot", "CHR 2 (pair A's MLAG secondary)",
+                           "CHR 1, CHR 3 and CHR 4", "CHR 2 rejoins as MLAG secondary under pair A's unchanged ID."),
+    "reboot-b-primary": ("q1", "Pair B primary reboot", "CHR 3 (pair B's MLAG primary)",
+                         "CHR 1, CHR 2 and CHR 4", "CHR 3 rejoins as MLAG primary and pair B presents {b} again."),
+    "reboot-b-secondary": ("q2", "Pair B secondary reboot", "CHR 4 (pair B's MLAG secondary)",
+                           "CHR 1, CHR 2 and CHR 3", "CHR 4 rejoins as MLAG secondary under pair B's unchanged ID."),
+}
+TWO_PAIR_WITHDRAWAL = {
+    ("equal", "reboot-a-primary"): (
+        "If CHR 2 presents its own bridge ID 0x8000.02:00:00:21:00:14 while CHR 1 is away, pair B's "
+        "0x8000.02:00:00:21:00:12 is lower and RSTP moves the root to pair B. That root move, and the topology "
+        "change it causes on every switch, is the field failure this setup reproduces.", ROOT_FIGHT_REPORT),
+    ("field", "reboot-a-primary"): (
+        "Even if CHR 2 presents its own bridge ID 0x2000.02:00:00:21:00:14, it still beats pair B's 0x4000, so "
+        "the root stays on pair A. This is what the field per-pair priority is meant to guarantee.", ROOT_FIGHT_REPORT),
+    ("equal", "reboot-a-secondary"): ("CHR 1 keeps pair A's bridge ID, so the root does not change.", MLAG_MANUAL),
+    ("field", "reboot-a-secondary"): ("CHR 1 keeps pair A's bridge ID, so the root does not change.", MLAG_MANUAL),
+    ("equal", "reboot-b-primary"): (
+        "Pair B may present CHR 4's bridge ID 0x8000.02:00:00:21:00:13 instead. It is still higher than pair A's, "
+        "so the root stays on pair A.", MLAG_MANUAL),
+    ("field", "reboot-b-primary"): (
+        "Pair B may present CHR 4's bridge ID 0x4000.02:00:00:21:00:13 instead. It is still higher than pair A's, "
+        "so the root stays on pair A.", MLAG_MANUAL),
+    ("equal", "reboot-b-secondary"): ("CHR 3 keeps pair B's bridge ID, so the root does not change.", MLAG_MANUAL),
+    ("field", "reboot-b-secondary"): ("CHR 3 keeps pair B's bridge ID, so the root does not change.", MLAG_MANUAL),
+}
+# The same wiring with spanning tree off; stp-off-strict also sets lacp-strict=yes on the inter-pair bond.
+# The same wiring with spanning tree off on both pairs: no BPDUs, no root, only LACP and MLAG.
+_off = ("Resets the data bridge on all four CHRs over management SSH with protocol-mode=none. "
+        f"{TWO_PAIR_WIRING}")
+CASES += (
+    Case("two-pair-stp-off-baseline", "Medium", "Baseline · two MLAG pairs, spanning tree off",
+         f"{_off} Then runs numbered 100 ms pings for 4 s in both VLAN 110 and both bypass directions and reads back "
+         "bridge, MLAG and LACP state on all four CHRs. No fault is applied.",
+         ("two-pair-stp-off-baseline",), (101, 201), (301, 303),
+         (Phase("baseline", "Baseline",
+                "Both pairs are connected, with CHR 1 and CHR 3 as MLAG primaries. With protocol-mode=none no bridge "
+                "sends or forwards BPDUs. Every member of the inter-pair bond and both host bonds is synchronized, "
+                "collecting and distributing, and all four streams deliver with zero loss.", 0.0, MLAG_MANUAL),)),
+    Case("two-pair-stp-off-calibrate", "Medium", "One-way calibration · two MLAG pairs, spanning tree off",
+         "After the bridge reset (protocol-mode=none) and baseline gate, the runner adds a tc ingress filter on host "
+         "2's eth3 that drops bypass-forward echo requests (stream 301) for 2 s. It then removes the filter and "
+         "observes 3 s of settling and a 3 s recovery window.",
+         ("two-pair-stp-off-calibrate",), (301,), (101, 201, 303),
+         (Phase("calibration", "One-way bypass cut",
+                "The filter drops only stream 301's echo requests at host 2's bypass port, outside both MLAG pairs. "
+                "Stream 301 shows exactly one gap, with every request sent, and the gap's bounds enclose the measured "
+                "1.9–2.3 s filter interval. The reverse bypass and both VLAN 110 directions lose nothing.",
+                None, LAB_TARGET),)),
+)
+for _step, (_target, _title, _who, _others, _back) in TWO_PAIR_REBOOTS.items():
+    _primary = _step.endswith("-primary")
+    CASES += (Case(
+        f"two-pair-stp-off-{_step}", "Medium", f"{_title} · two MLAG pairs, spanning tree off",
+        f"{_off} It requires a loss-free baseline and zero BPDUs. It then reboots {_who} with `/system reboot`, waits "
+        "for the guest uptime to reset and keeps probing for 16 s plus a 3 s recovery window.",
+        (f"two-pair-stp-off-{_step}",), (101, 201), (301, 303),
+        (Phase("withdrawal", f"{_title.split(' reboot')[0]} down",
+               ("The surviving peer reverts its MLAG bonds to its own LACP system ID, so the other pair and the host "
+                "renegotiate LACP, with brief loss. " if _primary else
+                "The surviving peer keeps the shared LACP system ID. ")
+               + "The virtual links keep carrier, so partners drop the member to the rebooted switch at the LACP short "
+               "timeout (3 × 1 s). No port depends on spanning tree, no BPDUs appear, and each VLAN direction loses "
+               "at most 5 s.", 5.0, MLAG_MANUAL),
+         Phase("restoration", f"{_title.split(' reboot')[0]} back",
+               "The rebooted switch keeps its bond members out of the bond until the MLAG system ID syncs "
+               "(mlag-init-delay) and rejoins under the shared system ID. Partners renegotiate LACP with brief loss, "
+               "and each VLAN direction loses at most 5 s.", 5.0, MLAG_MANUAL)),
+    ),)
+# The same wiring with spanning tree off on both pairs: no BPDUs, no root, only LACP and MLAG.
+_off = ("Resets the data bridge on all four CHRs over management SSH with protocol-mode=none. It first sets lacp-strict=yes on the inter-pair bond of all four CHRs, so a member whose LACP partner times out stops carrying traffic. "
+        f"{TWO_PAIR_WIRING}")
+CASES += (
+    Case("two-pair-stp-off-strict-baseline", "Medium", "Baseline · two MLAG pairs, spanning tree off, lacp-strict=yes on the inter-pair bond",
+         f"{_off} Then runs numbered 100 ms pings for 4 s in both VLAN 110 and both bypass directions and reads back "
+         "bridge, MLAG and LACP state on all four CHRs. No fault is applied.",
+         ("two-pair-stp-off-strict-baseline",), (101, 201), (301, 303),
+         (Phase("baseline", "Baseline",
+                "Both pairs are connected, with CHR 1 and CHR 3 as MLAG primaries. With protocol-mode=none no bridge "
+                "sends or forwards BPDUs. Every member of the inter-pair bond and both host bonds is synchronized, "
+                "collecting and distributing, and all four streams deliver with zero loss.", 0.0, MLAG_MANUAL),)),
+    Case("two-pair-stp-off-strict-calibrate", "Medium", "One-way calibration · two MLAG pairs, spanning tree off, lacp-strict=yes on the inter-pair bond",
+         "After the bridge reset (protocol-mode=none) and baseline gate, the runner adds a tc ingress filter on host "
+         "2's eth3 that drops bypass-forward echo requests (stream 301) for 2 s. It then removes the filter and "
+         "observes 3 s of settling and a 3 s recovery window.",
+         ("two-pair-stp-off-strict-calibrate",), (301,), (101, 201, 303),
+         (Phase("calibration", "One-way bypass cut",
+                "The filter drops only stream 301's echo requests at host 2's bypass port, outside both MLAG pairs. "
+                "Stream 301 shows exactly one gap, with every request sent, and the gap's bounds enclose the measured "
+                "1.9–2.3 s filter interval. The reverse bypass and both VLAN 110 directions lose nothing.",
+                None, LAB_TARGET),)),
+)
+for _step, (_target, _title, _who, _others, _back) in TWO_PAIR_REBOOTS.items():
+    _primary = _step.endswith("-primary")
+    CASES += (Case(
+        f"two-pair-stp-off-strict-{_step}", "Medium", f"{_title} · two MLAG pairs, spanning tree off, lacp-strict=yes on the inter-pair bond",
+        f"{_off} It requires a loss-free baseline and zero BPDUs. It then reboots {_who} with `/system reboot`, waits "
+        "for the guest uptime to reset and keeps probing for 16 s plus a 3 s recovery window.",
+        (f"two-pair-stp-off-strict-{_step}",), (101, 201), (301, 303),
+        (Phase("withdrawal", f"{_title.split(' reboot')[0]} down",
+               ("The surviving peer reverts its MLAG bonds to its own LACP system ID, so the other pair and the host "
+                "renegotiate LACP, with brief loss. " if _primary else
+                "The surviving peer keeps the shared LACP system ID. ")
+               + "The virtual links keep carrier, so partners drop the member to the rebooted switch at the LACP short "
+               "timeout (3 × 1 s). No port depends on spanning tree, no BPDUs appear, and each VLAN direction loses "
+               "at most 5 s.", 5.0, MLAG_MANUAL),
+         Phase("restoration", f"{_title.split(' reboot')[0]} back",
+               "The rebooted switch keeps its bond members out of the bond until the MLAG system ID syncs "
+               "(mlag-init-delay) and rejoins under the shared system ID. Partners renegotiate LACP with brief loss, "
+               "and each VLAN direction loses at most 5 s.", 5.0, MLAG_MANUAL)),
+    ),)
+for _setup, (_label, _priorities, _a, _b, _winner) in TWO_PAIR_SETUPS.items():
+    _reset = (f"Resets the data bridge on all four CHRs over management SSH with protocol-mode=rstp and {_priorities}. "
+              f"{TWO_PAIR_WIRING}")
+    CASES += (
+        Case(f"two-pair-{_setup}-baseline", "Medium", f"Baseline · two MLAG pairs, {_label}",
+             f"{_reset} Then runs numbered 100 ms pings for 4 s in both VLAN 110 and both bypass directions and reads "
+             "back bridge, MLAG, RSTP and LACP state on all four CHRs. No fault is applied.",
+             (f"two-pair-{_setup}-baseline",), (101, 201), (301, 303),
+             (Phase("baseline", "Baseline",
+                    f"Both pairs are connected and each presents its MLAG primary's bridge ID: pair A {_a}, pair B "
+                    f"{_b}. All four CHRs report root {_a}; pair A wins on {_winner}. Every member of the inter-pair "
+                    "bond and both host bonds is synchronized, collecting and distributing, RSTP BPDUs from the root "
+                    "reach pair B, and all four streams deliver with zero loss.", 0.0, MLAG_MANUAL),)),
+        Case(f"two-pair-{_setup}-calibrate", "Medium", f"One-way calibration · two MLAG pairs, {_label}",
+             f"After the bridge reset ({_priorities}) and baseline gate, the runner adds a tc ingress filter on host "
+             "2's eth3 that drops bypass-forward echo requests (stream 301) for 2 s. It then removes the filter and "
+             "observes 3 s of settling and a 3 s recovery window.",
+             (f"two-pair-{_setup}-calibrate",), (301,), (101, 201, 303),
+             (Phase("calibration", "One-way bypass cut",
+                    "The filter drops only stream 301's echo requests at host 2's bypass port, outside both MLAG "
+                    "pairs. Stream 301 shows exactly one gap, with every request sent, and the gap's bounds enclose "
+                    "the measured 1.9–2.3 s filter interval. The reverse bypass and both VLAN 110 directions lose "
+                    "nothing.", None, LAB_TARGET),)),
+    )
+    for _step, (_target, _title, _who, _others, _back) in TWO_PAIR_REBOOTS.items():
+        _expected, _source = TWO_PAIR_WITHDRAWAL[_setup, _step]
+        CASES += (Case(
+            f"two-pair-{_setup}-{_step}", "Medium", f"{_title} · two MLAG pairs, {_label}",
+            f"{_reset} It requires a loss-free baseline with root {_a} on all four CHRs. It then reboots {_who} with "
+            "`/system reboot`, waits for the guest uptime to reset and keeps probing for 16 s plus a 3 s recovery "
+            "window.",
+            (f"two-pair-{_setup}-{_step}",), (101, 201), (301, 303),
+            (Phase("withdrawal", f"{_title.split(' reboot')[0]} down",
+                   f"{_expected} The case passes only if {_others} keep root {_a} while the switch is away and each "
+                   "VLAN direction loses at most 5 s.", 5.0, _source),
+             Phase("restoration", f"{_title.split(' reboot')[0]} back",
+                   f"{_back.format(a=_a, b=_b)} {_others} must keep root {_a} throughout, and each VLAN direction "
+                   "loses at most 5 s.", 5.0, MLAG_MANUAL)),
+        ),)
+
 def _index(cases):
     index = {}
     for case in cases:

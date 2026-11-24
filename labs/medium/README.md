@@ -55,3 +55,7 @@ sudo env MLAG_CHR_IMAGE="$(cat labs/campaign-image.txt)" MLAG_SYSLOG_IMAGE="$sys
 ## Pair-root variant
 
 `medium-pair-root.clab.yml` makes the MLAG pair the RSTP root on management subnet `172.30.216.0/27`. It uses the same deployment name, so remove the other Medium topology first. [Wiring and fault target](../../docs/cases/medium-core-reboot.md) · [Commands](../../docs/operator-guide.md#reboot-the-root-pair)
+
+## Two-pair variant
+
+[medium-two-pair.clab.yml](medium-two-pair.clab.yml) replaces the access switch with a second MLAG pair (`dc1-access-mlag1`, `dc1-access-mlag2`) on management subnet `172.30.219.0/27`. It tests whether STP root stays on the core pair when a pair's primary reboots. [Case, reasons and commands](../../docs/cases/medium-two-pair-root.md)

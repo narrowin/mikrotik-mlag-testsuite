@@ -12,8 +12,8 @@ POWER_MARKS = ("power_off_start", "power_off_applied", "power_off_observed", "po
                "power_on_applied", "power_on_observed", "guest_boot_observed")
 
 
-def guest_window(icmp, target, down, end, check, timeline):
-    ident = MANAGEMENT_PROBES[target]
+def guest_window(icmp, target, down, end, check, timeline, *, probes=MANAGEMENT_PROBES):
+    ident = probes[target]
     packets = icmp[f"{target}-tap0"]
     requests = sorted((stamps[0], seq) for (probe, kind, seq), stamps in packets.items()
                       if probe == ident and kind == 8 and down <= stamps[0] < end)

@@ -25,10 +25,11 @@ from .legacy import CASES, CAPTURES, FLOWS, PEER_LINK_PORTS, case_captures, case
 from .report import write_suite
 from .root_state import uptime
 from .root_topology import MEDIUM_TARGETS, ROOT_CASES
+from .two_pair_topology import TWO_PAIR_TARGETS
 
 HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parents[1]
-LAB_FOLDERS = {"small": "small", "medium": "medium", "medium-pair-root": "medium"}
+LAB_FOLDERS = {"small": "small", "medium": "medium", "medium-pair-root": "medium", "medium-two-pair": "medium"}
 PEERS = {"p1": "172.30.215.11", "p2": "172.30.215.12"}
 PORTS = {"p1": "eth2", "c1": "eth1"}
 QMP_PORT = 5001
@@ -599,7 +600,11 @@ def select_topology(cases, bridge_mode="rstp"):
         raise ValueError("The single-homed external cases are archived. Use medium-* for live runs.")
     if bridge_mode not in BRIDGE_MODES:
         raise ValueError(f"Unknown bridge mode {bridge_mode!r}; choose one of {', '.join(BRIDGE_MODES)}")
-    if any(name in MEDIUM_TARGETS for name in cases):
+    if any(name in TWO_PAIR_TARGETS for name in cases):
+        if any(name not in TWO_PAIR_TARGETS for name in cases):
+            raise ValueError("Select cases from one topology per run")
+        kind = "two-pair"
+    elif any(name in MEDIUM_TARGETS for name in cases):
         if any(name not in MEDIUM_TARGETS for name in cases):
             raise ValueError("Select cases from one topology per run")
         kind = "medium"
@@ -613,7 +618,7 @@ def select_topology(cases, bridge_mode="rstp"):
         kind = "root"
     else:
         kind = "small"
-    if kind in ("medium", "root") and bridge_mode != "rstp":
+    if kind in ("medium", "root", "two-pair") and bridge_mode != "rstp":
         raise ValueError("--bridge-mode applies to the small lab only. Medium and root case names set the bridge mode.")
     return kind
 
@@ -632,8 +637,13 @@ def restore_rstp(lab, output):
 
 def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp"):
     kind = select_topology(cases, bridge_mode)
-    is_medium, is_direct, is_root = kind == "medium", kind == "direct", kind == "root"
-    if is_medium:
+    # The two-pair topology runs through the same attempt and baseline gate as the Medium lab.
+    is_medium, is_direct, is_root = kind in ("medium", "two-pair"), kind == "direct", kind == "root"
+    if kind == "two-pair":
+        from .external_run import external_attempt
+        from .two_pair_run import TwoPairLab
+        lab_type, topology_name = TwoPairLab, "medium-two-pair"
+    elif is_medium:
         from .external_run import MediumLab, external_attempt
         lab_type, topology_name = MediumLab, "medium"
     elif is_direct:

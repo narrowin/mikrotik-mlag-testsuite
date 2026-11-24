@@ -21,12 +21,12 @@ Tested on RouterOS 7.26beta7 (`mikrotik/chr:7.26beta7`) with Containerlab 0.83.0
 
 | Result | Setup | Runs | Longest interruption |
 | --- | --- | --- | --- |
-| ✅ PASS | STP off | 10 passed, 0 failed | MLAG secondary reboot, Secondary down: 2.52–2.73 s (limit 5 s) |
 | ✅ PASS | STP off on the pair, RSTP on the access switch | 13 passed, 0 failed, 1 invalid or not reached | MLAG secondary reboot, Secondary down: 2.72–2.93 s (limit 5 s) |
 | ✅ PASS | MSTP, access switch is root of VLAN 110 only | 34 passed, 0 failed, 2 invalid or not reached | MLAG primary reboot, Primary down: 3.02–3.23 s (limit 5 s) |
+| ⚠️ INCOMPLETE | STP off | 13 passed, 0 failed, 4 invalid or not reached | MLAG secondary reboot, Secondary down: 2.52–2.73 s (limit 5 s) |
 | ❌ FAIL | MSTP, access switch is root of the default instance | 5 passed, 5 failed, 14 invalid or not reached | VLAN never forwarded in 4 of 6 suites. Where it forwarded: MLAG secondary reboot, Secondary down: 11.35–11.55 s (limit 5 s) |
-| ❌ FAIL | RSTP, MLAG pair is root | 9 passed, 3 failed | MLAG primary reboot, Primary down: 11.44–11.65 s (limit 5 s) |
 | ❌ FAIL | MSTP, MLAG pair is root | 13 passed, 4 failed, 11 invalid or not reached | MLAG primary reboot, Primary down: 12.87–13.08 s (limit 5 s) |
+| ❌ FAIL | RSTP, MLAG pair is root | 15 passed, 5 failed, 1 invalid or not reached | Pair A primary reboot, Pair A primary down: 17.38–17.59 s (limit 5 s) |
 | ❌ FAIL | RSTP, access switch is root | 0 passed, 1 failed, 3 invalid or not reached | Baseline: VLAN traffic did not forward |
 
 The [Medium lab results](results/README.md#medium-lab) list every setup variant and run.

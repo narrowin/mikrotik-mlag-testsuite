@@ -15,6 +15,7 @@ from .cases import CASES
 DEVICES = {
     "p1": ("CHR 1", "dc1-core-mlag1"), "p2": ("CHR 2", "dc1-core-mlag2"),
     "witness": ("Access switch", "dc1-access-switch1"),
+    "q1": ("CHR 3", "dc1-access-mlag1"), "q2": ("CHR 4", "dc1-access-mlag2"),
     "r1": ("STP root 1", "dc1-stp-root1"), "r2": ("STP root 2", "dc1-stp-root2"),
     "c1": ("Client 1", "dc1-traffic-host1"), "c2": ("Client 2", "dc1-traffic-host2"),
     "mobile": ("MAC-move host", "dc1-mac-move-host"), "syslog": ("Syslog collector", "dc1-syslog-collector"),
@@ -23,7 +24,7 @@ MODES = {"none": "STP off", "rstp": "RSTP", "mstp": "MSTP"}
 ICONS = {"pass": "✅ PASS", "fail": "❌ FAIL", "error": "⚠️ INVALID", "skipped": "⏭️ NOT RUN"}
 ORDER = {"fail": 0, "error": 1, "skipped": 2, "pass": 3}
 # Archived runs recorded the Small lab config as peers.rsc.
-STARTUP_CONFIGS = ("small.rsc", "peers.rsc", "medium.rsc", "medium-pair-root.rsc")
+STARTUP_CONFIGS = ("small.rsc", "peers.rsc", "medium.rsc", "medium-pair-root.rsc", "medium-two-pair.rsc")
 
 
 def find_suites(path):
@@ -224,13 +225,13 @@ def setup_rows(suites, runs, base):
     rows.append(("Bridge modes", ", ".join(sorted({run.mode for run in runs})) or "not recorded"))
     roles = {}
     for run in runs:
-        for node in ("p1", "p2"):
+        for node in ("p1", "p2", "q1", "q2"):
             state = run.directory / f"state-{node}.jsonl"
             if node not in roles and state.exists() and (m := re.search(r"mlag-active-role: (\w+)", state.read_text())):
                 roles[node] = m[1]
     settings = {}
     for run in runs:
-        for config in sorted(run.directory.glob("config-p*.txt")):
+        for config in sorted((*run.directory.glob("config-p*.txt"), *run.directory.glob("config-q*.txt"))):
             text = config.read_text()
             for key in ("lacp-strict", "up-delay", "mlag-priority", "mlag-lacp-fallback", "mlag-init-delay"):
                 for value in re.findall(rf"\b{key}=(\S+)", text):
@@ -240,14 +241,14 @@ def setup_rows(suites, runs, base):
                                                         for key, values in settings.items())))
     if roles:
         rows.append(("MLAG roles", ", ".join(f"{DEVICES[n][0]} is MLAG {r}" for n, r in sorted(roles.items()))
-                     + ". Peer link: ether2 on both CHRs (mlag-peer-port)."))
+                     + ". Peer link: ether2 on each MLAG peer (mlag-peer-port)."))
     started = sorted(build["started"][:10] for build in builds if build.get("started"))
     if started:
         rows.append(("Date", started[0] if started[0] == started[-1] else f"{started[0]} to {started[-1]}"))
     configs = []
     for suite in suites:
         inputs = suite / "inputs"
-        for name in (*STARTUP_CONFIGS, "small.clab.yml", "medium.clab.yml", "medium-pair-root.clab.yml",
+        for name in (*STARTUP_CONFIGS, "small.clab.yml", "medium.clab.yml", "medium-pair-root.clab.yml", "medium-two-pair.clab.yml",
                      "client-network.sh"):
             if (inputs / name).exists():
                 configs.append(link(name if len(suites) == 1 else f"{suite.name}/{name}", inputs / name, base))

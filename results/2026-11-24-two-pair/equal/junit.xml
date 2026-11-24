@@ -1,0 +1,29 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="mikrotik-mlag-medium" tests="4" errors="0" failures="1" skipped="0">
+  <testcase name="01-two-pair-equal-baseline" classname="mikrotik.mlag.medium">
+    <properties>
+      <property name="lab" value="Medium lab" />
+    </properties>
+  </testcase>
+  <testcase name="01-two-pair-equal-calibrate" classname="mikrotik.mlag.medium">
+    <properties>
+      <property name="lab" value="Medium lab" />
+    </properties>
+  </testcase>
+  <testcase name="01-two-pair-equal-reboot-a-primary" classname="mikrotik.mlag.medium">
+    <properties>
+      <property name="lab" value="Medium lab" />
+    </properties>
+    <failure>101 withdrawal loss ≥ 17.359 s exceeds 5 s
+101 restoration loss ≥ 6.708 s exceeds 5 s
+201 withdrawal loss ≥ 17.381 s exceeds 5 s
+201 restoration loss ≥ 6.706 s exceeds 5 s
+q1 kept root 0x8000.02:00:00:21:00:11 while p1 was absent; observed ['0x8000.02:00:00:21:00:11', '0x8000.02:00:00:21:00:12']
+q2 kept root 0x8000.02:00:00:21:00:11 while p1 was absent; observed ['0x8000.02:00:00:21:00:11', '0x8000.02:00:00:21:00:12']</failure>
+  </testcase>
+  <testcase name="01-two-pair-equal-reboot-a-secondary" classname="mikrotik.mlag.medium">
+    <properties>
+      <property name="lab" value="Medium lab" />
+    </properties>
+  </testcase>
+</testsuite>

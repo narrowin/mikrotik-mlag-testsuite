@@ -14,12 +14,14 @@ from .direct_topology import DIRECT_CASES
 from .evaluate import replay
 from .legacy import CASE_NAMES, CASES
 from .root_topology import MEDIUM_TARGETS, ROOT_CASES
+from .two_pair_topology import TWO_PAIR_TARGETS
 
 app = typer.Typer(no_args_is_help=True)
 LABS = Path(__file__).resolve().parents[2] / "labs"
 
 # Descriptive Small lab names first. The internal selectors stay accepted.
-Case = Enum("Case", {name: name for name in (*CASE_NAMES, *CASES, *ROOT_CASES, *MEDIUM_TARGETS, *DIRECT_CASES)},
+Case = Enum("Case", {name: name for name in (*CASE_NAMES, *CASES, *ROOT_CASES, *MEDIUM_TARGETS, *DIRECT_CASES,
+                                               *TWO_PAIR_TARGETS)},
             type=str)
 
 

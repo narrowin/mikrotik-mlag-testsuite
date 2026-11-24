@@ -21,7 +21,8 @@ STP = ("stp.version", "stp.type", "stp.flags", "stp.flags.port_role", "stp.root.
 ROOT_FIELDS = ("frame.time_epoch", *FRAME, *LACP, *STP, *ARP)
 
 
-def read_root_packets(path, captures, start, down, check, timeline, *, reference_root=True):
+def read_root_packets(path, captures, start, down, check, timeline, *, reference_root=True,
+                      probes=MANAGEMENT_PROBES):
     manifest = (path / "pcap.sha256").read_text()
     if manifest != capture_hashes(path, captures):
         raise ValueError("PCAP hashes differ from saved manifest")
@@ -46,7 +47,7 @@ def read_root_packets(path, captures, start, down, check, timeline, *, reference
                     "src": fields["eth.src"], "dst": fields["eth.dst"],
                     "tagged_vid": int(fields["vlan.id"]) if fields["vlan.id"] else None,
                 })
-            elif ident and int(ident) in MANAGEMENT_PROBES.values():
+            elif ident and int(ident) in probes.values():
                 data[int(ident), int(fields["icmp.type"]), int(fields["icmp.seq"])].append(stamp)
             if fields["stp.version"]:
                 bpdu = {field: fields[field] for field in (*STP, "eth.src")}
