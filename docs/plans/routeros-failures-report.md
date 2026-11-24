@@ -7,7 +7,7 @@ This report is written for filing bug reports with MikroTik. We do not plan to f
 ## Outcome
 
 - Both faults are RouterOS behaviour, not errors of the test checks.
-- Fault 1: after a bond member or an MLAG peer returns, an MLAG peer sends frames from the peer port back out a dual-connected MLAG bond. The 7.25.2 and 7.26beta7 fix "packets looped back to a dual-connected bond" does not fully hold.
+- Fault 1: after a bond member or an MLAG peer returns, an MLAG peer sends frames from the peer port back out a dual-connected MLAG bond. The 7.26beta7 changelog fix "packets looped back to a dual-connected bond" does not fully hold.
 - Fault 2: with two MLAG pairs, rebooting one pair's MLAG primary stops traffic for 19.8–23.3 s. The other pair keeps sending into the rebooting switch.
 - Likely common cause: an MLAG bond whose local member has link up but is not LACP-distributing stays a forwarding bridge port.
 
@@ -46,11 +46,11 @@ This report is written for filing bug reports with MikroTik. We do not plan to f
 | --- | --- |
 | Repeated bond member flap | 4 of 4 |
 | MLAG primary reboot | 3 of 3 |
-| MLAG secondary reboot | 2 of 3, the third was interrupted |
+| MLAG secondary reboot | 2 of 2 |
 | MLAG secondary power loss | 2 of 2 |
-| Primary power loss, single member loss, peer link loss, MAC move | 0 of 12 |
+| Primary power loss, single member loss, peer link loss, MAC move | 0 of 11 |
 
-- On the Medium lab, a unicast request from host 2 comes back to host 2 the same way. It happened in 5 of 6 RSTP reboots and 7 of 31 MSTP reboots, with the MLAG pair as root. It did not happen in 13 Medium reboots with STP off on the MLAG pair.
+- On the Medium lab, a unicast request from host 2 comes back to host 2 the same way. It happened in 5 of 6 graded RSTP reboots and 6 of 28 graded MSTP reboots with the MLAG pair as root. It did not happen in 16 graded Medium reboots with STP off on the MLAG pair.
 - Neither `lacp-strict=yes` nor `mlag-lacp-fallback=no` prevented it on the Medium lab.
 
 **Not verified.**
@@ -79,7 +79,7 @@ This report is written for filing bug reports with MikroTik. We do not plan to f
 
 **Results.**
 
-- Primary reboots: 4 of 4 lost 19.8–23.3 s. Earlier saved two-pair runs lost 19.3–24.2 s.
+- Primary reboots: 4 of 4 lost 19.8–23.3 s. The earlier saved two-pair run lost 19.7–19.9 s.
 - Example, reboot of p1:
   - The last LACPDU from p1 came at 8.89 s.
   - At 12.39 s, q1 marked its member `ether3` expired. It was not collecting or distributing, as expected with `lacp-rate=1sec`.
@@ -92,7 +92,7 @@ This report is written for filing bug reports with MikroTik. We do not plan to f
 
 **Not verified.**
 
-- `lacp-strict=yes` on `interpair`: one saved run still lost 16.1–16.4 s with the same member flags, but that run is invalid for other reasons.
+- `lacp-strict=yes` on `interpair`: one saved run still lost about 16.5 s with the same member flags, but that run is invalid for other reasons.
 - Power loss on the two-pair lab. There the link goes down, which may avoid the outage.
 - Whether hardware shows the same outage on a reboot. A rebooting CHR keeps its link up, and most hardware drops it. Any failure that stops forwarding while the link stays up triggers the behaviour.
 
