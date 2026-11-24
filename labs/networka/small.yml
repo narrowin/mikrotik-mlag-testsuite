@@ -1,0 +1,17 @@
+general:
+  transport: system
+  ssh_config_file: false
+  ssh_strict_host_key_checking: true
+  timeout: 8
+  command_timeout: 10
+devices:
+  dc1-core-mlag1:
+    host: 172.30.215.11
+    device_type: mikrotik_routeros
+  dc1-core-mlag2:
+    host: 172.30.215.12
+    device_type: mikrotik_routeros
+groups:
+  mlag-peers:
+    description: The two isolated MLAG lab switches
+    members: [dc1-core-mlag1, dc1-core-mlag2]

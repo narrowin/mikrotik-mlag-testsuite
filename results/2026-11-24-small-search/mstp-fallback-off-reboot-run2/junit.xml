@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="mikrotik-mlag-small" tests="5" errors="2" failures="0" skipped="1">
+  <testcase name="01-baseline" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+  </testcase>
+  <testcase name="01-reboot-calibration" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+  </testcase>
+  <testcase name="01-secondary-reboot" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+    <error>p2 did not prove a new guest boot within 90 s
+Management UDP syslog end markers from required observers
+101 delivered ten consecutive probes after recovery
+201 delivered ten consecutive probes after recovery
+301 delivered ten consecutive probes after recovery
+303 delivered ten consecutive probes after recovery
+Restore state was captured</error>
+  </testcase>
+  <testcase name="01-primary-reboot" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+    <skipped message="Attempt did not reach evaluation" />
+  </testcase>
+  <testcase name="runner" classname="mikrotik.mlag.small">
+    <properties>
+      <property name="lab" value="Small lab" />
+    </properties>
+    <error>Restoring protocol-mode=rstp failed: Command ['ssh', '-F', '/dev/null', '-S', '/tmp/mlag-_stuhs8m/p2', '-o', 'ConnectTimeout=3', '-o', 'NumberOfPasswordPrompts=1', '-o', 'PubkeyAuthentication=no', '-o', 'ServerAliveInterval=2', '-o', 'ServerAliveCountMax=2', '-o', 'UserKnownHostsFile=/tmp/mlag-_stuhs8m/known_hosts', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'LogLevel=ERROR', '-o', 'BatchMode=yes', 'admin@172.30.215.12', ':put ("uptime-ns=" . [:tonsec [/system resource get uptime]])'] returned non-zero exit status 255.. Set it on both MLAG peers by hand.</error>
+  </testcase>
+</testsuite>

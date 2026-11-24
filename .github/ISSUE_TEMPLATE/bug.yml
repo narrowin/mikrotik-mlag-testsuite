@@ -1,0 +1,22 @@
+name: Bug
+description: Something in the lab, runner or reports does not work.
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected and what you saw.
+    validations:
+      required: true
+  - type: textarea
+    id: command
+    attributes:
+      label: Command and output
+      description: The command and the last lines of its output. Remove any passwords.
+      render: shell
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      placeholder: Codespaces, or OrbStack on macOS 15, or Ubuntu 24.04 with Docker 27

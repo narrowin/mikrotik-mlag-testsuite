@@ -1,0 +1,59 @@
+{
+  "schema": 2,
+  "case": "direct-baseline",
+  "name": "baseline",
+  "topology": "mlag-small",
+  "builds_sha256": "4ac83edc9b62e6461de5885f90918098213be60a297d06dd1d3f8ac1047cc696",
+  "target": null,
+  "devices": {
+    "p1": {
+      "name": "dc1-core-mlag1",
+      "container": "clab-mlag-small-dc1-core-mlag1",
+      "management_ip": "172.30.215.11",
+      "role": null,
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "p2": {
+      "name": "dc1-core-mlag2",
+      "container": "clab-mlag-small-dc1-core-mlag2",
+      "management_ip": "172.30.215.12",
+      "role": null,
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "c1": {
+      "name": "dc1-traffic-host1",
+      "container": "clab-mlag-small-dc1-traffic-host1",
+      "management_ip": "172.30.215.4",
+      "role": null,
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    },
+    "c2": {
+      "name": "dc1-traffic-host2",
+      "container": "clab-mlag-small-dc1-traffic-host2",
+      "management_ip": "172.30.215.2",
+      "role": null,
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    },
+    "mobile": {
+      "name": "dc1-mac-move-host",
+      "container": "clab-mlag-small-dc1-mac-move-host",
+      "management_ip": "172.30.215.3",
+      "role": null,
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    },
+    "syslog": {
+      "name": "dc1-syslog-collector",
+      "container": "clab-mlag-small-dc1-syslog-collector",
+      "management_ip": "172.30.215.20",
+      "role": null,
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    }
+  },
+  "bridge_mode": "mstp"
+}

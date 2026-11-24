@@ -1,0 +1,90 @@
+seconds_from_baseline	source	event
+-2.067194021	c1-eth2	LACP aa:c1:ab:5b:f2:61 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-2.067187021	p2-tap2	LACP aa:c1:ab:5b:f2:61 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-2.027040109	syslog-172.30.215.11	<30>Nov 24 09:45:52 p1 script,info mlag-suite-01-carrier-begin
+-2.006507885	syslog-172.30.215.12	<30>Nov 24 09:45:52 p2 script,info mlag-suite-01-carrier-begin
+-1.960568396	p2	"query start +-2.048349 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:D7:0B:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether2"
+-1.951454712	p1	"query start +-2.048502 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:D7:0B:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether5"
+-1.373831021	p2-tap2	LACP 52:54:00:d7:0c:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+-1.373826021	c1-eth2	LACP 52:54:00:d7:0c:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+-1.272958021	p1-tap2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+-1.272951021	p1-eth2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+-1.272949021	c1-eth1	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+-1.123156021	c1-eth1	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-1.123155021	p1-eth2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-1.123152021	p1-tap2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+0.000000000	action	"{""epoch_ns"": 1795513554611079021, ""mono_ns"": 139317051270261, ""name"": ""baseline_start""}"
+4.000697366	action	"{""epoch_ns"": 1795513558611776387, ""mono_ns"": 139321051966294, ""name"": ""down_start""}"
+4.002170003	link-p1	296: eth2@if297: <BROADCAST,MULTICAST> mtu 9500 qdisc noqueue master br2 state DOWN group default 
+4.002512019	link-c1	297: eth1@if296: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc noqueue master bond0 state DOWN group default 
+4.002576019	link-p1	296: eth2@if297: <BROADCAST,MULTICAST> mtu 9500 master br2 state DOWN 
+4.039366359	action	"{""epoch_ns"": 1795513558650445380, ""mono_ns"": 139321090634870, ""name"": ""down_applied"", ""qmp"": {""done_ns"": 1795513558644073784, ""reply"": {""id"": 2, ""return"": {}}, ""request"": {""arguments"": {""name"": ""nic2"", ""up"": false}, ""execute"": ""set_link"", ""id"": 2}, ""started_ns"": 1795513558643590575}}"
+4.048792979	syslog-172.30.215.11	<30>Nov 24 09:45:58 p1 interface,info ether3 link down
+4.075822995	link-c1	297: eth1@if296: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc noqueue master bond0 state DOWN group default 
+4.075984019	link-c1	297: eth1@if296: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP> mtu 1500 qdisc noqueue master bond0 state DOWN group default 
+4.078680728	action	"{""confirmed"": [""guest"", ""linux""], ""epoch_ns"": 1795513558689759749, ""linux_flags"": [""NO-CARRIER"", ""BROADCAST"", ""MULTICAST"", ""SLAVE"", ""UP""], ""max_latency_s"": 0.077877153, ""mono_ns"": 139321129948947, ""name"": ""down_observed"", ""routeros_status"": ""name: ether3 \n     status: no-link\n  supported:""}"
+4.092580979	icmp-201	"{""absent_at_source"": 0, ""failed_probes"": 1, ""first_seq"": 60, ""last_seq"": 60, ""lower_s"": 0.0, ""phases"": [""withdrawal""], ""trace_s"": {""mobile-bond0"": {""0"": [], ""8"": [4.092581]}, ""p1-tap4"": {""0"": [], ""8"": [4.092591]}}, ""trace_seq"": 60, ""upper_s"": 0.206983, ""where"": [""request absent at destination""]}"
+4.098288979	icmp-101	"{""absent_at_source"": 0, ""failed_probes"": 1, ""first_seq"": 60, ""last_seq"": 60, ""lower_s"": 0.0, ""phases"": [""withdrawal""], ""trace_s"": {""c1-bond0"": {""0"": [], ""8"": [4.098289]}, ""c1-eth2"": {""0"": [], ""8"": [4.098293]}, ""mobile-bond0"": {""0"": [4.099116], ""8"": [4.099108]}, ""p1-tap1"": {""0"": [], ""8"": [4.098634]}, ""p1-tap4"": {""0"": [4.099119], ""8"": [4.099103]}, ""p2-tap1"": {""0"": [], ""8"": [4.098626]}, ""p2-tap2"": {""0"": [], ""8"": [4.098303]}}, ""trace_seq"": 60, ""upper_s"": 0.210704, ""where"": [""reply absent at source""]}"
+4.102761979	icmp-302	"{""absent_at_source"": 0, ""failed_probes"": 1, ""first_seq"": 60, ""last_seq"": 60, ""lower_s"": 0.0, ""phases"": [""withdrawal""], ""trace_s"": {""c1-bond0"": {""0"": [], ""8"": [4.102762]}, ""c1-eth2"": {""0"": [], ""8"": [4.102764]}, ""c2-bond0"": {""0"": [4.103055], ""8"": [4.10305]}, ""p2-tap2"": {""0"": [], ""8"": [4.102792]}}, ""trace_seq"": 60, ""upper_s"": 0.20983, ""where"": [""reply absent at source""]}"
+4.120969875	syslog-172.30.215.11	<30>Nov 24 09:45:58 p1 interface,info client1 link down
+4.132127123	syslog-172.30.215.11	<31>Nov 24 09:45:58 p1 bridge,debug host 02:00:00:11:00:11:110 changed ports: client1 to ether2
+4.144696979	syslog-172.30.215.11	<31>Nov 24 09:45:58 p1 bridge,stp,debug ether2:0  role transition DESIGNATED_AGREE
+4.358877571	p1	"query start +4.279275 s | status: no-link | P port=ether3 key=0 flags=""ATG-----"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATG-CD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:D7:0B:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                inactive in-bridge                in-bridge | role: designated-port                   designated-port          designated-port | forwarding: yes                               yes                      yes | topology-changes: 1                                 0                        0 | on-interface=ether2 | on-interface=ether5"
+12.078914500	action	"{""epoch_ns"": 1795513566689993521, ""mono_ns"": 139329130183136, ""name"": ""up_start""}"
+12.080552083	link-p1	296: eth2@if297: <NO-CARRIER,BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue master br2 state DOWN group default 
+12.080567955	link-p1	296: eth2@if297: <NO-CARRIER,BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 master br2 state DOWN 
+12.081078931	link-c1	297: eth1@if296: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default 
+12.081152915	link-p1	296: eth2@if297: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 master br2 state UP 
+12.081186963	link-p1	296: eth2@if297: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 master br2 state UP 
+12.081195923	link-p1	296: eth2@if297: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue master br2 state UP group default 
+12.093015955	link-c1	297: eth1@if296: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default 
+12.114792404	action	"{""epoch_ns"": 1795513566725871425, ""mono_ns"": 139329166060748, ""name"": ""up_applied"", ""qmp"": {""done_ns"": 1795513566719600412, ""reply"": {""id"": 2, ""return"": {}}, ""request"": {""arguments"": {""name"": ""nic2"", ""up"": true}, ""execute"": ""set_link"", ""id"": 2}, ""started_ns"": 1795513566719208286}}"
+12.117009979	c1-eth1	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x47 partner=0x00
+12.117011979	p1-eth2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x47 partner=0x00
+12.117017979	p1-tap2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x47 partner=0x00
+12.134308650	action	"{""confirmed"": [""guest"", ""linux""], ""epoch_ns"": 1795513566745387671, ""linux_flags"": [""BROADCAST"", ""MULTICAST"", ""SLAVE"", ""UP"", ""LOWER_UP""], ""max_latency_s"": 0.055252775, ""mono_ns"": 139329185576745, ""name"": ""up_observed"", ""routeros_status"": ""name: ether3 \n       status: link-ok\n         rate: 10Gbps \n  full-duplex: yes    \n    supported:""}"
+12.150599827	syslog-172.30.215.11	<30>Nov 24 09:46:06 p1 interface,info client1 link up
+12.167736979	syslog-172.30.215.11	<31>Nov 24 09:46:06 p1 bridge,stp,debug client1:0  role transition DESIGNATED_SYNCED
+12.169173907	syslog-172.30.215.11	<31>Nov 24 09:46:06 p1 bridge,stp,debug client1:0  role transition DESIGNATED_LEARN
+12.172696979	syslog-172.30.215.11	<31>Nov 24 09:46:06 p1 bridge,stp,debug client1:0  role transition DESIGNATED_FORWARD
+12.174072979	syslog-172.30.215.11	<31>Nov 24 09:46:06 p1 bridge,debug host 02:00:00:11:00:11:110 changed ports: ether2 to client1
+12.195773979	icmp-302	"{""absent_at_source"": 0, ""failed_probes"": 24, ""first_seq"": 138, ""last_seq"": 161, ""lower_s"": 2.401195, ""phases"": [""restoration""], ""trace_s"": {""c1-bond0"": {""0"": [], ""8"": [12.195774]}, ""c1-eth2"": {""0"": [], ""8"": [12.19578]}, ""c2-bond0"": {""0"": [12.196188], ""8"": [12.196172]}, ""p2-tap2"": {""0"": [], ""8"": [12.19579]}}, ""trace_seq"": 138, ""upper_s"": 2.609973, ""where"": [""reply absent at source""]}"
+12.214459979	icmp-201	"{""absent_at_source"": 0, ""failed_probes"": 24, ""first_seq"": 139, ""last_seq"": 162, ""lower_s"": 2.390491, ""phases"": [""restoration""], ""trace_s"": {""mobile-bond0"": {""0"": [], ""8"": [12.21446]}, ""p1-tap4"": {""0"": [], ""8"": [12.214473]}}, ""trace_seq"": 139, ""upper_s"": 2.608825, ""where"": [""request absent at destination""]}"
+12.244372979	icmp-101	"{""absent_at_source"": 0, ""failed_probes"": 24, ""first_seq"": 139, ""last_seq"": 162, ""lower_s"": 2.401493, ""phases"": [""restoration""], ""trace_s"": {""c1-bond0"": {""0"": [], ""8"": [12.244373]}, ""c1-eth2"": {""0"": [], ""8"": [12.244377]}, ""mobile-bond0"": {""0"": [12.24489], ""8"": [12.244885]}, ""p1-tap1"": {""0"": [], ""8"": [12.244634]}, ""p1-tap4"": {""0"": [12.244892], ""8"": [12.244882]}, ""p2-tap1"": {""0"": [], ""8"": [12.244626]}, ""p2-tap2"": {""0"": [], ""8"": [12.244382]}}, ""trace_seq"": 139, ""upper_s"": 2.607855, ""where"": [""reply absent at source"", ""request absent at destination""]}"
+12.257866979	p1-tap2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x47 partner=0x00
+12.257874979	p1-eth2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x47 partner=0x00
+12.257877979	c1-eth1	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x47 partner=0x00
+12.429626979	c1-eth1	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x07 partner=0x47
+12.429629979	p1-eth2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x07 partner=0x47
+12.429635979	p1-tap2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x07 partner=0x47
+12.449458312	p1	"query start +12.355776 s | status: link-ok | A port=ether3 key=15 flags=""ATG---FE"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:D7:0B:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether5"
+12.793272154	p1	"query start +12.705884 s | status: link-ok | AP port=ether3 key=15 flags=""ATG-----"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATG-----"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:D7:0B:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether5"
+13.073014931	syslog-172.30.215.11	<30>Nov 24 09:46:07 p1 interface,info ether3 link up (speed 10G, full duplex)
+13.576637979	p1-tap2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x07 partner=0x07
+13.576640979	p1-eth2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x07 partner=0x07
+13.576641979	c1-eth1	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x07 partner=0x07
+14.206026979	c1-eth1	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x07 partner=0x07
+14.206029979	p1-eth2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x07 partner=0x07
+14.206035979	p1-tap2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x07 partner=0x07
+14.518422979	c1-eth1	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x0f partner=0x07
+14.518424979	p1-eth2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x0f partner=0x07
+14.518431979	p1-tap2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x0f partner=0x07
+14.566928979	p1-tap2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x0f partner=0x0f
+14.566937979	p1-eth2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x0f partner=0x0f
+14.566939979	c1-eth1	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x0f partner=0x0f
+14.621452947	link-c1	297: eth1@if296: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default 
+14.828311979	c1-eth1	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x3f partner=0x0f
+14.828314979	p1-eth2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x3f partner=0x0f
+14.828320979	p1-tap2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x3f partner=0x0f
+14.897882979	p1-tap2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+14.897888979	p1-eth2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+14.897890979	c1-eth1	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+14.901273466	p1	"query start +14.813439 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:D7:0B:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether5"
+15.245849979	c1-eth1	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+15.245851979	p1-eth2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+15.245857979	p1-tap2	LACP aa:c1:ab:51:a9:a7 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+20.134635760	action	"{""epoch_ns"": 1795513574745714781, ""mono_ns"": 139337185904312, ""name"": ""recovery_start""}"
+23.134948329	action	"{""epoch_ns"": 1795513577746027350, ""mono_ns"": 139340186217673, ""name"": ""recovery_end""}"
+23.143580819	syslog-172.30.215.11	<30>Nov 24 09:46:17 p1 script,info mlag-suite-01-carrier-end
+23.156989075	syslog-172.30.215.12	<30>Nov 24 09:46:17 p2 script,info mlag-suite-01-carrier-end
+25.169498707	action	"{""clock_delta_ns"": 3125, ""early_exits"": [], ""epoch_ns"": 1795513579780577728, ""mono_ns"": 139342220766884, ""name"": ""collectors_stopped""}"

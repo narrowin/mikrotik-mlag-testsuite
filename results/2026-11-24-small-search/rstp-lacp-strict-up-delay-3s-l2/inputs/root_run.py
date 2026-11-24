@@ -1,0 +1,308 @@
+"""Observe the root-pair topology before, during and after its cases."""
+
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager
+from decimal import Decimal
+import json
+import os
+from queue import Empty, SimpleQueue
+import re
+import subprocess
+from threading import Event
+import time
+
+from .evaluate import analyze
+from .evidence import seal_captures
+from .legacy import NS, case_name
+from .root_state import uptime, verify_root
+from .root_topology import MANAGEMENT_PROBES, ROOT_CAPTURES, ROOT_FLOWS, ROOT_LINKS, ROOT_NODES, ROOT_PORTS, target_for
+from .run import CONFIG, UPTIME, Capture, Lab, filter_fault, run, sample_loop
+
+STATE = (
+    UPTIME,
+    "/interface ethernet monitor ether2 once",
+    "/interface ethernet monitor ether3 once",
+    "/interface ethernet monitor ether4 once",
+    "/interface bridge monitor bridge once",
+    "/interface bridge port monitor [find where bridge=bridge] once",
+    "/interface bridge host print detail without-paging where mac-address=02:00:00:11:00:11",
+    "/interface bridge host print detail without-paging where mac-address=02:00:00:11:00:12",
+)
+
+
+class RootLab(Lab):
+    name = "mlag-medium"
+    device_names = {**Lab.device_names, "witness": "dc1-access-switch1"}
+    nodes = (*ROOT_NODES, "c1", "c2", "syslog")
+    peers = ROOT_NODES
+    links = ROOT_LINKS
+    ports = ROOT_PORTS
+    client1_probe_port = "eth1"
+    management_timeout_s = 100
+
+    def validate_links(self):
+        for left, right in self.links:
+            self.verify_veth(left, right)
+
+    def read_router(self, peer):
+        bonds = ("uplink",) if peer == "witness" else ("access-uplink", "client2")
+        monitors = tuple(f"/interface bonding monitor-slaves bond={bond} once=yes" for bond in bonds)
+        return self.ros(peer, ";".join((*STATE, *monitors)))
+
+    def observe_router(self, peer):
+        try:
+            return self.read_router(peer)
+        except subprocess.SubprocessError:
+            ssh = self.ssh[peer]
+            subprocess.run([*ssh[:-1], "-O", "exit", ssh[-1]], capture_output=True, timeout=2)
+            self.master.pop(peer, None)
+            if self.open_ssh(peer):
+                return self.read_router(peer)
+            raise
+
+    def read_linux(self):
+        return run(self.ns("c2", "cat", "/proc/net/bonding/bond0"))
+
+    def readiness(self):
+        routers = {peer: self.read_router(peer) for peer in self.peers}
+        linux = self.read_linux()
+        verify_root(routers, linux)
+        return {"routers": routers, "linux": linux, "neighbors": self.probe_neighbors()}
+
+    def probe_neighbors(self):
+        neighbors = {
+            node: json.loads(run(self.ns(node, "ip", "-j", "neigh", "show", "to", address, "dev", interface)))
+            for node, address, interface in (("c1", "10.110.0.12", self.client1_probe_port),
+                                             ("c2", "10.110.0.11", "bond0"))
+        }
+        for node, mac in (("c1", "02:00:00:11:00:12"), ("c2", "02:00:00:11:00:11")):
+            entries = neighbors[node]
+            if not any(entry.get("lladdr") == mac and "PERMANENT" in entry["state"] for entry in entries):
+                raise RuntimeError(f"{node} missing the permanent probe neighbor {mac}")
+        return neighbors
+
+    def wait_ready(self):
+        last_error = "management SSH unavailable"
+        deadline = time.monotonic() + self.management_timeout_s
+        while time.monotonic() < deadline:
+            for peer in self.peers:
+                if peer not in self.master:
+                    self.open_ssh(peer)
+            if len(self.master) == len(self.peers):
+                try:
+                    return self.readiness()
+                except (RuntimeError, subprocess.SubprocessError) as error:
+                    last_error = str(error)
+            time.sleep(1)
+        raise RuntimeError(f"Root baseline did not settle: {last_error}")
+
+    def host_state(self):
+        by_node = {}
+        for node in (*self.peers, "c1", "c2"):
+            interesting = {port for point, port in self.ports if point == node}
+            if node in self.peers:
+                interesting.update(f"tap{port.removeprefix('eth')}" for port in tuple(interesting))
+            links = json.loads(run(self.ns(node, "ip", "-j", "link", "show")))
+            by_node[node] = {link["ifname"]: link["flags"] for link in links if link["ifname"] in interesting}
+        fdb = {}
+        for peer in self.peers:
+            entries = json.loads(run(self.ns(peer, "bridge", "-j", "fdb", "show")))
+            fdb[peer] = [entry for entry in entries if entry.get("mac") in (
+                "02:00:00:11:00:11", "02:00:00:11:00:12",
+            )]
+        return {"links": by_node, "bond": self.read_linux(), "virtual_cable_fdb": fdb}
+
+    def versions(self):
+        versions = super().versions()
+        for image in versions["images"].values():
+            image["repo_digests"] = json.loads(run(["docker", "image", "inspect",
+                                                  "--format", "{{json .RepoDigests}}", image["id"]]))
+        for label, args in {
+            "uv": ("uv", "--version"), "docker": ("docker", "version", "--format", "{{.Server.Version}}"),
+            "ip": ("ip", "-Version"), "tcpdump": ("tcpdump", "--version"), "ping": ("ping", "-V"),
+        }.items():
+            versions[label] = run(args).splitlines()[0]
+        versions["kernel"] = os.uname().release
+        versions["virtual_cables"] = {
+            peer: json.loads(run(self.ns(peer, "bridge", "-j", "-d", "link", "show")))
+            for peer in self.peers
+        }
+        return versions
+
+    @contextmanager
+    def compare_fallback(self, name):
+        if name != "reboot-primary-no-fallback":
+            yield
+            return
+        original = {}
+        try:
+            for peer in ("p1", "p2"):
+                raw = self.ros(peer, "/interface bridge print detail without-paging where name=bridge")
+                flag = re.search(r"\bmlag-lacp-fallback=(yes|no)", raw)
+                if flag is None or flag[1] != "yes":
+                    raise RuntimeError(f"{peer} does not have a verified default fallback setting")
+                original[peer] = flag[1]
+                self.ros(peer, "/interface bridge set bridge mlag-lacp-fallback=no")
+            self.wait_ready()
+            yield
+        finally:
+            for peer, flag in original.items():
+                self.ros(peer, f"/interface bridge set bridge mlag-lacp-fallback={flag}")
+
+
+def reboot_guest(capture, target, before, samples):
+    lab = capture.lab
+    prior = uptime(before["routers"][target])
+    if prior is None:
+        raise RuntimeError(f"{target} missing pre-reboot uptime")
+    requested = capture.mark("down_start", target=target, prior_uptime_ns=prior)
+    receipt = lab.ros(target, ":execute { :delay 1s; /system reboot }")
+    capture.mark("reboot_request_acknowledged", target=target, raw=receipt)
+    deadline = time.monotonic() + 90
+    while time.monotonic() < deadline:
+        try:
+            sample = samples.get(timeout=0.5)
+        except Empty:
+            continue
+        if sample["started_ns"] < requested["epoch_ns"] or "raw" not in sample:
+            continue
+        returned = uptime(sample["raw"])
+        elapsed = sample["done_ns"] - requested["epoch_ns"]
+        if returned is not None and returned < prior and returned <= elapsed + 2_000_000_000:
+            capture.mark("guest_boot_observed", target=target, prior_uptime_ns=prior,
+                         uptime_ns=returned, query_start_ns=sample["started_ns"],
+                         query_end_ns=sample["done_ns"])
+            return
+    raise RuntimeError(f"{target} did not prove a new guest boot within 90 s")
+
+
+def stop_guest(capture, target):
+    lab = capture.lab
+    capture.mark("down_start", target=target)
+    try:
+        stopped = lab.qmp_action(target, "stop")
+        status = lab.qmp_action(target, "query-status")["reply"]["return"]
+        if status["running"] or status["status"] != "paused":
+            raise RuntimeError(f"QEMU did not confirm a paused guest: {status}")
+        capture.mark("guest_stopped", target=target, qmp=stopped, status=status)
+        time.sleep(35)
+    finally:
+        capture.mark("guest_resume_requested", target=target)
+        continued = lab.qmp_action(target, "cont")
+        status = lab.qmp_action(target, "query-status")["reply"]["return"]
+        capture.mark("guest_resumed", target=target, qmp=continued, status=status)
+        if not status["running"]:
+            raise RuntimeError(f"QEMU did not confirm guest resumed: {status}")
+
+
+def rebind_syslog(capture, target, logs):
+    label = f"{capture.lab.name}-{capture.path.name}"
+    marker = f"{label}-end"
+    address = capture.lab.peers[target]
+    if any(log["source_ip"] == address and marker in log["raw"]
+           for log in map(json.loads, logs.splitlines())):
+        return
+    capture.mark("syslog_rebind_requested", target=target)
+    action = "/system logging action set [find where name=mlagLabSyslog] src-address="
+    capture.lab.ros(target, f"{action}0.0.0.0;{action}{address};"
+                    f':log info "{label}-after-rebind"')
+    time.sleep(2)
+
+
+def verify_live_collectors(capture, baseline, logs, *, verify_delivery=True):
+    marker = f"{capture.lab.name}-{capture.path.name}-begin"
+    sources = {log["source_ip"] for log in map(json.loads, logs.splitlines()) if marker in log["raw"]}
+    expected = set(capture.lab.peers.values())
+    if sources != expected:
+        raise RuntimeError(f"Missing pre-fault management syslog markers from {sorted(expected - sources)}")
+    if any(child.poll() is not None for child, _ in capture.processes):
+        raise RuntimeError("An observer exited before the fault")
+    if verify_delivery:
+        verify_live_delivery(capture, baseline)
+
+
+def verify_live_delivery(capture, baseline):
+    for ident in getattr(capture.lab, "flows", ROOT_FLOWS):
+        probe = capture.path / "probes" / f"{ident}.log"
+        replies = [(int(Decimal(stamp) * NS), int(seq)) for stamp, seq in re.findall(
+            r"^\[(\d+\.\d+)\] \d+ bytes from .*?icmp_seq=(\d+)", probe.read_text(), re.M
+        )]
+        baseline_replies = [(stamp, seq) for stamp, seq in replies if stamp >= baseline["epoch_ns"]]
+        tail = baseline_replies[-10:]
+        if (len(baseline_replies) < 30 or tail[-1][1] - tail[0][1] != 9
+                or time.time_ns() - tail[-1][0] > 450_000_000):
+            raise RuntimeError(f"Probe {ident} did not establish stable baseline delivery")
+
+
+def root_attempt(lab, path, name, build_hash):
+    path.mkdir()
+    target = target_for(name)
+    manifest = {"schema": 2, "case": name, "name": case_name(name), "topology": lab.name,
+                "builds_sha256": build_hash, "target": target}
+    (path / "attempt.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    capture = Capture(lab, path)
+    stop = Event()
+    target_samples = SimpleQueue()
+    feed_path = lab.topology.parent / "pair-root-logs/routeros.jsonl"
+    logs = ""
+    try:
+        with feed_path.open() as feed:
+            feed.seek(0, os.SEEK_END)
+            try:
+                capture.observe(ROOT_CAPTURES, ROOT_PORTS, ROOT_FLOWS, named_ports=True)
+                for peer, ident in MANAGEMENT_PROBES.items():
+                    capture.launch(["ping", "-n", "-D", "-O", "-i", "0.1", "-e", str(ident), ROOT_NODES[peer]],
+                                   path / "probes" / f"{ident}.log")
+                with ThreadPoolExecutor(max_workers=4) as workers:
+                    jobs = [workers.submit(sample_loop, lambda peer=peer: lab.observe_router(peer),
+                                           path / f"state-{peer}.jsonl", stop,
+                                           target_samples if peer == target else None) for peer in lab.peers]
+                    jobs.append(workers.submit(sample_loop, lab.host_state, path / "state-host.jsonl", stop))
+                    try:
+                        for peer in lab.peers:
+                            lab.ros(peer, f':log info "{lab.name}-{path.name}-begin"')
+                        config = {peer: lab.ros(peer, CONFIG) for peer in lab.peers}
+                        (path / "effective-config.json").write_text(json.dumps(config, indent=2) + "\n")
+                        time.sleep(2)
+                        baseline = capture.mark("baseline_start")
+                        time.sleep(4)
+                        before = lab.readiness()
+                        capture.mark("baseline_confirmed", **before)
+                        logs += feed.read()
+                        verify_live_collectors(capture, baseline, logs)
+                        if name == "root-calibrate":
+                            filter_fault(capture, silent=False)
+                            time.sleep(3)
+                        else:
+                            if name == "primary-sustained-stop":
+                                stop_guest(capture, target)
+                            else:
+                                reboot_guest(capture, target, before, target_samples)
+                            # Leave time to observe return-side loss even after management comes back.
+                            time.sleep(16)
+                        capture.mark("recovery_start")
+                        time.sleep(3)
+                        capture.mark("recovery_end")
+                        try:
+                            capture.mark("baseline_restored", **lab.readiness())
+                        except RuntimeError as error:
+                            capture.mark("baseline_restoration_failed", detail=str(error))
+                        for peer in lab.peers:
+                            lab.ros(peer, f':log info "{lab.name}-{path.name}-end"')
+                        time.sleep(2)
+                        if target:
+                            logs += feed.read()
+                            rebind_syslog(capture, target, logs)
+                    finally:
+                        stop.set()
+                        for job in jobs:
+                            job.result()
+            finally:
+                (path / "syslog.jsonl").write_text(logs + feed.read())
+    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
+        capture.mark("runner_error", detail=str(error), stderr=getattr(error, "stderr", None))
+    finally:
+        capture.stop()
+        if all((path / "captures" / f"{point}.pcap").is_file() for point in ROOT_CAPTURES):
+            seal_captures(path, ROOT_CAPTURES)
+    return analyze(path)

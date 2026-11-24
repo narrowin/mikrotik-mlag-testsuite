@@ -1,0 +1,122 @@
+seconds_from_baseline	source	event_or_state
+-7.049755	syslog-172.30.215.11	<30>Nov 24 07:07:27 p1 script,info carrier-comparison-debug-start
+-6.991002	syslog-172.30.215.12	<30>Nov 24 07:07:27 p2 script,info carrier-comparison-debug-start
+-5.035372	action	initial_stable
+-4.992828	linux-c2	7457: eth3@if7458: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue state UP group default
+-4.992312	linux-p2	7: tap2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br2 state UP group default
+-4.991898	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+-4.991853	linux-c1	7454: eth2@if7453: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+-4.991850	linux-p2	11: tap4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br4 state UP group default
+-4.991845	linux-c1	3: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
+-4.991842	linux-p2	5: tap1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br1 state UP group default
+-4.991839	linux-p2	9: tap3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br3 state UP group default
+-4.991737	linux-p1	9: tap3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br3 state UP group default
+-4.991704	linux-p1	5: tap1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br1 state UP group default
+-4.991696	linux-p1	7449: eth2@if7450: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue master br2 state UP group default
+-4.991688	linux-p1	11: tap4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br4 state UP group default
+-4.910044	state-p1	"poll-000-p1.txt query_start=-5.031861 carrier=link-ok member=AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 partner=ATGSCD-- active=ether3 fdb=client1 mlag=connected topology_changes=1 forwarding=yes                      yes"
+-4.904114	state-p2	"poll-000-p2.txt query_start=-5.031670 carrier=link-ok member=AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 partner=ATGSCD-- active=ether3 fdb=client1 mlag=connected topology_changes=1 forwarding=yes                      yes"
+-4.759597	p1-tap2	LACP frame 1 src=aa:c1:ab:d4:b9:59 actor=0x3f partner=0x3f
+-4.759589	p2-tap2	LACP frame 1 src=aa:c1:ab:ca:40:7d actor=0x3f partner=0x3f
+-4.452644	p1-tap2	LACP frame 2 src=52:54:00:7b:0d:02 actor=0x3f partner=0x3f
+-4.450234	p2-tap2	LACP frame 2 src=52:54:00:1a:a0:02 actor=0x3f partner=0x3f
+0.000000	action	baseline_start
+61.010032	action	baseline_end
+61.022392	syslog-172.30.215.11	<30>Nov 24 07:08:35 p1 script,info carrier-comparison-linux-leg-down
+61.031362	action	client_down_pre
+61.047896	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE> mtu 1500 qdisc noqueue master bond0 state DOWN group default
+61.048267	linux-p1	7449: eth2@if7450: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 9500 master br2 state DOWN
+61.048320	linux-p1	7449: eth2@if7450: <NO-CARRIER,BROADCAST,MULTICAST,UP> mtu 9500 qdisc noqueue master br2 state DOWN group default
+61.053922	action	client_down_done
+61.071821	probe-101	missed 615–650 {'reply absent at source': 36} first packet {'p1-tap4': {'request': [61.072519118], 'reply': [61.072543118]}, 'mobile-eth1': {'request': [61.072526118], 'reply': [61.072540118]}, 'p1-tap1': {'request': [61.072207118], 'reply': []}, 'p2-tap1': {'request': [61.072196118], 'reply': []}, 'p1-tap2': {'request': [], 'reply': [61.072665118]}, 'p2-tap2': {'request': [61.071846118], 'reply': []}}
+61.102066	probe-302	missed 616–792 {'reply absent at source': 177} first packet {'p1-tap2': {'request': [], 'reply': [61.102829118]}, 'p2-tap2': {'request': [61.102094118], 'reply': []}, 'p1-tap3': {'request': [], 'reply': [61.102465118]}, 'p2-tap3': {'request': [61.102436118], 'reply': []}}
+61.127073	probe-201	missed 616–796 {'request absent at destination': 174, 'reply absent at destination': 7} first packet {'p1-tap4': {'request': [61.127088118], 'reply': []}, 'mobile-eth1': {'request': [61.127077118], 'reply': []}, 'p1-tap2': {'request': [61.127367118], 'reply': []}}
+61.134549	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE> mtu 1500 qdisc noqueue master bond0 state DOWN group default
+61.134666	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE> mtu 1500 qdisc noqueue master bond0 state DOWN group default
+64.153328	state-p1	"poll-145-p1.txt query_start=64.071906 carrier=link-ok member=AP port=ether3 key=15 flags=""ATGS---E"" partner-sys-id=02:00:00:11:00:11 partner=ATG-CD-- active=ether3 fdb=client1 mlag=connected topology_changes=1 forwarding=yes                      yes"
+64.188073	p1-tap2	LACP frame 3919 src=52:54:00:7b:0d:02 actor=0x8f partner=0x37
+67.459961	state-p1	"poll-152-p1.txt query_start=67.397628 carrier=link-ok member=A port=ether3 key=15 flags=""ATGS--F-"" partner=- active=ether3 fdb=client1 mlag=connected topology_changes=1 forwarding=yes                      yes"
+77.067047	syslog-172.30.215.11	<30>Nov 24 07:08:51 p1 script,info carrier-comparison-linux-leg-up
+77.097560	action	client_up_pre
+77.147961	linux-p1	7449: eth2@if7450: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 master br2 state UP
+77.148076	linux-p1	7449: eth2@if7450: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 master br2 state UP
+77.148094	linux-p1	7449: eth2@if7450: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue master br2 state UP group default
+77.148136	linux-c1	7450: eth1@if7449: <NO-CARRIER,BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state DOWN group default
+77.148184	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+77.154561	action	client_up_done
+77.182951	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+77.285693	p1-tap2	LACP frame 4125 src=aa:c1:ab:d4:b9:59 actor=0x47 partner=0x00
+77.387870	p1-tap2	LACP frame 4128 src=52:54:00:7b:0d:02 actor=0x0f partner=0x47
+77.479941	state-p1	"poll-173-p1.txt query_start=77.397173 carrier=link-ok member=AP port=ether3 key=15 flags=""ATGS----"" partner-sys-id=02:00:00:11:00:11 partner=ATG---F- active=ether3 fdb=client1 mlag=connected topology_changes=1 forwarding=yes                      yes"
+78.325518	p1-tap2	LACP frame 4148 src=aa:c1:ab:d4:b9:59 actor=0xc7 partner=0x02
+78.377106	p1-tap2	LACP frame 4149 src=52:54:00:7b:0d:02 actor=0x0f partner=0xc7
+78.424386	state-p1	"poll-175-p1.txt query_start=78.348696 carrier=link-ok member=AP port=ether3 key=15 flags=""ATGS----"" partner-sys-id=02:00:00:11:00:11 partner=ATG---FE active=ether3 fdb=client1 mlag=connected topology_changes=1 forwarding=yes                      yes"
+79.366198	p1-tap2	LACP frame 4176 src=aa:c1:ab:d4:b9:59 actor=0x07 partner=0x0f
+79.574599	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+79.677500	p1-tap2	LACP frame 4184 src=aa:c1:ab:d4:b9:59 actor=0x3f partner=0x0f
+79.698004	p1-tap2	LACP frame 4185 src=52:54:00:7b:0d:02 actor=0x3f partner=0x3f
+79.832206	state-p1	"poll-178-p1.txt query_start=79.770019 carrier=link-ok member=AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 partner=ATGSCD-- active=ether3 fdb=client1 mlag=connected topology_changes=1 forwarding=yes                      yes"
+80.406565	p1-tap2	LACP frame 4214 src=aa:c1:ab:d4:b9:59 actor=0x3f partner=0x3f
+84.055159	action	client_up_stable
+89.070182	syslog-172.30.215.11	<30>Nov 24 07:09:03 p1 script,info carrier-comparison-guest-carrier-down
+89.079002	action	guest_down_pre
+89.110457	qmp	{'name': 'nic2', 'up': False} result={}
+89.117571	probe-201	missed 881–905 {'request absent at destination': 1, 'reply absent at source': 24} first packet {'p1-tap4': {'request': [89.117582118], 'reply': []}, 'mobile-eth1': {'request': [89.117575118], 'reply': []}}
+89.117921	action	guest_down_done
+89.139510	probe-302	missed 884–908 {'request absent at destination': 25} first packet {'p1-tap2': {'request': [89.139525118], 'reply': []}}
+89.160693	syslog-172.30.215.11	<30>Nov 24 07:09:03 p1 interface,info client1 link down
+89.165908	probe-101	missed 760–783 {'request absent at destination': 24} first packet {'p1-tap2': {'request': [89.165920118], 'reply': []}}
+89.168664	syslog-172.30.215.11	<31>Nov 24 07:09:03 p1 bridge,debug host 02:00:00:11:00:11:110 changed ports: client1 to ether2
+89.562033	syslog-172.30.215.11	<30>Nov 24 07:09:03 p1 interface,info ether3 link down
+89.632085	state-p1	"poll-199-p1.txt query_start=89.555966 carrier=no-link member=P port=ether3 key=0 flags=""ATG-----"" partner-sys-id=02:00:00:11:00:11 partner=ATG-CD-- active=- fdb=ether2 mlag=connected topology_changes=1 forwarding=yes"
+91.647115	p1-tap2	LACP frame 4843 src=aa:c1:ab:d4:b9:59 actor=0x8f partner=0x37
+91.647154	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+92.390726	linux-p1	7449: eth2@if7450: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 master br2 state UP
+105.129108	syslog-172.30.215.11	<30>Nov 24 07:09:19 p1 script,info carrier-comparison-guest-carrier-up
+105.137341	action	guest_up_pre
+105.151195	qmp	{'name': 'nic2', 'up': True} result={}
+105.158068	action	guest_up_done
+105.222671	syslog-172.30.215.11	<30>Nov 24 07:09:19 p1 interface,info client1 link up
+105.238195	syslog-172.30.215.11	<31>Nov 24 07:09:19 p1 bridge,stp,debug client1:0  role transition DESIGNATED_LEARN
+105.238195	syslog-172.30.215.11	<31>Nov 24 07:09:19 p1 bridge,stp,debug client1:0  role transition DESIGNATED_SYNCED
+105.240242	syslog-172.30.215.11	<31>Nov 24 07:09:19 p1 bridge,stp,debug client1:0  role transition DESIGNATED_FORWARD
+105.242614	syslog-172.30.215.11	<31>Nov 24 07:09:19 p1 bridge,debug host 02:00:00:11:00:11:110 changed ports: ether2 to client1
+105.253516	probe-101	missed 915–939 {'reply absent at source': 25} first packet {'p1-tap4': {'request': [105.253938118], 'reply': [105.253962118]}, 'mobile-eth1': {'request': [105.253945118], 'reply': [105.253959118]}, 'p1-tap1': {'request': [105.253713118], 'reply': []}, 'p2-tap1': {'request': [105.253707118], 'reply': []}, 'p2-tap2': {'request': [105.253529118], 'reply': []}}
+105.274187	probe-302	missed 1039–1063 {'reply absent at source': 25} first packet {'p2-tap2': {'request': [105.274200118], 'reply': []}, 'p1-tap3': {'request': [], 'reply': [105.274429118]}, 'p2-tap3': {'request': [105.274401118], 'reply': []}}
+105.302424	probe-201	missed 1037–1060 {'request absent at destination': 24} first packet {'p1-tap4': {'request': [105.302442118], 'reply': []}, 'mobile-eth1': {'request': [105.302430118], 'reply': []}}
+105.437417	p1-tap2	LACP frame 4850 src=52:54:00:7b:0d:02 actor=0xc7 partner=0x02
+105.511417	p1-tap2	LACP frame 4853 src=aa:c1:ab:d4:b9:59 actor=0x0f partner=0xc7
+105.584438	syslog-172.30.215.11	<30>Nov 24 07:09:19 p1 interface,info ether3 link up (speed 10G, full duplex)
+105.649274	state-p1	"poll-233-p1.txt query_start=105.547178 carrier=link-ok member=AP port=ether3 key=15 flags=""ATG-----"" partner-sys-id=02:00:00:11:00:11 partner=ATGS---- active=ether3 fdb=client1 mlag=connected topology_changes=1 forwarding=yes                      yes"
+106.427602	p1-tap2	LACP frame 4884 src=52:54:00:7b:0d:02 actor=0x07 partner=0x0f
+106.553220	p1-tap2	LACP frame 4889 src=aa:c1:ab:d4:b9:59 actor=0x0f partner=0x07
+107.748125	p1-tap2	LACP frame 4922 src=52:54:00:7b:0d:02 actor=0x3f partner=0x0f
+107.800304	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+107.901753	p1-tap2	LACP frame 4930 src=aa:c1:ab:d4:b9:59 actor=0x3f partner=0x3f
+107.986861	state-p1	"poll-238-p1.txt query_start=107.921523 carrier=link-ok member=AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 partner=ATGSCD-- active=ether3 fdb=client1 mlag=connected topology_changes=1 forwarding=yes                      yes"
+108.737666	p1-tap2	LACP frame 4992 src=52:54:00:7b:0d:02 actor=0x3f partner=0x3f
+110.119684	action	guest_up_stable
+117.132446	syslog-172.30.215.11	<30>Nov 24 07:09:31 p1 script,info carrier-comparison-observations-complete
+117.140737	action	observations_complete
+117.152668	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+117.152683	linux-c1	7454: eth2@if7453: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+117.152686	linux-c1	3: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
+117.155330	linux-c1	7450: eth1@if7449: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+117.160752	linux-c1	7454: eth2@if7453: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+117.165672	linux-c1	7458: eth3@if7457: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue state UP group default
+117.170155	linux-c2	7452: eth1@if7451: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+117.170192	linux-c2	7456: eth2@if7455: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+117.170197	linux-c2	3: bond0: <BROADCAST,MULTICAST,MASTER,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP group default
+117.174446	linux-c2	7452: eth1@if7451: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+117.179321	linux-c2	7456: eth2@if7455: <BROADCAST,MULTICAST,SLAVE,UP,LOWER_UP> mtu 1500 qdisc noqueue master bond0 state UP group default
+117.184551	linux-c2	7457: eth3@if7458: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue state UP group default
+117.205082	linux-p1	7449: eth2@if7450: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc noqueue master br2 state UP group default
+117.209868	linux-p1	5: tap1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br1 state UP group default
+117.214157	linux-p1	7: tap2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br2 state UP group default
+117.217992	linux-p1	9: tap3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br3 state UP group default
+117.222692	linux-p1	11: tap4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br4 state UP group default
+117.227447	linux-p2	5: tap1: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br1 state UP group default
+117.231463	linux-p2	7: tap2: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br2 state UP group default
+117.235106	linux-p2	9: tap3: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br3 state UP group default
+117.239293	linux-p2	11: tap4: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 9500 qdisc pfifo_fast master br4 state UP group default
+117.400126	action	collector_finished

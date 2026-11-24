@@ -1,0 +1,5332 @@
+{
+  "run": "02-medium-mstp-pair-root-reboot-secondary",
+  "case": "medium-mstp-pair-root-reboot-secondary",
+  "checks": [
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Baseline BPDU coverage missing [], unexpected []"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Host clocks agreed within 50 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "All capture and probe collectors stayed up"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-eth1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c1-eth3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-bond0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-eth1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-eth2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "c2-eth3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1-tap3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap0 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2-tap3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness-eth1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness-eth2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness-eth3 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness-tap1 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness-tap2 captured with zero kernel drops"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2 management TAP shows one closed guest absence"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1 supplied MLAG and root state while p2 was absent"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Observed carrier independently at the surviving ends and CHR TAPs"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Recorded RouterOS carrier at surviving linked guest ports"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1 state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p1 independent observer had complete state at intervals within 1.5 s"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2 state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "witness independent observer had complete state at intervals within 1.5 s"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "host state samples cover both ends of the scoring window"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "host independent observer had complete state at intervals within 1.5 s"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Management UDP syslog begin markers from required observers"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Management UDP syslog end markers from required observers"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "p2 emitted the post-observation syslog rebind marker"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "101 endpoint capture agreement"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "101 baseline loss-free, 47 delivered, 0 missed"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "101 duplicate-free"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "101 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "201 endpoint capture agreement"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "201 baseline loss-free, 47 delivered, 0 missed"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "201 duplicate-free"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "201 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 endpoint capture agreement"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 baseline loss-free, 46 delivered, 0 missed"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 at least 30 emits and cadence within 450 ms"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 endpoint capture agreement"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 baseline loss-free, 46 delivered, 0 missed"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 duplicate-free"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 delivered ten consecutive probes after recovery",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "Restore state was captured",
+      "phase": "restoration"
+    },
+    {
+      "level": "fail",
+      "ok": true,
+      "detail": "Restored BPDU coverage missing [], unexpected []",
+      "phase": "restoration"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "301 independent bypass stayed clean"
+    },
+    {
+      "level": "error",
+      "ok": true,
+      "detail": "303 independent bypass stayed clean"
+    }
+  ],
+  "name": "medium-mstp-pair-root-reboot-secondary",
+  "lab": "Medium lab",
+  "title": "MLAG secondary reboot \u00b7 Medium lab, MSTP, MLAG pair as root",
+  "action": "Resets all three bridges over management SSH with protocol-mode=mstp, priority 0x1000 on CHR 1 and CHR 2 and 0x8000 on the access switch. It requires a loss-free baseline with root ID 0x1000.02:00:00:21:00:11 in the access switch's BPDUs. It then reboots CHR 2 (MLAG secondary) with `/system reboot`, waits for the guest uptime to reset and keeps probing for 16 s plus a 3 s recovery window.",
+  "devices": {
+    "p1": {
+      "name": "dc1-core-mlag1",
+      "container": "clab-mlag-medium-dc1-core-mlag1",
+      "management_ip": "172.30.218.11",
+      "role": "MLAG core switch 1",
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "p2": {
+      "name": "dc1-core-mlag2",
+      "container": "clab-mlag-medium-dc1-core-mlag2",
+      "management_ip": "172.30.218.12",
+      "role": "MLAG core switch 2",
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "witness": {
+      "name": "dc1-access-switch1",
+      "container": "clab-mlag-medium-dc1-access-switch1",
+      "management_ip": "172.30.218.13",
+      "role": "Dual-attached access switch and external RSTP root candidate",
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "c1": {
+      "name": "dc1-traffic-host1",
+      "container": "clab-mlag-medium-dc1-traffic-host1",
+      "management_ip": "172.30.218.16",
+      "role": "Linux VLAN 110 and bypass probe host 1",
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    },
+    "c2": {
+      "name": "dc1-traffic-host2",
+      "container": "clab-mlag-medium-dc1-traffic-host2",
+      "management_ip": "172.30.218.17",
+      "role": "Linux VLAN 110 and bypass probe host 2",
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    },
+    "syslog": {
+      "name": "dc1-syslog-collector",
+      "container": "clab-mlag-medium-dc1-syslog-collector",
+      "management_ip": "172.30.218.20",
+      "role": "Management network syslog collector",
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    }
+  },
+  "initial_validation_s": {
+    "management_reset": 2.378271,
+    "settle_and_start_observers": 0.939196,
+    "probe_window_and_readback": 4.352989,
+    "check_wire_links_and_delivery": 0.422199,
+    "reset_to_verdict": 8.092654
+  },
+  "election": {
+    "root": "0x1000.02:00:00:21:00:11"
+  },
+  "baseline_state": {
+    "p1": {
+      "bridge": {
+        "bridge-id": "0x1000.02:00:00:21:00:11",
+        "root-bridge": "yes",
+        "root-bridge-id": "0x1000.02:00:00:21:00:11",
+        "root-port": "none",
+        "topology-changes": "2",
+        "max-age": "20s",
+        "hello-time": "2s",
+        "forward-delay": "15s",
+        "mlag-state": "connected",
+        "mlag-active-role": "primary"
+      },
+      "ports": {
+        "ether2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes",
+          "designated-bridge-id": "0x1000.02:00:00:21:00:11",
+          "discard-transitions": "0",
+          "forward-transitions": "1"
+        },
+        "access-uplink": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes",
+          "designated-bridge-id": "0x1000.02:00:00:21:00:11",
+          "discard-transitions": "0",
+          "forward-transitions": "1"
+        },
+        "client2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes",
+          "designated-bridge-id": "0x1000.02:00:00:21:00:11",
+          "discard-transitions": "0",
+          "forward-transitions": "1"
+        }
+      },
+      "carrier": {
+        "ether2": "link-ok",
+        "ether3": "link-ok",
+        "ether4": "link-ok"
+      },
+      "lacp": {
+        "ether3": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "52:54:00:DA:0D:01"
+        },
+        "ether4": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "02:00:00:11:00:12"
+        }
+      },
+      "fdb": [
+        {
+          "mac": "02:00:00:11:00:11",
+          "vid": 110,
+          "interface": "access-uplink",
+          "on_interface": "access-uplink"
+        },
+        {
+          "mac": "02:00:00:11:00:12",
+          "vid": 110,
+          "interface": "client2",
+          "on_interface": "client2"
+        }
+      ]
+    },
+    "p2": {
+      "bridge": {
+        "bridge-id": "0x1000.02:00:00:21:00:11",
+        "root-bridge": "yes",
+        "root-bridge-id": "0x1000.02:00:00:21:00:11",
+        "root-port": "none",
+        "topology-changes": "2",
+        "max-age": "20s",
+        "hello-time": "2s",
+        "forward-delay": "15s",
+        "mlag-state": "connected",
+        "mlag-active-role": "secondary"
+      },
+      "ports": {
+        "ether2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes",
+          "designated-bridge-id": "0x1000.02:00:00:21:00:11",
+          "discard-transitions": "0",
+          "forward-transitions": "1"
+        },
+        "access-uplink": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes",
+          "designated-bridge-id": "0x1000.02:00:00:21:00:11",
+          "discard-transitions": "0",
+          "forward-transitions": "1"
+        },
+        "client2": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes",
+          "designated-bridge-id": "0x1000.02:00:00:21:00:11",
+          "discard-transitions": "0",
+          "forward-transitions": "1"
+        }
+      },
+      "carrier": {
+        "ether2": "link-ok",
+        "ether3": "link-ok",
+        "ether4": "link-ok"
+      },
+      "lacp": {
+        "ether3": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "52:54:00:DA:0D:01"
+        },
+        "ether4": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "02:00:00:11:00:12"
+        }
+      },
+      "fdb": [
+        {
+          "mac": "02:00:00:11:00:11",
+          "vid": 110,
+          "interface": "access-uplink",
+          "on_interface": "access-uplink"
+        },
+        {
+          "mac": "02:00:00:11:00:12",
+          "vid": 110,
+          "interface": "client2",
+          "on_interface": "client2"
+        }
+      ]
+    },
+    "witness": {
+      "bridge": {
+        "bridge-id": "0x8000.02:00:00:21:00:13",
+        "root-bridge": "no",
+        "root-bridge-id": "0x1000.02:00:00:21:00:11",
+        "root-port": "uplink",
+        "topology-changes": "1",
+        "max-age": "20s",
+        "hello-time": "2s",
+        "forward-delay": "15s"
+      },
+      "ports": {
+        "uplink": {
+          "status": "in-bridge",
+          "role": "root-port",
+          "edge-port": "no",
+          "learning": "yes",
+          "forwarding": "yes",
+          "designated-bridge-id": "0x1000.02:00:00:21:00:11",
+          "discard-transitions": "0",
+          "forward-transitions": "1"
+        },
+        "ether4": {
+          "status": "in-bridge",
+          "role": "designated-port",
+          "edge-port": "yes",
+          "learning": "yes",
+          "forwarding": "yes",
+          "designated-bridge-id": "0x8000.02:00:00:21:00:13",
+          "discard-transitions": "0",
+          "forward-transitions": "1"
+        }
+      },
+      "carrier": {
+        "ether2": "link-ok",
+        "ether3": "link-ok",
+        "ether4": "link-ok"
+      },
+      "lacp": {
+        "ether2": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "52:54:00:DA:0B:02"
+        },
+        "ether3": {
+          "actor": "ATGSCD--",
+          "partner": "ATGSCD--",
+          "partner_id": "52:54:00:DA:0B:02"
+        }
+      },
+      "fdb": [
+        {
+          "mac": "02:00:00:11:00:11",
+          "vid": 110,
+          "interface": "ether4",
+          "on_interface": "ether4"
+        },
+        {
+          "mac": "02:00:00:11:00:12",
+          "vid": 110,
+          "interface": "uplink",
+          "on_interface": "uplink"
+        }
+      ]
+    }
+  },
+  "baseline_bpdus": {
+    "roots": {
+      "witness-tap1": {
+        "0x1000.02:00:00:21:00:11": [
+          "02:00:00:21:00:11"
+        ]
+      },
+      "witness-tap2": {
+        "0x1000.02:00:00:21:00:11": [
+          "02:00:00:21:00:11"
+        ]
+      }
+    },
+    "missing": [],
+    "unexpected": []
+  },
+  "fault_executed": true,
+  "peer": {
+    "survivor": "p1",
+    "mlag_transitions": [
+      {
+        "mlag_state": "connected",
+        "active_role": "primary",
+        "root_id": "0x1000.02:00:00:21:00:11",
+        "before_s": 0.195095,
+        "by_s": 0.32461
+      }
+    ],
+    "while_absent": [
+      {
+        "mlag_state": "connected",
+        "active_role": "primary",
+        "root_id": "0x1000.02:00:00:21:00:11"
+      }
+    ],
+    "linux_carrier_while_absent": {
+      "p1:eth1": [
+        true
+      ],
+      "witness:eth2": [
+        true
+      ],
+      "c2:eth2": [
+        true
+      ],
+      "p2:tap1": [
+        true
+      ],
+      "p2:tap2": [
+        true
+      ],
+      "p2:tap3": [
+        true
+      ]
+    },
+    "routeros_carrier_while_absent": {
+      "p1:ether2": [
+        "link-ok"
+      ],
+      "witness:ether3": [
+        "link-ok"
+      ]
+    }
+  },
+  "guest_absence_s": [
+    6.216922,
+    22.777148,
+    22.884358
+  ],
+  "phases_s": {
+    "withdrawal": [
+      4.775377,
+      22.884358
+    ],
+    "restoration": [
+      22.884358,
+      40.537205
+    ]
+  },
+  "sampling": {
+    "p1": {
+      "complete": 128,
+      "incomplete": 0,
+      "max_start_interval_s": 0.353692,
+      "max_poll_duration_s": 0.296837
+    },
+    "p2": {
+      "complete": 76,
+      "incomplete": 4,
+      "max_start_interval_s": 13.087076,
+      "max_poll_duration_s": 6.018597
+    },
+    "witness": {
+      "complete": 128,
+      "incomplete": 0,
+      "max_start_interval_s": 0.354666,
+      "max_poll_duration_s": 0.156275
+    },
+    "host": {
+      "complete": 128,
+      "incomplete": 0,
+      "max_start_interval_s": 0.354397,
+      "max_poll_duration_s": 0.021355
+    }
+  },
+  "syslog": {
+    "begin": [
+      "172.30.218.11",
+      "172.30.218.12",
+      "172.30.218.13"
+    ],
+    "end": [
+      "172.30.218.11",
+      "172.30.218.13"
+    ],
+    "target_end_received": false,
+    "target_after_rebind_received": true
+  },
+  "flows": {
+    "101": {
+      "description": "client A to client B",
+      "sent": 427,
+      "missed": 25,
+      "duplicates": [],
+      "gaps": [
+        {
+          "first_seq": 71,
+          "last_seq": 95,
+          "failed_probes": 25,
+          "absent_at_source": 0,
+          "lower_s": 2.499566,
+          "upper_s": 2.707914,
+          "phases": [
+            "withdrawal"
+          ],
+          "trace_seq": 71,
+          "trace_s": {
+            "c1-eth1": {
+              "8": [
+                6.260364
+              ],
+              "0": []
+            },
+            "p2-tap2": {
+              "8": [
+                6.260913
+              ],
+              "0": []
+            },
+            "witness-eth2": {
+              "8": [
+                6.260904
+              ],
+              "0": []
+            },
+            "witness-eth3": {
+              "8": [
+                6.260372
+              ],
+              "0": []
+            },
+            "witness-tap2": {
+              "8": [
+                6.260895
+              ],
+              "0": []
+            }
+          },
+          "where": [
+            "request absent at destination"
+          ],
+          "first_miss_s": 6.260364,
+          "last_miss_s": 8.75993,
+          "previous_good_s": 6.158117,
+          "first_good_s": 8.866031,
+          "stable_delivery_s": 8.866031,
+          "stable_window_end_s": 9.78116,
+          "misses": {
+            "71": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.260364,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.260913,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.260904,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.260372,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.260895,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "72": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.367936,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.368512,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.368503,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.367941,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.368492,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "73": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.473032,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.4736,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.47359,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.473039,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.473583,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "74": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.575783,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.576102,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.576093,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.575793,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.576086,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "75": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.678853,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.67928,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.679265,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.67886,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.679258,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "76": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.785624,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.785971,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.785963,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.785629,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.785956,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "77": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.888357,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.889021,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.88901,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.888362,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.889,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "78": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.992335,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.992916,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.992909,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.99234,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.992901,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "79": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.097462,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.097822,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.09781,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.097467,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.097801,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "80": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.199401,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.199772,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.199762,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.199407,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.19975,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "81": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.303513,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.303912,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.303903,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.303521,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.303893,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "82": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.407597,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.407943,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.407932,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.407604,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.407925,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "83": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.511819,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.51223,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.512218,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.511825,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.512211,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "84": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.615816,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.616047,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.61604,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.615823,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.616033,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "85": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.722521,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.722931,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.72292,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.722525,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.722911,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "86": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.823248,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.823555,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.823544,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.823254,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.823538,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "87": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.927079,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.927813,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.927806,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.927085,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.927798,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "88": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.030931,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.031532,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.031519,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.030937,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.031512,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "89": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.135001,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.135367,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.135359,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.135006,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.135349,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "90": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.239872,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.240242,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.240234,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.239879,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.240224,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "91": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.345343,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.345594,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.345586,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.345347,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.345579,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "92": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.449419,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.449777,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.449764,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.449424,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.449753,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "93": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.553492,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.554207,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.554198,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.553498,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.554184,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "94": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.655956,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.656909,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.656901,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.655964,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.656892,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            },
+            "95": {
+              "where": "request absent at destination",
+              "request": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.75993,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.76038,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.760368,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.759934,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.760354,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": []
+              }
+            }
+          },
+          "stable_before_target_return": true
+        }
+      ],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.111521,
+      "baseline_good": 47,
+      "recovery_good": 29,
+      "baseline_missed": 0,
+      "stable_recovery": true,
+      "phase_gaps_s": {
+        "withdrawal": [
+          {
+            "first_seq": 71,
+            "last_seq": 95,
+            "lower_s": 2.499566,
+            "upper_s": 2.707914
+          }
+        ],
+        "restoration": []
+      },
+      "good_while_target_absent": 137,
+      "stable_while_target_absent": true
+    },
+    "201": {
+      "description": "client B to client A",
+      "sent": 427,
+      "missed": 26,
+      "duplicates": [],
+      "gaps": [
+        {
+          "first_seq": 71,
+          "last_seq": 95,
+          "failed_probes": 25,
+          "absent_at_source": 0,
+          "lower_s": 2.49818,
+          "upper_s": 2.700612,
+          "phases": [
+            "withdrawal"
+          ],
+          "trace_seq": 71,
+          "trace_s": {
+            "c1-eth1": {
+              "8": [
+                6.280252
+              ],
+              "0": [
+                6.280264
+              ]
+            },
+            "c2-bond0": {
+              "8": [
+                6.279745
+              ],
+              "0": []
+            },
+            "c2-eth1": {
+              "8": [
+                6.279752
+              ],
+              "0": []
+            },
+            "p1-tap2": {
+              "8": [
+                6.279996
+              ],
+              "0": []
+            },
+            "p1-tap3": {
+              "8": [
+                6.279761
+              ],
+              "0": []
+            },
+            "p2-tap2": {
+              "8": [],
+              "0": [
+                6.280455
+              ]
+            },
+            "witness-eth1": {
+              "8": [
+                6.280007
+              ],
+              "0": []
+            },
+            "witness-eth2": {
+              "8": [],
+              "0": [
+                6.280447
+              ]
+            },
+            "witness-eth3": {
+              "8": [
+                6.280248
+              ],
+              "0": [
+                6.280265
+              ]
+            },
+            "witness-tap1": {
+              "8": [
+                6.280016
+              ],
+              "0": []
+            },
+            "witness-tap2": {
+              "8": [],
+              "0": [
+                6.280442
+              ]
+            }
+          },
+          "where": [
+            "reply absent at source"
+          ],
+          "first_miss_s": 6.279745,
+          "last_miss_s": 8.777925,
+          "previous_good_s": 6.17912,
+          "first_good_s": 8.879732,
+          "stable_delivery_s": 8.879732,
+          "stable_window_end_s": 9.813744,
+          "misses": {
+            "71": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.280252,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.279745,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.279752,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.279996,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.279761,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.280007,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.280248,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.280016,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 6.280264,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.280455,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.280447,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.280265,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.280442,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "72": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.383529,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.382865,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.382872,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.38317,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.382881,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.383182,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.383524,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.383191,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 6.383544,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.38371,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.3837,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.383545,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.383695,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "73": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.490939,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.489967,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.489975,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.490599,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.489986,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.490609,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.490935,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.490619,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 6.490953,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.49108,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.491073,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.490954,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.491068,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "74": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.594965,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.594299,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.594306,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.594664,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.594314,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.594673,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.594961,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.594684,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 6.594982,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.595115,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.595108,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.594983,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.595103,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "75": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.698691,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.698074,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.698081,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.698388,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.698092,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.6984,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.698688,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.698408,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 6.698705,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.698866,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.698858,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.698706,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.698852,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "76": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.799597,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.7988,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.798805,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.799126,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.798815,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.799137,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.799594,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.799148,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 6.799607,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.799733,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.799721,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.799608,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.799717,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "77": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 6.903888,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.903075,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.903089,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.903513,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.903098,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.903527,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.903884,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.903539,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 6.903901,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.904066,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.904058,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.903902,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 6.904052,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "78": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.008709,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.007845,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.007852,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.008284,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.007862,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.008301,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.008705,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.008311,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 7.008729,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.009065,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.009056,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.00873,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.00905,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "79": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.111654,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.110823,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.110831,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.111245,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.110843,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.111259,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.11165,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.11127,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 7.111674,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.111812,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.111803,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.111675,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.111798,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "80": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.218369,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.217487,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.217495,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.21777,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.217503,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.217777,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.218366,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.217785,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 7.218383,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.2187,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.218695,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.218384,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.218689,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "81": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.319833,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.319233,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.31924,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.319573,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.319251,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.319584,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.319829,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.319596,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 7.319845,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.320001,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.319991,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.319846,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.319985,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "82": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.425732,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.424852,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.424859,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.425305,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.424869,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.425315,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.425717,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.425361,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 7.425747,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.426055,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.426044,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.425748,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.426037,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "83": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.530947,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.530383,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.530389,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.530686,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.530401,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.530696,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.530943,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.530707,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 7.530961,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.531121,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.531112,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.530962,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.531106,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "84": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.632223,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.631792,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.631798,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.631979,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.631806,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.631989,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.63222,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.631997,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 7.632237,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.632368,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.63236,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.632237,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.632354,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "85": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.739078,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.738411,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.73842,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.738818,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.738435,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.73883,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.739073,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.738837,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 7.739093,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.739261,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.739252,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.739094,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.739247,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "86": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.840741,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840189,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840198,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840509,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840214,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840522,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840738,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840533,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 7.840754,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840943,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840933,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840755,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.840929,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "87": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 7.945322,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.944832,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.944837,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.945061,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.944846,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.945071,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.945318,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.94508,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 7.945336,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.945569,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.945559,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.945337,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 7.945553,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "88": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.049256,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.048587,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.048595,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.04889,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.048606,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.048899,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.049252,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.048907,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 8.049269,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.049637,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.049631,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.04927,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.049625,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "89": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.15181,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.151362,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.151368,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.151643,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.151379,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.151656,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.151806,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.151665,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 8.151825,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.152024,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.152018,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.151826,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.152015,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "90": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.255765,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255018,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255027,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255426,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255036,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255438,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255762,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255449,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 8.255781,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255925,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255914,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255782,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.255908,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "91": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.359429,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.35881,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.358818,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.359088,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.358827,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.359096,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.359423,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.359107,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 8.359442,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.359882,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.359873,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.359443,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.359865,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "92": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.466709,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.465956,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.465964,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.46641,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.465977,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.466418,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.466706,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.466428,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 8.46673,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.466871,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.466864,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.466731,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.466859,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "93": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.569145,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.567625,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.567637,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.568299,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.567649,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.568323,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.569137,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.568342,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 8.569178,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.569605,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.569591,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.56918,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.569579,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "94": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.6728,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.672024,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.672029,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.672555,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.672036,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.67257,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.672792,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.672582,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 8.672815,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.673021,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.673013,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.672817,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.673007,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            },
+            "95": {
+              "where": "reply absent at source",
+              "request": [
+                "c1-eth1",
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap2",
+                "p1-tap3",
+                "witness-eth1",
+                "witness-eth3",
+                "witness-tap1"
+              ],
+              "reply": [
+                "c1-eth1",
+                "p2-tap2",
+                "witness-eth2",
+                "witness-eth3",
+                "witness-tap2"
+              ],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 8.778628,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.777925,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.777944,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.778251,
+                    "point": "p1-tap2",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.777959,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.778258,
+                    "point": "witness-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.778624,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.778268,
+                    "point": "witness-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  }
+                ],
+                "reply": [
+                  {
+                    "time_s": 8.77864,
+                    "point": "c1-eth1",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.778819,
+                    "point": "p2-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.778811,
+                    "point": "witness-eth2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.778641,
+                    "point": "witness-eth3",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 8.778806,
+                    "point": "witness-tap2",
+                    "src": "02:00:00:11:00:11",
+                    "dst": "02:00:00:11:00:12",
+                    "tagged_vid": null
+                  }
+                ]
+              }
+            }
+          },
+          "stable_before_target_return": true
+        },
+        {
+          "first_seq": 232,
+          "last_seq": 232,
+          "failed_probes": 1,
+          "absent_at_source": 0,
+          "lower_s": 0.0,
+          "upper_s": 0.208563,
+          "phases": [
+            "withdrawal"
+          ],
+          "trace_seq": 232,
+          "trace_s": {
+            "c2-bond0": {
+              "8": [
+                22.754804
+              ],
+              "0": []
+            },
+            "c2-eth1": {
+              "8": [
+                22.754811
+              ],
+              "0": []
+            },
+            "p1-tap1": {
+              "8": [
+                22.755342
+              ],
+              "0": []
+            },
+            "p1-tap3": {
+              "8": [
+                22.75482
+              ],
+              "0": []
+            },
+            "p2-tap1": {
+              "8": [
+                22.755353
+              ],
+              "0": []
+            }
+          },
+          "where": [
+            "request absent at destination"
+          ],
+          "first_miss_s": 22.754804,
+          "last_miss_s": 22.754804,
+          "previous_good_s": 22.654266,
+          "first_good_s": 22.862829,
+          "stable_delivery_s": 22.862829,
+          "stable_window_end_s": 23.776931,
+          "misses": {
+            "232": {
+              "where": "request absent at destination",
+              "request": [
+                "c2-bond0",
+                "c2-eth1",
+                "p1-tap1",
+                "p1-tap3",
+                "p2-tap1"
+              ],
+              "reply": [],
+              "frames": {
+                "request": [
+                  {
+                    "time_s": 22.754804,
+                    "point": "c2-bond0",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 22.754811,
+                    "point": "c2-eth1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 22.755342,
+                    "point": "p1-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": 110
+                  },
+                  {
+                    "time_s": 22.75482,
+                    "point": "p1-tap3",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": null
+                  },
+                  {
+                    "time_s": 22.755353,
+                    "point": "p2-tap1",
+                    "src": "02:00:00:11:00:12",
+                    "dst": "02:00:00:11:00:11",
+                    "tagged_vid": 110
+                  }
+                ],
+                "reply": []
+              }
+            }
+          },
+          "stable_before_target_return": false
+        }
+      ],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.110483,
+      "baseline_good": 47,
+      "recovery_good": 30,
+      "baseline_missed": 0,
+      "stable_recovery": true,
+      "phase_gaps_s": {
+        "withdrawal": [
+          {
+            "first_seq": 71,
+            "last_seq": 95,
+            "lower_s": 2.49818,
+            "upper_s": 2.700612
+          },
+          {
+            "first_seq": 232,
+            "last_seq": 232,
+            "lower_s": 0,
+            "upper_s": 0.208563
+          }
+        ],
+        "restoration": []
+      },
+      "good_while_target_absent": 136,
+      "stable_while_target_absent": true
+    },
+    "301": {
+      "description": "bypass forward",
+      "sent": 418,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.110597,
+      "baseline_good": 46,
+      "recovery_good": 29,
+      "baseline_missed": 0,
+      "stable_recovery": true
+    },
+    "303": {
+      "description": "bypass reverse",
+      "sent": 418,
+      "missed": 0,
+      "duplicates": [],
+      "gaps": [],
+      "capture_mismatches": [],
+      "max_send_interval_s": 0.111087,
+      "baseline_good": 46,
+      "recovery_good": 29,
+      "baseline_missed": 0,
+      "stable_recovery": true
+    }
+  },
+  "restored_bpdus": {
+    "roots": {
+      "witness-tap1": {
+        "0x1000.02:00:00:21:00:11": [
+          "02:00:00:21:00:11"
+        ]
+      },
+      "witness-tap2": {
+        "0x1000.02:00:00:21:00:11": [
+          "02:00:00:21:00:11"
+        ]
+      }
+    },
+    "missing": [],
+    "unexpected": []
+  },
+  "bridge_mode": "mstp",
+  "status": "pass",
+  "phases": [
+    {
+      "key": "withdrawal",
+      "name": "Secondary down",
+      "expected": "CHR 1 keeps the shared system ID, which is both the RSTP bridge ID and the LACP system ID, so the access switch still sees root 0x1000.02:00:00:21:00:11 and its uplink stays the forwarding root port. The virtual links keep carrier, so the access switch and traffic host 2 drop their member to CHR 2 at the LACP short timeout (3 \u00d7 1 s). Only traffic hashed to that member sees brief loss.",
+      "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
+      "limit_s": 5.0,
+      "window_s": [
+        4.775377,
+        22.884358
+      ],
+      "verdict": "pass",
+      "worst_loss_s": {
+        "lower_s": 2.499566,
+        "upper_s": 2.707914,
+        "lost_probes": null,
+        "spans_both_phases": false
+      },
+      "loss_s": {
+        "101": {
+          "lower_s": 2.499566,
+          "upper_s": 2.707914,
+          "lost_probes": null,
+          "spans_both_phases": false
+        },
+        "201": {
+          "lower_s": 2.49818,
+          "upper_s": 2.700612,
+          "lost_probes": null,
+          "spans_both_phases": false
+        }
+      },
+      "control_loss_s": {},
+      "failed_checks": []
+    },
+    {
+      "key": "restoration",
+      "name": "Secondary back",
+      "expected": "CHR 2 keeps its bond members out of the bond until the MLAG system ID syncs (mlag-init-delay), then adds them under the unchanged shared system ID. The root ID and the access switch's forwarding uplink do not change, so loss is brief or none.",
+      "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
+      "limit_s": 5.0,
+      "window_s": [
+        22.884358,
+        40.537205
+      ],
+      "verdict": "pass",
+      "worst_loss_s": null,
+      "loss_s": {},
+      "control_loss_s": {},
+      "failed_checks": []
+    }
+  ]
+}

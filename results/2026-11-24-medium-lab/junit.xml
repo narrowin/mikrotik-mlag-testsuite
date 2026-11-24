@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="mikrotik-mlag-external-7.26beta7" tests="49" errors="9" failures="16">
+  <testcase name="all-off-baseline/01-external-all-stp-off-baseline" classname="mikrotik.mlag.external">
+    <failure>Baseline gate withheld the fault: ["Expected three broadcast requests at each end, observed {'c1': [3, 3], 'c2': [2, 2]}"]</failure>
+  </testcase>
+  <testcase name="all-off-complete/01-external-all-stp-off-calibrate" classname="mikrotik.mlag.external" />
+  <testcase name="all-off-complete/01-external-all-stp-off-reboot-primary" classname="mikrotik.mlag.external" />
+  <testcase name="all-off-complete/01-external-all-stp-off-reboot-secondary" classname="mikrotik.mlag.external" />
+  <testcase name="all-off-primary-repeat/01-external-all-stp-off-reboot-primary" classname="mikrotik.mlag.external" />
+  <testcase name="all-off-verified-baseline/01-external-all-stp-off-baseline" classname="mikrotik.mlag.external" />
+  <testcase name="all-off-verified-reboots/01-external-all-stp-off-calibrate" classname="mikrotik.mlag.external" />
+  <testcase name="all-off-verified-reboots/01-external-all-stp-off-reboot-primary" classname="mikrotik.mlag.external">
+    <failure>r1 reported an elected STP root or forwards reserved addresses with mode none
+r2 reported an elected STP root or forwards reserved addresses with mode none</failure>
+  </testcase>
+  <testcase name="all-off-verified-reboots/01-external-all-stp-off-reboot-secondary" classname="mikrotik.mlag.external" />
+  <testcase name="attachment-repeat-combined/01-external-combined-loss" classname="mikrotik.mlag.external">
+    <failure>Restoration: r1:ether2 is not forwarding: {'status': 'in-bridge', 'role': 'designated-port', 'edge-port': 'no', 'learning': 'yes', 'forwarding': 'no', 'designated-bridge-id': '0.02:00:00:21:00:14', 'discard-transitions': '0', 'forward-transitions': '0'}
+101 withdrawal loss ≥ 12.607 s exceeds 5 s
+201 withdrawal loss ≥ 12.532 s exceeds 5 s</failure>
+  </testcase>
+  <testcase name="attachment-repeat-root/01-external-root-loss" classname="mikrotik.mlag.external">
+    <failure>101 baseline loss-free, 0 delivered, 44 missed
+201 baseline loss-free, 0 delivered, 44 missed</failure>
+  </testcase>
+  <testcase name="baseline/01-external-baseline" classname="mikrotik.mlag.external" />
+  <testcase name="clean-primary/01-external-reboot-primary" classname="mikrotik.mlag.external">
+    <failure>101 withdrawal loss ≥ 11.624 s exceeds 5 s
+101 restoration loss ≥ 5.148 s exceeds 5 s
+201 withdrawal loss ≥ 11.670 s exceeds 5 s
+201 restoration loss ≥ 5.205 s exceeds 5 s
+witness kept the preferred root 0x0000.02:00:00:21:00:15 during the guest absence; observed ['0x0000.02:00:00:21:00:15', '0x8000.02:00:00:21:00:13']</failure>
+  </testcase>
+  <testcase name="closing-external-baseline/01-external-baseline" classname="mikrotik.mlag.external" />
+  <testcase name="combined-2/01-external-combined-loss" classname="mikrotik.mlag.external">
+    <error>p2 independent observer had complete state at intervals within 1.5 s
+r1 independent observer had complete state at intervals within 1.5 s
+Restoration: r1:ether2 is not forwarding: {'status': 'in-bridge', 'role': 'designated-port', 'edge-port': 'no', 'learning': 'no', 'forwarding': 'no', 'designated-bridge-id': '0.02:00:00:21:00:14', 'discard-transitions': '0', 'forward-transitions': '0'}
+101 withdrawal loss ≥ 9.886 s exceeds 5 s
+201 withdrawal loss ≥ 9.888 s exceeds 5 s</error>
+  </testcase>
+  <testcase name="core-none/01-external-no-stp-baseline" classname="mikrotik.mlag.external">
+    <failure>p1 emitted STP state or forwards reserved addresses with mode none
+p2 emitted STP state or forwards reserved addresses with mode none
+witness:uplink is not forwarding: {'status': 'in-bridge', 'role': 'designated-port', 'edge-port': 'no', 'learning': 'no', 'forwarding': 'no', 'designated-bridge-id': '0x8000.02:00:00:21:00:13', 'discard-transitions': '1', 'forward-transitions': '1'}
+r2:ether2 is not forwarding: {'status': 'in-bridge', 'role': 'designated-port', 'edge-port': 'no', 'learning': 'no', 'forwarding': 'no', 'designated-bridge-id': '0.02:00:00:21:00:15', 'discard-transitions': '0', 'forward-transitions': '0'}
+101 baseline loss-free, 0 delivered, 61 missed
+201 baseline loss-free, 0 delivered, 61 missed</failure>
+  </testcase>
+  <testcase name="direct-reboots/01-direct-calibrate" classname="mikrotik.mlag.external" />
+  <testcase name="direct-reboots/01-direct-reboot-primary" classname="mikrotik.mlag.external" />
+  <testcase name="direct-reboots/01-direct-reboot-secondary" classname="mikrotik.mlag.external" />
+  <testcase name="final-managed-baseline/01-external-baseline" classname="mikrotik.mlag.external">
+    <failure>101 baseline loss-free, 0 delivered, 44 missed
+201 baseline loss-free, 0 delivered, 44 missed</failure>
+  </testcase>
+  <testcase name="initial-baseline/01-external-baseline" classname="mikrotik.mlag.external">
+    <error>[Errno 2] No such file or directory: 'small-lab/external-logs/routeros.jsonl'</error>
+  </testcase>
+  <testcase name="managed-combined-1/01-external-combined-loss" classname="mikrotik.mlag.external">
+    <failure>Restoration: r1:ether2 is not forwarding: {'status': 'in-bridge', 'role': 'designated-port', 'edge-port': 'no', 'learning': 'no', 'forwarding': 'no', 'designated-bridge-id': '0.02:00:00:21:00:14', 'discard-transitions': '0', 'forward-transitions': '0'}
+101 withdrawal loss ≥ 13.002 s exceeds 5 s
+101 restoration loss ≥ 5.399 s exceeds 5 s
+201 withdrawal loss ≥ 10.823 s exceeds 5 s
+201 restoration loss ≥ 5.452 s exceeds 5 s</failure>
+  </testcase>
+  <testcase name="managed-root-only-1/01-external-root-loss" classname="mikrotik.mlag.external">
+    <failure>Restoration: r2:ether2 is not forwarding: {'status': 'in-bridge', 'role': 'designated-port', 'edge-port': 'no', 'learning': 'no', 'forwarding': 'no', 'designated-bridge-id': '0.02:00:00:21:00:15', 'discard-transitions': '0', 'forward-transitions': '0'}</failure>
+  </testcase>
+  <testcase name="management-reset-baseline/01-external-baseline" classname="mikrotik.mlag.external" />
+  <testcase name="matched-rstp-baseline/01-external-baseline" classname="mikrotik.mlag.external">
+    <failure>101 baseline loss-free, 0 delivered, 44 missed
+201 baseline loss-free, 0 delivered, 44 missed</failure>
+  </testcase>
+  <testcase name="recovered-final-baseline/01-external-baseline" classname="mikrotik.mlag.external" />
+  <testcase name="repeat-primary/01-external-calibrate" classname="mikrotik.mlag.external" />
+  <testcase name="repeat-primary/01-external-reboot-primary" classname="mikrotik.mlag.external">
+    <failure>101 withdrawal loss ≥ 10.986 s exceeds 5 s
+101 restoration loss ≥ 6.644 s exceeds 5 s
+201 withdrawal loss ≥ 11.022 s exceeds 5 s
+201 restoration loss ≥ 6.654 s exceeds 5 s
+witness kept the preferred root 0x0000.02:00:00:21:00:15 during the guest absence; observed ['0x0000.02:00:00:21:00:15', '0x8000.02:00:00:21:00:13']</failure>
+  </testcase>
+  <testcase name="rstp/01-external-calibrate" classname="mikrotik.mlag.external" />
+  <testcase name="rstp/01-external-reboot-primary" classname="mikrotik.mlag.external">
+    <error>Missing pre-fault management syslog markers from ['172.30.217.12']
+r2:ether2 is not forwarding: {'status': 'in-bridge', 'role': 'designated-port', 'edge-port': 'no', 'learning': 'yes', 'forwarding': 'no', 'designated-bridge-id': '0.02:00:00:21:00:15', 'discard-transitions': '1', 'forward-transitions': '1'}
+p1 state samples cover both ends of the scoring window
+p2 state samples cover both ends of the scoring window
+witness state samples cover both ends of the scoring window
+r1 state samples cover both ends of the scoring window
+r2 state samples cover both ends of the scoring window
+host state samples cover both ends of the scoring window
+Management UDP syslog begin markers from required observers
+Management UDP syslog end markers from required observers
+101 at least 30 emits and cadence within 450 ms
+101 baseline loss-free, 0 delivered, 54 missed
+201 at least 30 emits and cadence within 450 ms
+201 baseline loss-free, 0 delivered, 54 missed
+301 at least 30 emits and cadence within 450 ms
+303 at least 30 emits and cadence within 450 ms</error>
+  </testcase>
+  <testcase name="rstp/01-external-reboot-secondary" classname="mikrotik.mlag.external">
+    <failure>101 delivered ten consecutive probes after recovery
+201 delivered ten consecutive probes after recovery
+Restoration: p2:witness-bond is not forwarding: {'status': 'in-bridge', 'role': 'designated-port', 'edge-port': 'no', 'learning': 'no', 'forwarding': 'no', 'designated-bridge-id': '0x4000.02:00:00:21:00:11', 'discard-transitions': '0', 'forward-transitions': '0'}
+101 restoration loss ≥ 20.202 s exceeds 5 s
+201 restoration loss ≥ 20.224 s exceeds 5 s</failure>
+  </testcase>
+  <testcase name="rstp-introduced-baseline/01-external-baseline" classname="mikrotik.mlag.external" />
+  <testcase name="rstp-introduced-reboots/01-external-calibrate" classname="mikrotik.mlag.external">
+    <error>Run interrupted</error>
+  </testcase>
+  <testcase name="rstp-resumed/01-external-reboot-primary" classname="mikrotik.mlag.external">
+    <failure>r2:ether2 is not forwarding: {'status': 'in-bridge', 'role': 'designated-port', 'edge-port': 'no', 'learning': 'yes', 'forwarding': 'no', 'designated-bridge-id': '0.02:00:00:21:00:15', 'discard-transitions': '1', 'forward-transitions': '1'}
+101 baseline loss-free, 0 delivered, 62 missed
+201 baseline loss-free, 0 delivered, 62 missed</failure>
+  </testcase>
+  <testcase name="rstp-secondary-repeat/01-external-reboot-secondary" classname="mikrotik.mlag.external">
+    <failure>101 delivered ten consecutive probes after recovery
+201 delivered ten consecutive probes after recovery
+Restoration: p2:witness-bond is not forwarding: {'status': 'in-bridge', 'role': 'designated-port', 'edge-port': 'no', 'learning': 'no', 'forwarding': 'no', 'designated-bridge-id': '0x4000.02:00:00:21:00:11', 'discard-transitions': '0', 'forward-transitions': '0'}
+101 restoration loss ≥ 19.167 s exceeds 5 s
+201 restoration loss ≥ 19.154 s exceeds 5 s</failure>
+  </testcase>
+  <testcase name="small-gate-calibrate/01-direct-baseline" classname="mikrotik.mlag.external" />
+  <testcase name="small-gate-carrier/01-direct-baseline" classname="mikrotik.mlag.external" />
+  <testcase name="small-gate-mobile-move/01-direct-baseline" classname="mikrotik.mlag.external" />
+  <testcase name="small-gate-silent-lacp/01-direct-baseline" classname="mikrotik.mlag.external" />
+  <testcase name="small-regression-calibrate/01-calibrate" classname="mikrotik.mlag.external" />
+  <testcase name="small-regression-carrier/01-carrier" classname="mikrotik.mlag.external">
+    <failure>101 restoration loss lasted at least 2.401 s against 1.0 s target
+201 restoration loss lasted at least 2.390 s against 1.0 s target
+302 restoration loss lasted at least 2.401 s against 1.0 s target</failure>
+  </testcase>
+  <testcase name="small-regression-mobile-move/01-mobile-move" classname="mikrotik.mlag.external" />
+  <testcase name="small-regression-silent-lacp/01-silent-lacp" classname="mikrotik.mlag.external" />
+  <testcase name="verification-external-root-loss/01-external-root-loss" classname="mikrotik.mlag.external">
+    <failure>101 baseline loss-free, 0 delivered, 44 missed
+201 baseline loss-free, 0 delivered, 44 missed</failure>
+  </testcase>
+  <testcase name="final-combined-2/runner" classname="mikrotik.mlag.external">
+    <error>Command '['nsenter', '-t', '104009', '-n', 'bridge', '-j', '-d', 'link', 'show']' returned non-zero exit status 1.</error>
+  </testcase>
+  <testcase name="final-root-only-2/runner" classname="mikrotik.mlag.external">
+    <error>Root baseline did not settle: management SSH unavailable</error>
+  </testcase>
+  <testcase name="root-only-1/runner" classname="mikrotik.mlag.external">
+    <error>Root baseline did not settle: Command '['ssh', '-F', '/dev/null', '-S', '/tmp/mlag-unovndci/witness', '-o', 'ConnectTimeout=3', '-o', 'NumberOfPasswordPrompts=1', '-o', 'PubkeyAuthentication=no', '-o', 'ServerAliveInterval=2', '-o', 'ServerAliveCountMax=2', '-o', 'UserKnownHostsFile=/tmp/mlag-unovndci/known_hosts', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'LogLevel=ERROR', '-o', 'BatchMode=yes', 'admin@172.30.217.13', ':put ("uptime-ns=" . [:tonsec [/system resource get uptime]]);/interface ethernet monitor ether2 once;/interface ethernet monitor ether3 once;/interface ethernet monitor ether4 once;/interface bridge monitor bridge once;/interface bridge port monitor [find where bridge=bridge] once;/interface bridge host print detail without-paging where mac-address=02:00:00:11:00:11;/interface bridge host print detail without-paging where mac-address=02:00:00:11:00:12;/interface bonding monitor-slaves bond=uplink once=yes']' returned non-zero exit status 255.</error>
+  </testcase>
+  <testcase name="rstp-after-all-off/runner" classname="mikrotik.mlag.external">
+    <error>Root baseline did not settle: Command '['ssh', '-F', '/dev/null', '-S', '/tmp/mlag-kr9wniic/r1', '-o', 'ConnectTimeout=3', '-o', 'NumberOfPasswordPrompts=1', '-o', 'PubkeyAuthentication=no', '-o', 'ServerAliveInterval=2', '-o', 'ServerAliveCountMax=2', '-o', 'UserKnownHostsFile=/tmp/mlag-kr9wniic/known_hosts', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'LogLevel=ERROR', '-o', 'BatchMode=yes', 'admin@172.30.217.14', ':put ("uptime-ns=" . [:tonsec [/system resource get uptime]]);/interface ethernet monitor ether2 once;/interface bridge monitor bridge once;/interface bridge port monitor [find where bridge=bridge] once;/interface bridge host print detail without-paging where mac-address=02:00:00:11:00:11;/interface bridge host print detail without-paging where mac-address=02:00:00:11:00:12']' returned non-zero exit status 255.</error>
+  </testcase>
+  <testcase name="verification-external-baseline/runner" classname="mikrotik.mlag.external">
+    <error>Root baseline did not settle: Command '['ssh', '-F', '/dev/null', '-S', '/tmp/mlag-1mttp5v7/r2', '-o', 'ConnectTimeout=3', '-o', 'NumberOfPasswordPrompts=1', '-o', 'PubkeyAuthentication=no', '-o', 'ServerAliveInterval=2', '-o', 'ServerAliveCountMax=2', '-o', 'UserKnownHostsFile=/tmp/mlag-1mttp5v7/known_hosts', '-o', 'StrictHostKeyChecking=accept-new', '-o', 'LogLevel=ERROR', '-o', 'BatchMode=yes', 'admin@172.30.217.15', ':put ("uptime-ns=" . [:tonsec [/system resource get uptime]]);/interface ethernet monitor ether2 once;/interface bridge monitor bridge once;/interface bridge port monitor [find where bridge=bridge] once;/interface bridge host print detail without-paging where mac-address=02:00:00:11:00:11;/interface bridge host print detail without-paging where mac-address=02:00:00:11:00:12']' returned non-zero exit status 255.</error>
+  </testcase>
+</testsuite>

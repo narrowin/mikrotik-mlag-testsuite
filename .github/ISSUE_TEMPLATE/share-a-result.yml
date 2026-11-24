@@ -1,0 +1,38 @@
+name: Share a result
+description: Share a measured result from your RouterOS version, hardware or setup.
+labels: [result]
+body:
+  - type: input
+    id: routeros
+    attributes:
+      label: RouterOS version
+      placeholder: 7.26beta7
+    validations:
+      required: true
+  - type: input
+    id: platform
+    attributes:
+      label: Hardware or CHR
+      placeholder: CRS326-24S+2Q+RM, or CHR in Containerlab
+    validations:
+      required: true
+  - type: input
+    id: setup
+    attributes:
+      label: Lab and setup
+      description: Small or Medium lab, bridge mode, and anything changed from the lab defaults.
+      placeholder: Medium lab, STP off, mlag-lacp-fallback=no
+    validations:
+      required: true
+  - type: input
+    id: cases
+    attributes:
+      label: Cases run
+      placeholder: primary-reboot, secondary-reboot, peer-link-loss
+  - type: textarea
+    id: result
+    attributes:
+      label: Result
+      description: Paste the TL;DR and summary table from the generated README.md, or attach the report. Do not attach packet captures.
+    validations:
+      required: true

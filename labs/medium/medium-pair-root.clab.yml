@@ -1,0 +1,72 @@
+name: mlag-medium
+mgmt:
+  network: mlag-medium-mgmt
+  ipv4-subnet: 172.30.216.0/27
+topology:
+  kinds:
+    mikrotik_chr:
+      image: "${MLAG_CHR_IMAGE:=mikrotik/chr:development}"
+      startup-config: medium-pair-root.rsc
+      binds:
+        - ../shared/qemu-data-link.sh:/usr/local/bin/qemu-system-aarch64:ro
+        - ../shared/qemu-data-link.sh:/usr/local/bin/qemu-system-x86_64:ro
+        - ../shared/forward-control.sh:/lab/forward-control.sh:ro
+      exec:
+        - /bin/sh /lab/forward-control.sh --wire eth1 eth2 eth3 tap1 tap2 tap3
+      stages:
+        create:
+          wait-for:
+            - node: dc1-syslog-collector
+              stage: healthy
+  nodes:
+    dc1-syslog-collector:
+      kind: linux
+      image: "${MLAG_SYSLOG_IMAGE:=rsyslog/rsyslog:latest}"
+      mgmt-ipv4: 172.30.216.20
+      user: "${SUDO_UID:=0}:${SUDO_GID:=0}"
+      entrypoint: rsyslogd
+      cmd: "-n -iNONE -f /etc/rsyslog.conf"
+      binds:
+        - ../shared/rsyslog.conf:/etc/rsyslog.conf:ro
+        - ./pair-root-logs:/evidence
+      healthcheck:
+        test:
+          - CMD-SHELL
+          - "test -w /evidence && { test ! -e /evidence/routeros.jsonl || test -w /evidence/routeros.jsonl; } && grep -q ':05EA ' /proc/net/udp"
+        interval: 1
+        timeout: 3
+        retries: 12
+    dc1-core-mlag1:
+      kind: mikrotik_chr
+      mgmt-ipv4: 172.30.216.11
+    dc1-core-mlag2:
+      kind: mikrotik_chr
+      mgmt-ipv4: 172.30.216.12
+    dc1-access-switch1:
+      kind: mikrotik_chr
+      mgmt-ipv4: 172.30.216.13
+    dc1-traffic-host1:
+      kind: linux
+      group: probes
+      exec:
+        - /bin/sh /lab/root-client.sh 11
+    dc1-traffic-host2:
+      kind: linux
+      group: probes
+      exec:
+        - /bin/sh /lab/root-client.sh 12
+  groups:
+    probes:
+      image: mlag-lab-endpoint:local
+      cmd: "sleep infinity"
+      binds:
+        - ../shared/client-network.sh:/lab/client-network.sh:ro
+        - ../shared/root-client.sh:/lab/root-client.sh:ro
+  links:
+    - endpoints: ["dc1-core-mlag1:eth1", "dc1-core-mlag2:eth1"]
+    - endpoints: ["dc1-core-mlag1:eth2", "dc1-access-switch1:eth1"]
+    - endpoints: ["dc1-core-mlag2:eth2", "dc1-access-switch1:eth2"]
+    - endpoints: ["dc1-core-mlag1:eth3", "dc1-traffic-host2:eth1"]
+    - endpoints: ["dc1-core-mlag2:eth3", "dc1-traffic-host2:eth2"]
+    - endpoints: ["dc1-access-switch1:eth3", "dc1-traffic-host1:eth1"]
+    - endpoints: ["dc1-traffic-host1:eth3", "dc1-traffic-host2:eth3"]

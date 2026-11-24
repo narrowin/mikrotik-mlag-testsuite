@@ -1,0 +1,58 @@
+{
+  "schema": 2,
+  "case": "medium-pair-root-reboot-secondary",
+  "name": "medium-pair-root-reboot-secondary",
+  "topology": "mlag-medium",
+  "builds_sha256": "d0894bcec52e8a555ce67387fd58e4354545d2a6104bbd4a5b62065af2366144",
+  "target": "p2",
+  "devices": {
+    "p1": {
+      "name": "dc1-core-mlag1",
+      "container": "clab-mlag-medium-dc1-core-mlag1",
+      "management_ip": "172.30.218.11",
+      "role": "MLAG core switch 1",
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "p2": {
+      "name": "dc1-core-mlag2",
+      "container": "clab-mlag-medium-dc1-core-mlag2",
+      "management_ip": "172.30.218.12",
+      "role": "MLAG core switch 2",
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "witness": {
+      "name": "dc1-access-switch1",
+      "container": "clab-mlag-medium-dc1-access-switch1",
+      "management_ip": "172.30.218.13",
+      "role": "Dual-attached access switch and external RSTP root candidate",
+      "runtime": "RouterOS CHR guest",
+      "host": "mlag-external"
+    },
+    "c1": {
+      "name": "dc1-traffic-host1",
+      "container": "clab-mlag-medium-dc1-traffic-host1",
+      "management_ip": "172.30.218.16",
+      "role": "Linux VLAN 110 and bypass probe host 1",
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    },
+    "c2": {
+      "name": "dc1-traffic-host2",
+      "container": "clab-mlag-medium-dc1-traffic-host2",
+      "management_ip": "172.30.218.17",
+      "role": "Linux VLAN 110 and bypass probe host 2",
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    },
+    "syslog": {
+      "name": "dc1-syslog-collector",
+      "container": "clab-mlag-medium-dc1-syslog-collector",
+      "management_ip": "172.30.218.20",
+      "role": "Management network syslog collector",
+      "runtime": "Linux container",
+      "host": "mlag-external"
+    }
+  }
+}

@@ -1,0 +1,29 @@
+seconds_from_baseline	source	event
+-2.258410153	action	"{""epoch_ns"": 1795521010547879361, ""mono_ns"": 146772988068434, ""name"": ""configuration_applied"", ""replies"": {""bridge_mode"": ""rstp"", ""completed_mono_ns"": 146772727355208, ""readback"": {""p1"": ""rstp"", ""p2"": ""rstp""}, ""replies"": {""p1"": """", ""p2"": """"}, ""settings"": {""p1"": ""protocol-mode=rstp"", ""p2"": ""protocol-mode=rstp""}, ""started_mono_ns"": 146770343011512, ""uptime_after_ns"": {""p1"": 1116000000000, ""p2"": 1116000000000}, ""uptime_before_ns"": {""p1"": 1114000000000, ""p2"": 1114000000000}}}"
+-2.187636514	p2-tap2	LACP 52:54:00:d7:0c:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+-2.187628514	c1-eth2	LACP 52:54:00:d7:0c:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+-2.179484522	syslog-172.30.215.11	<30>Nov 24 11:50:10 dc1-core-mlag1 script,info mlag-suite-01-calibration-begin
+-2.170103658	syslog-172.30.215.12	<30>Nov 24 11:50:10 dc1-core-mlag2 script,info mlag-suite-01-calibration-begin
+-2.150433514	c1-eth2	LACP aa:c1:ab:cf:67:b4 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-2.150423514	p2-tap2	LACP aa:c1:ab:cf:67:b4 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-2.118641209	p2	"query start +-2.19842 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:D7:0B:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether2"
+-2.081400093	p1	"query start +-2.198518 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:D7:0B:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether5"
+-1.833376514	p1-tap2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+-1.833367514	p1-eth2	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+-1.833365514	c1-eth1	LACP 52:54:00:d7:0b:02 system=52:54:00:d7:0b:02 actor=0x3f partner=0x3f
+-1.212973514	c1-eth1	LACP aa:c1:ab:6d:26:54 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-1.212969514	p1-eth2	LACP aa:c1:ab:6d:26:54 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-1.212962514	p1-tap2	LACP aa:c1:ab:6d:26:54 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+0.000000000	action	"{""epoch_ns"": 1795521012806289514, ""mono_ns"": 146775246483004, ""name"": ""baseline_start""}"
+0.318666390	syslog-172.30.215.12	<31>Nov 24 11:50:12 dc1-core-mlag2 bridge,stp,debug ether2:0  TCHANGE over
+0.331038358	syslog-172.30.215.11	<31>Nov 24 11:50:12 dc1-core-mlag1 bridge,stp,debug ether2:0  TCHANGE over
+4.004372247	action	"{""epoch_ns"": 1795521016810661761, ""mono_ns"": 146779250850959, ""name"": ""down_start""}"
+4.005283499	action	"{""epoch_ns"": 1795521016811573013, ""mono_ns"": 146779251762169, ""name"": ""down_applied""}"
+4.058471486	icmp-301	"{""absent_at_source"": 0, ""failed_probes"": 19, ""first_seq"": 61, ""last_seq"": 79, ""lower_s"": 1.887379, ""phases"": [""withdrawal"", ""restoration""], ""trace_s"": {""c1-eth3"": {""0"": [], ""8"": [4.058471]}, ""c2-eth3"": {""0"": [], ""8"": [4.058472]}}, ""trace_seq"": 61, ""upper_s"": 2.096236, ""where"": [""reply absent at destination""]}"
+6.007626560	action	"{""counters"": ""filter protocol ip pref 43 flower chain 0 \nfilter protocol ip pref 43 flower chain 0 handle 0x1 \n  eth_type ipv4\n  ip_proto icmp\n  dst_ip 198.51.100.2\n  src_ip 198.51.100.1\n  icmp_type 8\n  not_in_hw\n\taction order 1: gact action drop\n\t random type none pass val 0\n\t index 1 ref 1 bind 1 installed 2 sec used 0 sec firstused 1 sec\n\tAction statistics:\n\tSent 1596 bytes 19 pkt (dropped 19, overlimits 0 requeues 0) \n\tbacklog 0b 0p requeues 0\n\n"", ""epoch_ns"": 1795521018813916074, ""mono_ns"": 146781254105481, ""name"": ""up_start""}"
+6.008928854	action	"{""epoch_ns"": 1795521018815218368, ""mono_ns"": 146781255407483, ""name"": ""up_applied""}"
+9.010956027	action	"{""epoch_ns"": 1795521021817245541, ""mono_ns"": 146784257435906, ""name"": ""recovery_start""}"
+12.014210202	action	"{""epoch_ns"": 1795521024820499716, ""mono_ns"": 146787260690081, ""name"": ""recovery_end""}"
+12.021604502	syslog-172.30.215.11	<30>Nov 24 11:50:24 dc1-core-mlag1 script,info mlag-suite-01-calibration-end
+12.032605590	syslog-172.30.215.12	<30>Nov 24 11:50:24 dc1-core-mlag2 script,info mlag-suite-01-calibration-end
+14.042817274	action	"{""clock_delta_ns"": -1042, ""early_exits"": [], ""epoch_ns"": 1795521026849106788, ""mono_ns"": 146789289295861, ""name"": ""collectors_stopped""}"

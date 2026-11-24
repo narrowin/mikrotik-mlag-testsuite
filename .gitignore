@@ -1,0 +1,38 @@
+.DS_Store
+
+# Python and uv
+.venv/
+.uv-cache/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Local editor state
+.vscode/
+
+# Containerlab lab directories and RouterOS syslog feeds
+labs/*/clab-*/
+labs/*/*logs/*.jsonl
+
+# Local runs and checkpoints
+test-results/
+networka-results/
+.networka-venv/
+schemas/
+
+# Results: new raw evidence is stored with campaign artifacts.
+/results/2026-11-24-small-lab/test-suite-evidence/
+/results/**/*.tar.gz
+/results/**/*.pcap
+/results/**/*.pcapng
+
+# Raw per-run evidence stays local; reports, verdicts, configs and the index are committed.
+/results/**/state-*.jsonl
+/results/**/syslog.jsonl
+/results/**/events.jsonl
+/results/**/captures/
+/results/**/probes/
+/results/**/links/
+/results/**/inputs/
+/results/**/effective-config.json

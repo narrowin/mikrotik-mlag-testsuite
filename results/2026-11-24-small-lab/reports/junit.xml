@@ -1,0 +1,34 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="mikrotik-mlag-small" tests="8" errors="0" failures="6">
+  <testcase name="01-calibrate" classname="mikrotik.mlag.small" />
+  <testcase name="01-carrier" classname="mikrotik.mlag.small">
+    <failure>101 restoration loss lasted at least 2.288 s against 1.0 s target
+201 restoration loss lasted at least 2.303 s against 1.0 s target
+302 restoration loss lasted at least 2.303 s against 1.0 s target</failure>
+  </testcase>
+  <testcase name="01-mobile-move" classname="mikrotik.mlag.small">
+    <failure>to-p2 no unicast after GARP on the old TAP
+No loss during either announced move</failure>
+  </testcase>
+  <testcase name="01-silent-lacp" classname="mikrotik.mlag.small">
+    <failure>101 restoration loss lasted at least 2.808 s against 1.0 s target
+201 restoration loss lasted at least 2.815 s against 1.0 s target
+302 withdrawal loss lasted at least 6.159 s against 4.0 s target
+302 restoration loss lasted at least 6.159 s against 1.0 s target</failure>
+  </testcase>
+  <testcase name="02-calibrate" classname="mikrotik.mlag.small" />
+  <testcase name="02-carrier" classname="mikrotik.mlag.small">
+    <failure>101 restoration loss lasted at least 2.288 s against 1.0 s target
+201 restoration loss lasted at least 2.184 s against 1.0 s target
+302 restoration loss lasted at least 2.287 s against 1.0 s target</failure>
+  </testcase>
+  <testcase name="02-mobile-move" classname="mikrotik.mlag.small">
+    <failure>to-p2 no unicast after GARP on the old TAP
+No loss during either announced move</failure>
+  </testcase>
+  <testcase name="02-silent-lacp" classname="mikrotik.mlag.small">
+    <failure>101 restoration loss lasted at least 2.809 s against 1.0 s target
+201 restoration loss lasted at least 2.824 s against 1.0 s target
+302 restoration loss lasted at least 2.824 s against 1.0 s target</failure>
+  </testcase>
+</testsuite>

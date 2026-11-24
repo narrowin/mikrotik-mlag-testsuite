@@ -1,0 +1,22 @@
+general:
+  transport: system
+  ssh_config_file: false
+  ssh_strict_host_key_checking: true
+  timeout: 5
+  connection_retries: 1
+  command_timeout: 5
+  results_format: json
+devices:
+  dc1-core-mlag1:
+    host: 172.30.218.11
+    device_type: mikrotik_routeros
+  dc1-core-mlag2:
+    host: 172.30.218.12
+    device_type: mikrotik_routeros
+  dc1-access-switch1:
+    host: 172.30.218.13
+    device_type: mikrotik_routeros
+groups:
+  dc1-routeros:
+    description: The three RouterOS CHR guests on the mlag-external OrbStack VM
+    members: [dc1-core-mlag1, dc1-core-mlag2, dc1-access-switch1]

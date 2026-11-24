@@ -1,0 +1,12 @@
+sequences:
+  mlag_small_state:
+    description: Read-only state for the two-CHR MLAG lab
+    commands:
+      - /system/identity/print
+      - /system/resource/print
+      - /interface/ethernet/monitor ether3 once
+      - /interface/bonding/monitor-slaves bond=client1 once=yes
+      - /interface/bonding/monitor-slaves bond=client2 once=yes
+      - /interface/bridge/monitor bridge once
+      - /interface/bridge/port/monitor [find where bridge="bridge"] once
+      - /interface/bridge/host/print detail without-paging where mac-address=02:00:00:11:00:11

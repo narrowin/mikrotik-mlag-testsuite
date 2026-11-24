@@ -1,0 +1,38 @@
+<?xml version='1.0' encoding='utf-8'?>
+<testsuite name="mikrotik-mlag-mlags" tests="5" errors="2" failures="0" skipped="1">
+  <testcase name="01-medium-mstp-access-root-baseline" classname="mikrotik.mlag.mlags">
+    <properties>
+      <property name="lab" value="MLAG labs" />
+    </properties>
+  </testcase>
+  <testcase name="01-medium-mstp-access-root-calibrate" classname="mikrotik.mlag.mlags">
+    <properties>
+      <property name="lab" value="MLAG labs" />
+    </properties>
+  </testcase>
+  <testcase name="01-medium-mstp-access-root-reboot-secondary" classname="mikrotik.mlag.mlags">
+    <properties>
+      <property name="lab" value="MLAG labs" />
+    </properties>
+    <error>p2 did not prove a new guest boot within 90 s
+p1 independent observer had complete state at intervals within 1.5 s
+Management UDP syslog end markers from required observers
+101 delivered ten consecutive probes after recovery
+201 delivered ten consecutive probes after recovery
+301 delivered ten consecutive probes after recovery
+303 delivered ten consecutive probes after recovery
+Restore state was captured</error>
+  </testcase>
+  <testcase name="01-medium-mstp-access-root-reboot-primary" classname="mikrotik.mlag.mlags">
+    <properties>
+      <property name="lab" value="MLAG labs" />
+    </properties>
+    <skipped message="Attempt did not reach evaluation" />
+  </testcase>
+  <testcase name="runner" classname="mikrotik.mlag.mlags">
+    <properties>
+      <property name="lab" value="MLAG labs" />
+    </properties>
+    <error>1 scheduled attempts did not reach evaluation</error>
+  </testcase>
+</testsuite>

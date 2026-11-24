@@ -1,0 +1,51 @@
+seconds_from_baseline	source	event
+-2.016758870	syslog-172.30.215.11	<30>Nov 24 07:41:51 p1 script,info mlag-suite-01-mobile-move-begin
+-2.004948822	syslog-172.30.215.12	<30>Nov 24 07:41:51 p2 script,info mlag-suite-01-mobile-move-begin
+-1.936702445	p2	"query start +-2.025935 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:1A:A0:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether2"
+-1.935921944	p1	"query start +-2.026211 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:1A:A0:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether5"
+-1.699543942	c1-eth1	LACP aa:c1:ab:d4:b9:59 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-1.699539942	p1-eth2	LACP aa:c1:ab:d4:b9:59 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-1.699530942	p1-tap2	LACP aa:c1:ab:d4:b9:59 system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-1.596105942	c1-eth2	LACP aa:c1:ab:ca:40:7d system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-1.596099942	p2-tap2	LACP aa:c1:ab:ca:40:7d system=02:00:00:11:00:11 actor=0x3f partner=0x3f
+-1.466726942	p1-tap2	LACP 52:54:00:7b:0d:02 system=52:54:00:1a:a0:02 actor=0x3f partner=0x3f
+-1.466714942	p1-eth2	LACP 52:54:00:7b:0d:02 system=52:54:00:1a:a0:02 actor=0x3f partner=0x3f
+-1.466712942	c1-eth1	LACP 52:54:00:7b:0d:02 system=52:54:00:1a:a0:02 actor=0x3f partner=0x3f
+-1.353497942	p2-tap2	LACP 52:54:00:1a:a0:02 system=52:54:00:1a:a0:02 actor=0x3f partner=0x3f
+-1.353492942	c1-eth2	LACP 52:54:00:1a:a0:02 system=52:54:00:1a:a0:02 actor=0x3f partner=0x3f
+0.000000000	action	"{""epoch_ns"": 1795506114179961942, ""mono_ns"": 131876620153057, ""name"": ""baseline_start""}"
+4.008648809	action	"{""epoch_ns"": 1795506118188610751, ""mono_ns"": 131880628800366, ""name"": ""down_start""}"
+4.009904058	mobile-bond0	Mobile gratuitous ARP
+4.009914058	p2-tap4	Mobile gratuitous ARP
+4.010742058	c2-bond0	Mobile gratuitous ARP
+4.010788058	p2-tap2	Mobile gratuitous ARP
+4.010792058	c1-bond0	Mobile gratuitous ARP
+4.010792058	c1-eth2	Mobile gratuitous ARP
+4.010864058	p2-tap1	Mobile gratuitous ARP
+4.010879058	icmp-102	"{""absent_at_source"": 0, ""failed_probes"": 1, ""first_seq"": 59, ""last_seq"": 59, ""lower_s"": 0.0, ""phases"": [""withdrawal""], ""trace_s"": {""c2-bond0"": {""0"": [], ""8"": [4.010879]}, ""p1-tap4"": {""0"": [], ""8"": [4.011212]}}, ""trace_seq"": 59, ""upper_s"": 0.208777, ""where"": [""request absent at destination""]}"
+4.010944058	p1-tap1	Mobile gratuitous ARP
+4.010977979	action	"{""epoch_ns"": 1795506118190939921, ""mono_ns"": 131880631129661, ""name"": ""down_applied""}"
+4.011922058	p1-tap4	Mobile gratuitous ARP
+4.012906154	syslog-172.30.215.12	<31>Nov 24 07:41:57 p2 bridge,debug host 02:00:00:11:00:50:110 changed ports: ether2 to ether5
+4.039529940	p2	"query start +3.946991 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:1A:A0:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether5"
+4.045476949	p1	"query start +3.952928 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:1A:A0:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether2"
+8.013480195	action	"{""epoch_ns"": 1795506122193442137, ""mono_ns"": 131884633632419, ""name"": ""up_start""}"
+8.014958058	mobile-bond0	Mobile gratuitous ARP
+8.014973058	p1-tap4	Mobile gratuitous ARP
+8.015420058	p1-tap2	Mobile gratuitous ARP
+8.015428058	p1-eth2	Mobile gratuitous ARP
+8.015431058	c1-bond0	Mobile gratuitous ARP
+8.015431058	c1-eth1	Mobile gratuitous ARP
+8.015476058	c2-bond0	Mobile gratuitous ARP
+8.015553058	p1-tap1	Mobile gratuitous ARP
+8.015586058	p2-tap1	Mobile gratuitous ARP
+8.015930058	p2-tap4	Mobile gratuitous ARP
+8.017871018	syslog-172.30.215.11	<31>Nov 24 07:42:01 p1 bridge,debug host 02:00:00:11:00:50:110 changed ports: ether2 to ether5
+8.017988244	action	"{""epoch_ns"": 1795506122197950186, ""mono_ns"": 131884638139676, ""name"": ""up_applied""}"
+8.253509195	p2	"query start +8.168716 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:1A:A0:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether2"
+8.264686963	p1	"query start +8.165688 s | status: link-ok | AP port=ether3 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:11 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | AP port=ether4 key=15 flags=""ATGSCD--"" partner-sys-id=02:00:00:11:00:12 | partner-sys-priority=65535 partner-key=15 partner-flags=""ATGSCD--"" | root-bridge-id: 0x1000.52:54:00:1A:A0:01 | topology-changes: 1 | mlag-state: connected | status: in-bridge                in-bridge                in-bridge                in-bridge | role: designated-port          designated-port          designated-port          designated-port | forwarding: yes                      yes                      yes                      yes | topology-changes: 1                        0                        0                        0 | on-interface=client1 | on-interface=ether5"
+11.018900769	action	"{""epoch_ns"": 1795506125198862711, ""mono_ns"": 131887639052284, ""name"": ""recovery_start""}"
+14.022884340	action	"{""epoch_ns"": 1795506128202846282, ""mono_ns"": 131890643037022, ""name"": ""recovery_end""}"
+14.032604074	syslog-172.30.215.11	<30>Nov 24 07:42:07 p1 script,info mlag-suite-01-mobile-move-end
+14.047221162	syslog-172.30.215.12	<30>Nov 24 07:42:08 p2 script,info mlag-suite-01-mobile-move-end
+16.057141604	action	"{""clock_delta_ns"": -750, ""early_exits"": [], ""epoch_ns"": 1795506130237103546, ""mono_ns"": 131892677292661, ""name"": ""collectors_stopped""}"

@@ -1,0 +1,51 @@
+Flags: R - RUNNING
+0 R name="bridge" mtu=auto actual-mtu=1500 l2mtu=1500 arp=enabled
+    arp-timeout=auto mac-address=02:00:00:21:00:13 protocol-mode=mstp
+    fast-forward=yes igmp-snooping=no auto-mac=no admin-mac=02:00:00:21:00:13
+    ageing-time=5m priority=0x0000 max-message-age=20s forward-delay=15s
+    transmit-hold-count=6 region-name="mlag-lab" region-revision=1 max-hops=20
+    vlan-filtering=yes ether-type=0x8100 pvid=1
+    frame-types=admit-only-vlan-tagged ingress-filtering=yes dhcp-snooping=no
+    dhcpv6-snooping=no ra-guard=no port-cost-mode=long mvrp=no
+    max-learned-entries=auto mlag-peer-port=none mlag-priority=128
+    mlag-heartbeat=5s mlag-init-delay=1m mlag-lacp-fallback=yes
+
+0  interface=uplink bridge=bridge priority=0x80 edge=no point-to-point=auto
+   learn=auto horizon=none hw=yes auto-isolate=no restricted-role=no
+   restricted-tcn=no pvid=110 frame-types=admit-all ingress-filtering=yes
+   unknown-unicast-flood=yes unknown-multicast-flood=yes broadcast-flood=yes
+   tag-stacking=no bpdu-guard=no trusted=no trusted-ra=no trusted-dhcpv6=no
+   trusted-arp=no trusted-ipsg=no mvrp-registrar-state=normal
+   mvrp-applicant-state=normal-participant multicast-router=temporary-query
+   fast-leave=no
+ 
+1  interface=ether4 bridge=bridge priority=0x80 edge=yes point-to-point=auto
+   learn=auto horizon=none hw=yes auto-isolate=no restricted-role=no
+   restricted-tcn=no pvid=110 frame-types=admit-all ingress-filtering=yes
+   unknown-unicast-flood=yes unknown-multicast-flood=yes broadcast-flood=yes
+   tag-stacking=no bpdu-guard=no trusted=no trusted-ra=no trusted-dhcpv6=no
+   trusted-arp=no trusted-ipsg=no mvrp-registrar-state=normal
+   mvrp-applicant-state=normal-participant multicast-router=temporary-query
+   fast-leave=no
+
+0  bridge=bridge vlan-ids=110 tagged="" untagged=uplink,ether4
+   mvrp-forbidden="" current-tagged="" current-untagged=uplink,ether4
+
+Flags: D - DYNAMIC
+0  D identifier=0 bridge=bridge priority=0x0000 vlan-mapping=1-109,111-4094
+ 
+1    identifier=1 bridge=bridge priority=0x0000 vlan-mapping=110
+
+Flags: R - RUNNING
+0 R name="uplink" mtu=1500 mac-address=52:54:00:DA:0D:01 arp=enabled
+    arp-timeout=auto slaves=ether2,ether3 mode=802.3ad primary=none
+    link-monitoring=mii arp-interval=100ms arp-ip-targets="" mii-interval=100ms
+    down-delay=0ms up-delay=0ms lacp-rate=1sec transmit-hash-policy=layer-2
+    min-links=0 lacp-mode=active lacp-strict=no lacp-system-priority=65535
+
+0  name="mlagLabSyslog" target=remote remote=172.30.218.20 remote-port=1514
+   src-address=172.30.218.13 remote-log-format=syslog remote-protocol=udp
+   syslog-time-format=bsd-syslog syslog-facility=daemon syslog-severity=auto
+   add-topics-string=yes vrf=mgmt
+
+peer-link-mac=52:54:00:DA:0D:01
