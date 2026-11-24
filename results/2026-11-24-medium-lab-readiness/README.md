@@ -40,7 +40,7 @@ For this report’s offline replay, extract the archive below and pass `external
 
 ## Evidence
 
-[Raw timings, captures and Networka output](evidence.tar.gz) · [Checksums](SHA256SUMS)
+[Checksums](SHA256SUMS)
 
 The first Networka group run exited zero after all five host-key checks failed. The verified run checked each device’s actual output after host-key enrollment. Networka also verified all five RouterOS identities in 0.98 s.
 
@@ -55,6 +55,6 @@ These captures used the earlier deployment name `dc1-mlag-external` and access-s
 
 Both checks verified MLAG, LACP and loss-free traffic in both VLAN and both bypass directions. All seven CHRs ran the pinned 7.26beta7 image. Device and container names follow the [naming convention](../../docs/lab-naming.md). New JSON and JUnit records include lab names and case IDs.
 
-[Passing checks, configurations, captures and JUnit](renamed-labs-evidence.tar.gz) · [Running deployments](renamed-deployments.txt) · [Checksums](SHA256SUMS)
+[Running deployments](renamed-deployments.txt) · [Checksums](SHA256SUMS)
 
 Replay `naming-small-rstp-ready` and `naming-medium-final` from the extracted archive with the [existing evaluator](../../docs/test-framework.md#read-or-replay-a-run). Expect exit 0 for both. The initial Small lab attempt lacked the permanent neighbor entries required by the documented setup. Applying that setup produced the pass recorded above.

@@ -26,8 +26,8 @@ When the local draw.io MCP server is available, query the workbook and compare i
 | Carrier withdrawal and restoration | [Case and threshold](../cases/small-client-link.md) · [First verdict](../../results/2026-11-24-small-lab/reports/01-carrier/result.json) · [First packet timeline](../../results/2026-11-24-small-lab/reports/01-carrier/timeline.tsv) · [Second verdict](../../results/2026-11-24-small-lab/reports/02-carrier/result.json) |
 | Silent LACP and bypass calibration | [Numbered packet bounds and checks](../../results/2026-11-24-small-lab/reports/suite.json) · [JUnit verdicts](../../results/2026-11-24-small-lab/reports/junit.xml) |
 | Announced MAC move | [Earlier loss-free run](../../results/2026-11-24-small-lab/dual-homed.md#consecutive-mac-moves) · [Later suite with two failures](../../results/2026-11-24-small-lab/reports/suite.json) |
-| Peer-link partition | [Measured reply gaps](../../results/2026-11-24-small-lab/postmortem.md#measurements) · [Captures and analysis](../../results/2026-11-24-small-lab/postmortem-evidence.tar.gz) |
-| Direct-client reboot of each CHR | [Run commands](../operator-guide.md#reboot-the-direct-client-pair) · `final-runs-evidence.tar.gz` (saved campaign bundle) |
+| Peer-link partition | [Measured reply gaps](../../results/2026-11-24-small-lab/postmortem.md#measurements) |
+| Direct-client reboot of each CHR | [Run commands](../operator-guide.md#reboot-the-direct-client-pair) |
 
 [Planned virtual carrier-down and physical power-loss trials](../validation-plan.md#chassis-loss-and-return)
 
@@ -36,9 +36,9 @@ When the local draw.io MCP server is available, query the workbook and compare i
 | Scenario | Evidence files |
 | --- | --- |
 | Pair as root, primary and secondary reboot (three-CHR control) | [Report](../../results/2026-11-24-medium-lab-pair-root/README.md#development-726beta7) · [Phase data](../../results/2026-11-24-medium-lab-pair-root/phase-loss.tsv) |
-| Access switch as root (three-CHR control) | [Election and failed baseline](../../results/2026-11-24-medium-lab-pair-root/README.md#root-placement-comparison) · [Captures](../../results/2026-11-24-medium-lab-pair-root/witness-root-baseline-evidence.tar.gz) |
+| Access switch as root (three-CHR control) | [Election and failed baseline](../../results/2026-11-24-medium-lab-pair-root/README.md#root-placement-comparison) |
 | Archived five-CHR diagnostic fixture in both bridge modes | [Readiness summary](../cases/medium-spanning-tree.md#archived-diagnostics) |
-| External root and attachment loss | [Report](../cases/medium-spanning-tree.md#archived-diagnostics) · `recovery-evidence.tar.gz` (saved campaign bundle) |
+| External root and attachment loss | [Report](../cases/medium-spanning-tree.md#archived-diagnostics) |
 | Core-only and all-bridges-off comparisons | [Report](../cases/medium-spanning-tree.md#archived-diagnostics) · [Offline replay](../test-framework.md#replay-the-stp-off-reboots) |
 
 ## Large lab test plan

@@ -14,6 +14,6 @@ Calibrate the bypass and reboot either core in separate repeats only after that 
 
 ## Archived diagnostics
 
-In the earlier three-CHR trial, both cores recognized the access switch as root and neither VLAN direction delivered any of 62 probes. The five-CHR diagnostic fixture used two single-homed root bridges. Its STP-off reboots passed for both core roles in two repeats. The five-CHR RSTP readiness run failed VLAN forwarding and withheld the reboot. Earlier five-CHR RSTP reboots on passing baselines exceeded the five-second target for both core roles. These results describe their original wiring. [Three-CHR access-root capture](../../results/2026-11-24-medium-lab-pair-root/witness-root-baseline-evidence.tar.gz)
+In the earlier three-CHR trial, both cores recognized the access switch as root and neither VLAN direction delivered any of 62 probes. The five-CHR diagnostic fixture used two single-homed root bridges. Its STP-off reboots passed for both core roles in two repeats. The five-CHR RSTP readiness run failed VLAN forwarding and withheld the reboot. Earlier five-CHR RSTP reboots on passing baselines exceeded the five-second target for both core roles. These results describe their original wiring.
 
 The five-CHR bundles are retained with the local campaign evidence. Use the [offline replay procedure](../test-framework.md#replay-the-stp-off-reboots) with the saved bundle.

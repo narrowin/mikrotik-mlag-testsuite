@@ -12,7 +12,7 @@ All tests here run on RouterOS **7.26beta7** on CHR. A pass shows that the fixed
 | --- | --- |
 | **Checked** | A case that runs today grades this behaviour. |
 | **Indirect** | A case that runs today would fail if the fault came back, but no check names it. |
-| **In progress** | The check or case is being added by the [forwarding checks plan](../plans/forwarding-checks-and-speed-plan.md). |
+| **In progress** | The check or case is being added. |
 | **Not checked** | No test yet. The row names what is missing. |
 | **Hardware only** | The fix is in the switch chip or hardware offload path. CHR cannot show it. |
 

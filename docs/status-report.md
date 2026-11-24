@@ -13,7 +13,7 @@
 | Primary held stopped and fallback disabled | During separate 35-second stops with carrier up, service recovered briefly and failed again until the primary resumed. Disabling LACP fallback in a separate reboot still exceeded the outage target. | [Root campaign report and archives](../results/2026-11-24-medium-lab-pair-root/README.md) · [Per-flow measurements](../results/2026-11-24-medium-lab-pair-root/phase-loss.tsv) |
 | Archived five-CHR external roots on 7.26beta7 | The initial and management-reset baselines passed. Both chassis roles exceeded the five-second target on the access-switch path. | [External campaign](cases/medium-spanning-tree.md#archived-diagnostics) |
 | Archived five-CHR bridges off on 7.26beta7 | Both chassis roles passed twice. Reintroducing RSTP on the same wiring reproduced a non-forwarding baseline. | [Matched comparison](cases/medium-spanning-tree.md#archived-diagnostics) |
-| Direct-client pair on 7.26beta7 | Both chassis role checks passed with RSTP on the cores. The four original Small lab cases then yielded three passes and one carrier restoration failure. | `final-runs-evidence.tar.gz` (saved campaign bundle) |
+| Direct-client pair on 7.26beta7 | Both chassis role checks passed with RSTP on the cores. The four original Small lab cases then yielded three passes and one carrier restoration failure. | [Reboot run](../results/2026-11-24-small-lab/README.md#evidence) |
 
 ## What to do next
 

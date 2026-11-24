@@ -30,18 +30,14 @@ The two-second calibration passed in both repeats. The bypass lost zero probes d
 
 ### Access switch as root
 
-Neither VLAN direction delivered any of its 62 probes. Both bypass directions delivered all 62. Captures showed proposals from the access switch without a core reply during the sample. Restoring the original priority restored forwarding. [Packet captures](witness-root-baseline-evidence.tar.gz) · [External roots and STP-off follow-up](../2026-11-24-medium-lab/README.md)
-
-### Archived stable comparison
-
-The archived 7.25.2 comparison also passed both secondary repeats and failed both primary repeats after correcting a virtual cable learning issue. [Stable evidence](stable-evidence.tar.gz) · [Port timeline and diagnosis](diagnostics.md)
+Neither VLAN direction delivered any of its 62 probes. Both bypass directions delivered all 62. Captures showed proposals from the access switch without a core reply during the sample. Restoring the original priority restored forwarding. [External roots and STP-off follow-up](../2026-11-24-medium-lab/README.md)
 
 ## Reproduce
 
-[Case procedure](../../docs/cases/medium-core-reboot.md) · [Deploy, calibrate, and run](../../docs/operator-guide.md#reboot-the-root-pair) · [Offline replay instructions](../../docs/test-framework.md#read-or-replay-a-run) · [Working dry-run example](../../docs/test-framework.md#dry-run-with-saved-evidence)
+[Case procedure](../../docs/cases/medium-core-reboot.md) · [Deploy, calibrate, and run](../../docs/operator-guide.md#reboot-the-root-pair)
 
-For this report’s offline replay, extract the development archive below and pass its `mlag-root-development-pinned` directory to `mlag-lab evaluate`. Expect exit 1 for the measured primary reboot failures.
+The packet captures behind this report stay local. Rerun the case with the commands above to get your own captures and verdicts.
 
 ## Evidence
 
-[Per-flow phase bounds](phase-loss.tsv) · [Development JUnit](development-junit.xml) · [Stable JUnit](stable-junit.xml) · [Development captures and follow-ups](development-evidence.tar.gz) · [Archive checksums](SHA256SUMS)
+[Per-flow phase bounds](phase-loss.tsv) · [Development JUnit](development-junit.xml) · [Capture checksums](SHA256SUMS)

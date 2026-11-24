@@ -200,7 +200,10 @@ def write_summary(results):
                           key=lambda row: (order[row["result"]], row["campaign"], row["suite"]))
         lines += [f"## {lab}", "", "| Result | Setup | Runs | Longest interruption | Details |", "| --- | --- | --- | --- | --- |"]
         for row in rows_lab:
-            link = f"[{row['suite']}]({row['campaign']}/{row['suite']}/README.md)"
+            target = f"{row['campaign']}/{row['suite']}"
+            if (results / target / "README.md").exists():
+                target += "/README.md"
+            link = f"[{row['suite']}]({target})"
             lines.append(f"| {ICONS[row['result']]} | {row['setup']} | {row['runs']} | {worst_text(row['worst'])} | {link} |")
         lines.append("")
     lines += ["## Where the data is", "",

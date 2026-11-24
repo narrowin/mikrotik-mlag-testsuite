@@ -34,5 +34,14 @@ schemas/
 /results/**/captures/
 /results/**/probes/
 /results/**/links/
-/results/**/inputs/
+# Run inputs: keep the startup configs, not the source snapshot.
+/results/**/inputs/*
+!/results/**/inputs/*.rsc
+!/results/**/inputs/*.clab.yml
+!/results/**/inputs/client-network.sh
 /results/**/effective-config.json
+
+# Internal work records stay local.
+/docs/plans/forwarding-checks-and-speed-plan.md
+/docs/plans/forwarding-checks-and-speed-log.md
+/docs/plans/replay-speed-analysis.md

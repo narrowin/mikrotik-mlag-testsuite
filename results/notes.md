@@ -42,7 +42,7 @@ RouterOS 7.26beta7 CHRs in Containerlab, 24 November 2026. Working log: [docs/pl
 
 ## Forwarding measurements on saved evidence (record-only, 24 November 2026)
 
-The four forwarding measurements of the [forwarding checks plan](../docs/plans/forwarding-checks-and-speed-plan.md) were computed on all 205 replayable saved runs. They grade nothing yet, and no verdict changed. Check A: frames at a host outside the conversation. Check B: reflected unicast copies. Check C: wrong bridge host table location after recovery. Check D: MLAG sync and heartbeat warnings in syslog. Each cell counts the runs with a non-zero finding.
+The four forwarding measurements were computed on all 205 replayable saved runs. They grade nothing yet, and no verdict changed. Check A: frames at a host outside the conversation. Check B: reflected unicast copies. Check C: wrong bridge host table location after recovery. Check D: MLAG sync and heartbeat warnings in syslog. Each cell counts the runs with a non-zero finding.
 
 | Lab and cases | Bridge mode | Runs | A | B | C | D | Worst value |
 | --- | --- | --- | --- | --- | --- | --- | --- |

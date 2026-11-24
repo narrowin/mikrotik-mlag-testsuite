@@ -135,7 +135,7 @@ done
 wait
 ```
 
-The script prints the start time, end time and exit code of each suite, and exits with the highest suite exit code. The safe number of labs at once is measured in package 3 of the [forwarding checks plan](plans/forwarding-checks-and-speed-plan.md#package-3-run-labs-in-parallel) and recorded here afterwards.
+The script prints the start time, end time and exit code of each suite, and exits with the highest suite exit code.
 
 ## Collect a Networka checkpoint
 

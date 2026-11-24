@@ -1,6 +1,6 @@
 # Carrier asymmetry in the two-CHR virtual lab
 
-**24 November 2026.** The two tests exposed different behavior at the boundary between a Containerlab link and a QEMU guest. The Linux withdrawal left RouterOS with carrier and stale forwarding. A guest-only carrier drop moved the MAC to the peer link, but Linux still waited for LACP to time out. Neither action signaled loss to both endpoint drivers. [Combined timeline](carrier-comparison-timeline.tsv) · [Captures, raw state and syslog](carrier-comparison-evidence.tar.gz)
+**24 November 2026.** The two tests exposed different behavior at the boundary between a Containerlab link and a QEMU guest. The Linux withdrawal left RouterOS with carrier and stale forwarding. A guest-only carrier drop moved the MAC to the peer link, but Linux still waited for LACP to time out. Neither action signaled loss to both endpoint drivers. [Combined timeline](carrier-comparison-timeline.tsv)
 
 ## What was measured
 

@@ -1,6 +1,6 @@
 # Dual-homed MAC mobility on OrbStack
 
-**24 November 2026.** Both dual-homed clients received **290/290 replies** while the mobile endpoint moved from CHR 1 to CHR 2 and back. No unicast addressed to the mobile MAC reached either old port after its announcement. The run used two RouterOS 7.26beta7 CHRs and Containerlab 0.83.0 in OrbStack’s ARM64 `debian-clab` VM. [Captures, device state, topology and analysis](dual-homed-evidence.tar.gz)
+**24 November 2026.** Both dual-homed clients received **290/290 replies** while the mobile endpoint moved from CHR 1 to CHR 2 and back. No unicast addressed to the mobile MAC reached either old port after its announcement. The run used two RouterOS 7.26beta7 CHRs and Containerlab 0.83.0 in OrbStack’s ARM64 `debian-clab` VM.
 
 ## Why LACP now works in this lab
 

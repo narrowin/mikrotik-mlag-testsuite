@@ -28,7 +28,7 @@ Each test keeps pings running between the hosts, makes one change, and measures 
 Each run link opens that run's verdict file. On GitHub, links to failed runs highlight the failed checks. The run's packet timeline, `timeline.tsv`, is in the same folder.
 
 | Test | What was done | Limit | Result |
-| --- | --- | --- | --- |
+| --- | --- | --- |
 | SMALL-01 · Baseline | Check MLAG, both client bonds and loss-free pings before each test | No lost pings | **Passed 4 of 4** separate checks before the rerun tests: [1](reports/rerun/baseline-before-calibrate/result.json), [2](reports/rerun/baseline-before-carrier/result.json), [3](reports/rerun/baseline-before-silent-lacp/result.json), [4](reports/rerun/baseline-before-mobile-move/result.json). The suite and reboot runs check their baseline inside each verdict. |
 | SMALL-02 · Measurement check | Block traffic in one direction for 2 s | The measured gap contains the 2 s cut | **Passed 8 of 8:** [suite 1](reports/01-calibrate/result.json), [suite 2](reports/02-calibrate/result.json), [rerun](reports/rerun/calibrate/result.json), [reboot run](reports/reboots/calibrate/result.json), [manual 1](reports/manual-run-1/calibration-metrics.json), [manual 2](dual-homed.md#one-way-timing-calibration), [manual 3, two cuts](postmortem.md#measurements). Measured 1.87–2.19 s. |
 | SMALL-03 · Client link loss and return | Take client 1's link to CHR 1 down for 8 s, then bring it back | 1 s on loss, 1 s on return | **Failed 3 of 3:** [suite 1](reports/01-carrier/result.json#L340-L354), [suite 2](reports/02-carrier/result.json#L340-L354), [rerun](reports/rerun/carrier/result.json#L340-L354). Loss cost at most 0.21 s. Return cost 2.2–2.6 s. Client 2 lost nothing. |
@@ -53,18 +53,18 @@ Each run link opens that run's verdict file. On GitHub, links to failed runs hig
 
 ## Reproduce
 
-[Deploy the Small lab](../../labs/small/README.md#deploy) · [Run the tests](../../docs/test-framework.md#execute-locally) · [What each test checks](../../docs/test-framework.md#what-the-cases-assert) · [Reboot commands](../../docs/operator-guide.md#reboot-the-direct-client-pair) · [Replay saved evidence offline](../../docs/test-framework.md#dry-run-with-saved-evidence)
+[Deploy the Small lab](../../labs/small/README.md#deploy) · [Run the tests](../../docs/test-framework.md#execute-locally) · [What each test checks](../../docs/test-framework.md#what-the-cases-assert) · [Reboot commands](../../docs/operator-guide.md#reboot-the-direct-client-pair)
 
 ## Evidence
 
-| Run | Tests | Verdicts | Captures |
-| --- | --- | --- | --- |
-| Manual run 1 | Measurement check, host move | [Measurements](reports/manual-run-1) | [Captures and configuration](evidence.tar.gz) |
-| Manual run 2 | Measurement check, host move | [Report](dual-homed.md) | [Captures](dual-homed-evidence.tar.gz) |
-| Manual run 3 | Measurement check, host move, one-sided link cuts, peer link cut | [Report](postmortem.md) | [Captures](postmortem-evidence.tar.gz) |
-| Link-cut diagnosis | How the virtual lab signals a cut link | [Report](carrier-comparison.md) · [Timeline](carrier-comparison-timeline.tsv) | [Captures](carrier-comparison-evidence.tar.gz) |
-| Automated suite, 2 repeats | Measurement check, link loss, LACP timeout, host move | [Per test](reports) · [Summary](reports/suite.json) · [JUnit](reports/junit.xml) | [Captures](test-suite-evidence.tar.gz) |
-| Rerun | Baseline, measurement check, link loss, LACP timeout, host move | [Per test](reports/rerun) | [Captures](../2026-11-24-medium-lab/small-l2-evidence.tar.gz) |
-| Reboot run | Measurement check, both reboots | [Per test](reports/reboots) | [Captures](../2026-11-24-medium-lab/final-runs-evidence.tar.gz) |
+| Run | Tests | Verdicts |
+| --- | --- | --- |
+| Manual run 1 | Measurement check, host move | [Measurements](reports/manual-run-1) |
+| Manual run 2 | Measurement check, host move | [Report](dual-homed.md) |
+| Manual run 3 | Measurement check, host move, one-sided link cuts, peer link cut | [Report](postmortem.md) |
+| Link-cut diagnosis | How the virtual lab signals a cut link | [Report](carrier-comparison.md) · [Timeline](carrier-comparison-timeline.tsv) |
+| Automated suite, 2 repeats | Measurement check, link loss, LACP timeout, host move | [Per test](reports) · [Summary](reports/suite.json) · [JUnit](reports/junit.xml) |
+| Rerun | Baseline, measurement check, link loss, LACP timeout, host move | [Per test](reports/rerun) |
+| Reboot run | Measurement check, both reboots | [Per test](reports/reboots) |
 
-The files in `reports/` are unchanged copies from these archives. Each archive contains its checksums and an offline reader. The SHA-256 of `evidence.tar.gz` is `377c9c0380c21cc11c41e610f943429eeec95b871160035baf82d7d279eebfb5`.
+The files in `reports/` are unchanged copies of the saved runs. The packet captures behind them stay local.

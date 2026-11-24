@@ -29,7 +29,6 @@ Pick the page by what you need to do. New here? Start with the [quick start](../
 | [Primary reboot plan](plans/primary-reboot-plan.md) | Why does losing the MLAG primary stop traffic longer while the pair is the STP root? |
 | [Member failure diagnosis](plans/member-failure-diagnosis.md) | What else is needed to explain the client-link loss result? |
 | [Report generation plan](plans/report-generation-plan.md) | How do runs write their own reports? |
-| [Forwarding checks and speed plan](plans/forwarding-checks-and-speed-plan.md) | How do we check where frames went, cover the forum forwarding-table faults and run campaigns faster? |
 
 ## Reference
 

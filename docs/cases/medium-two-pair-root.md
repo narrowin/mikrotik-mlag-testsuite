@@ -5,7 +5,7 @@
 Every other lab has one MLAG pair, so a root fight between pairs cannot happen there. Two field sources say it does happen:
 
 - **Field failure.** An operator ran six MLAG pairs on RouterOS 7.19.3/7.19.4. The pairs used the same STP priority and fought over the root. Each time the root moved, all four switches of the two pairs dropped traffic while STP relearned the ports. Giving each pair its own priority fixed it at once. [sirbryan, post #6, 20 March 2026](https://forum.mikrotik.com/t/mlag-between-crs326-24s-2q-rm-with-more-than-1-000-hosts-macs/269294)
-- **Deployed design.** The field OT network sets one bridge priority per pair: Site A cores `0x2000` (root), Site B cores `0x4000` (backup root), access switches `0x8000`. Both cores of a pair share the priority. Each core has a fixed `admin-mac` so its bridge ID never changes. Source: the field Ansible inventory (core `host_vars/*/interface_bridge.yml`) and `mkdocs/docs/design/topologie.md` in the original checkout. [Original project sources](../reference/original-project-sources.md)
+- **Deployed design.** The field OT network sets one bridge priority per pair: Site A cores `0x2000` (root), Site B cores `0x4000` (backup root), access switches `0x8000`. Both cores of a pair share the priority. Each core has a fixed `admin-mac` so its bridge ID never changes. Source: the deployed field configuration.
 - **Vendor rule.** Both MLAG peers must use the same priority. The pair uses the primary's bridge ID for STP. [RouterOS MLAG manual](https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/)
 
 The case answers two questions:

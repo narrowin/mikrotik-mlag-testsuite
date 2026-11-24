@@ -121,34 +121,19 @@ uv run --locked mlag-lab evaluate test-results/link-isolation
 
 ### Dry run with saved evidence
 
-Install uv and TShark. From the repository root, extract the [archived small-lab suite](../results/2026-11-24-small-lab/test-suite-evidence.tar.gz) into a fresh directory. Replay reads saved files and writes verdicts and timelines into that temporary copy. It needs no running lab, SSH credentials, or sudo.
+Replay reads a saved suite directory, including its packet captures, and writes verdicts and timelines into it. It needs no running lab, SSH credentials, or sudo. The published results omit the captures, so replay a suite from your own live run. Install uv and TShark, then copy the suite first so the original stays untouched:
 
 ```sh
 replay_dir=$(mktemp -d)
-tar -xzf results/2026-11-24-small-lab/test-suite-evidence.tar.gz -C "$replay_dir"
+cp -R path/to/your/suite "$replay_dir/suite"
 uv run --locked mlag-lab evaluate "$replay_dir/suite"
 ```
 
-Expect exit **1** because the archive records network assertion failures. Open `suite/junit.xml` and `suite/suite.json` under the temporary directory. [Recorded findings](../results/2026-11-24-small-lab/README.md)
-
-#### Replay the STP-off reboots
-
-Use the same prerequisites and set `MLAG_EVIDENCE_DIR` to the directory containing the saved `all-off-reboots-evidence.tar.gz` and `comparison-evidence.tar.gz` bundles.
-
-```sh
-replay_dir=$(mktemp -d)
-tar -xzf "$MLAG_EVIDENCE_DIR/all-off-reboots-evidence.tar.gz" -C "$replay_dir"
-tar -xzf "$MLAG_EVIDENCE_DIR/comparison-evidence.tar.gz" -C "$replay_dir" all-off-verified-reboots
-uv run --locked mlag-lab evaluate "$replay_dir/all-off-complete"
-uv run --locked mlag-lab evaluate "$replay_dir/all-off-primary-repeat"
-uv run --locked mlag-lab evaluate "$replay_dir/all-off-verified-reboots/01-external-all-stp-off-reboot-secondary"
-```
-
-Expect exit **0** for each command. Open `suite.json` or `junit.xml` for the first two commands and `result.json` in the secondary reboot directory for the third. Replaying the entire `all-off-verified-reboots` suite exits **2** because its baseline withheld the primary reboot. [Campaign report](cases/medium-spanning-tree.md#archived-diagnostics)
+Exit codes follow the table above. Open `suite/junit.xml` and `suite/suite.json` under the temporary directory.
 
 ## Verified on OrbStack
 
-Two complete repeats on RouterOS 7.26beta7 produced **two passes, six network failures, and zero evidence errors**. Client 2 and both bypass directions stayed clean in the carrier and silent-LACP cases. The final health check showed connected MLAG, two up members on each client bond, the mobile endpoint on its original leg, and both test classifiers removed. [Raw evidence, scripts and results](../results/2026-11-24-small-lab/test-suite-evidence.tar.gz)
+Two complete repeats on RouterOS 7.26beta7 produced **two passes, six network failures, and zero evidence errors**. Client 2 and both bypass directions stayed clean in the carrier and silent-LACP cases. The final health check showed connected MLAG, two up members on each client bond, the mobile endpoint on its original leg, and both test classifiers removed.
 
 | Case | Observed in the repeats |
 | --- | --- |
@@ -157,7 +142,7 @@ Two complete repeats on RouterOS 7.26beta7 produced **two passes, six network fa
 | `carrier` | Both drivers confirmed every transition within 127 ms of actuation. Withdrawal recovered within 0.22 s, with zero client 1 probes on the withdrawn TAP after confirmation. Restoration loss bounds across affected flows ranged from 2.18 to 2.52 s, exceeding the 1 s target in both repeats. |
 | `silent-lacp` | Each repeat suppressed 12 frames with carrier up. CHR 1 advertised expiry at about 2.7 s and defaulting at about 6 s. Both captures showed 59 probes addressed to client 1 on the affected TAP after defaulting. Both runs exceeded the restoration target. One client-to-client outage spanned restoration and lasted 6.16–6.37 s. |
 
-The archive includes `suite/junit.xml`, `suite/suite.json`, all 112 capture files with hashes, and the exact runner and evaluator. All capture hashes were verified. Offline replay reproduced all eight case results, eight timelines and both suite reports byte-for-byte. This is the baseline to compare against when isolating failback or updating RouterOS.
+The saved suite holds `suite/junit.xml`, `suite/suite.json`, all 112 capture files with hashes, and the exact runner and evaluator. The captures stay local. All capture hashes were verified. Offline replay reproduced all eight case results, eight timelines and both suite reports byte-for-byte. This is the baseline to compare against when isolating failback or updating RouterOS.
 
 ## Run in CI
 

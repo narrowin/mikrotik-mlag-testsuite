@@ -46,4 +46,3 @@ Virtual links kept carrier during guest reboots. Disconnecting a root attachment
 
 Capture archives include the configurations and timelines for each trial group.
 
-[Initial RSTP and core-only](initial-evidence.tar.gz) · [Matched baseline and first attachment trials](comparison-evidence.tar.gz) · [STP-off reboots](all-off-reboots-evidence.tar.gz) · [RSTP and combined repeats](recovery-evidence.tar.gz) · [Direct-client reboots and root-only checks](final-runs-evidence.tar.gz) · [L2 regressions and closing baseline](small-l2-evidence.tar.gz)
