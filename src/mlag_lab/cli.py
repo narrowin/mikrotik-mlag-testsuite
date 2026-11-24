@@ -94,8 +94,12 @@ def export(
     from .export import write_export
     try:
         folder, count = write_export(results, output)
-        from .summary import write_summary
-        write_summary(results)
+        if output is None:
+            # The summary and the README section read <results>/index, so skip them for another output folder.
+            from .summary import write_summary
+            from .overview import write_overview
+            write_summary(results)
+            write_overview(results)
     except (OSError, ValueError, KeyError) as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(2)

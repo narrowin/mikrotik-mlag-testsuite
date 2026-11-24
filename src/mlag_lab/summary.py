@@ -106,6 +106,7 @@ def summarise(rows, results):
                     + (f", {len(statuses) - len(valid)} invalid or not reached" if len(valid) < len(statuses) else ""),
             "worst": worst,
             "cases": {row["case"] for row in suite["rows"] if row["run_status"] in ("pass", "fail")},
+            "attempted": {row["case"] for row in suite["rows"] if row.get("case")},
         })
     return table
 
@@ -122,7 +123,11 @@ def worst_text(worst):
 
 
 def setup_verdicts(table):
-    """Combine suites with the same lab and setup description: a setup fails if any suite fails."""
+    """Combine suites with the same lab and setup description: a setup fails if any suite fails.
+
+    It passes if at least one suite passed in full and every case attempted in any of its suites has a valid run,
+    even when a repeat has invalid runs. Otherwise it is incomplete.
+    """
     setups = {}
     for row in table:
         if row["result"] == "invalid":
@@ -131,7 +136,9 @@ def setup_verdicts(table):
     verdicts = {}
     for key, rows in setups.items():
         results = {row["result"] for row in rows}
-        verdicts[key] = "fail" if "fail" in results else "pass" if results == {"pass"} else "incomplete"
+        attempted = set().union(*(row["attempted"] for row in rows))
+        covered = set().union(*(row["cases"] for row in rows))
+        verdicts[key] = "fail" if "fail" in results else "pass" if "pass" in results and attempted <= covered else "incomplete"
     return verdicts, setups
 
 
@@ -162,7 +169,7 @@ def tldr_lines(table):
             lines.append(f"- ❌ **{lab}: {len({setup for setup, _ in failed})} of {total} setups fail.**")
     open_count = sum(1 for v in verdicts.values() if v == "incomplete") + sum(1 for r in table if r["result"] == "invalid")
     if open_count:
-        lines.append(f"- ⚠️ **{open_count} setups or suites are incomplete or invalid** and need repeats; see the tables.")
+        lines.append(f"- ⚠️ **{open_count} setups or suites are incomplete or invalid** and need repeats. See the tables.")
     return lines
 
 
