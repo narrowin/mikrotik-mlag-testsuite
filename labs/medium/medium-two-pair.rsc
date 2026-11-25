@@ -23,8 +23,8 @@
     /interface bridge add name=bridge protocol-mode=rstp priority=$bridgePriority vlan-filtering=yes mlag-peer-port=ether2 frame-types=admit-only-vlan-tagged
     /interface bridge set bridge mlag-priority=$mlagPriority auto-mac=no admin-mac=$mac
     /interface bridge port add bridge=bridge interface=ether2 frame-types=admit-only-vlan-tagged edge=auto
-    /interface bridge port add bridge=bridge interface=interpair pvid=110 edge=auto
-    /interface bridge port add bridge=bridge interface=$client pvid=110 edge=yes
+    /interface bridge port add bridge=bridge interface=interpair pvid=110 edge=auto path-cost=2000 internal-path-cost=2000
+    /interface bridge port add bridge=bridge interface=$client pvid=110 edge=yes path-cost=2000 internal-path-cost=2000
     /interface bridge vlan add bridge=bridge tagged=ether2 untagged="interpair,$client" vlan-ids=110
 }
 /system/logging/action/add name=mlagLabSyslog target=remote remote=172.30.219.20 remote-port=1514 vrf=mgmt remote-protocol=udp remote-log-format=syslog syslog-time-format=bsd-syslog add-topics-string=yes

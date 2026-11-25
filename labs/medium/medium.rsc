@@ -17,8 +17,8 @@
             /interface bridge set bridge mlag-priority=20 auto-mac=no admin-mac=02:00:00:21:00:12
         }
         /interface bridge port add bridge=bridge interface=ether2 frame-types=admit-only-vlan-tagged edge=no
-        /interface bridge port add bridge=bridge interface=access-uplink pvid=110 edge=no
-        /interface bridge port add bridge=bridge interface=client2 pvid=110 edge=yes
+        /interface bridge port add bridge=bridge interface=access-uplink pvid=110 edge=no path-cost=2000 internal-path-cost=2000
+        /interface bridge port add bridge=bridge interface=client2 pvid=110 edge=yes path-cost=2000 internal-path-cost=2000
         /interface bridge vlan add bridge=bridge tagged=ether2 untagged=access-uplink,client2 vlan-ids=110
     }
 }

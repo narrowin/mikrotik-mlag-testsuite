@@ -2,8 +2,8 @@
 /interface bonding add name=client2 mode=802.3ad mlag-id=12 slaves=ether4 lacp-rate=1sec
 /interface bridge add name=bridge vlan-filtering=yes mlag-peer-port=ether2 priority=0x1000 frame-types=admit-only-vlan-tagged protocol-mode=rstp
 /interface bridge port add bridge=bridge interface=ether2 frame-types=admit-only-vlan-tagged
-/interface bridge port add bridge=bridge interface=client1 pvid=110 edge=yes
-/interface bridge port add bridge=bridge interface=client2 pvid=110 edge=yes
+/interface bridge port add bridge=bridge interface=client1 pvid=110 edge=yes path-cost=2000 internal-path-cost=2000
+/interface bridge port add bridge=bridge interface=client2 pvid=110 edge=yes path-cost=2000 internal-path-cost=2000
 /interface bridge port add bridge=bridge interface=ether5 pvid=110 edge=yes
 /interface bridge vlan add bridge=bridge tagged=ether2 untagged=client1,client2,ether5 vlan-ids=110
 /system/logging/action/add name=mlagLabSyslog target=remote remote=172.30.215.20 remote-port=1514 vrf=mgmt remote-protocol=udp remote-log-format=syslog syslog-time-format=bsd-syslog add-topics-string=yes
