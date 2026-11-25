@@ -104,6 +104,26 @@ def verify(
 
 
 @app.command()
+def cut(
+    run: Annotated[Path, typer.Argument(help="One saved run folder with captures/ and events.jsonl.")],
+    start: Annotated[float | None, typer.Option(
+        "--from", help="Start in seconds from the baseline in timeline.tsv. Defaults to 2 s before the fault.")] = None,
+    end: Annotated[float | None, typer.Option(
+        "--to", help="Window end in seconds from the baseline. Defaults to the end of the return phase.")] = None,
+    output: Annotated[Path | None, typer.Option(
+        help="Archive path. Defaults to test-results/cuts/<suite>-<run>-<from>s-<to>s.tar.gz.")] = None,
+):
+    """Cut every packet capture of one run to a time window and pack them for a ticket or bug report."""
+    from .cut import cut as cut_run
+    try:
+        _, line = cut_run(run, start, end, output)
+    except (OSError, ValueError, KeyError) as error:
+        typer.echo(str(error), err=True)
+        raise typer.Exit(2)
+    typer.echo(line)
+
+
+@app.command()
 def export(
     results: Annotated[Path, typer.Argument(help="results/ folder with one folder per campaign.")] = Path("results"),
     output: Annotated[Path | None, typer.Option(help="Output folder. Defaults to <results>/index.")] = None,
