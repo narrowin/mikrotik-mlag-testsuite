@@ -20,9 +20,11 @@
 
 [Root-pair reboot wiring and fault target](cases/medium-core-reboot.md)
 
-Use a dedicated ARM64 OrbStack VM with a local Docker daemon. Install Containerlab, uv, OpenSSH client, iproute2 including `tc`, iputils, tcpdump and TShark. The root topology uses three CHRs, two Linux clients, and a separate syslog receiver on `172.30.216.20:1514`. A reboot is issued inside the selected RouterOS guest. The Linux veths, TAPs, captures and other guests stay up to observe it.
+Use a dedicated ARM64 OrbStack VM with a local Docker daemon. Install Containerlab, uv, OpenSSH client, iproute2 including `tc`, iputils, tcpdump and TShark. The root topology uses three CHRs, two Linux clients, and a separate syslog receiver on `172.30.216.20:1514` (instance N adds 10·N to the third octet). A reboot is issued inside the selected RouterOS guest. The Linux veths, TAPs, captures and other guests stay up to observe it.
 
 From the repository root in that VM, use the shared image from `labs/campaign-image.txt`. The example uses **7.26beta7**, the latest on 24 November 2026. Deploy once by digest and use that image for the full campaign. [MikroTik development releases](https://mikrotik.com/download/changelogs?channelFilter=development) · [Version policy](validation-plan.md#routeros-version-for-live-tests) · [Root topology](../labs/medium/medium-pair-root.clab.yml)
+
+These commands deploy instance 0 from the checkout. To run beside other labs or sessions in the same VM, use [Run suites in parallel](#run-suites-in-parallel).
 
 ```sh
 chr=$(cat labs/campaign-image.txt)
@@ -112,32 +114,144 @@ sudo --preserve-env=MLAG_SSH_PASSWORD env "PATH=$PATH:/usr/sbin:/sbin" \
   --repeat 2 --output /var/tmp/mlag-direct-reboots
 ```
 
+The container names are those of instance 0. For instance N, use `clab-mlag-small-i<N>-` and run the runner with `MLAG_INSTANCE=<N>` and `--lab-dir` set to that instance's copy.
+
 The runner sets RSTP on both CHRs before each direct-client case. It selects the reboot target from the observed MLAG election, verifies both client bonds are forwarding edge ports, and scores VLAN 110 and the bypass in both directions. The matching Small lab STP-off run is pending. Validate routed gateway ownership and service separately for BASE-05. [Small lab bridge-mode plan](validation-plan.md#small-lab-bridge-mode-comparison)
 
 Use `--case direct-baseline` immediately before each original Small lab case. It performs the management reset and verifies the direct-client state and packet paths. Run the original selector only after the gate passes. Save each gate and fault under its own evidence directory.
 
-## Run one campaign per machine
+## Run suites in parallel
 
-[`labs/campaign.sh`](../labs/campaign.sh) runs a list of suites on one lab inside one OrbStack machine. It copies `labs/` to the machine's own disk (`/var/tmp/mlag-labs`, or `MLAG_LABS_COPY`), because Containerlab writes `clab-<name>/` and the syslog feed next to the topology file. It deploys the lab from that copy with the image in `labs/campaign-image.txt` only if the lab is not running. It runs every suite with `--lab-dir` pointing at the copy and a machine-local `UV_PROJECT_ENVIRONMENT`. It never destroys a lab.
+Independent suites run at the same time in one OrbStack VM, each on its own lab instance. [`labs/parallel.sh`](../labs/parallel.sh) starts one [`labs/campaign.sh`](../labs/campaign.sh) campaign per instance, waits for all of them and prints one verdict per campaign. Run suites one after another only when they need the same lab instance.
 
-The runner accepts only a deployment whose topology file is the one under `--lab-dir`. If the lab in that machine was deployed from another path, for example the shared checkout, the script names that path and stops. Run against that deployment directly, or remove it yourself first.
+### Lab instances
 
-Start one campaign per machine from the Mac, with one bridge mode per machine. Each suite spec is `<sub-folder>:<mlag-lab run arguments>`. Replace the machine names with your own.
+`MLAG_INSTANCE` selects the instance, 0 to 3, default 0. Instance 0 is the lab as named in its topology. Instance N differs from it in four places:
+
+- Name: the Containerlab name is `<deployment>-i<N>`, for example `mlag-small-i2`, and Docker names start with `clab-mlag-small-i2-`.
+- Subnet: the third octet of the management subnet is the base octet plus 10·N, so Small instance 2 is `172.30.235.0/27`.
+- Lab copy: the lab runs from `<MLAG_LABS_COPY>-i<N>`, by default `/var/tmp/mlag-labs-i<N>`. Instance 0 runs from `/var/tmp/mlag-labs`.
+- Syslog: the instance has its own collector at `.20` in its subnet. In the copy, the RouterOS startup configs send syslog to that collector; the Medium and Large configs also use the instance addresses as source.
+
+| Lab | `campaign.sh` lab | Deployment | Third octet, instances 0 to 3 |
+| --- | --- | --- | --- |
+| Small | `small` | `mlag-small` | 215, 225, 235, 245 |
+| Medium, pair-root variant | `medium-pair-root` | `mlag-medium-pair-root` | 216, 226, 236, 246 |
+| Medium | `medium` | `mlag-medium` | 218, 228, 238, 248 |
+| Medium, two-pair variant | `medium-two-pair` | `mlag-medium-two-pair` | 219, 229, 239, 249 |
+
+The runner reads `MLAG_INSTANCE`, uses that instance's lab name and management addresses, and records the instance in each `attempt.json`. `mlag-lab evaluate` and `mlag-lab verify` use the recorded instance. The Large lab has no runner cases and no `campaign.sh` support.
+
+`campaign.sh` syncs the copy from the checkout only while no lab is deployed from it. A copy that a running lab uses stays as it was deployed. Different labs at the same instance share one copy, so their deploys run one after the other; their suites then run at the same time.
+
+### Run several suites at once
+
+Run `parallel.sh` inside the VM from the checkout root. First check that no other campaign or run is active and which labs are deployed:
 
 ```sh
-cd ~/git/narrowin/mikrotik-mlag-testsuite
-l2="--case calibration --case bond-member-loss --case lacp-timeout --case mac-move --case peer-link-loss"
-campaign="test-results/$(date -u +%Y%m%dT%H%M%SZ)-parallel"
-mkdir -p "$campaign"
-for pair in rstp:mlag-lab-a none:mlag-lab-b mstp:mlag-lab-c; do
-  mode=${pair%%:*} machine=${pair#*:}
-  orb -m "$machine" labs/campaign.sh small "$campaign/$mode" "$mode-l2:--bridge-mode $mode $l2" \
-    > "$campaign/$mode.log" 2>&1 &
-done
-wait
+pgrep -af "mlag-lab|campaign.sh"
+sudo containerlab inspect --all
 ```
 
-The script prints the start time, end time and exit code of each suite, and exits with the highest suite exit code.
+Each campaign is `<instance> <lab> <campaign dir> <suite spec>...`, and `--` separates campaigns. A suite spec is `<sub-folder>:<mlag-lab run arguments>`, as for `campaign.sh`. `--destroy` comes first and applies to every campaign:
+
+```sh
+labs/parallel.sh --destroy \
+  1 small /var/tmp/c-small-1 "baseline:--bridge-mode none --case baseline" -- \
+  2 small /var/tmp/c-small-2 "baseline:--bridge-mode none --case baseline" -- \
+  3 medium /var/tmp/c-medium-3 "stp-off:--case medium-stp-off-baseline"
+```
+
+- Instances: each campaign takes instance 0, 1, 2 or 3. `parallel.sh` refuses two campaigns on the same lab instance or the same campaign folder.
+- Removal: with `--destroy`, each campaign removes the lab it deployed when it exits, also after a failure. A lab that was already running stays up. Without `--destroy`, every lab stays up.
+- Existing labs: if the instance is already deployed from its copy, the campaign uses it as it is. If it is deployed from another folder, the campaign stops with exit 2 and names that folder.
+- Environment: `MLAG_SSH_PASSWORD`, `MLAG_LABS_COPY` and `UV_PROJECT_ENVIRONMENT` pass through to every campaign. The default environment is `/var/tmp/mlag-campaign-venv-<uid>`.
+- Sudo: the campaigns run in the background and call `sudo`, so `sudo` must not ask for a password.
+
+### Results and exit status
+
+Each campaign writes its console output to `<campaign dir>/console.log`. The log holds the sync, the deploy, and one `=== <suite> start` and `=== <suite> end ... exit <N>` line per suite. Each suite writes its results to `<campaign dir>/<sub-folder>/`, with `suite.json`, `junit.xml` and one folder per attempt.
+
+`parallel.sh` prints one `Started instance` line per campaign with its PID and console log. When all campaigns have ended, it prints one line per campaign:
+
+```text
+PASS instance 1 small: exit 0, results /var/tmp/c-small-1
+FAIL instance 3 medium: exit 1, results /var/tmp/c-medium-3
+```
+
+A campaign exits with the highest exit code of its suites. It exits 2 when it stops before the suites, for example on a wrong argument, a lab deployed from another folder or a container that does not become healthy. `parallel.sh` exits 0 when every campaign exits 0 and 1 when any campaign fails. It exits 2 on a usage error, before it starts any campaign.
+
+### Deploy and remove an instance by hand
+
+`campaign.sh` does these steps itself. Use them only to keep an instance up for manual work. The copy needs the same syslog rewrite for every lab, because another lab at the same instance may later deploy from it without a new sync. Example for Small instance 2, from the checkout root in the VM:
+
+```sh
+n=2
+copy=/var/tmp/mlag-labs-i$n
+mkdir -p "$copy"
+tar -C labs --exclude='clab-*' --exclude='*logs' -cf - . | tar -C "$copy" -xf -
+for config in small/small.rsc:215 medium/medium-pair-root.rsc:216 medium/medium.rsc:218 \
+    medium/medium-two-pair.rsc:219 large/large.rsc:220; do
+  base=${config#*:}
+  sed -i "s/172\.30\.$base\./172.30.$((base + 10 * n))./g" "$copy/${config%:*}"
+done
+mkdir -p "$copy/small/logs" "$copy/medium/logs" "$copy/medium/pair-root-logs" "$copy/medium/two-pair-logs"
+chr=$(cat labs/campaign-image.txt)
+sudo docker pull rsyslog/rsyslog:latest
+syslog=$(sudo docker image inspect --format '{{index .RepoDigests 0}}' rsyslog/rsyslog:latest)
+sudo env MLAG_LAB_NAME=mlag-small-i2 MLAG_MGMT_NET=235 MLAG_CHR_IMAGE="$chr" MLAG_SYSLOG_IMAGE="$syslog" \
+  containerlab deploy -t "$copy/small/small.clab.yml"
+```
+
+Do this only while no lab is deployed from the copy. Wait until every container with a health check is healthy. For Small, wire the virtual cables and pin the probe neighbors with the instance's container names, as in [Reboot the direct-client pair](#reboot-the-direct-client-pair):
+
+```sh
+for node in dc1-core-mlag1 dc1-core-mlag2; do
+  sudo docker exec "clab-mlag-small-i2-$node" /bin/sh /lab/forward-control.sh --wire
+done
+sudo docker exec clab-mlag-small-i2-dc1-traffic-host1 ip neigh replace 10.110.0.12 \
+  lladdr 02:00:00:11:00:12 nud permanent dev bond0
+sudo docker exec clab-mlag-small-i2-dc1-traffic-host2 ip neigh replace 10.110.0.11 \
+  lladdr 02:00:00:11:00:11 nud permanent dev bond0
+```
+
+Run the runner with `MLAG_INSTANCE` and `--lab-dir` pointing at the copy:
+
+```sh
+sudo --preserve-env=MLAG_SSH_PASSWORD env "PATH=$PATH:/usr/sbin:/sbin" MLAG_INSTANCE=2 \
+  "UV_PROJECT_ENVIRONMENT=$UV_PROJECT_ENVIRONMENT" uv run --locked mlag-lab run \
+  --lab-dir /var/tmp/mlag-labs-i2 --bridge-mode none --case baseline --output /var/tmp/mlag-small-i2-baseline
+```
+
+Remove the instance with the same variables, through `sudo env`. Never use `containerlab destroy --name`: Containerlab then reads the topology without the variables and removes another lab.
+
+```sh
+sudo env MLAG_LAB_NAME=mlag-small-i2 MLAG_MGMT_NET=235 \
+  containerlab destroy -t /var/tmp/mlag-labs-i2/small/small.clab.yml --cleanup
+```
+
+### Effect of parallel load
+
+Measured on 25 November 2026 in `mlag-external` (13 CPUs, 31 GB), with RouterOS 7.26beta7 and spanning tree off. The target was Small instance 1 with `baseline`, `primary-power-loss` and `bond-member-loss`. The other labs ran the same suite, and Medium ran `medium-stp-off-baseline` and `medium-stp-off-power-loss-primary`. All suites of a level started together. The idle lab `mlag-medium` of another session was up during every level.
+
+| Labs with cases | Power-loss loss, withdrawal / restoration, s | State read median / p95, ms | Poll period median / max, ms | Largest probe gap, ms (gaps over 150 ms) | CPU busy median / max, % |
+| --- | --- | --- | --- | --- | --- |
+| 1 Small (3 runs) | 0.42–0.52 / ≤0.43 | 107–132 / 121–156 | 351 / 355 | 114 (0) | 11–14 / 21 |
+| 2 Small (2 runs) | 0.42–0.52 / 0.21 | 111–136 / 123–193 | 351 / 387 | 135 (0) | 20–21 / 34 |
+| 3 Small (1 run) | 0.42–0.68 / ≤0.52 | 118 / 135 | 351 / 355 | 113 (0) | 26 / 43 |
+| 3 Small and Medium, first run | ≤0.63 | 125 / 150 | 351 / 359 | 122 (0) | 30 / 49 |
+| 3 Small and Medium, second run | ≤0.46 | 131 / 184 | 351 / 666 | 508 (17) | 33 / 53 |
+
+Verdicts did not change with load. The only failed checks at any level were the flood checks 501 and 502. They also changed between single runs: two, one and zero failures in the three Small runs alone. No loss came near its limit of 5 s for power loss and 3 s for a bond member. Wall time stayed at 90–95 s for baseline plus power loss.
+
+Run at most 3 labs with cases in the VM at once, counting labs of other sessions. At four labs, the second run stalled the probe senders of all three Small labs at the same moment during the bond member restoration, and once during the CHR boots of the power loss. A fourth lab with cases therefore distorts the timing of reboot, power-loss and bond member cases. The cause of the stalls is not known; the CPU was 47–68 % idle at those moments.
+
+### Several sessions in one VM
+
+- Check `pgrep -af "mlag-lab|campaign.sh"` and `sudo containerlab inspect --all` before you start.
+- Never use instance 0 of a lab that another session has deployed. Pick an instance that no running lab uses.
+- Give each checkout its own `UV_PROJECT_ENVIRONMENT` and `MLAG_LABS_COPY`. The lab copy default is the same for every checkout and the environment default depends only on the user, so a second checkout would re-sync the same environment to its own code and could run from the other checkout's lab copy.
+- Destroy only the labs you deployed, with the variables they were deployed with.
 
 ## Collect a Networka checkpoint
 
@@ -174,7 +288,7 @@ The Medium profiles also have a `dc1-routeros` group with every CHR in the lab. 
 
 ### Run a checkpoint
 
-Run Networka on the host that runs the lab. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. `--inventory-prefer config` selects the profile's entries when Containerlab's generated inventory also contains `p1` and `p2`. The command prompts for the lab credentials and stores a timestamped summary with separate command output files for each CHR. Use a distinct results directory for each case, repeat and phase. [Networka CLI reference](https://github.com/narrowin/networka/blob/v0.3.0/docs/reference/cli.md)
+Run Networka on the host that runs the lab. The profiles hold the addresses of instance 0, so `nw` reaches only instance 0 of each lab. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. `--inventory-prefer config` selects the profile's entries when Containerlab's generated inventory also contains `p1` and `p2`. The command prompts for the lab credentials and stores a timestamped summary with separate command output files for each CHR. Use a distinct results directory for each case, repeat and phase. [Networka CLI reference](https://github.com/narrowin/networka/blob/v0.3.0/docs/reference/cli.md)
 
 ```sh
 uv run --locked nw --inventory-prefer config run \

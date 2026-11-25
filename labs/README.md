@@ -1,6 +1,6 @@
 # Labs
 
-Each folder holds one lab: its Containerlab topology, the RouterOS startup config each CHR imports, and an inventory. Containerlab resolves every path relative to the topology file, so a lab folder is self-contained apart from `shared/`. Deploy from the repository root.
+Each folder holds one lab: its Containerlab topology, the RouterOS startup config each CHR imports, and an inventory. Containerlab resolves every path relative to the topology file, so a lab folder is self-contained apart from `shared/`. Deploy instance 0 by hand from the repository root; `campaign.sh` deploys every instance from its own copy.
 
 | Lab | Question it answers | Topology | Deployment | Management subnet |
 | --- | --- | --- | --- | --- |
@@ -28,13 +28,17 @@ Each lab README lists the extra steps for that lab. Containerlab writes its lab 
 
 `MLAG_INSTANCE` (0 to 3, default 0) runs up to three more copies of a lab in the same VM. Instance 0 is the lab in the table above. Instance N is named `<deployment>-i<N>` and adds 10·N to the third octet of the management subnet: Small instance 2 is `mlag-small-i2` on `172.30.235.0/27`. The topology files read `MLAG_LAB_NAME` and `MLAG_MGMT_NET` and default to instance 0; the runner reads `MLAG_INSTANCE` and records it in each `attempt.json`.
 
-[campaign.sh](campaign.sh) derives the variables from `MLAG_INSTANCE` and deploys instance N from its own copy, `/var/tmp/mlag-labs-i<N>`, whose startup configs send syslog to that instance's collector. [parallel.sh](parallel.sh) starts several campaigns at once and prints one PASS or FAIL line per campaign:
+[campaign.sh](campaign.sh) derives the variables from `MLAG_INSTANCE` and deploys instance N from its own copy, `<MLAG_LABS_COPY>-i<N>`, by default `/var/tmp/mlag-labs-i<N>`. In that copy the startup configs send syslog to that instance's collector. The copy is synced from the checkout only while no lab is deployed from it. Different labs at the same instance share the copy and deploy one after the other. `campaign.sh` takes `small`, `medium`, `medium-pair-root` and `medium-two-pair`; the Large lab has no instances yet. [parallel.sh](parallel.sh) starts several campaigns at once inside the VM, one per lab instance, and prints one PASS or FAIL line per campaign:
 
 ```sh
 labs/parallel.sh --destroy \
   1 small /var/tmp/c-small-1 "baseline:--bridge-mode none --case baseline" -- \
   2 small /var/tmp/c-small-2 "baseline:--bridge-mode none --case baseline"
 ```
+
+Each campaign writes its console output to `<campaign dir>/console.log` and each suite to `<campaign dir>/<sub-folder>/`. `parallel.sh` exits 0 when every campaign passed, 1 when any failed and 2 on a usage error. `--destroy` removes only the labs that the campaigns deployed. [Run suites in parallel](../docs/operator-guide.md#run-suites-in-parallel)
+
+Deploy instances through `campaign.sh` or `parallel.sh`. A deploy of instance N straight from this folder keeps the instance 0 syslog target in the startup configs, so its RouterOS logs reach the wrong collector.
 
 Remove an instance with the same variables it was deployed with, never with `containerlab destroy --name`:
 
