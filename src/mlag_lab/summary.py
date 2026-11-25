@@ -60,6 +60,8 @@ def describe(setup, run_dir):
     delays = {bond.get("up-delay") for bond in bonds} - {"0ms", None}
     if delays:
         parts.append(f"up-delay={', '.join(sorted(delays))}")
+    if setup.get("settle_s"):
+        parts.append(f"baseline {setup['settle_s']} s after the bridge change")
     return ", ".join(parts)
 
 

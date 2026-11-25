@@ -766,7 +766,7 @@ def restore_rstp(lab, output):
         print("Restored protocol-mode=rstp on both MLAG peers", flush=True)
 
 
-def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp"):
+def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp", settle=0):
     kind = select_topology(cases, bridge_mode)
     # The two-pair topology runs through the same attempt and baseline gate as the Medium lab.
     is_medium, is_direct, is_root = kind in ("medium", "two-pair"), kind == "direct", kind == "root"
@@ -810,6 +810,7 @@ def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp"):
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             with tempfile.TemporaryDirectory(prefix="mlag-") as temporary:
                 lab = lab_type(topology, Path(temporary), username, password)
+                lab.settle_s = settle
                 lab.bridge_mode = bridge_mode
                 try:
                     lab.wait_ready()

@@ -300,9 +300,12 @@ def external_attempt(lab, path, name, build_hash, changes):
                 "builds_sha256": build_hash, "target": target, "devices": lab.device_inventory()}
     if "bridge_mode" in changes:
         manifest["bridge_mode"] = changes["bridge_mode"]
+    settle = getattr(lab, "settle_s", 0)
+    if settle:
+        manifest["settle_s"] = settle
     (path / "attempt.json").write_text(json.dumps(manifest, indent=2) + "\n")
     capture = Capture(lab, path)
-    capture.mark("configuration_applied", replies=changes)
+    applied = capture.mark("configuration_applied", replies=changes)
     stop = Event()
     samples = SimpleQueue()
     feed_path = lab.topology.parent / lab.log_dir / "routeros.jsonl"
@@ -328,6 +331,10 @@ def external_attempt(lab, path, name, build_hash, changes):
                         config = {peer: lab.ros(peer, CONFIG) for peer in lab.peers}
                         (path / "effective-config.json").write_text(json.dumps(config, indent=2) + "\n")
                         lab.wait_for_baseline_state(name, config, target)
+                        if settle:
+                            # Hold the baseline back so a state the configuration change left behind must persist.
+                            time.sleep(max(0.0, settle - (time.monotonic_ns() - applied["mono_ns"]) / 1e9))
+                            capture.mark("settled", seconds=settle)
                         logs += feed.read()
                         repair_missing_syslog(capture, logs)
                         baseline = capture.mark("baseline_start")

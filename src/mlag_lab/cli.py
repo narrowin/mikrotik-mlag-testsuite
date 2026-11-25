@@ -42,6 +42,9 @@ def run(
     username: Annotated[str, typer.Option()] = "admin",
     bridge_mode: Annotated[BridgeMode, typer.Option(
         help="Spanning tree protocol-mode on both Small lab MLAG peers.")] = BridgeMode.rstp,
+    settle: Annotated[int, typer.Option(min=0, help=(
+        "Medium and Small direct lab: seconds from applying the bridge configuration to the start of the baseline. "
+        "Device state is sampled throughout. 0 starts the baseline as soon as the lab is ready."))] = 0,
 ):
     """Run cases on the dedicated Linux lab host."""
     from .run import run_suite, select_topology
@@ -53,22 +56,22 @@ def run(
         output, lab_dir = output.resolve(), lab_dir.resolve()
         if sys.platform == "linux":
             if os.geteuid() != 0:
-                restart_as_root(output, lab_dir, cases, repeat, username, bridge_mode.value)
-        status = run_suite(lab_dir, output, cases, repeat, username, bridge_mode.value)
+                restart_as_root(output, lab_dir, cases, repeat, username, bridge_mode.value, settle)
+        status = run_suite(lab_dir, output, cases, repeat, username, bridge_mode.value, settle)
     except (OSError, ValueError) as error:
         typer.echo(str(error), err=True)
         status = 2
     raise typer.Exit(status)
 
 
-def restart_as_root(output, lab_dir, cases, repeat, username, bridge_mode):
+def restart_as_root(output, lab_dir, cases, repeat, username, bridge_mode, settle=0):
     """Run this command again under sudo with the same interpreter, absolute paths and uv settings."""
     uv = os.environ.get("UV") or shutil.which("uv")
     if uv:
         # The runner calls uv inside the lab namespaces, where sudo's PATH may not find it.
         os.environ["UV"] = os.path.abspath(uv)
     arguments = ["--output", str(output), "--lab-dir", str(lab_dir), "--repeat", str(repeat),
-                 "--username", username, "--bridge-mode", bridge_mode]
+                 "--username", username, "--bridge-mode", bridge_mode, "--settle", str(settle)]
     for name in cases:
         arguments += ["--case", name]
     preserved = ",".join(name for name in ("MLAG_SSH_PASSWORD", "UV_PROJECT_ENVIRONMENT", "UV") if name in os.environ)

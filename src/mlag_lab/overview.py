@@ -49,6 +49,14 @@ def looped(rows):
 
 def group_label(setup, run_dir):
     """Bridge mode and root placement in a few words, or None when the run did not record its setup."""
+    label = placement(setup, run_dir)
+    # A delayed baseline tests whether a state left by the bridge change persists, so it never folds in.
+    if label and setup.get("settle_s"):
+        label += f", baseline {setup['settle_s']} s after the bridge change"
+    return label
+
+
+def placement(setup, run_dir):
     mode = setup.get("bridge_mode")
     bridges = {node: info.get("bridge", {}) for node, info in (setup.get("devices") or {}).items()}
     if mode == "none":

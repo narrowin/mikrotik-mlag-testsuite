@@ -31,6 +31,8 @@ FIELDS = (
     ("setup.containerlab", "Containerlab version."),
     ("setup.bridge_mode", "Spanning tree protocol-mode applied in the run: none, rstp or mstp."),
     ("setup.stp_root_id", "Root bridge ID the run elected, where the case checks it."),
+    ("setup.settle_s", "Seconds the runner waited after applying the bridge configuration before the baseline, from "
+                       "`mlag-lab run --settle`. Null when the baseline started as soon as the lab was ready."),
     ("setup.roles", "MLAG role of each MLAG peer at the start of the run (primary or secondary)."),
     ("setup.devices", "Per RouterOS device: bridge settings (protocol-mode, priority, MSTP region, mlag-peer-port "
                       "for the peer link, mlag-priority, mlag-lacp-fallback, mlag-init-delay) and bond settings "
@@ -136,7 +138,8 @@ def suite_rows(campaign, suite, repo_root):
         # Older runs did not record the bridge mode; their saved or startup config shows it.
         mode = (result.get("bridge_mode") or devices.get("p1", {}).get("bridge", {}).get("protocol-mode")
                 or (startup_mode(suite) or "").split(" ")[0] or None)
-        setup = {"lab": result.get("lab"), **versions, "bridge_mode": mode,
+        attempt = json.loads((directory / "attempt.json").read_text()) if (directory / "attempt.json").exists() else {}
+        setup = {"lab": result.get("lab"), **versions, "bridge_mode": mode, "settle_s": attempt.get("settle_s"),
                  "stp_root_id": (result.get("election") or {}).get("root"),
                  "roles": roles(directory), "devices": devices}
         base = {"schema": SCHEMA, "campaign": campaign.name, "suite": suite.name, "run": listed["run"],
