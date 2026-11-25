@@ -20,7 +20,7 @@
 
 [Root-pair reboot wiring and fault target](cases/medium-core-reboot.md)
 
-Use a dedicated ARM64 OrbStack VM with a local Docker daemon. Install Containerlab, uv, OpenSSH client, sshpass, iproute2 including `tc`, iputils, tcpdump and TShark. The root topology uses three CHRs, two Linux clients, and a separate syslog receiver on `172.30.216.20:1514`. A reboot is issued inside the selected RouterOS guest. The Linux veths, TAPs, captures and other guests stay up to observe it.
+Use a dedicated ARM64 OrbStack VM with a local Docker daemon. Install Containerlab, uv, OpenSSH client, iproute2 including `tc`, iputils, tcpdump and TShark. The root topology uses three CHRs, two Linux clients, and a separate syslog receiver on `172.30.216.20:1514`. A reboot is issued inside the selected RouterOS guest. The Linux veths, TAPs, captures and other guests stay up to observe it.
 
 From the repository root in that VM, use the shared image from `labs/campaign-image.txt`. The example uses **7.26beta7**, the latest on 24 November 2026. Deploy once by digest and use that image for the full campaign. [MikroTik development releases](https://mikrotik.com/download/changelogs?channelFilter=development) · [Version policy](validation-plan.md#routeros-version-for-live-tests) · [Root topology](../labs/medium/medium-pair-root.clab.yml)
 
@@ -141,22 +141,9 @@ The script prints the start time, end time and exit code of each suite, and exit
 
 ## Collect a Networka checkpoint
 
-### Execute a command on the Medium lab
+Networka (`nw`) saves a read-only view of every CHR in a lab before a fault, while a fault is held open, or after recovery. The runner does not call it. Continuous packet capture, persistent RouterOS polling and syslog supply the fault timeline.
 
-Use the [Medium lab Networka profile](../labs/networka/medium.yml) from the `mlag-external` OrbStack VM. This command executes RouterOS ICMP probes from each of the three CHRs to `dc1-traffic-host1` over the management VRF. Use the normal lab credentials and verify the CHRs' SSH host keys before running it.
-
-```sh
-uv run --locked --extra checkpoints nw --inventory-prefer config run \
-  --config labs/networka/medium.yml --interactive-auth --store-results \
-  --results-dir networka-results/dc1-management-ping dc1-routeros \
-  '/ping address=172.30.218.16 vrf=mgmt count=3 interval=200ms'
-```
-
-Inspect every device's saved output for three sent, three received, and zero loss. Networka v0.2.0 can exit zero on a group run that contains failed devices. Check the per-device records and the printed counts. The scored baseline separately proves VLAN 110 and the bypass using probes from both Linux hosts.
-
-### Collect both cores in the original small lab
-
-Run Networka on the Linux lab host when you want a saved view of both peers before a fault, after recovery, or while a fault is held open. The checkpoint opens SSH sessions to both peers concurrently and runs eight read-only commands on each. The [sequence](../labs/networka/sequences/mikrotik_routeros/common.yml) records the guest carrier for the affected member, both bonds’ actor and partner flags, bridge and STP state, and where VLAN 110 learned client 1’s MAC. Continuous packet capture, persistent RouterOS polling and syslog supply the fault timeline.
+### Install Networka
 
 From the repository root, enable the optional `checkpoints` extra in the same uv project as the runner. The lockfile records the GitHub release wheel and its digest. The verified release on 24 November 2026 was **v0.2.0**. [Networka releases](https://github.com/narrowin/networka/releases/latest)
 
@@ -165,7 +152,26 @@ uv sync --locked --extra checkpoints
 uv run --locked --extra checkpoints nw --version
 ```
 
-Verify both CHRs’ SSH host keys and add them to the collector’s known-hosts file before connecting. The [checkpoint profile](../labs/networka/small.yml) names the two management addresses explicitly. `--inventory-prefer config` selects those entries when Containerlab’s generated inventory also contains `p1` and `p2`. The command prompts for the lab credentials and stores a timestamped summary with separate command output files for each peer. Use a distinct results directory for each case, repeat and phase. [Networka CLI reference](https://github.com/narrowin/networka/blob/v0.2.0/docs/reference/cli.md)
+### Profiles for each lab
+
+Each lab has a profile that names its management addresses and device groups. All profiles share one [sequence file](../labs/networka/sequences/mikrotik_routeros/common.yml) with one read-only sequence per switch role. Each sequence holds the base state read that the runner sends to that switch, in the same order and spelling. It reads guest carrier on the data ports, the actor and partner flags of the switch's bonds, bridge, MLAG and STP state, and where VLAN 110 learned the client MACs. The runner takes its device addresses and base state reads from these files and copies the lab's profile and the sequence file into each run's `inputs/` folder. Identity and resource are not part of the lab sequences; read them with Networka's built-in `system_info` sequence.
+
+| Lab | Profile | Group | Sequence |
+| --- | --- | --- | --- |
+| Small | [small.yml](../labs/networka/small.yml) | `mlag-peers` | `mlag_small_state` |
+| Small, reboot and power-loss cases | [small.yml](../labs/networka/small.yml) | `mlag-peers` | `mlag_direct_state` |
+| Medium | [medium.yml](../labs/networka/medium.yml) | `mlag-peers` | `mlag_medium_core_state` |
+| Medium | [medium.yml](../labs/networka/medium.yml) | `access-switch` | `mlag_medium_access_state` |
+| Medium, pair-root variant | [medium-pair-root.yml](../labs/networka/medium-pair-root.yml) | `mlag-peers` | `mlag_medium_core_state` |
+| Medium, pair-root variant | [medium-pair-root.yml](../labs/networka/medium-pair-root.yml) | `access-switch` | `mlag_medium_access_state` |
+| Medium, two-pair variant | [medium-two-pair.yml](../labs/networka/medium-two-pair.yml) | `core-peers` | `mlag_two_pair_core_state` |
+| Medium, two-pair variant | [medium-two-pair.yml](../labs/networka/medium-two-pair.yml) | `access-peers` | `mlag_two_pair_access_state` |
+
+The Medium profiles also have a `dc1-routeros` group with every CHR in the lab. The Large lab gets a profile once its topology and management addresses exist.
+
+### Run a checkpoint
+
+Run Networka on the host that runs the lab. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. `--inventory-prefer config` selects the profile's entries when Containerlab's generated inventory also contains `p1` and `p2`. The command prompts for the lab credentials and stores a timestamped summary with separate command output files for each CHR. Use a distinct results directory for each case, repeat and phase. [Networka CLI reference](https://github.com/narrowin/networka/blob/v0.2.0/docs/reference/cli.md)
 
 ```sh
 uv run --locked --extra checkpoints nw --inventory-prefer config run \
@@ -173,7 +179,33 @@ uv run --locked --extra checkpoints nw --inventory-prefer config run \
   --results-dir networka-results/before mlag-peers mlag_small_state
 ```
 
-**OrbStack verification.** Networka v0.2.0 completed all eight reads on both RouterOS 7.26beta7 peers in about **1.02 s**. Both reported `link-ok` on `ether3`, synchronized, collecting and distributing actor and partner flags on the two client bonds, connected MLAG, and the client 1 MAC on `client1` in VLAN 110. Inspect the per-peer command output before using a checkpoint. A preliminary config attempt sent an unresolved sequence name to RouterOS, and Networka marked the SSH command successful even though RouterOS returned a syntax error. The RouterOS sequence file included here was then verified on both peers.
+For the Medium lab, run the core and access sequences into separate results directories:
+
+```sh
+uv run --locked --extra checkpoints nw --inventory-prefer config run \
+  --config labs/networka/medium.yml --interactive-auth --store-results \
+  --results-dir networka-results/medium-before-cores mlag-peers mlag_medium_core_state
+uv run --locked --extra checkpoints nw --inventory-prefer config run \
+  --config labs/networka/medium.yml --interactive-auth --store-results \
+  --results-dir networka-results/medium-before-access access-switch mlag_medium_access_state
+```
+
+Networka v0.2.0 can exit zero on a group run that contains failed devices. It also marked a command successful when RouterOS returned a syntax error. Check every CHR's saved output before using a checkpoint.
+
+**OrbStack verification.** Networka v0.2.0 completed all eight reads of the earlier `mlag_small_state` list on both RouterOS 7.26beta7 peers in about **1.02 s**. That list began with the identity and resource reads and read only the client 1 MAC. Both reported `link-ok` on `ether3`, synchronized, collecting and distributing actor and partner flags on the two client bonds, connected MLAG, and the client 1 MAC on `client1` in VLAN 110. The current sequences, including `mlag_direct_state`, have not yet run through Networka. They use the same RouterOS reads that the runner sends to those labs on every run.
+
+### Execute a command on the Medium lab
+
+This command executes RouterOS ICMP probes from each of the three CHRs to `dc1-traffic-host1` over the management VRF.
+
+```sh
+uv run --locked --extra checkpoints nw --inventory-prefer config run \
+  --config labs/networka/medium.yml --interactive-auth --store-results \
+  --results-dir networka-results/dc1-management-ping dc1-routeros \
+  '/ping address=172.30.218.16 vrf=mgmt count=3 interval=200ms'
+```
+
+Inspect every device's saved output for three sent, three received, and zero loss. The scored baseline separately proves VLAN 110 and the bypass using probes from both Linux hosts.
 
 ## Check Markdown
 

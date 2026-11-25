@@ -34,6 +34,6 @@ Each lab README lists the extra steps for that lab. Containerlab writes its lab 
 | [shared/forward-control.sh](shared/forward-control.sh) | Every CHR | Makes each veth-to-TAP bridge pass STP, LACP and LLDP; `--wire` also turns off MAC learning so it acts as a plain cable |
 | [shared/qemu-data-link.sh](shared/qemu-data-link.sh) | Every CHR | QEMU wrapper that advertises 10G full duplex on the data NICs |
 | [shared/rsyslog.conf](shared/rsyslog.conf) | Syslog collector | Writes RouterOS syslog from each lab subnet to `logs/routeros.jsonl` |
-| [networka/](networka/) | Operator | Networka checkpoint profiles: `small.yml`, `medium.yml` and the RouterOS command sequence |
+| [networka/](networka/) | Operator | Networka checkpoint profiles for each lab and the read-only RouterOS sequences |
 
 The runner copies these files into each run's `inputs/` folder and records their SHA-256. [Syslog notes](../docs/syslog/README.md) · [Networka checkpoints](../docs/operator-guide.md#collect-a-networka-checkpoint)
