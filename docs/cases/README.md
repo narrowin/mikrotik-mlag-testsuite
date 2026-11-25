@@ -19,7 +19,11 @@ CLI selectors map each case to the existing runner and archived evidence. Pendin
 | SMALL-09 | Silent host past bridge ageing, then relearn (catalogue M2) | `silent-mobile` (`mac-age-relearn`) |
 | SMALL-10 | Repeated MLAG bond member flap (catalogue M4, one pair) | `carrier-flap` (`member-flap-repeat`) |
 
-The current Small lab selectors use RSTP. The matching STP-disabled campaign remains pending.
+Small lab selectors default to RSTP. Use `--bridge-mode none` to test with STP off.
+
+The [SMALL-06 case definition](../../src/mlag_lab/small-06.yaml) specifies the reboot,
+the required switch and client state, and the traffic checks. The runner saves
+a copy with each attempt so a replay uses the recorded expectations.
 
 [Inventory](../../labs/small/README.md) · [Link-loss procedure](small-client-link.md) · [Reboot commands](../operator-guide.md#reboot-the-direct-client-pair) · [Results](../../results/2026-11-24-small-lab/README.md)
 

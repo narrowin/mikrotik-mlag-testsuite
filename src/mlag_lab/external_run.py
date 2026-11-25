@@ -2,6 +2,7 @@
 
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
+from dataclasses import asdict
 import json
 import os
 from queue import SimpleQueue
@@ -9,6 +10,8 @@ import subprocess
 from threading import Event
 import time
 
+from .bridge_intent import collect_bridge_port_replies
+from .cases import case_spec
 from .direct_topology import DIRECT_CAPTURES, DIRECT_FLOWS, DIRECT_LINKS, DIRECT_NODES, DIRECT_PORTS
 from .direct_topology import DIRECT_FLOOD_FLOWS
 from .evaluate import analyze
@@ -29,6 +32,7 @@ from .root_topology import (
 )
 from .root_state import ACCESS_GUARDS_READBACK, access_guards, router_state
 from .run import UPTIME, Capture, filter_fault, remove_flood_neighbour, run, start_floods
+from .small_06 import SMALL_06_PATH, SMALL_06_YAML
 
 # Access switch port settings per Medium family, applied in every bridge reset so none leaks into the next.
 ACCESS_GUARDS = {
@@ -192,18 +196,20 @@ class DirectLab(BridgeComparisonLab):
     def case_target(self, name):
         if name in ("direct-baseline", "direct-calibrate"):
             return None
-        role = name.rsplit("-", 1)[1]
+        intent = case_spec(name).reboot_intent
+        role = intent.fault.reboot_role if intent else name.rsplit("-", 1)[1]
+        state = intent.expected_state.mlag_state if intent else "connected"
         deadline = time.monotonic() + self.settle_timeout_s
         while time.monotonic() < deadline:
             for node in self.peers:
                 bridge, _ = router_state(self.read_router(node))
-                if (bridge.get("mlag-state"), bridge.get("mlag-active-role")) == ("connected", role):
+                if (bridge.get("mlag-state"), bridge.get("mlag-active-role")) == (state, role):
                     return node
             time.sleep(0.25)
         return None
 
     def check_baseline(self, name, before, config, target):
-        return direct_baseline_issues(name, before, config, target, self.bridge_mode)
+        return direct_baseline_issues(name, before, config, target, self.bridge_mode, case_spec(name).reboot_intent)
 
     def check_wire(self, path, name, start, end):
         # The client LAGs terminate on hosts, so there is no downstream STP election.
@@ -237,7 +243,7 @@ def interpair_member(capture, up):
                     [(node, INTERPAIR_ETHER) for node, _ in INTERPAIR_MEMBER], up)
 
 
-def run_fault(capture, name, target, before, samples):
+def run_fault(capture, name, target, before, samples, observe_after_boot_seconds):
     if name.endswith("-calibrate"):
         filter_fault(capture, silent=False)
         time.sleep(3)
@@ -253,7 +259,7 @@ def run_fault(capture, name, target, before, samples):
     else:
         fault = power_loss if "-power-loss-" in name else reboot_guest
         fault(capture, target, before, samples)
-        time.sleep(16)
+        time.sleep(observe_after_boot_seconds)
 
 
 def repair_missing_syslog(capture, logs):
@@ -269,8 +275,7 @@ def repair_missing_syslog(capture, logs):
         time.sleep(2)
 
 
-def verify_probe_window(capture, start, end):
-    definitions = capture.lab.flows
+def verify_probe_window(capture, start, end, definitions):
     seen = {}
     fields = ("frame.time_epoch", "icmp.ident", "icmp.type", "icmp.seq")
     for point in sorted({point for source, dest, _, _ in definitions.values() for point in (source, dest)}):
@@ -293,11 +298,27 @@ def verify_probe_window(capture, start, end):
     return evidence, issues
 
 
+def capture_bridge_port_intent(capture, name, intents):
+    started_mono_ns = time.monotonic_ns()
+    replies = collect_bridge_port_replies(capture.lab.ros, intents)
+    capture.mark(name, started_mono_ns=started_mono_ns, replies=replies)
+    return replies
+
+
 def external_attempt(lab, path, name, build_hash, changes):
     path.mkdir()
     target = lab.case_target(name)
+    spec = case_spec(name)
+    intent = spec.reboot_intent
+    fault = intent.fault if intent else None
+    flows = intent.probe_flows if intent else lab.flows
+    flood_flows = intent.flood_flows if intent else lab.flood_flows
+    reboot_intents = intent.bridge_ports if intent else ()
     manifest = {"schema": 2, "case": name, "name": case_name(name), "topology": lab.name,
                 "instance": INSTANCE, "builds_sha256": build_hash, "target": target, "devices": lab.device_inventory()}
+    if intent:
+        manifest["reboot_bridge_port_intent"] = [asdict(port) for port in reboot_intents]
+        (path / SMALL_06_PATH.name).write_text(SMALL_06_YAML)
     if "bridge_mode" in changes:
         manifest["bridge_mode"] = changes["bridge_mode"]
     settle = getattr(lab, "settle_s", 0)
@@ -314,9 +335,9 @@ def external_attempt(lab, path, name, build_hash, changes):
         with feed_path.open() as feed:
             feed.seek(0, os.SEEK_END)
             try:
-                capture.observe(lab.captures, lab.ports, lab.flows, named_ports=True, immediate=True)
-                if lab.flood_flows:
-                    start_floods(capture, lab.flood_flows)
+                capture.observe(lab.captures, lab.ports, flows, named_ports=True, immediate=True)
+                if flood_flows:
+                    start_floods(capture, flood_flows)
                 for peer, ident in lab.management_probes.items():
                     capture.launch(["ping", "-n", "-D", "-O", "-i", "0.1", "-e", str(ident), lab.peers[peer]],
                                    path / "probes" / f"{ident}.log")
@@ -338,21 +359,24 @@ def external_attempt(lab, path, name, build_hash, changes):
                         logs += feed.read()
                         repair_missing_syslog(capture, logs)
                         baseline = capture.mark("baseline_start")
-                        time.sleep(4)
+                        time.sleep(fault.baseline_seconds if fault else 4)
                         before = lab.readiness()
                         finished = capture.mark("baseline_observed", **before)
                         logs += feed.read()
                         verify_live_collectors(capture, baseline, logs, verify_delivery=False)
                         issues = lab.check_baseline(name, before, config, target)
+                        if reboot_intents:
+                            capture_bridge_port_intent(capture, "baseline_bridge_port_intent", reboot_intents)
                         issues += lab.check_wire(path, name, baseline["epoch_ns"], finished["epoch_ns"])
                         links, link_issues = lab.check_links()
                         capture.mark("baseline_links", **links)
                         issues += link_issues
-                        probes, probe_issues = verify_probe_window(capture, baseline["epoch_ns"], finished["epoch_ns"])
+                        probes, probe_issues = verify_probe_window(capture, baseline["epoch_ns"], finished["epoch_ns"],
+                                                                  flows)
                         capture.mark("baseline_packets", flows=probes)
                         issues += probe_issues
                         try:
-                            verify_live_delivery(capture, baseline)
+                            verify_live_delivery(capture, baseline, flows)
                         except RuntimeError as error:
                             issues.append(str(error))
                         if name in MEDIUM_PAIR_STP_OFF and not issues:
@@ -381,9 +405,10 @@ def external_attempt(lab, path, name, build_hash, changes):
                         else:
                             capture.mark("baseline_confirmed", **before)
                             if not name.endswith("-baseline"):
-                                run_fault(capture, name, target, before, samples)
+                                run_fault(capture, name, target, before, samples,
+                                          fault.observe_after_boot_seconds if fault else 16)
                                 capture.mark("recovery_start")
-                                time.sleep(3)
+                                time.sleep(fault.recovery_seconds if fault else 3)
                                 capture.mark("recovery_end")
                                 # Leave a state sample beyond the scoring boundary before taking readbacks.
                                 time.sleep(0.5)
@@ -393,6 +418,8 @@ def external_attempt(lab, path, name, build_hash, changes):
                                 after = lab.readiness()
                                 config = lab.ros_peers(CONFIG)
                                 capture.mark("baseline_restored", **after, issues=lab.check_baseline(name, after, config, target))
+                                if reboot_intents:
+                                    capture_bridge_port_intent(capture, "restored_bridge_port_intent", reboot_intents)
                         for peer in lab.peers:
                             lab.ros(peer, f':log info "{lab.name}-{path.name}-end"')
                         time.sleep(2)
@@ -409,7 +436,7 @@ def external_attempt(lab, path, name, build_hash, changes):
         capture.mark("runner_error", detail=str(error), stderr=getattr(error, "stderr", None))
     finally:
         capture.stop()
-        if lab.flood_flows:
+        if flood_flows:
             remove_flood_neighbour(capture)
         if all((path / "captures" / f"{point}.pcap").is_file() for point in lab.captures):
             seal_captures(path, lab.captures)

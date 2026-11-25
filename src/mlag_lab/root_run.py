@@ -309,8 +309,10 @@ def verify_live_collectors(capture, baseline, logs, *, verify_delivery=True):
         verify_live_delivery(capture, baseline)
 
 
-def verify_live_delivery(capture, baseline):
-    for ident in getattr(capture.lab, "flows", ROOT_FLOWS):
+def verify_live_delivery(capture, baseline, definitions=None):
+    if definitions is None:
+        definitions = getattr(capture.lab, "flows", ROOT_FLOWS)
+    for ident in definitions:
         probe = capture.path / "probes" / f"{ident}.log"
         replies = [(int(Decimal(stamp) * NS), int(seq)) for stamp, seq in re.findall(
             r"^\[(\d+\.\d+)\] \d+ bytes from .*?icmp_seq=(\d+)", probe.read_text(), re.M

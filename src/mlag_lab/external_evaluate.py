@@ -134,34 +134,42 @@ def baseline_issues(name, state, config):
     return issues
 
 
-def direct_baseline_issues(name, state, config, target, mode):
+def direct_baseline_issues(name, state, config, target, mode, intent=None):
     issues = []
     bridges = {}
+    stable = intent.expected_state if intent else None
+    connected = stable.mlag_state if stable else "connected"
+    bridge_ports = stable.bridge_forwarding.ports if stable else ("client1", "client2")
+    forwarding = "no" if stable and not stable.bridge_forwarding.forwarding else "yes"
+    router_members_expected = set(stable.router_lacp.members) if stable else {"ether3", "ether4"}
+    scd = stable.router_lacp.actor_and_partner_flags if stable else "SCD"
     for node, raw in state["routers"].items():
         bridge, ports = router_state(raw)
         bridges[node] = bridge
-        if f"protocol-mode={mode}" not in config[node] or bridge.get("mlag-state") != "connected":
-            issues.append(f"{node} protocol-mode={mode} and connected MLAG were not verified: {bridge}")
-        for bond in ("client1", "client2"):
+        if f"protocol-mode={mode}" not in config[node] or bridge.get("mlag-state") != connected:
+            issues.append(f"{node} protocol-mode={mode} and {connected} MLAG were not verified: {bridge}")
+        for bond in bridge_ports:
             port = ports.get(bond, {})
-            if mode != "none" and (port.get("edge-port") != "yes" or port.get("forwarding") != "yes"):
+            if mode != "none" and (port.get("edge-port") != "yes" or port.get("forwarding") != forwarding):
                 issues.append(f"{node}:{bond} is not a forwarding edge port: {port}")
         members = router_members(raw)
-        if set(members) != {"ether3", "ether4"} or any(
-            any(member[side][3:6] != "SCD" for side in ("actor", "partner")) for member in members.values()
+        if set(members) != router_members_expected or any(
+            any(member[side][3:6] != scd for side in ("actor", "partner")) for member in members.values()
         ):
             issues.append(f"{node} LACP members are not all eligible: {members}")
     roles = {state.get("mlag-active-role") for state in bridges.values()}
     roots = {state.get("root-bridge-id") for state in bridges.values()}
     if roles != {"primary", "secondary"} or mode != "none" and (len(roots) != 1 or None in roots):
         issues.append(f"Expected complementary MLAG roles and a shared RSTP root: {bridges}")
-    if name.endswith(("-primary", "-secondary")) and bridges.get(target, {}).get(
-        "mlag-active-role"
-    ) != name.rsplit("-", 1)[1]:
+    target_role = intent.fault.reboot_role if intent else name.rsplit("-", 1)[1]
+    if target_role in ("primary", "secondary") and bridges.get(target, {}).get("mlag-active-role") != target_role:
         issues.append(f"{target} did not hold the intended MLAG role for {name}")
     for client, key in (("c1", "linux_client1"), ("c2", "linux")):
         members = linux_members(state[key])
-        if set(members) != {"eth1", "eth2"} or any(not all(member.values()) for member in members.values()):
+        expected_ports = set(stable.client_lacp.members[client]) if stable else {"eth1", "eth2"}
+        expected_member = ({"carrier": stable.client_lacp.carrier, "eligible": stable.client_lacp.eligible}
+                           if stable else {"carrier": True, "eligible": True})
+        if set(members) != expected_ports or any(member != expected_member for member in members.values()):
             issues.append(f"{client} LACP is not eligible on both members: {members}")
     return issues
 
@@ -268,8 +276,9 @@ def election_samples(path, start, end):
     return summaries
 
 
-def evaluate_external(path, name, checks, result):
-    spec = case_spec(name)
+def evaluate_external(path, name, checks, result, *, spec=None):
+    spec = spec or case_spec(name)
+    intent = spec.reboot_intent
 
     def check(level, ok, detail, phase=None):
         checks.append({"level": level, "ok": bool(ok), "detail": detail} | ({"phase": phase} if phase else {}))
@@ -309,6 +318,13 @@ def evaluate_external(path, name, checks, result):
         target = manifest["target"] if direct else (MEDIUM_TARGETS if medium else EXTERNAL_TARGETS)[name]
         captures = DIRECT_CAPTURES if direct else ROOT_CAPTURES if medium else EXTERNAL_CAPTURES
         definitions = DIRECT_FLOWS if direct else ROOT_FLOWS
+        flood_flows = DIRECT_FLOOD_FLOWS if direct else {}
+        recovery_probes, recovery_label = 10, "ten"
+        if intent:
+            definitions = intent.probe_flows
+            flood_flows = intent.flood_flows
+            recovery_probes = intent.traffic.recovery_consecutive_replies
+            recovery_label = intent.traffic.recovery_count_label
         preferred = preferred_root(name)
         root_id, backup_id = election_ids(preferred)
         if direct:
@@ -330,7 +346,7 @@ def evaluate_external(path, name, checks, result):
             result["election"] = {"preferred": preferred, "root": root_id, "backup": backup_id}
         before = marks["baseline_observed"]
         config = json.loads((path / "effective-config.json").read_text())
-        issues = (direct_baseline_issues(name, before, config, target, direct_mode) if direct
+        issues = (direct_baseline_issues(name, before, config, target, direct_mode, intent) if direct
                   else baseline_issues(name, before, config))
         for issue in issues:
             check("fail", False, issue)
@@ -357,7 +373,7 @@ def evaluate_external(path, name, checks, result):
         end = marks.get("recovery_end", before)["epoch_ns"]
         bpdus = []
         icmp, frames, _, _ = read_root_packets(path, captures, start, down, check, timeline,
-                                             reference_root=False, floods=DIRECT_FLOOD_FLOWS if direct else (),
+                                             reference_root=False, floods=flood_flows,
                                              bpdus=bpdus)
         if name in MEDIUM_CORE_OFF_CASES:
             scoring = pair_bpdus(path, start, end)
@@ -400,7 +416,8 @@ def evaluate_external(path, name, checks, result):
         if "syslog_rebind_requested" in marks:
             check("error", result["syslog"]["target_after_rebind_received"],
                   f"{target} emitted the post-observation syslog rebind marker")
-        flows = score_flows(icmp, start, end, actions, timeline, definitions=definitions, detailed=True)
+        flows = score_flows(icmp, start, end, actions, timeline, definitions=definitions, detailed=True,
+                            recovery_probes=recovery_probes)
         result["flows"] = flows
         result["forwarding"] = forwarding(
             path, icmp, definitions, start, down, up, end, outside=DIRECT_OUTSIDE if direct else MEDIUM_OUTSIDE,
@@ -412,10 +429,12 @@ def evaluate_external(path, name, checks, result):
         if not direct:
             result["access_bpdus"] = access_bpdus(bpdus, start, down, up, end)
             grade_access_bpdus(result["access_bpdus"], check)
+        bypass_streams = spec.control_flows if intent else (301, 303)
         result["sender_pause_rule"] = sender_pause_rule(name if executed else "", flows, definitions,
-                                                        seconds(down - start), seconds(end - start))
+                                                        seconds(down - start), seconds(end - start),
+                                                        bypass=bypass_streams)
         for ident, flow in flows.items():
-            bypass = ident in (301, 303)
+            bypass = ident in bypass_streams
             check("error", flow["sent"] >= 30 and cadence_ok(flow),
                   f"{ident} at least 30 emits and cadence within 450 ms{cadence_text(flow)}")
             check("error", not flow["capture_mismatches"], f"{ident} endpoint capture agreement")
@@ -424,7 +443,7 @@ def evaluate_external(path, name, checks, result):
             check("error" if bypass else "fail", not flow["duplicates"], f"{ident} duplicate-free")
             if executed:
                 check("error" if bypass else "fail", flow["stable_recovery"],
-                      f"{ident} delivered ten consecutive probes after recovery", "restoration")
+                      f"{ident} delivered {recovery_label} consecutive probes after recovery", "restoration")
             for gap in flow["gaps"]:
                 for sequence, miss in gap.get("misses", {}).items():
                     miss["frames"] = {label: frames[ident, kind, sequence]
@@ -485,13 +504,14 @@ def evaluate_external(path, name, checks, result):
             ]
             check("error", bool(observations), f"{survivor} supplied direct-edge port state during the guest absence",
                   "withdrawal")
-            for bond in ("client1", "client2"):
+            ports_to_check = intent.expected_state.bridge_forwarding.ports if intent else ("client1", "client2")
+            for bond in ports_to_check:
                 check("fail", all(ports.get(bond, {}).get("forwarding") == "yes" for ports in observations),
                       f"{survivor}:{bond} stayed forwarding while {target} was absent", "withdrawal")
         if direct:
             result["floods"] = check_floods(path, spec, icmp, start, end, actions, DIRECT_FLOOD_RECEIVERS,
-                                            FLOOD_SENDER_MEMBERS, DIRECT_FLOOD_FLOWS, timeline, check,
+                                            FLOOD_SENDER_MEMBERS, flood_flows, timeline, check,
                                             pause_window=(down, end) if executed and pause_case(name)
-                                            and bypass_kept_pace(flows) else None)
+                                            and bypass_kept_pace(flows, bypass_streams) else None)
     finally:
         write_timeline(path, start, timeline)

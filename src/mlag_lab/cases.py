@@ -6,6 +6,8 @@ graded limit and the documented expectation cannot drift apart.
 
 from dataclasses import dataclass, replace
 
+from .small_06 import SMALL_06_PATH, SMALL_06_YAML, Small06Intent, load_small_06
+
 MLAG_MANUAL = "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/"
 BOND_FLAGS = "https://manual.mikrotik.com/docs/cli-reference/interface/bonding/monitor-slaves/"
 LACP_STANDARD = "https://standards.ieee.org/ieee/802.1AX/6768/"
@@ -56,9 +58,30 @@ class Case:
     # MikroTik fixes this case checks: (RouterOS version, MikroTik's changelog wording, changelog link).
     # Filled from docs/reference/mlag-fixes.md, rows in state Checked or Indirect only.
     fixes: tuple[tuple[str, str, str], ...] = ()
+    reboot_intent: Small06Intent | None = None
 
     def limit(self, key):
         return next(phase.limit_s for phase in self.phases if phase.key == key)
+
+
+def configure_small_06(case, intent):
+    fault, traffic = intent.fault, intent.traffic
+    action = ("Resets the bridge on CHR 1 and CHR 2 over management SSH with the bridge mode of the run, "
+              f"picks the MLAG peer that reports mlag-state connected as {fault.reboot_role}, and after a loss-free "
+              "baseline reboots it with `/system reboot` (1 s delay). The runner waits for the guest uptime to reset, "
+              f"then keeps probing for {fault.observe_after_boot_seconds:g} s plus a "
+              f"{fault.recovery_seconds:g} s recovery window.")
+    limits = traffic.max_client_outage_seconds
+    return replace(case, reboot_intent=intent, action=action,
+                   graded_flows=traffic.client_streams, control_flows=traffic.loss_free_bypass_streams,
+                   phases=tuple(replace(phase, limit_s=getattr(limits, phase.key)) for phase in case.phases))
+
+
+def recorded_case(spec, path):
+    source = path / SMALL_06_PATH.name
+    if spec.reboot_intent and source.is_file():
+        return configure_small_06(spec, load_small_06(source.read_text(), source))
+    return spec
 
 
 STEADY = Phase(
@@ -123,15 +146,15 @@ CASES = (
          'Runs the baseline check, then drops the forward bypass pings at client 2 for 2 s with a tc filter while four numbered ping streams run.',
          ('direct-calibrate',), (301,), (101, 201, 303),
          (CALIBRATION,)),
-    Case('secondary-reboot', 'Small', 'MLAG secondary reboot',
-         'Resets the bridge on CHR 1 and CHR 2 over management SSH with the bridge mode of the run, picks the MLAG peer that reports mlag-state connected as secondary, and after a loss-free baseline reboots it with `/system reboot` (1 s delay). The runner waits for the guest uptime to reset, then keeps probing for 16 s plus a 3 s recovery window.',
-         ('direct-reboot-secondary',), (101, 201), (301, 303),
+    configure_small_06(Case('secondary-reboot', 'Small', 'MLAG secondary reboot', '',
+         ('direct-reboot-secondary',), (), (),
          (Phase('withdrawal', 'Secondary down',
               'The MLAG primary keeps the shared system ID, so both traffic hosts keep their LACP partner and forward over their bond member to the primary, which delivers locally without the peer port. The virtual links keep carrier, so each host drops its member to the secondary only at the LACP short timeout (3 × 1 s). Only traffic hashed to that member sees brief loss.',
-              5.0, MLAG_MANUAL),
+              None, MLAG_MANUAL),
          Phase('restoration', 'Secondary back',
               'The rejoining secondary keeps its bond members out of the 802.3ad bond until the MLAG system ID syncs with the primary (mlag-init-delay, default 1 min), then adds them under the unchanged shared system ID. The MLAG bonds client1 and client2 are edge ports and forward at once, so loss is brief or none.',
-              5.0, MLAG_MANUAL),)),
+              None, MLAG_MANUAL),)),
+        load_small_06(SMALL_06_YAML, SMALL_06_PATH)),
     Case('primary-reboot', 'Small', 'MLAG primary reboot',
          'Resets the bridge on CHR 1 and CHR 2 over management SSH with the bridge mode of the run, picks the MLAG peer that reports mlag-state connected as primary, and after a loss-free baseline reboots it with `/system reboot` (1 s delay). The runner waits for the guest uptime to reset, then keeps probing for 16 s plus a 3 s recovery window.',
          ('direct-reboot-primary',), (101, 201), (301, 303),

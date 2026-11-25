@@ -5,7 +5,7 @@ import json
 import re
 import subprocess
 
-from .cases import BY_NAME, case_spec, phase_results
+from .cases import BY_NAME, case_spec, phase_results, recorded_case
 from .direct_topology import DIRECT_CASES, DIRECT_NODES
 from .evidence import load_jsonl, read_legacy_packets, read_legacy_state
 from .external_evaluate import evaluate_external
@@ -22,6 +22,7 @@ from .readme import write_readme
 from .report import write_timeline, write_result, write_suite
 from .root_evaluate import evaluate_root
 from .root_topology import MEDIUM_TARGETS, ROOT_CASES
+from .secondary_reboot_intent import secondary_reboot_intent
 from .two_pair_evaluate import evaluate_two_pair
 from .two_pair_topology import TWO_PAIR_TARGETS
 
@@ -146,14 +147,18 @@ def write_configs(path, checks):
 def analyze(path):
     if (path / "result.json").exists() and not any((path / "captures").glob("*.pcap")):
         # Pruned after the run: only proof.tar.gz is left, so the saved verdict stands.
-        return json.loads((path / "result.json").read_text())
+        result = json.loads((path / "result.json").read_text())
+        spec = BY_NAME.get(result.get("name"))
+        if spec and spec.reboot_intent and "secondary_reboot_intent" not in result:
+            result["secondary_reboot_intent"] = secondary_reboot_intent(path, recorded_case(spec, path), result)
+        return result
     name = spec = None
     checks = []
     result = {"run": path.name, "case": name, "checks": checks}
     try:
         name = case_id(path)
         result["case"] = name
-        spec = case_spec(name)
+        spec = recorded_case(case_spec(name), path)
         result.update(name=spec.name, lab=f"{spec.lab} lab", title=spec.title, action=spec.action)
         if name in TWO_PAIR_TARGETS:
             evaluator = evaluate_two_pair
@@ -161,7 +166,10 @@ def analyze(path):
             evaluator = evaluate_external
         else:
             evaluator = evaluate_root if name in ROOT_CASES else evaluate_legacy
-        evaluator(path, name, checks, result)
+        if evaluator is evaluate_external:
+            evaluator(path, name, checks, result, spec=spec)
+        else:
+            evaluator(path, name, checks, result)
         result["bridge_mode"] = bridge_mode(path)
         write_configs(path, checks)
     except (OSError, ValueError, KeyError, RuntimeError, subprocess.SubprocessError) as error:
@@ -178,6 +186,8 @@ def analyze(path):
         result["status"] = "pass"
     if spec is not None:
         result["phases"] = phase_results(spec, result, checks)
+        if spec.reboot_intent:
+            result["secondary_reboot_intent"] = secondary_reboot_intent(path, spec, result)
     write_result(path, result)
     return result
 

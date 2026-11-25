@@ -20,7 +20,7 @@ def seconds(value):
     return round(value / NS, 6)
 
 
-def score_flows(icmp, start, end, actions, timeline, *, definitions=FLOWS, detailed=False):
+def score_flows(icmp, start, end, actions, timeline, *, definitions=FLOWS, detailed=False, recovery_probes=10):
     flows = {}
     for ident, (source, dest, _, name) in definitions.items():
         sent, received = icmp[source], icmp[dest]
@@ -82,14 +82,15 @@ def score_flows(icmp, start, end, actions, timeline, *, definitions=FLOWS, detai
                        "where": sorted({bad[s] for s in missing})}
                 if detailed and missing:
                     stable = next((seq for seq in seen if seq >= n
-                                   and all(q in good for q in range(seq, seq + 10))), None)
+                                   and all(q in good for q in range(seq, seq + recovery_probes))), None)
                     gap.update(
                         first_miss_s=seconds(window[missing[0]] - start),
                         last_miss_s=seconds(window[missing[-1]] - start),
                         previous_good_s=seconds(prev - start) if prev is not None else None,
                         first_good_s=seconds(nxt - start) if nxt is not None else None,
                         stable_delivery_s=seconds(window[stable] - start) if stable is not None else None,
-                        stable_window_end_s=seconds(window[stable + 9] - start) if stable is not None else None,
+                        stable_window_end_s=(seconds(window[stable + recovery_probes - 1] - start)
+                                             if stable is not None else None),
                         misses={seq: {"where": bad[seq], "request": [
                             cap for cap, frames in icmp.items() if (ident, 8, seq) in frames
                         ], "reply": [
@@ -127,7 +128,7 @@ def score_flows(icmp, start, end, actions, timeline, *, definitions=FLOWS, detai
         if detailed:
             flows[ident]["baseline_missed"] = sum(window[q] < actions[0][1] for q in bad)
             flows[ident]["stable_recovery"] = any(
-                window[q] >= actions[-1][2] and all(seq in good for seq in range(q, q + 10))
+                window[q] >= actions[-1][2] and all(seq in good for seq in range(q, q + recovery_probes))
                 for q in good
             )
     return flows
