@@ -255,11 +255,11 @@ Run at most 3 labs with cases in the VM at once, counting labs of other sessions
 
 ## Collect a Networka checkpoint
 
-Networka (`nw`) saves a read-only view of every CHR in a lab before a fault, while a fault is held open, or after recovery. The runner does not call it. Continuous packet capture, persistent RouterOS polling and syslog supply the fault timeline.
+Networka (`nw`) saves a read-only view of each selected CHR before a fault, while a fault is held open, or after recovery. Operators run the checkpoint CLI separately. The runner uses the Networka SDK for RouterOS command reads. Continuous packet capture, persistent RouterOS polling and syslog supply the fault timeline.
 
 ### Install Networka
 
-Networka **0.3.0** from PyPI is a dependency of the runner, so `uv sync` installs it in the same uv project. The lockfile records the wheel and its hash. [Networka 0.3.0](https://pypi.org/project/networka/0.3.0/)
+The runner and checkpoint CLI use **Networka 0.4.1** and require Python 3.15 or later. `uv sync --locked` installs the GitHub release wheel into the project environment. The lockfile records the URL and SHA-256 digest. [Networka 0.4.1](https://github.com/narrowin/networka/releases/tag/v0.4.1)
 
 ```sh
 uv sync --locked
@@ -288,7 +288,7 @@ The Medium profiles also have a `dc1-routeros` group with every CHR in the lab. 
 
 ### Run a checkpoint
 
-Run Networka on the host that runs the lab. The profiles hold the addresses of instance 0, so `nw` reaches only instance 0 of each lab. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. `--inventory-prefer config` selects the profile's entries when Containerlab's generated inventory also contains `p1` and `p2`. The command prompts for the lab credentials and stores a timestamped summary with separate command output files for each CHR. Use a distinct results directory for each case, repeat and phase. [Networka CLI reference](https://github.com/narrowin/networka/blob/v0.3.0/docs/reference/cli.md)
+Run Networka on the host that runs the lab. The profiles hold the addresses of instance 0, so `nw` reaches only instance 0 of each lab. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. `--inventory-prefer config` selects the profile's entries when Containerlab's generated inventory also contains `p1` and `p2`. The command prompts for the lab credentials and stores a timestamped summary with separate command output files for each CHR. Use a distinct results directory for each case, repeat and phase. [Networka CLI reference](https://github.com/narrowin/networka/blob/v0.4.1/docs/reference/cli.md)
 
 ```sh
 uv run --locked nw --inventory-prefer config run \
@@ -307,9 +307,11 @@ uv run --locked nw --inventory-prefer config run \
   --results-dir networka-results/medium-before-access access-switch mlag_medium_access_state
 ```
 
-Networka v0.3.0 exits with code 1 when a command or sequence failed on any device of a group. A RouterOS reply that starts with `syntax error`, `bad command name`, `expected end of command`, `input does not match any value`, `failure:` or `no such item` counts as a failed command. [Networka changelog](https://github.com/narrowin/networka/blob/v0.3.0/CHANGELOG.md)
+Networka exits with code 1 when a command or sequence failed on any device of a group. A RouterOS reply that starts with `syntax error`, `bad command name`, `expected end of command`, `input does not match any value`, `failure:` or `no such item` counts as a failed command. For a bridge-port forwarding check, Networka's offline intent example replays native RouterOS JSON collected from the two Medium cores and the access switch. [Networka changelog](https://github.com/narrowin/networka/blob/v0.4.1/CHANGELOG.md) · [Native JSON example](https://github.com/narrowin/networka/tree/v0.4.1/docs/examples/intent#medium-mikrotik-lab-replay)
 
 **OrbStack verification.** Networka v0.2.0 completed all eight reads of the earlier `mlag_small_state` list on both RouterOS 7.26beta7 peers in about **1.02 s**. That list began with the identity and resource reads and read only the client 1 MAC. Both reported `link-ok` on `ether3`, synchronized, collecting and distributing actor and partner flags on the two client bonds, connected MLAG, and the client 1 MAC on `client1` in VLAN 110. The current sequences, including `mlag_direct_state`, have not yet run through Networka. They use the same RouterOS reads that the runner sends to those labs on every run.
+
+**v0.4.1 verification.** In a fresh locked environment on `mlag-external`, the installed SDK loaded the Medium profile and read native bridge-port statistics and monitor JSON over SSH. It observed `forwarding: true` on both core `access-uplink` ports and on the access switch's `uplink`. The prior verified lab host keys were used for these reads.
 
 ### Execute a command on the Medium lab
 
