@@ -25,7 +25,7 @@ If you cannot share the full folder, open a **Share a result** issue with the ge
 
 ## Fix something
 
-Describe the problem and how you checked the fix. If you change grading, replay saved evidence before and after and confirm the verdicts, as shown in [Try it without a lab](README.md#try-it-without-a-lab).
+Describe the problem and how you checked the fix. If you change grading, rerun the affected cases and confirm the verdicts. The runner deletes packet captures after scoring, so saved runs cannot be replayed.
 
 ## Pull request checklist
 

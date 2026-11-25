@@ -104,23 +104,19 @@ def verify(
 
 
 @app.command()
-def cut(
-    run: Annotated[Path, typer.Argument(help="One saved run folder with captures/ and events.jsonl.")],
-    start: Annotated[float | None, typer.Option(
-        "--from", help="Start in seconds from the baseline in timeline.tsv. Defaults to 2 s before the fault.")] = None,
-    end: Annotated[float | None, typer.Option(
-        "--to", help="Window end in seconds from the baseline. Defaults to the end of the return phase.")] = None,
-    output: Annotated[Path | None, typer.Option(
-        help="Archive path. Defaults to test-results/cuts/<suite>-<run>-<from>s-<to>s.tar.gz.")] = None,
+def prune(
+    path: Annotated[Path, typer.Argument(help="One run, a suite, a campaign or results/.")],
+    jobs: Annotated[int, typer.Option(min=1, help="Parallel workers. 4 leaves cores for live labs.")] = 4,
 ):
-    """Cut every packet capture of one run to a time window and pack them for a ticket or bug report."""
-    from .cut import cut as cut_run
+    """Keep each failed run's proof packets in proof.tar.gz and delete every run's captures, probes and links."""
+    from .proof import prune_all
     try:
-        _, line = cut_run(run, start, end, output)
-    except (OSError, ValueError, KeyError) as error:
+        ok, lines = prune_all(path, jobs)
+    except OSError as error:
         typer.echo(str(error), err=True)
         raise typer.Exit(2)
-    typer.echo(line)
+    typer.echo("\n".join(lines) or f"{path}: no run with captures")
+    raise typer.Exit(0 if ok else 2)
 
 
 @app.command()

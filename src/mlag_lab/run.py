@@ -20,6 +20,7 @@ from datetime import datetime, timezone
 from .cases import FLAP_CYCLES, FLAP_DOWN_S, FLAP_UP_S, MAC_AGE_DEFAULT, MAC_AGE_RETURN_S, MAC_AGE_SILENCE_S, MAC_AGE_TIME
 from .direct_topology import DIRECT_CASES
 from .evaluate import analyze
+from .proof import keep_proof
 from .evidence import seal_captures
 from .external_topology import EXTERNAL_CASES
 from .legacy import CASES, CAPTURES, FLOWS, PEER_LINK_PORTS, case_captures, case_name
@@ -706,7 +707,7 @@ def run_case(lab, path, name, changes, hold=8):
             (path / "syslog.jsonl").write_text(feed.read())
     if all((path / "captures" / f"{point}.pcap").is_file() for point in captures):
         seal_captures(path, captures)
-    return analyze(path)
+    return keep_proof(path, analyze(path))
 
 
 def verify_campaign_image(expected, builds, peers):

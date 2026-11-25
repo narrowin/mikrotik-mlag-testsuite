@@ -112,7 +112,7 @@ For each test the runner checks that traffic flows, keeps numbered pings running
 
 - See how the Small and Medium labs are wired and what's planned for two sites. [Lab inventory](labs/README.md)
 - Choose a test and find its command. [Case index](docs/cases/README.md)
-- Run a campaign, inspect reports, or replay packet captures with the [operator guide](docs/operator-guide.md) and the [test framework](docs/test-framework.md#read-or-replay-a-run).
+- Run a campaign, inspect reports, or attach a failed run's proof packets to a ticket with the [operator guide](docs/operator-guide.md) and the [test framework](docs/test-framework.md#read-or-replay-a-run).
 - Report a setup issue or unexpected result. Include the command you ran and the error or verdict. [GitHub issues](https://github.com/narrowin/mikrotik-mlag-testsuite/issues)
 - File a bug report with MikroTik. The [RouterOS 7.26beta7 fault report](docs/plans/routeros-failures-report.md) has the evidence and reproduction steps for two MLAG faults. Our earlier reports to MikroTik had limited success, so we do not plan to file these ourselves. Anyone who wants to may use it.
 

@@ -141,6 +141,9 @@ def write_configs(path, checks):
 
 
 def analyze(path):
+    if (path / "result.json").exists() and not any((path / "captures").glob("*.pcap")):
+        # Pruned after the run: only proof.tar.gz is left, so the saved verdict stands.
+        return json.loads((path / "result.json").read_text())
     name = spec = None
     checks = []
     result = {"run": path.name, "case": name, "checks": checks}

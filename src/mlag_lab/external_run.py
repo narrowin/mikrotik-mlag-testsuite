@@ -12,6 +12,7 @@ import time
 from .direct_topology import DIRECT_CAPTURES, DIRECT_FLOWS, DIRECT_LINKS, DIRECT_NODES, DIRECT_PORTS
 from .direct_topology import DIRECT_FLOOD_FLOWS
 from .evaluate import analyze
+from .proof import keep_proof
 from .evidence import packets, seal_captures
 from .external_evaluate import baseline_issues, bpdu_coverage, broadcast_counts, direct_baseline_issues
 from .legacy import case_name
@@ -405,4 +406,4 @@ def external_attempt(lab, path, name, build_hash, changes):
             remove_flood_neighbour(capture)
         if all((path / "captures" / f"{point}.pcap").is_file() for point in lab.captures):
             seal_captures(path, lab.captures)
-    return analyze(path)
+    return keep_proof(path, analyze(path))

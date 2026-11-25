@@ -105,9 +105,10 @@ The reset-to-verdict time begins after management access and image verification.
 | `suite.json`, `junit.xml` | Case conclusions for operators and CI. Each repeat has its own test entry. |
 | `01-CASE/result.json` | Lab name, standardized case ID, probe counts, per-flow loss bounds and failed assertions. |
 | `01-CASE/timeline.tsv` | Host-relative timeline of actions, Linux carrier events, LACP frames, RouterOS state changes, syslog and loss. Query entries include their start time to show sampling uncertainty. |
-| `01-CASE/captures/`, `pcap.sha256`, `probes/`, `links/`, `state-*.jsonl`, `syslog.jsonl`, `events.jsonl` | Raw measurements and action receipts, including the QEMU acknowledgment and classifier counters. |
+| `01-CASE/proof.tar.gz` | Failed runs only: every capture cut to the seconds around each failed check, with the windows in `proof.json`. |
+| `01-CASE/pcap.sha256`, `state-*.jsonl`, `syslog.jsonl`, `events.jsonl` | Raw measurements and action receipts, including the QEMU acknowledgment and classifier counters. The runner deletes `captures/`, `probes/` and `links/` after scoring; `pcap.sha256` keeps the checksums of the deleted captures. |
 
-From the repository root, use uv and TShark to regenerate verdicts and timelines from the same checkout. Copy the evidence first if you want to preserve the original derived files.
+The runner scores each attempt as it ends and then deletes its packet captures, so a later replay keeps the saved verdicts. `mlag-lab evaluate` rebuilds the suite reports and re-scores only runs that still have captures. Copy the evidence first if you want to preserve the original derived files.
 
 ```bash
 uv run --locked mlag-lab evaluate test-results/link-isolation
@@ -116,20 +117,8 @@ uv run --locked mlag-lab evaluate test-results/link-isolation
 | Exit | Meaning |
 | --- | --- |
 | `0` | Every executed case passed. |
-| `1` | A valid observation failed a network assertion. Preserve the report and pcaps as regression evidence. |
+| `1` | A valid observation failed a network assertion. The report and `proof.tar.gz` are the regression evidence. |
 | `2` | Infrastructure or evidence error, including an invalid calibration or an inconclusive measurement. Resolve it before trusting the score. A live suite stops scheduling new cases after this outcome. |
-
-### Dry run with saved evidence
-
-Replay reads a saved suite directory, including its packet captures, and writes verdicts and timelines into it. It needs no running lab, SSH credentials, or sudo. The published results omit the captures, so replay a suite from your own live run. Install uv and TShark, then copy the suite first so the original stays untouched:
-
-```sh
-replay_dir=$(mktemp -d)
-cp -R path/to/your/suite "$replay_dir/suite"
-uv run --locked mlag-lab evaluate "$replay_dir/suite"
-```
-
-Exit codes follow the table above. Open `suite/junit.xml` and `suite/suite.json` under the temporary directory.
 
 ## Verified on OrbStack
 

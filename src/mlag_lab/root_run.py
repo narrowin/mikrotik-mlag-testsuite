@@ -12,6 +12,7 @@ from threading import Event
 import time
 
 from .evaluate import analyze
+from .proof import keep_proof
 from .evidence import seal_captures
 from .legacy import NS, case_name
 from .root_state import uptime, verify_root
@@ -414,4 +415,4 @@ def root_attempt(lab, path, name, build_hash):
         capture.stop()
         if all((path / "captures" / f"{point}.pcap").is_file() for point in ROOT_CAPTURES):
             seal_captures(path, ROOT_CAPTURES)
-    return analyze(path)
+    return keep_proof(path, analyze(path))

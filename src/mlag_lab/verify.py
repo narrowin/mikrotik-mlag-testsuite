@@ -20,7 +20,8 @@ def verdict(path):
 def verify(results, jobs=None):
     """Return the changed runs as text lines: status before and after, then each check that appeared or went."""
     folders = {campaign: attempt_folders(campaign) for campaign in campaigns(results)}
-    runs = [run for group in folders.values() for run in group]
+    # A pruned run has no captures left to replay.
+    runs = [run for group in folders.values() for run in group if any((run / "captures").glob("*.pcap"))]
     before = {run: verdict(run) for run in runs}
     analyze_all(runs, jobs)
     for campaign in folders:
