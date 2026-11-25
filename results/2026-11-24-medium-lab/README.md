@@ -43,6 +43,3 @@ Virtual links kept carrier during guest reboots. Disconnecting a root attachment
 ## Evidence
 
 [Per-flow timings](phase-loss.tsv) · [JUnit](junit.xml) · [STP-off JUnit](stp-disabled-junit.xml) · [Checksums](SHA256SUMS)
-
-Capture archives include the configurations and timelines for each trial group.
-
