@@ -234,15 +234,15 @@ sudo env MLAG_LAB_NAME=mlag-small-i2 MLAG_MGMT_NET=235 \
 
 Measured on 25 November 2026 in `mlag-external` (13 CPUs, 31 GB), with RouterOS 7.26beta7 and spanning tree off. The target was Small instance 1 with `baseline`, `primary-power-loss` and `bond-member-loss`. The other labs ran the same suite, and Medium ran `medium-stp-off-baseline` and `medium-stp-off-power-loss-primary`. All suites of a level started together. The idle lab `mlag-medium` of another session was up during every level.
 
-| Labs with cases | Power-loss loss, withdrawal / restoration, s | State read median / p95, ms | Poll period median / max, ms | Largest probe gap, ms (gaps over 150 ms) | CPU busy median / max, % |
-| --- | --- | --- | --- | --- | --- |
-| 1 Small (3 runs) | 0.42–0.52 / ≤0.43 | 107–132 / 121–156 | 351 / 355 | 114 (0) | 11–14 / 21 |
-| 2 Small (2 runs) | 0.42–0.52 / 0.21 | 111–136 / 123–193 | 351 / 387 | 135 (0) | 20–21 / 34 |
-| 3 Small (1 run) | 0.42–0.68 / ≤0.52 | 118 / 135 | 351 / 355 | 113 (0) | 26 / 43 |
-| 3 Small and Medium, first run | ≤0.63 | 125 / 150 | 351 / 359 | 122 (0) | 30 / 49 |
-| 3 Small and Medium, second run | ≤0.46 | 131 / 184 | 351 / 666 | 508 (17) | 33 / 53 |
+| Labs with cases | State read median / p95, ms | Poll period median / max, ms | Largest probe gap, ms (gaps over 150 ms) | CPU busy median / max, % |
+| --- | --- | --- | --- | --- |
+| 1 Small (3 runs) | 107–132 / 121–156 | 351 / 355 | 114 (0) | 11–14 / 21 |
+| 2 Small (2 runs) | 111–136 / 123–193 | 351 / 387 | 135 (0) | 20–21 / 34 |
+| 3 Small (1 run) | 118 / 135 | 351 / 355 | 113 (0) | 26 / 43 |
+| 3 Small and Medium, first run | 125 / 150 | 351 / 359 | 122 (0) | 30 / 49 |
+| 3 Small and Medium, second run | 131 / 184 | 351 / 666 | 508 (17) | 33 / 53 |
 
-Verdicts did not change with load. The only failed checks at any level were the flood checks 501 and 502. They also changed between single runs: two, one and zero failures in the three Small runs alone. No loss came near its limit of 5 s for power loss and 3 s for a bond member. Wall time stayed at 90–95 s for baseline plus power loss.
+Verdicts did not change with load. The only failed checks at any level were the flood checks 501 and 502. They also failed in single runs without load, so load did not cause them. No loss came near its limit of 5 s for power loss and 3 s for a bond member. Wall time stayed at 90–95 s for baseline plus power loss.
 
 Run at most 3 labs with cases in the VM at once, counting labs of other sessions. At four labs, the second run stalled the probe senders of all three Small labs at the same moment during the bond member restoration, and once during the CHR boots of the power loss. A fourth lab with cases therefore distorts the timing of reboot, power-loss and bond member cases. The cause of the stalls is not known; the CPU was 47–68 % idle at those moments.
 
