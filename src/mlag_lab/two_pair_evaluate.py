@@ -5,6 +5,7 @@ import re
 
 from .cases import case_spec
 from .evidence import load_jsonl, packets
+from .networka import recorded
 from .forwarding_checks import TWO_PAIR_HOSTS, TWO_PAIR_OUTSIDE, TWO_PAIR_PARTNER_BONDS, forwarding, grade
 from .forwarding_checks import grade_system_ids, lacp_system_ids
 from .legacy_checks import check_calibration
@@ -239,7 +240,8 @@ def evaluate_two_pair(path, name, checks, result):
         actions = (("withdrawal", down, up), ("restoration", up, recovery))
         result["phases_s"] = {phase: [seconds(a - start), seconds(b - start)] for phase, a, b in actions}
         result["sampling"] = read_root_state(path, start, end, target, check, timeline, nodes=CARRIERS)
-        result["syslog"] = read_root_syslog(path, target, check, timeline, nodes=TWO_PAIR_NODES,
+        nodes = recorded(TWO_PAIR_NODES, manifest)
+        result["syslog"] = read_root_syslog(path, target, check, timeline, nodes=nodes,
                                             label=manifest["topology"])
         if "syslog_rebind_requested" in marks:
             check("error", result["syslog"]["target_after_rebind_received"],
@@ -247,7 +249,7 @@ def evaluate_two_pair(path, name, checks, result):
         flows = score_flows(icmp, start, end, actions, timeline, definitions=TWO_PAIR_FLOWS, detailed=True)
         result["flows"] = flows
         result["forwarding"] = forwarding(path, icmp, TWO_PAIR_FLOWS, start, down, up, end, outside=TWO_PAIR_OUTSIDE,
-                                          hosts=TWO_PAIR_HOSTS, nodes=TWO_PAIR_NODES,
+                                          hosts=TWO_PAIR_HOSTS, nodes=nodes,
                                           recovery=recovery if executed else None, stopped=stopped["epoch_ns"]
                                           if executed and "recovery_end" not in marks else None)
         grade(result["forwarding"], check)

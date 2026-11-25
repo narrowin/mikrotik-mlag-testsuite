@@ -28,7 +28,7 @@ from .external_topology import EXTERNAL_CASES
 from .legacy import CASES, CAPTURES, FLOWS, PEER_LINK_PORTS, case_captures, case_name
 from .legacy import FLOOD_FLOWS, FLOOD_NEIGHBOUR
 from .legacy import CLIENT_MAC, MOBILE_MAC
-from .networka import PROFILES, reads
+from .networka import INSTANCE, PROFILES, lab_name, reads, shift
 from .report import write_suite
 from .root_state import uptime
 from .root_topology import MEDIUM_TARGETS, ROOT_CASES
@@ -80,7 +80,7 @@ def run(args, **kwargs):
 
 
 class Lab:
-    name = "mlag-small"
+    name = lab_name("mlag-small")
     nodes = ("p1", "p2", "c1", "c2", "mobile", "syslog")
     peers = PEERS
     bridge_mode = "rstp"
@@ -114,9 +114,11 @@ class Lab:
         self.validate_links()
 
     def networka(self):
-        """A Networka client for the lab's profile, with strict host key checking off."""
+        """A Networka client for the lab's profile at this instance's addresses, with strict host key checking off."""
         client = NetworkaClient(self.profile)
         client.config.general.ssh_strict_host_key_checking = False
+        for device in client.devices.values():
+            device.host = shift(device.host)
         return client
 
     def device_name(self, node):
@@ -579,7 +581,7 @@ def remove_flood_neighbour(capture):
 
 def run_case(lab, path, name, changes, hold=8):
     path.mkdir()
-    manifest = {"case": name, "name": case_name(name), "bridge_mode": changes["bridge_mode"]}
+    manifest = {"case": name, "name": case_name(name), "bridge_mode": changes["bridge_mode"], "instance": INSTANCE}
     (path / "attempt.json").write_text(json.dumps(manifest, indent=2) + "\n")
     capture = Capture(lab, path)
     capture.mark("configuration_applied", replies=changes)

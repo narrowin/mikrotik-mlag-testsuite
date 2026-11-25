@@ -6,6 +6,7 @@ import re
 from .direct_topology import DIRECT_CAPTURES, DIRECT_CASES, DIRECT_FLOWS, DIRECT_NODES
 from .direct_topology import DIRECT_FLOOD_FLOWS, DIRECT_FLOOD_RECEIVERS
 from .evidence import load_jsonl, packets
+from .networka import recorded
 from .external_topology import (
     ALL_STP_OFF_CASES, ARCHIVED_EXTERNAL_MANAGEMENT, EXTERNAL_CAPTURES, EXTERNAL_LAB_NAME,
     EXTERNAL_NODES, EXTERNAL_TARGETS, NO_STP_CASES,
@@ -388,9 +389,9 @@ def evaluate_external(path, name, checks, result):
         carriers = dict.fromkeys(DIRECT_NODES, 4) if direct else MEDIUM_CARRIERS if medium else CARRIER_COUNTS
         result["sampling"] = read_root_state(path, start, end, target, check, timeline, nodes=carriers)
         if direct:
-            nodes, label = DIRECT_NODES, "mlag-small"
+            nodes, label = recorded(DIRECT_NODES, manifest), manifest["topology"]
         elif medium:
-            nodes, label = MEDIUM_NODES, manifest["topology"]
+            nodes, label = recorded(MEDIUM_NODES, manifest), manifest["topology"]
         elif manifest["topology"] in (EXTERNAL_LAB_NAME, "dc1-mlag-external"):
             nodes, label = EXTERNAL_NODES, manifest["topology"]
         else:

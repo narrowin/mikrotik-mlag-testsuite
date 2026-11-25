@@ -17,6 +17,7 @@ from .legacy import FLOOD_FLOWS, FLOOD_RECEIVERS, FLOOD_SENDER_MEMBERS
 from .legacy_checks import check_calibration, check_member, check_mobile_move, check_peer_link
 from .legacy_checks import check_mac_age, check_member_flaps, sends
 from .measure import number, score_flows, seconds
+from .networka import recorded
 from .readme import write_readme
 from .report import write_timeline, write_result, write_suite
 from .root_evaluate import evaluate_root
@@ -43,6 +44,8 @@ def case_id(path):
 
 def evaluate_legacy(path, name, checks, result):
     spec = case_spec(name)
+    manifest = path / "attempt.json"
+    nodes = recorded(DIRECT_NODES, json.loads(manifest.read_text()) if manifest.exists() else {})
     events = load_jsonl(path / "events.jsonl")
     marks = {event["name"]: event for event in events}
     timeline = [(e["epoch_ns"], "action", json.dumps(e, sort_keys=True)) for e in events]
@@ -70,7 +73,7 @@ def evaluate_legacy(path, name, checks, result):
     flows = score_flows(packets.icmp, start, end, actions, timeline)
     result["flows"] = flows
     result["forwarding"] = forwarding(path, packets.icmp, FLOWS, start, down, up, end, outside=SMALL_OUTSIDE,
-                                      hosts=SMALL_HOSTS, nodes=DIRECT_NODES, recovery=recovery)
+                                      hosts=SMALL_HOSTS, nodes=nodes, recovery=recovery)
     # While the MAC-move host is silent past bridge ageing, both peers flood streams 101 and 102 on purpose.
     grade(result["forwarding"], check, {"withdrawal": (101, 102)} if name == "silent-mobile" else None)
     result["lacp_system_ids"] = lacp_system_ids(marks)

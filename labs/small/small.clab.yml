@@ -1,7 +1,7 @@
-name: mlag-small
+name: ${MLAG_LAB_NAME:=mlag-small}
 mgmt:
-  network: mlag-small-mgmt
-  ipv4-subnet: 172.30.215.0/27
+  network: ${MLAG_LAB_NAME:=mlag-small}-mgmt
+  ipv4-subnet: 172.30.${MLAG_MGMT_NET:=215}.0/27
 topology:
   kinds:
     mikrotik_chr:
@@ -24,7 +24,7 @@ topology:
       kind: linux
       image: rsyslog/rsyslog:latest
       image-pull-policy: Always
-      mgmt-ipv4: 172.30.215.20
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=215}.20
       user: "${SUDO_UID:=0}:${SUDO_GID:=0}"
       entrypoint: rsyslogd
       cmd: "-n -iNONE -f /etc/rsyslog.conf"
@@ -40,10 +40,10 @@ topology:
         retries: 12
     dc1-core-mlag1:
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.215.11
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=215}.11
     dc1-core-mlag2:
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.215.12
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=215}.12
     dc1-traffic-host1:
       kind: linux
       group: probes

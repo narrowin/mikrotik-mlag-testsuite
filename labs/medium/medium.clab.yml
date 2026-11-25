@@ -1,7 +1,7 @@
-name: mlag-medium
+name: ${MLAG_LAB_NAME:=mlag-medium}
 mgmt:
-  network: mlag-medium-mgmt
-  ipv4-subnet: 172.30.218.0/27
+  network: ${MLAG_LAB_NAME:=mlag-medium}-mgmt
+  ipv4-subnet: 172.30.${MLAG_MGMT_NET:=218}.0/27
 topology:
   kinds:
     mikrotik_chr:
@@ -24,7 +24,7 @@ topology:
         role: "Management network syslog collector"
       kind: linux
       image: "${MLAG_SYSLOG_IMAGE:=rsyslog/rsyslog:latest}"
-      mgmt-ipv4: 172.30.218.20
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=218}.20
       user: "${SUDO_UID:=0}:${SUDO_GID:=0}"
       entrypoint: rsyslogd
       cmd: "-n -iNONE -f /etc/rsyslog.conf"
@@ -44,7 +44,7 @@ topology:
         lab-vm: mlag-external
         role: "MLAG core switch 1"
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.218.11
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=218}.11
       exec:
         - /bin/sh /lab/forward-control.sh --wire eth1 eth2 eth3 tap1 tap2 tap3
     dc1-core-mlag2:
@@ -53,7 +53,7 @@ topology:
         lab-vm: mlag-external
         role: "MLAG core switch 2"
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.218.12
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=218}.12
       exec:
         - /bin/sh /lab/forward-control.sh --wire eth1 eth2 eth3 tap1 tap2 tap3
     dc1-access-switch1:
@@ -62,7 +62,7 @@ topology:
         lab-vm: mlag-external
         role: "Dual-attached access switch and external RSTP root candidate"
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.218.13
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=218}.13
       exec:
         - /bin/sh /lab/forward-control.sh --wire eth1 eth2 eth3 tap1 tap2 tap3
     dc1-traffic-host1:
@@ -72,7 +72,7 @@ topology:
         role: "Linux VLAN 110 and bypass probe host 1"
       kind: linux
       group: probes
-      mgmt-ipv4: 172.30.218.16
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=218}.16
       exec:
         - /bin/sh /lab/root-client.sh 11
     dc1-traffic-host2:
@@ -82,7 +82,7 @@ topology:
         role: "Linux VLAN 110 and bypass probe host 2"
       kind: linux
       group: probes
-      mgmt-ipv4: 172.30.218.17
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=218}.17
       exec:
         - /bin/sh /lab/root-client.sh 12
   groups:

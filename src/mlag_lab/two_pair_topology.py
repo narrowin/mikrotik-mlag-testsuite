@@ -5,10 +5,10 @@ Bridge MACs are ordered so that pair B wins a MAC tie-break against pair A's sec
 bridge priorities the root moves to pair B whenever pair A presents its secondary's bridge ID.
 """
 
-from .networka import addresses
+from .networka import addresses, lab_name
 from .root_topology import ROOT_FLOWS
 
-TWO_PAIR_LAB = "mlag-medium-two-pair"
+TWO_PAIR_LAB = lab_name("mlag-medium-two-pair")
 TWO_PAIR_DEVICES = {"q1": "dc1-access-mlag1", "q2": "dc1-access-mlag2"}
 TWO_PAIR_NODES = addresses("medium-two-pair", {"p1": "dc1-core-mlag1", "p2": "dc1-core-mlag2", **TWO_PAIR_DEVICES})
 PAIRS = {"p1": "A", "p2": "A", "q1": "B", "q2": "B"}

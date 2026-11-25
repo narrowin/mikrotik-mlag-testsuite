@@ -14,6 +14,7 @@ import subprocess
 
 from .direct_topology import DIRECT_NODES
 from .legacy import CAPTURES, CLIENT_MAC, FLOOD_FLOWS, FLOWS, MOBILE_MAC, NS
+from .networka import recorded
 from .measure import seconds, within
 
 FIELDS = (
@@ -131,7 +132,8 @@ def read_legacy_state(path, name, marks, start, down, up, check, timeline):
                 if flags := re.search(r"<([^>]+)>", match[2]):
                     link_events[path_link.stem].append((stamp, set(flags[1].split(","))))
     manifest = path / "attempt.json"
-    mode = json.loads(manifest.read_text()).get("bridge_mode", "rstp") if manifest.exists() else "rstp"
+    attempt = json.loads(manifest.read_text()) if manifest.exists() else {}
+    mode = attempt.get("bridge_mode", "rstp")
     # With protocol-mode=none the bridge monitor prints no root bridge or topology-change fields.
     required = ("status:", "partner-flags=", "mlag-state:", "forwarding:", "mac-address=") + (
         () if mode == "none" else ("root-bridge-id:", "topology-changes:"))
@@ -162,7 +164,7 @@ def read_legacy_state(path, name, marks, start, down, up, check, timeline):
     for phase in ("begin", "end"):
         marker = f"mlag-suite-{path.name}-{phase}"
         sources = {log["source_ip"] for log in logs if marker in log["raw"]}
-        check("error", sources == set(DIRECT_NODES.values()), f"Syslog {phase} markers from both peers")
+        check("error", sources == set(recorded(DIRECT_NODES, attempt).values()), f"Syslog {phase} markers from both peers")
     for log in logs:
         stamp = int(datetime.fromisoformat(log["received_at"]).timestamp() * NS)
         timeline.append((stamp, f"syslog-{log['source_ip']}", log["raw"]))

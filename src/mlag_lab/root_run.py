@@ -15,7 +15,7 @@ from .evaluate import analyze
 from .proof import keep_proof
 from .evidence import seal_captures
 from .legacy import NS, case_name
-from .networka import reads
+from .networka import INSTANCE, lab_name, reads
 from .root_state import uptime, verify_root
 from .root_topology import (
     MANAGEMENT_PROBES, POWER_OFF_HOLD_S, ROOT_CAPTURES, ROOT_FLOWS, ROOT_LINKS, ROOT_NODES, ROOT_PORTS, target_for,
@@ -24,7 +24,7 @@ from .run import CONFIG, UPTIME, UV, Capture, Lab, filter_fault, run, sample_loo
 
 
 class RootLab(Lab):
-    name = "mlag-medium"
+    name = lab_name("mlag-medium-pair-root")
     device_names = {**Lab.device_names, "witness": "dc1-access-switch1"}
     nodes = (*ROOT_NODES, "c1", "c2", "syslog")
     peers = ROOT_NODES
@@ -326,7 +326,7 @@ def root_attempt(lab, path, name, build_hash):
     path.mkdir()
     target = target_for(name)
     manifest = {"schema": 2, "case": name, "name": case_name(name), "topology": lab.name,
-                "builds_sha256": build_hash, "target": target}
+                "instance": INSTANCE, "builds_sha256": build_hash, "target": target}
     (path / "attempt.json").write_text(json.dumps(manifest, indent=2) + "\n")
     capture = Capture(lab, path)
     stop = Event()

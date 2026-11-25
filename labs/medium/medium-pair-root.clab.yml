@@ -1,7 +1,7 @@
-name: mlag-medium
+name: ${MLAG_LAB_NAME:=mlag-medium-pair-root}
 mgmt:
-  network: mlag-medium-mgmt
-  ipv4-subnet: 172.30.216.0/27
+  network: ${MLAG_LAB_NAME:=mlag-medium-pair-root}-mgmt
+  ipv4-subnet: 172.30.${MLAG_MGMT_NET:=216}.0/27
 topology:
   kinds:
     mikrotik_chr:
@@ -22,7 +22,7 @@ topology:
     dc1-syslog-collector:
       kind: linux
       image: "${MLAG_SYSLOG_IMAGE:=rsyslog/rsyslog:latest}"
-      mgmt-ipv4: 172.30.216.20
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=216}.20
       user: "${SUDO_UID:=0}:${SUDO_GID:=0}"
       entrypoint: rsyslogd
       cmd: "-n -iNONE -f /etc/rsyslog.conf"
@@ -38,13 +38,13 @@ topology:
         retries: 12
     dc1-core-mlag1:
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.216.11
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=216}.11
     dc1-core-mlag2:
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.216.12
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=216}.12
     dc1-access-switch1:
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.216.13
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=216}.13
     dc1-traffic-host1:
       kind: linux
       group: probes

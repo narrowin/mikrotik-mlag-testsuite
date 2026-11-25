@@ -17,7 +17,7 @@ from .evidence import packets, seal_captures
 from .external_evaluate import baseline_issues, bpdu_coverage, broadcast_counts, direct_baseline_issues
 from .legacy import case_name
 from .measure import score_flows
-from .networka import reads
+from .networka import INSTANCE, lab_name, reads
 from .root_run import (
     CONFIG, RootLab, power_loss, rebind_syslog, reboot_guest, sample_loop, verify_live_collectors,
     verify_live_delivery,
@@ -125,6 +125,7 @@ class BridgeComparisonLab(RootLab):
 
 
 class MediumLab(BridgeComparisonLab):
+    name = lab_name("mlag-medium")
     peers = MEDIUM_NODES
     nodes = (*peers, "c1", "c2", "syslog")
     links = ROOT_LINKS
@@ -167,7 +168,7 @@ class MediumLab(BridgeComparisonLab):
 
 
 class DirectLab(BridgeComparisonLab):
-    name = "mlag-small"
+    name = lab_name("mlag-small")
     device_names = RootLab.device_names
     peers = DIRECT_NODES
     nodes = (*peers, "c1", "c2", "mobile", "syslog")
@@ -296,7 +297,7 @@ def external_attempt(lab, path, name, build_hash, changes):
     path.mkdir()
     target = lab.case_target(name)
     manifest = {"schema": 2, "case": name, "name": case_name(name), "topology": lab.name,
-                "builds_sha256": build_hash, "target": target, "devices": lab.device_inventory()}
+                "instance": INSTANCE, "builds_sha256": build_hash, "target": target, "devices": lab.device_inventory()}
     if "bridge_mode" in changes:
         manifest["bridge_mode"] = changes["bridge_mode"]
     settle = getattr(lab, "settle_s", 0)

@@ -6,9 +6,11 @@
 | --- | --- | --- |
 | Small lab | `mlag-small` | Two RouterOS MLAG switches plus Linux traffic and logging containers |
 | Medium lab | `mlag-medium` | One MLAG pair, one dual-attached access switch and traffic hosts |
+| Medium lab, pair-root variant | `mlag-medium-pair-root` | The Medium wiring with the MLAG pair as RSTP root |
+| Medium lab, two-pair variant | `mlag-medium-two-pair` | The access switch replaced by a second MLAG pair |
 | Large lab | `mlag-large`, planned | Two sites with core and access MLAG pairs |
 
-STP mode and root placement are variants within a lab. The OrbStack host VM retains its existing name `mlag-external`.
+STP mode and root placement are variants within a lab. Lab instance N (1 to 3) of any lab adds `-i<N>`, for example `mlag-small-i2`; see [labs/README.md](../labs/README.md#lab-instances). The OrbStack host VM retains its existing name `mlag-external`.
 
 ## Devices
 

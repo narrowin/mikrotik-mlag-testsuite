@@ -1,7 +1,7 @@
-name: mlag-medium-two-pair
+name: ${MLAG_LAB_NAME:=mlag-medium-two-pair}
 mgmt:
-  network: mlag-medium-two-pair-mgmt
-  ipv4-subnet: 172.30.219.0/27
+  network: ${MLAG_LAB_NAME:=mlag-medium-two-pair}-mgmt
+  ipv4-subnet: 172.30.${MLAG_MGMT_NET:=219}.0/27
 topology:
   kinds:
     mikrotik_chr:
@@ -23,7 +23,7 @@ topology:
         role: "Management network syslog collector"
       kind: linux
       image: "${MLAG_SYSLOG_IMAGE:=rsyslog/rsyslog:latest}"
-      mgmt-ipv4: 172.30.219.20
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=219}.20
       user: "${SUDO_UID:=0}:${SUDO_GID:=0}"
       entrypoint: rsyslogd
       cmd: "-n -iNONE -f /etc/rsyslog.conf"
@@ -43,7 +43,7 @@ topology:
         lab-vm: mlag-external
         role: "MLAG pair A switch 1, intended STP root pair"
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.219.11
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=219}.11
       exec:
         - /bin/sh /lab/forward-control.sh --wire eth1 eth2 eth3 tap1 tap2 tap3
     dc1-core-mlag2:
@@ -52,7 +52,7 @@ topology:
         lab-vm: mlag-external
         role: "MLAG pair A switch 2, intended STP root pair"
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.219.12
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=219}.12
       exec:
         - /bin/sh /lab/forward-control.sh --wire eth1 eth2 eth3 tap1 tap2 tap3
     dc1-access-mlag1:
@@ -61,7 +61,7 @@ topology:
         lab-vm: mlag-external
         role: "MLAG pair B switch 1"
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.219.13
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=219}.13
       exec:
         - /bin/sh /lab/forward-control.sh --wire eth1 eth2 eth3 tap1 tap2 tap3
     dc1-access-mlag2:
@@ -70,7 +70,7 @@ topology:
         lab-vm: mlag-external
         role: "MLAG pair B switch 2"
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.219.14
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=219}.14
       exec:
         - /bin/sh /lab/forward-control.sh --wire eth1 eth2 eth3 tap1 tap2 tap3
     dc1-traffic-host1:
@@ -80,7 +80,7 @@ topology:
         role: "Linux VLAN 110 and bypass probe host 1, bonded to MLAG pair B"
       kind: linux
       group: probes
-      mgmt-ipv4: 172.30.219.16
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=219}.16
       exec:
         - /bin/sh /lab/client-network.sh 11
         - ip neigh replace 10.110.0.12 lladdr 02:00:00:11:00:12 nud permanent dev bond0
@@ -91,7 +91,7 @@ topology:
         role: "Linux VLAN 110 and bypass probe host 2, bonded to MLAG pair A"
       kind: linux
       group: probes
-      mgmt-ipv4: 172.30.219.17
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=219}.17
       exec:
         - /bin/sh /lab/client-network.sh 12
         - ip neigh replace 10.110.0.11 lladdr 02:00:00:11:00:11 nud permanent dev bond0

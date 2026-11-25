@@ -74,7 +74,7 @@ def restart_as_root(output, lab_dir, cases, repeat, username, bridge_mode, settl
                  "--username", username, "--bridge-mode", bridge_mode, "--settle", str(settle)]
     for name in cases:
         arguments += ["--case", name]
-    preserved = ",".join(name for name in ("MLAG_SSH_PASSWORD", "UV_PROJECT_ENVIRONMENT", "UV") if name in os.environ)
+    preserved = ",".join(name for name in ("MLAG_SSH_PASSWORD", "MLAG_INSTANCE", "UV_PROJECT_ENVIRONMENT", "UV") if name in os.environ)
     os.execvp("sudo", ["sudo", *([f"--preserve-env={preserved}"] if preserved else []),
                        sys.executable, "-m", "mlag_lab.cli", "run", *arguments])
 

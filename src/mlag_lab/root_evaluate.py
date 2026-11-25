@@ -4,6 +4,7 @@ import json
 import re
 
 from .evidence import load_jsonl
+from .networka import recorded
 from .forwarding_checks import MEDIUM_HOSTS, MEDIUM_OUTSIDE, MEDIUM_PARTNER_BONDS, forwarding, grade
 from .forwarding_checks import access_bpdus, grade_access_bpdus, grade_system_ids, lacp_system_ids
 from .cases import case_spec
@@ -95,14 +96,15 @@ def evaluate_root(path, name, checks, result):
             check("error", True, f"{marker}: complementary roles, shared root, forwarding and all live LACP members")
     result["root_baseline"] = {"root_id": ROOT_ID, "witness_bpdu_legs": legs}
     result["sampling"] = read_root_state(path, start, end, target, check, timeline)
-    result["syslog"] = read_root_syslog(path, target, check, timeline, label=manifest["topology"])
+    nodes = recorded(ROOT_NODES, manifest)
+    result["syslog"] = read_root_syslog(path, target, check, timeline, nodes=nodes, label=manifest["topology"])
     if "syslog_rebind_requested" in marks:
         check("error", result["syslog"]["target_after_rebind_received"],
               f"{target} emitted the verification marker after the post-observation syslog rebind")
     flows = score_flows(icmp, start, end, actions, timeline, definitions=ROOT_FLOWS, detailed=True)
     result["flows"] = flows
     result["forwarding"] = forwarding(path, icmp, ROOT_FLOWS, start, down, up, end, outside=MEDIUM_OUTSIDE,
-                                      hosts=MEDIUM_HOSTS, nodes=ROOT_NODES, recovery=recovery)
+                                      hosts=MEDIUM_HOSTS, nodes=nodes, recovery=recovery)
     grade(result["forwarding"], check)
     result["lacp_system_ids"] = lacp_system_ids(marks, MEDIUM_PARTNER_BONDS)
     grade_system_ids(result["lacp_system_ids"], check)
