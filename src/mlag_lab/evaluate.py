@@ -43,8 +43,8 @@ def case_id(path):
     return name
 
 
-def evaluate_legacy(path, name, checks, result):
-    spec = case_spec(name)
+def evaluate_legacy(path, name, checks, result, *, spec=None):
+    spec = spec or case_spec(name)
     manifest = path / "attempt.json"
     nodes = recorded(DIRECT_NODES, json.loads(manifest.read_text()) if manifest.exists() else {})
     events = load_jsonl(path / "events.jsonl")
@@ -76,7 +76,8 @@ def evaluate_legacy(path, name, checks, result):
     result["forwarding"] = forwarding(path, packets.icmp, FLOWS, start, down, up, end, outside=SMALL_OUTSIDE,
                                       hosts=SMALL_HOSTS, nodes=nodes, recovery=recovery)
     # While the MAC-move host is silent past bridge ageing, both peers flood streams 101 and 102 on purpose.
-    grade(result["forwarding"], check, {"withdrawal": (101, 102)} if name == "silent-mobile" else None)
+    grade(result["forwarding"], check, {"withdrawal": (101, 102)} if name == "silent-mobile" else None,
+          outside_limit_s=spec.grading_limits.outside_flood_s)
     result["lacp_system_ids"] = lacp_system_ids(marks)
     grade_system_ids(result["lacp_system_ids"], check)
     for ident, flow in flows.items():
@@ -166,10 +167,7 @@ def analyze(path):
             evaluator = evaluate_external
         else:
             evaluator = evaluate_root if name in ROOT_CASES else evaluate_legacy
-        if evaluator is evaluate_external:
-            evaluator(path, name, checks, result, spec=spec)
-        else:
-            evaluator(path, name, checks, result)
+        evaluator(path, name, checks, result, spec=spec)
         result["bridge_mode"] = bridge_mode(path)
         write_configs(path, checks)
     except (OSError, ValueError, KeyError, RuntimeError, subprocess.SubprocessError) as error:

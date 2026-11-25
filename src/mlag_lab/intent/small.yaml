@@ -1,0 +1,234 @@
+# Small baseline, calibration and single-peer faults.
+
+baseline:
+  lab: Small
+  title: Baseline readiness
+  action: Applies the bridge mode on both MLAG peers, waits for MLAG and LACP to settle, checks MLAG, LACP
+    and the virtual links, and sends numbered pings for 4 s without a fault.
+  selectors: [direct-baseline]
+  graded_flows: [101, 201]
+  control_flows: [301, 303]
+  phases:
+  - key: baseline
+    name: Steady state
+    expected: Both MLAG peers show mlag-state connected, one as MLAG primary and one as MLAG secondary, and
+      use the primary's system ID as the shared system ID. Each client bonds both members and every probe arrives
+      once.
+    limit_s: 0.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+
+calibration:
+  lab: Small
+  title: Calibration
+  action: Drops the forward bypass pings at client 2 for 2 s with a tc filter while seven numbered ping streams
+    run, then removes the filter.
+  selectors: [calibrate]
+  graded_flows: [301]
+  control_flows: [101, 102, 201, 202, 302, 303]
+  phases:
+  - key: calibration
+    name: 2 s one-way cut
+    expected: Only the bypass stream between the two clients loses probes, and its measured gap contains the
+      applied 1.9–2.3 s cut. The bypass does not cross the MLAG peers, so every other stream loses nothing.
+    limit_s: null
+    source: lab target
+
+bond-member-loss:
+  lab: Small
+  title: MLAG bond member loss and return
+  action: Takes client 1's bond member to CHR 1 (ether3) down at both ends, holds it down for 8 s, then brings
+    both ends back up.
+  selectors: [carrier]
+  graded_flows: [101, 201, 302]
+  control_flows: [102, 202, 301, 303]
+  phases:
+  - key: withdrawal
+    name: Member down
+    expected: Carrier drops at both ends, so CHR 1's MLAG bond client1 (mlag-id=11) stops using ether3 and
+      client 1 sends only on its member to CHR 2. CHR 1 forwards traffic for client 1 over the peer link (mlag-peer-port
+      ether2) to CHR 2, which delivers it on its member of the same MLAG bond, with brief loss.
+    limit_s: 3.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  - key: restoration
+    name: Member back
+    expected: Carrier returns at both ends and LACP renegotiates ether3 with client 1 at the 1-second LACPDU
+      rate. Each end carries traffic on the member only once its LACP flags show synchronization, collecting
+      and distributing (S, C, D), so the return causes at most brief loss.
+    limit_s: 3.0
+    source: https://manual.mikrotik.com/docs/cli-reference/interface/bonding/monitor-slaves/
+
+lacp-timeout:
+  lab: Small
+  title: LACP partner timeout and return
+  action: Blocks client 1's LACPDUs towards CHR 1 on ether3 for 8 s while carrier stays up, then lets them
+    through again.
+  selectors: [silent-lacp]
+  graded_flows: [101, 201, 302]
+  control_flows: [102, 202, 301, 303]
+  phases:
+  - key: withdrawal
+    name: LACPDUs blocked
+    expected: 'Carrier stays up, but CHR 1 receives no LACPDUs on ether3. With lacp-rate=1sec, CHR 1''s partner
+      information expires after the 3 s short timeout: ether3 shows expired (E) and stops collecting and distributing,
+      and traffic for client 1 moves to its member on CHR 2, crossing the peer port where needed.'
+    limit_s: 4.0
+    source: https://standards.ieee.org/ieee/802.1AX/6768/
+  - key: restoration
+    name: LACPDUs resumed
+    expected: Client 1's LACPDUs reach CHR 1 again, so ether3 has current partner information and clears the
+      expired (E) and defaulted (F) flags. The member returns to synchronization, collecting and distributing
+      (S, C, D) in the MLAG bond, with brief loss.
+    limit_s: 3.0
+    source: https://manual.mikrotik.com/docs/cli-reference/interface/bonding/monitor-slaves/
+
+mac-move:
+  lab: Small
+  title: MAC move between MLAG peers and back
+  action: Switches the MAC-move host's active-backup bond from its link to CHR 1 to its link to CHR 2, keeping
+    the same MAC and IP address, then switches it back after 4 s.
+  selectors: [mobile-move]
+  graded_flows: [101, 102, 201, 202]
+  control_flows: [301, 302, 303]
+  phases:
+  - key: withdrawal
+    name: Move to CHR 2
+    expected: 'The host''s gratuitous ARP enters CHR 2 on ether5, a regular bridge port without mlag-id. CHR
+      2 moves the host MAC to ether5 in its bridge host table and floods the broadcast to its local ports and
+      over the peer port; CHR 1 floods it only to its regular port ether5 and moves the MAC to the peer port
+      ether2. Lab target: no probe to or from the host is lost, and once the gratuitous ARP reaches CHR 2,
+      no frame addressed to the host MAC leaves CHR 1 on ether5.'
+    limit_s: 0.0
+    source: lab target
+  - key: restoration
+    name: Move back to CHR 1
+    expected: 'The host''s gratuitous ARP enters CHR 1 on ether5. CHR 1 moves the host MAC back to ether5 and
+      floods the broadcast to its local ports and over the peer port; CHR 2 floods it only to its regular port
+      ether5 and moves the MAC to the peer port ether2. Lab target: no probe to or from the host is lost, and
+      from the moment the gratuitous ARP reaches CHR 1 to the end of the recovery window, no frame addressed
+      to the host MAC leaves CHR 2 on ether5.'
+    limit_s: 0.0
+    source: lab target
+
+reboot-calibration:
+  lab: Small
+  title: Calibration before reboots
+  action: Runs the baseline check, then drops the forward bypass pings at client 2 for 2 s with a tc filter
+    while four numbered ping streams run.
+  selectors: [direct-calibrate]
+  graded_flows: [301]
+  control_flows: [101, 201, 303]
+  phases:
+  - key: calibration
+    name: 2 s one-way cut
+    expected: Only the bypass stream between the two clients loses probes, and its measured gap contains the
+      applied 1.9–2.3 s cut. The bypass does not cross the MLAG peers, so every other stream loses nothing.
+    limit_s: null
+    source: lab target
+
+secondary-reboot:
+  lab: Small
+  title: MLAG secondary reboot
+  selectors: [direct-reboot-secondary]
+  phases:
+  - key: withdrawal
+    name: Secondary down
+    expected: The MLAG primary keeps the shared system ID, so both traffic hosts keep their LACP partner and
+      forward over their bond member to the primary, which delivers locally without the peer port. The virtual
+      links keep carrier, so each host drops its member to the secondary only at the LACP short timeout (3
+      × 1 s). Only traffic hashed to that member sees brief loss.
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  - key: restoration
+    name: Secondary back
+    expected: The rejoining secondary keeps its bond members out of the 802.3ad bond until the MLAG system
+      ID syncs with the primary (mlag-init-delay, default 1 min), then adds them under the unchanged shared
+      system ID. The MLAG bonds client1 and client2 are edge ports and forward at once, so loss is brief or
+      none.
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+
+primary-reboot:
+  lab: Small
+  title: MLAG primary reboot
+  action: Resets the bridge on CHR 1 and CHR 2 over management SSH with the bridge mode of the run, picks the
+    MLAG peer that reports mlag-state connected as primary, and after a loss-free baseline reboots it with
+    `/system reboot` (1 s delay). The runner waits for the guest uptime to reset, then keeps probing for 16
+    s plus a 3 s recovery window.
+  selectors: [direct-reboot-primary]
+  graded_flows: [101, 201]
+  control_flows: [301, 303]
+  phases:
+  - key: withdrawal
+    name: Primary down
+    expected: The MLAG secondary reverts its MLAG bonds to its own LACP system ID (mlag-lacp-fallback=yes)
+      and both traffic hosts renegotiate LACP, with brief loss. The virtual links keep carrier, so each host
+      drops its member to the primary only at the LACP short timeout (3 × 1 s). The secondary's edge MLAG bonds
+      keep forwarding throughout.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  - key: restoration
+    name: Primary back
+    expected: The rebooted peer keeps its bond members out of the bond until the MLAG system ID syncs (mlag-init-delay),
+      rejoins as MLAG primary and restores the shared system ID. Both traffic hosts renegotiate LACP to the
+      shared system ID, with brief loss.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+
+secondary-power-loss:
+  lab: Small
+  title: MLAG secondary power loss
+  action: Resets the bridge on CHR 1 and CHR 2 over management SSH with the bridge mode of the run, picks the
+    MLAG peer that reports mlag-state connected as secondary, and after a loss-free baseline emulates its power
+    loss. In one step it takes the container veths behind the secondary's ether2 to ether5 down, sets the other
+    peer's peer-link NIC link-down over QMP and pauses the secondary's guest with QMP stop, then confirms carrier
+    loss at every neighbour. After 20 s it powers the secondary on with QMP system_reset and cont, brings the
+    links back up, waits for the guest uptime to reset and keeps probing for 16 s plus a 3 s recovery window.
+  selectors: [direct-power-loss-secondary]
+  graded_flows: [101, 201]
+  control_flows: [301, 303]
+  phases:
+  - key: withdrawal
+    name: Secondary off
+    expected: Every link to the secondary loses carrier at once, as on a real power loss. The MLAG primary
+      sees its peer port ether2 go down and keeps the shared system ID, so both traffic hosts keep their LACP
+      partner. Each host drops its member to the secondary on carrier loss, without waiting for the LACP short
+      timeout, and forwards over its member to the primary. Only traffic hashed to the lost member sees brief
+      loss.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  - key: restoration
+    name: Secondary back
+    expected: Carrier returns while the secondary boots. Its bond members stay out of the 802.3ad bond until
+      the MLAG system ID syncs with the primary (mlag-init-delay, default 1 min), then join under the unchanged
+      shared system ID. The MLAG bonds client1 and client2 are edge ports and forward at once, so loss is brief
+      or none.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+
+primary-power-loss:
+  lab: Small
+  title: MLAG primary power loss
+  action: Resets the bridge on CHR 1 and CHR 2 over management SSH with the bridge mode of the run, picks the
+    MLAG peer that reports mlag-state connected as primary, and after a loss-free baseline emulates its power
+    loss. In one step it takes the container veths behind the primary's ether2 to ether5 down, sets the other
+    peer's peer-link NIC link-down over QMP and pauses the primary's guest with QMP stop, then confirms carrier
+    loss at every neighbour. After 20 s it powers the primary on with QMP system_reset and cont, brings the
+    links back up, waits for the guest uptime to reset and keeps probing for 16 s plus a 3 s recovery window.
+  selectors: [direct-power-loss-primary]
+  graded_flows: [101, 201]
+  control_flows: [301, 303]
+  phases:
+  - key: withdrawal
+    name: Primary off
+    expected: Every link to the primary loses carrier at once, as on a real power loss. The MLAG secondary
+      sees its peer port ether2 go down and reverts its MLAG bonds to its own LACP system ID (mlag-lacp-fallback=yes),
+      so both traffic hosts renegotiate LACP, with brief loss. Each host drops its member to the primary on
+      carrier loss, without waiting for the LACP short timeout. The secondary's edge MLAG bonds keep forwarding
+      throughout.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  - key: restoration
+    name: Primary back
+    expected: Carrier returns while the primary boots. It keeps its bond members out of the bond until the
+      MLAG system ID syncs (mlag-init-delay), rejoins as MLAG primary and restores the shared system ID. Both
+      traffic hosts renegotiate LACP to the shared system ID, with brief loss.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/

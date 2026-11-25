@@ -11,7 +11,7 @@ from threading import Event
 import time
 
 from .bridge_intent import collect_bridge_port_replies
-from .cases import case_spec
+from .cases import case_spec, save_case
 from .direct_topology import DIRECT_CAPTURES, DIRECT_FLOWS, DIRECT_LINKS, DIRECT_NODES, DIRECT_PORTS
 from .direct_topology import DIRECT_FLOOD_FLOWS
 from .evaluate import analyze
@@ -32,7 +32,6 @@ from .root_topology import (
 )
 from .root_state import ACCESS_GUARDS_READBACK, access_guards, router_state
 from .run import UPTIME, Capture, filter_fault, remove_flood_neighbour, run, start_floods
-from .small_06 import SMALL_06_PATH, SMALL_06_YAML
 
 # Access switch port settings per Medium family, applied in every bridge reset so none leaks into the next.
 ACCESS_GUARDS = {
@@ -309,6 +308,7 @@ def external_attempt(lab, path, name, build_hash, changes):
     path.mkdir()
     target = lab.case_target(name)
     spec = case_spec(name)
+    save_case(spec, path)
     intent = spec.reboot_intent
     fault = intent.fault if intent else None
     flows = intent.probe_flows if intent else lab.flows
@@ -318,7 +318,6 @@ def external_attempt(lab, path, name, build_hash, changes):
                 "instance": INSTANCE, "builds_sha256": build_hash, "target": target, "devices": lab.device_inventory()}
     if intent:
         manifest["reboot_bridge_port_intent"] = [asdict(port) for port in reboot_intents]
-        (path / SMALL_06_PATH.name).write_text(SMALL_06_YAML)
     if "bridge_mode" in changes:
         manifest["bridge_mode"] = changes["bridge_mode"]
     settle = getattr(lab, "settle_s", 0)

@@ -19,7 +19,7 @@ from datetime import datetime, timezone
 from network_toolkit import InteractiveCredentials, NetworkaClient, NetworkToolkitError
 
 from .cases import FLAP_CYCLES, FLAP_DOWN_S, FLAP_UP_S, MAC_AGE_DEFAULT, MAC_AGE_RETURN_S, MAC_AGE_SILENCE_S, MAC_AGE_TIME
-from .cases import case_spec
+from .cases import INTENT_INPUTS, case_spec, save_case
 from .direct_topology import DIRECT_CASES, DIRECT_NODES as PEERS
 from .evaluate import analyze
 from .proof import keep_proof
@@ -33,7 +33,6 @@ from .networka import INSTANCE, PROFILES, lab_name, reads, shift
 from .report import write_suite
 from .root_state import uptime
 from .root_topology import MEDIUM_TARGETS, ROOT_CASES
-from .small_06 import SMALL_06_PATH
 from .two_pair_topology import TWO_PAIR_TARGETS
 
 HERE = Path(__file__).resolve().parent
@@ -583,6 +582,7 @@ def remove_flood_neighbour(capture):
 
 def run_case(lab, path, name, changes, hold=8):
     path.mkdir()
+    save_case(case_spec(name), path)
     manifest = {"case": name, "name": case_name(name), "bridge_mode": changes["bridge_mode"], "instance": INSTANCE}
     (path / "attempt.json").write_text(json.dumps(manifest, indent=2) + "\n")
     capture = Capture(lab, path)
@@ -788,8 +788,7 @@ def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp", sett
                               PROFILES / f"{topology_name}.yml", PROFILES / "sequences" / "mikrotik_routeros" / "common.yml")
                     if is_root or is_medium:
                         inputs += (shared / "root-client.sh",)
-                    if any(case_spec(name).reboot_intent for name in cases or ()):
-                        inputs += (SMALL_06_PATH,)
+                    inputs += INTENT_INPUTS
                     saved_inputs = output / "inputs"
                     saved_inputs.mkdir()
                     builds["input_sha256"] = {}

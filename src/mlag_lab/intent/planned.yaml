@@ -1,0 +1,40 @@
+# Planned Medium and Large cases. Without selectors these cannot run.
+
+medium-both-peers-down:
+  lab: Medium
+  title: Both MLAG peers down and return with the access switch
+  action: Stop both cores while the access switch, hosts and observers keep running. Restore core 1 first,
+    core 2 first, or both together in separate runs, in each bridge mode.
+
+large-baseline:
+  lab: Large
+  title: Two-site baseline and calibration
+  action: Verify forwarding at both sites and across the interconnect, then calibrate the probes with a 2 s
+    cut. Catalogue BASE-06.
+
+large-interconnect-member-loss:
+  lab: Large
+  title: Interconnect member loss and return
+  action: Remove one member of the inter-site MLAG bond, then restore it. Catalogue L2.
+
+large-chassis-loss:
+  lab: Large
+  title: Access or core chassis loss, including crossed failures
+  action: Lose one access or core chassis at a time, then crossed pairs across the sites. Catalogue DC-01,
+    DC-02 and DC-06.
+
+large-site-cores-down:
+  lab: Large
+  title: Both cores at one site down and return
+  action: Stop both core MLAG peers at one site, then restore them in each order. Catalogue DC-04 and DC-07.
+
+large-interconnect-partition:
+  lab: Large
+  title: Interconnect partition and restoration
+  action: Cut every inter-site member while all local peer links stay up, then restore them. Catalogue DC-03.
+
+large-site-loss:
+  lab: Large
+  title: Whole-site loss and restoration
+  action: Stop every device at one site while the other keeps running, then restore it core first and, on a
+    fresh run, access first. Catalogue DC-05.

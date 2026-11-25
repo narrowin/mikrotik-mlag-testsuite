@@ -181,8 +181,8 @@ def check_interpair_flap(spec, path, marks, flows, start, down, up, end, stp, ro
                   phase)
 
 
-def evaluate_two_pair(path, name, checks, result):
-    spec = case_spec(name)
+def evaluate_two_pair(path, name, checks, result, *, spec=None):
+    spec = spec or case_spec(name)
 
     def check(level, ok, detail, phase=None):
         checks.append({"level": level, "ok": bool(ok), "detail": detail} | ({"phase": phase} if phase else {}))
@@ -252,7 +252,7 @@ def evaluate_two_pair(path, name, checks, result):
                                           hosts=TWO_PAIR_HOSTS, nodes=nodes,
                                           recovery=recovery if executed else None, stopped=stopped["epoch_ns"]
                                           if executed and "recovery_end" not in marks else None)
-        grade(result["forwarding"], check)
+        grade(result["forwarding"], check, outside_limit_s=spec.grading_limits.outside_flood_s)
         result["lacp_system_ids"] = lacp_system_ids(marks, TWO_PAIR_PARTNER_BONDS)
         grade_system_ids(result["lacp_system_ids"], check)
         result["sender_pause_rule"] = sender_pause_rule(name if executed else "", flows, TWO_PAIR_FLOWS,

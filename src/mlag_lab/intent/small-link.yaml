@@ -1,0 +1,110 @@
+# Small peer-link, MAC ageing and repeated member flap cases.
+
+peer-link-loss:
+  lab: Small
+  title: Peer link loss and return
+  action: Cuts the peer link (ether2) at both MLAG peers, holds it down for 15 s, restores it and watches 65
+    s of return.
+  selectors: [peer-link-loss]
+  graded_flows: [101, 102, 201, 202, 302]
+  control_flows: [301, 303]
+  phases:
+  - key: withdrawal
+    name: Peer link down
+    expected: Both MLAG peers lose ICCP and leave mlag-state connected. With mlag-lacp-fallback=yes the MLAG
+      secondary stops using the shared system ID, so the clients renegotiate LACP and keep their member to
+      the primary, with brief loss.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  - key: restoration
+    name: Peer link back
+    expected: ICCP returns to mlag-state connected on both peers and the secondary takes the shared system
+      ID again. The clients renegotiate LACP with brief loss.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+
+mac-age-relearn:
+  lab: Small
+  title: Silent host past bridge ageing, then relearn
+  action: Sets ageing-time=10s on the bridge of both MLAG peers and reads it back, and pins permanent neighbour
+    entries between the MAC-move host and both traffic hosts, so no host needs ARP while one side is silent.
+    After the baseline it drops every frame the MAC-move host sends for 25 s, with a tc filter on egress of
+    both its bond members, then removes the filter and watches 5 s of return plus a 3 s recovery window. Afterwards
+    it restores ageing-time=5m, reads it back and removes the pinned neighbour entries.
+  selectors: [silent-mobile]
+  graded_flows: [101, 102, 201, 202]
+  control_flows: [301, 302, 303]
+  phases:
+  - key: withdrawal
+    name: Host silent
+    expected: 'Nothing from the MAC-move host reaches either MLAG peer. After the 10 s ageing time both peers
+      remove the host MAC from the bridge host table: CHR 1 its entry on ether5, CHR 2 its entry on the peer
+      port ether2. Frames to the host MAC are then unknown unicast, so both peers flood streams 101 and 102
+      to the other traffic host as well. This is correct bridge behaviour and is recorded, not failed. Every
+      stream to or from the host loses probes for the whole silence; that loss is the fault itself, so the
+      limit is the 25 s silence plus the 1 s relearn target. Stream 302 and both bypass streams lose nothing.'
+    limit_s: 26.0
+    source: https://manual.mikrotik.com/docs/cli-reference/interface/bridge/
+  - key: restoration
+    name: Host sends again
+    expected: 'The host''s first frame enters CHR 1 on ether5, so CHR 1 learns the host MAC on ether5 and CHR
+      2 on the peer port. Lab target, measured from the host''s first frame at a CHR TAP: flooding of streams
+      101 and 102 to the other traffic host stops within 1.0 s, streams 101, 102, 201 and 202 deliver again
+      within 1.0 s and lose nothing afterwards. The field report saw this flooding continue while both bridge
+      host tables showed the right port. Stream 302 and both bypass streams lose nothing.'
+    limit_s: 1.0
+    source: https://forum.mikrotik.com/t/strange-traffic-flooding-in-mlag-setup/271419
+
+member-flap-repeat:
+  lab: Small
+  title: Repeated MLAG bond member flap
+  action: Takes client 1's bond member to CHR 1 (ether3) down at both ends for 1 s and back up for 3 s, five
+    times, then watches 8 s of return plus a 3 s recovery window. Both MLAG peers' bridge host table entries
+    for client 2 and the MAC-move host are sampled every 0.35 s throughout.
+  selectors: [carrier-flap]
+  graded_flows: [101, 201, 302]
+  control_flows: [102, 202, 301, 303]
+  phases:
+  - key: withdrawal
+    name: Five member flaps
+    expected: Each flap removes ether3 from CHR 1's MLAG bond client1 and adds it back once LACP renegotiates.
+      While the member is down, CHR 1 forwards traffic for client 1 over the peer link to CHR 2, with brief
+      loss. This phase runs from the first flap to the fifth return, so it holds four complete flaps and the
+      fifth down; result.json lists the loss of every flap separately. Each loss of streams 101, 201 and 302
+      may last at most 3 s, the member limit per flap. Streams 102 and 202 never touch client 1 and lose nothing,
+      and the bridge host table entries for client 2 and the MAC-move host stay on both MLAG peers. The field
+      report saw unrelated MACs move to the peer port after a member flap.
+    limit_s: 3.0
+    source: https://forum.mikrotik.com/t/7-25-1-stable-is-released/274226/22
+  - key: restoration
+    name: Member back after the fifth flap
+    expected: Carrier returns for the last time and LACP renegotiates ether3 with client 1 until it shows synchronization,
+      collecting and distributing (S, C, D). Loss of streams 101, 201 and 302 lasts at most 3 s. Streams 102
+      and 202 and both bypass streams lose nothing, and the host entries for client 2 and the MAC-move host
+      stay present.
+    limit_s: 3.0
+    source: https://manual.mikrotik.com/docs/cli-reference/interface/bonding/monitor-slaves/
+
+primary-pause:
+  lab: Small
+  title: MLAG primary held stopped with carrier up
+  action: Pause the MLAG primary's QEMU guest for at least 35 s while its virtual links keep carrier, then
+    resume it. Runs today only in the Medium pair-root lab as primary-sustained-stop.
+
+primary-reboot-no-fallback:
+  lab: Small
+  title: MLAG primary reboot with mlag-lacp-fallback=no
+  action: Set mlag-lacp-fallback=no on both MLAG peers, reboot the MLAG primary, then restore the setting.
+    Runs today only in the Medium pair-root lab as reboot-primary-no-fallback.
+
+both-peers-down:
+  lab: Small
+  title: Both MLAG peers down and return
+  action: Stop both CHRs, then restore CHR 1 first, CHR 2 first, or both together in separate runs. Measure
+    service on one peer alone and again when the second peer rejoins.
+
+iccp-loss:
+  lab: Small
+  title: ICCP loss with the peer link up
+  action: Drop only ICCP frames (EtherType 0x88b5) on the peer link while tagged VLAN traffic still crosses
+    it, then allow them again.

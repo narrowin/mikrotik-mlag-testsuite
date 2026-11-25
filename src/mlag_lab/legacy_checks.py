@@ -2,8 +2,7 @@
 
 import re
 
-from .cases import CALIBRATION_CUT_S
-from .cases import FLAP_CYCLES, MAC_AGE_DEFAULT, MAC_AGE_TIME, RELEARN_LIMIT_S
+from .cases import FLAP_CYCLES, MAC_AGE_DEFAULT, MAC_AGE_TIME
 from .evidence import load_jsonl
 from .legacy import CLIENT_MAC
 from .legacy import FLOWS, MOBILE_MAC
@@ -28,7 +27,7 @@ def check_calibration(spec, marks, flows, result, check):
     result["injected_s"] = [hold_lo, hold_hi]
     (cut,) = spec.graded_flows
     gaps = flows[cut]["gaps"]
-    low, high = CALIBRATION_CUT_S
+    low, high = spec.grading_limits.calibration_cut_s
     check("error", len(gaps) == 1 and gaps[0]["lower_s"] <= hold_lo
           and gaps[0]["upper_s"] is not None and gaps[0]["upper_s"] >= hold_hi
           and low <= hold_lo <= hold_hi <= high, "Measured one-way gap encloses the two-second injection", phase)
@@ -215,8 +214,9 @@ def check_mac_age(spec, path, marks, packets, start, down, up, end, flows, resul
                          "silent_first_s": seconds(silent[0] - start) if silent else None,
                          "silent_last_s": seconds(silent[-1] - start) if silent else None,
                          "after_first_frame": len(after), "stopped_after_first_frame_s": stopped}
-        check("fail", stopped <= RELEARN_LIMIT_S, f"{ident} stopped flooding to the other traffic host {stopped:.3f} s "
-              f"after the host's first frame, target {RELEARN_LIMIT_S:.1f} s", "restoration")
+        limit = spec.grading_limits.mac_relearn_s
+        check("fail", stopped <= limit, f"{ident} stopped flooding to the other traffic host {stopped:.3f} s "
+              f"after the host's first frame, target {limit:.1f} s", "restoration")
 
     resumed = measured["delivered_after_first_frame_s"] = {}
     for ident in spec.graded_flows:
@@ -249,9 +249,10 @@ def check_mac_age(spec, path, marks, packets, start, down, up, end, flows, resul
         reply = icmp[FLOWS[ident][0]].get((ident, 0, good)) if good in window else None
         latency = seconds(reply[0] - first) if reply else None
         resumed[ident] = latency
-        check("fail", latency is not None and latency <= RELEARN_LIMIT_S,
+        limit = spec.grading_limits.mac_relearn_s
+        check("fail", latency is not None and latency <= limit,
               f"{ident} delivered again {latency if latency is not None else 'never'} s after the host's first frame, "
-              f"target {RELEARN_LIMIT_S:.1f} s", "restoration")
+              f"target {limit:.1f} s", "restoration")
         later = [gap["first_seq"] for gap in flow["gaps"] if gap["first_seq"] > silence[-1]["last_seq"]]
         check("fail", not later, f"{ident} lost no probe after it delivered again"
               + (f", lost from seq {later}" if later else ""), "restoration")

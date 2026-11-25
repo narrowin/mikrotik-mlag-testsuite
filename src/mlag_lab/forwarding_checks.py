@@ -7,7 +7,6 @@ grade turns those measurements into fail checks tagged with their phase.
 from datetime import datetime
 import re
 
-from .cases import FLOOD_LIMIT_S
 from .evidence import load_jsonl
 from .legacy import NS
 from .measure import seconds, within
@@ -210,7 +209,7 @@ def forwarding(path, icmp, definitions, start, down, up, end, *, outside, hosts,
     }
 
 
-def grade(measured, check, expected_flooding=None):
+def grade(measured, check, expected_flooding=None, *, outside_limit_s):
     """Fail checks from the four measurements. A measurement that is not applicable or not available adds none.
 
     expected_flooding maps a phase to the streams a case floods there on purpose; those are recorded, not failed."""
@@ -236,11 +235,11 @@ def grade(measured, check, expected_flooding=None):
                 found = [f for f in found if f not in expected]
             # Flooding right after a table flush is normal; the 100 ms streams re-teach the MAC within one interval.
             longest = max((f["span_s"] for f in found), default=0)
-            check("fail", longest <= FLOOD_LIMIT_S,
+            check("fail", longest <= outside_limit_s,
                   f"{phase.capitalize()}: unicast at a host outside the conversation for {longest:.3f} s, "
-                  f"limit {FLOOD_LIMIT_S:g} s" + "".join(f"; {f['stream']} at {f['point']}: {f['frames']} frames "
+                  f"limit {outside_limit_s:g} s" + "".join(f"; {f['stream']} at {f['point']}: {f['frames']} frames "
                                                          f"over {f['span_s']:.3f} s"
-                                                         for f in found if f["span_s"] > FLOOD_LIMIT_S), phase)
+                                                         for f in found if f["span_s"] > outside_limit_s), phase)
     reflected = measured["reflected_copies"]
     if "status" not in reflected:
         for phase in phases:

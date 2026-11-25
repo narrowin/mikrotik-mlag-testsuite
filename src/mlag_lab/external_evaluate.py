@@ -423,7 +423,7 @@ def evaluate_external(path, name, checks, result, *, spec=None):
             path, icmp, definitions, start, down, up, end, outside=DIRECT_OUTSIDE if direct else MEDIUM_OUTSIDE,
             hosts=SMALL_HOSTS if direct else MEDIUM_HOSTS, nodes=nodes, recovery=recovery if executed else None,
             stopped=stopped["epoch_ns"] if executed and "recovery_end" not in marks else None)
-        grade(result["forwarding"], check)
+        grade(result["forwarding"], check, outside_limit_s=spec.grading_limits.outside_flood_s)
         result["lacp_system_ids"] = lacp_system_ids(marks, None if direct else MEDIUM_PARTNER_BONDS)
         grade_system_ids(result["lacp_system_ids"], check)
         if not direct:

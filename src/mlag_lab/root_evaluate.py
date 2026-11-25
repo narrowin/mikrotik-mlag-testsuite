@@ -18,8 +18,8 @@ from .root_state import verify_root
 from .root_topology import ROOT_CAPTURES, ROOT_CAPTURES_V1, ROOT_FLOWS, ROOT_ID, ROOT_NODES, target_for
 
 
-def evaluate_root(path, name, checks, result):
-    spec = case_spec(name)
+def evaluate_root(path, name, checks, result, *, spec=None):
+    spec = spec or case_spec(name)
     events = load_jsonl(path / "events.jsonl")
     marks = {event["name"]: event for event in events}
     if "runner_error" in marks:
@@ -105,7 +105,7 @@ def evaluate_root(path, name, checks, result):
     result["flows"] = flows
     result["forwarding"] = forwarding(path, icmp, ROOT_FLOWS, start, down, up, end, outside=MEDIUM_OUTSIDE,
                                       hosts=MEDIUM_HOSTS, nodes=nodes, recovery=recovery)
-    grade(result["forwarding"], check)
+    grade(result["forwarding"], check, outside_limit_s=spec.grading_limits.outside_flood_s)
     result["lacp_system_ids"] = lacp_system_ids(marks, MEDIUM_PARTNER_BONDS)
     grade_system_ids(result["lacp_system_ids"], check)
     result["access_bpdus"] = access_bpdus(bpdus, start, down, up, end)

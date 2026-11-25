@@ -1,0 +1,182 @@
+# Medium MSTP variants.
+
+medium-mstp-pair-root-baseline:
+  lab: Medium
+  title: Baseline · MSTP, MLAG pair as root
+  action: Reset the data bridge on all three CHRs over management SSH with protocol-mode=mstp, priority 0x1000
+    on both MLAG peers and 0x8000 on the access switch. Then run numbered 100 ms pings for 4 s in both VLAN
+    110 and both bypass directions and read back bridge, MLAG, RSTP and LACP state. No fault is applied.
+  selectors: [medium-mstp-pair-root-baseline]
+  graded_flows: [101, 201]
+  control_flows: [301, 303]
+  phases:
+  - key: baseline
+    name: Baseline
+    expected: Both MLAG peers are connected and use the MLAG primary's system ID as the shared RSTP bridge
+      ID, so both show as root bridge with root ID 0x1000.02:00:00:21:00:11. The access switch picks its non-edge
+      uplink bond as root port and all VLAN 110 ports forward. RSTP BPDUs from that root reach the access switch,
+      and all four streams deliver with zero loss.
+    limit_s: 0.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+
+medium-mstp-access-root-baseline:
+  lab: Medium
+  title: Baseline · MSTP, access switch as root
+  action: Reset the data bridge on all three CHRs over management SSH with protocol-mode=mstp, priority 0x1000
+    on both MLAG peers and 0x0000 on the access switch. Then run numbered 100 ms pings for 4 s in both VLAN
+    110 and both bypass directions and read back bridge, MLAG, RSTP and LACP state. No fault is applied.
+  selectors: [medium-mstp-access-root-baseline]
+  graded_flows: [101, 201]
+  control_flows: [301, 303]
+  phases:
+  - key: baseline
+    name: Baseline
+    expected: The access switch has the lowest bridge priority (0x0000), so every bridge elects it as RSTP
+      root with root ID 0x0000.02:00:00:21:00:13. The connected MLAG peers present one shared bridge ID toward
+      it. The non-edge MLAG bond access-uplink and all VLAN 110 ports forward, and all four streams deliver
+      with zero loss.
+    limit_s: 0.0
+    source: https://manual.mikrotik.com/docs/bridging-and-switching/user-guides/spanning-tree-protocol/#election-process
+
+medium-mstp-pair-root-calibrate:
+  lab: Medium
+  title: One-way calibration · MSTP, MLAG pair as root
+  action: After the RSTP pair-root bridge reset and baseline gate, the runner adds a tc ingress filter on host
+    2's eth3 that drops bypass-forward echo requests (stream 301) for 2 s. It then removes the filter and observes
+    3 s of settling and a 3 s recovery window.
+  selectors: [medium-mstp-pair-root-calibrate]
+  graded_flows: [301]
+  control_flows: [101, 201, 303]
+  phases:
+  - key: calibration
+    name: One-way bypass cut
+    expected: The filter drops only stream 301's echo requests at host 2's bypass port, outside the MLAG fabric.
+      Stream 301 shows exactly one gap, with every request sent, and the gap's bounds enclose the measured
+      1.9–2.3 s filter interval. The reverse bypass and both VLAN 110 directions lose nothing.
+    limit_s: null
+    source: lab target
+
+medium-mstp-access-root-calibrate:
+  lab: Medium
+  title: One-way calibration · MSTP, access switch as root
+  action: After the RSTP access-root bridge reset and baseline gate, the runner adds a tc ingress filter on
+    host 2's eth3 that drops bypass-forward echo requests (stream 301) for 2 s. It then removes the filter
+    and observes 3 s of settling and a 3 s recovery window.
+  selectors: [medium-mstp-access-root-calibrate]
+  graded_flows: [301]
+  control_flows: [101, 201, 303]
+  phases:
+  - key: calibration
+    name: One-way bypass cut
+    expected: The filter drops only stream 301's echo requests at host 2's bypass port, outside the MLAG fabric.
+      Stream 301 shows exactly one gap, with every request sent, and the gap's bounds enclose the measured
+      1.9–2.3 s filter interval. The reverse bypass and both VLAN 110 directions lose nothing.
+    limit_s: null
+    source: lab target
+
+medium-mstp-pair-root-reboot-secondary:
+  lab: Medium
+  title: MLAG secondary reboot · Medium lab, MSTP, MLAG pair as root
+  action: Resets all three bridges over management SSH with protocol-mode=mstp, priority 0x1000 on CHR 1 and
+    CHR 2 and 0x8000 on the access switch. It requires a loss-free baseline with root ID 0x1000.02:00:00:21:00:11
+    in the access switch's BPDUs. It then reboots CHR 2 (MLAG secondary) with `/system reboot`, waits for the
+    guest uptime to reset and keeps probing for 16 s plus a 3 s recovery window.
+  selectors: [medium-mstp-pair-root-reboot-secondary]
+  graded_flows: [101, 201]
+  control_flows: [301, 303]
+  phases:
+  - key: withdrawal
+    name: Secondary down
+    expected: CHR 1 keeps the shared system ID, which is both the RSTP bridge ID and the LACP system ID, so
+      the access switch still sees root 0x1000.02:00:00:21:00:11 and its uplink stays the forwarding root port.
+      The virtual links keep carrier, so the access switch and traffic host 2 drop their member to CHR 2 at
+      the LACP short timeout (3 × 1 s). Only traffic hashed to that member sees brief loss.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  - key: restoration
+    name: Secondary back
+    expected: CHR 2 keeps its bond members out of the bond until the MLAG system ID syncs (mlag-init-delay),
+      then adds them under the unchanged shared system ID. The root ID and the access switch's forwarding uplink
+      do not change, so loss is brief or none.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+
+medium-mstp-access-root-reboot-secondary:
+  lab: Medium
+  title: MLAG secondary reboot · Medium lab, MSTP, access switch as root
+  action: Resets all three bridges over management SSH with protocol-mode=mstp, priority 0x1000 on CHR 1 and
+    CHR 2 and 0x0000 on the access switch. It requires a loss-free baseline with the access switch as root
+    (0x0000.02:00:00:21:00:13). It then reboots CHR 2 (MLAG secondary) with `/system reboot`, waits for the
+    guest uptime to reset and keeps probing for 16 s plus a 3 s recovery window.
+  selectors: [medium-mstp-access-root-reboot-secondary]
+  graded_flows: [101, 201]
+  control_flows: [301, 303]
+  phases:
+  - key: withdrawal
+    name: Secondary down
+    expected: CHR 1 keeps the shared system ID, so the access switch keeps its LACP partner and stays RSTP
+      root. The MLAG pair keeps access-uplink as its forwarding root port. The virtual links keep carrier,
+      so the access switch and traffic host 2 drop their member to CHR 2 at the LACP short timeout (3 × 1 s),
+      with brief loss on traffic hashed to it.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  - key: restoration
+    name: Secondary back
+    expected: CHR 2 keeps its bond members out of the bond until the MLAG system ID syncs (mlag-init-delay),
+      then adds them under the unchanged shared system ID. The access switch stays root, and CHR 2's non-edge
+      access-uplink must reach forwarding without a further outage.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+
+medium-mstp-pair-root-reboot-primary:
+  lab: Medium
+  title: MLAG primary reboot · Medium lab, MSTP, MLAG pair as root
+  action: Resets all three bridges over management SSH with protocol-mode=mstp, priority 0x1000 on CHR 1 and
+    CHR 2 and 0x8000 on the access switch. It requires a loss-free baseline with root ID 0x1000.02:00:00:21:00:11
+    in the access switch's BPDUs. It then reboots CHR 1 (MLAG primary) with `/system reboot`, waits for the
+    guest uptime to reset and keeps probing for 16 s plus a 3 s recovery window.
+  selectors: [medium-mstp-pair-root-reboot-primary]
+  graded_flows: [101, 201]
+  control_flows: [301, 303]
+  phases:
+  - key: withdrawal
+    name: Primary down
+    expected: CHR 2 reverts its MLAG bonds to its own LACP system ID and the access switch and traffic host
+      2 renegotiate LACP, with brief loss. The MLAG pair must stay RSTP root (0x1000 against 0x8000), and CHR
+      2's access-uplink and the access switch's uplink must keep forwarding.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  - key: restoration
+    name: Primary back
+    expected: CHR 1 keeps its bond members out of the bond until the MLAG system ID syncs (mlag-init-delay).
+      It rejoins as MLAG primary and restores the shared system ID as LACP system ID and RSTP bridge ID, and
+      partners renegotiate LACP with brief loss. The access switch must again see root 0x1000.02:00:00:21:00:11
+      with its uplink forwarding.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+
+medium-mstp-access-root-reboot-primary:
+  lab: Medium
+  title: MLAG primary reboot · Medium lab, MSTP, access switch as root
+  action: Resets all three bridges over management SSH with protocol-mode=mstp, priority 0x1000 on CHR 1 and
+    CHR 2 and 0x0000 on the access switch. It requires a loss-free baseline with the access switch as root
+    (0x0000.02:00:00:21:00:13). It then reboots CHR 1 (MLAG primary) with `/system reboot`, waits for the guest
+    uptime to reset and keeps probing for 16 s plus a 3 s recovery window.
+  selectors: [medium-mstp-access-root-reboot-primary]
+  graded_flows: [101, 201]
+  control_flows: [301, 303]
+  phases:
+  - key: withdrawal
+    name: Primary down
+    expected: CHR 2 reverts its MLAG bonds to its own LACP system ID and the access switch and traffic host
+      2 renegotiate LACP, with brief loss. The access switch must stay RSTP root, and CHR 2's access-uplink
+      must keep forwarding as root port.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  - key: restoration
+    name: Primary back
+    expected: CHR 1 keeps its bond members out of the bond until the MLAG system ID syncs (mlag-init-delay),
+      rejoins as MLAG primary and restores the shared system ID, and partners renegotiate LACP with brief loss.
+      The access switch stays root, and access-uplink must return to forwarding on both MLAG peers.
+    limit_s: 5.0
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/

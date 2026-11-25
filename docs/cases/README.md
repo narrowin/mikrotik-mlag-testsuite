@@ -4,6 +4,10 @@ Run these stages in order. Restore and verify the baseline before every fault. K
 
 CLI selectors map each case to the existing runner and archived evidence. Pending selectors identify planned work.
 
+Case definitions are grouped by lab and fault family in the [intent catalogue](../../src/mlag_lab/intent).
+Every new attempt saves its resolved rules as `case-intent.yaml`. The evaluator uses that file when replaying
+the attempt, so later changes to the catalogue do not change the recorded limits.
+
 ## Small lab
 
 | ID | Case | CLI selector |
@@ -22,8 +26,7 @@ CLI selectors map each case to the existing runner and archived evidence. Pendin
 Small lab selectors default to RSTP. Use `--bridge-mode none` to test with STP off.
 
 The [SMALL-06 case definition](../../src/mlag_lab/small-06.yaml) specifies the reboot,
-the required switch and client state, and the traffic checks. The runner saves
-a copy with each attempt so a replay uses the recorded expectations.
+the required switch and client state, and the traffic checks.
 
 [Inventory](../../labs/small/README.md) · [Link-loss procedure](small-client-link.md) · [Reboot commands](../operator-guide.md#reboot-the-direct-client-pair) · [Results](../../results/2026-11-24-small-lab/README.md)
 

@@ -11,6 +11,7 @@ import subprocess
 from threading import Event
 import time
 
+from .cases import case_spec, save_case
 from .evaluate import analyze
 from .proof import keep_proof
 from .evidence import seal_captures
@@ -326,6 +327,7 @@ def verify_live_delivery(capture, baseline, definitions=None):
 
 def root_attempt(lab, path, name, build_hash):
     path.mkdir()
+    save_case(case_spec(name), path)
     target = target_for(name)
     manifest = {"schema": 2, "case": name, "name": case_name(name), "topology": lab.name,
                 "instance": INSTANCE, "builds_sha256": build_hash, "target": target}
