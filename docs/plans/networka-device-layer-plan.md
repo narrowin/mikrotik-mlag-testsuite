@@ -60,7 +60,7 @@ Baseline of the current SSH code, from a saved Medium power-loss run:
 
 ## Development loop
 
-Build and test the runner and Networka together on this machine. Publish nothing and change no dependency entry until everything works. The operator approved running this loop directly on 25 November 2026.
+Build and test the runner and Networka together on this machine. Publish nothing and change no dependency entry until everything works. Since the Finish section, the runner depends on Networka v0.3.0 itself; use `--with-editable "$NETWORKA"` only to try unreleased Networka changes. The operator approved running this loop directly on 25 November 2026.
 
 **Setup, once.**
 
@@ -426,11 +426,11 @@ Start after step 2 was reported and the Networka changes it requires pass in the
 
 Do this only when steps 1 to 3 and the Networka changes pass every check in the loop.
 
-1. **Networka.** Commit the worktree branch and hand it to the operator for review. The operator publishes the new version: pushing a `v*` tag makes Networka's release workflow build the files and publish them to GitHub and PyPI.
-2. **Runner dependency.** In `pyproject.toml`, move `networka` from the `checkpoints` extra into `dependencies`, delete `[project.optional-dependencies]`, and point `[tool.uv.sources]` at the new release file. Run `uv lock`.
-3. **Runner docs.** Remove `--extra checkpoints` from the seven commands in `docs/operator-guide.md` and `docs/reference/measurement.md`, and remove the two v0.2.0 warnings from `docs/operator-guide.md`.
-4. **Final check without the worktree.** In the lab VM, run `uv sync --locked` and one baseline case without `--with-editable`. It must pass from the published version alone.
-5. Commit and push the runner.
+1. **Networka.** Done on 25 November 2026. Networka 0.3.0 is merged to `main` and tagged `v0.3.0`. Its release workflow failed at the PyPI upload, so there is no PyPI package and no GitHub release file yet.
+2. **Runner dependency.** Done. `networka` moved from the `checkpoints` extra into `dependencies`, and `[project.optional-dependencies]` is gone. Until a release file exists, `[tool.uv.sources]` pins Networka by Git tag: `networka = { git = "https://github.com/narrowin/networka", tag = "v0.3.0" }`. `uv lock` records the tag's commit. When the release file is published, point the source at it and run `uv lock` again.
+3. **Runner docs.** Done. No command uses `--extra checkpoints`, and the operator guide describes the 0.3.0 behaviour instead of the two v0.2.0 warnings.
+4. **Final check without the worktree.** Open. In the lab VM, run `uv sync --locked` and one baseline case without `--with-editable`. It must pass from the pinned version alone.
+5. Commit and push the runner. The branch is rebased onto `main` with its `--settle` option and committed locally; it is not pushed.
 
 ## Decision and scores
 

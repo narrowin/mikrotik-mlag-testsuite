@@ -61,7 +61,7 @@ Start with the tested checkpoint in the small lab. Current RouterOS exposes MLAG
 From the repository root, after following the installation and authentication steps, one group read can focus on the STP state while a fault is held. Use a unique results directory for each case, repeat and phase.
 
 ```sh
-uv run --locked --extra checkpoints nw --inventory-prefer config run \
+uv run --locked nw --inventory-prefer config run \
   --config labs/networka/small.yml --interactive-auth --store-results \
   --results-dir networka-results/S1/01/fault mlag-peers '/interface/bridge/port/monitor [find] once'
 ```

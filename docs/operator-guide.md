@@ -145,11 +145,11 @@ Networka (`nw`) saves a read-only view of every CHR in a lab before a fault, whi
 
 ### Install Networka
 
-From the repository root, enable the optional `checkpoints` extra in the same uv project as the runner. The lockfile records the GitHub release wheel and its digest. The verified release on 24 November 2026 was **v0.2.0**. [Networka releases](https://github.com/narrowin/networka/releases/latest)
+Networka is a dependency of the runner, so `uv sync` installs it in the same uv project. The lockfile pins Networka **v0.3.0** by its Git tag and commit, because the release has no PyPI package or GitHub release file yet. [Networka v0.3.0](https://github.com/narrowin/networka/tree/v0.3.0)
 
 ```sh
-uv sync --locked --extra checkpoints
-uv run --locked --extra checkpoints nw --version
+uv sync --locked
+uv run --locked nw --version
 ```
 
 ### Profiles for each lab
@@ -174,10 +174,10 @@ The Medium profiles also have a `dc1-routeros` group with every CHR in the lab. 
 
 ### Run a checkpoint
 
-Run Networka on the host that runs the lab. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. `--inventory-prefer config` selects the profile's entries when Containerlab's generated inventory also contains `p1` and `p2`. The command prompts for the lab credentials and stores a timestamped summary with separate command output files for each CHR. Use a distinct results directory for each case, repeat and phase. [Networka CLI reference](https://github.com/narrowin/networka/blob/v0.2.0/docs/reference/cli.md)
+Run Networka on the host that runs the lab. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. `--inventory-prefer config` selects the profile's entries when Containerlab's generated inventory also contains `p1` and `p2`. The command prompts for the lab credentials and stores a timestamped summary with separate command output files for each CHR. Use a distinct results directory for each case, repeat and phase. [Networka CLI reference](https://github.com/narrowin/networka/blob/v0.3.0/docs/reference/cli.md)
 
 ```sh
-uv run --locked --extra checkpoints nw --inventory-prefer config run \
+uv run --locked nw --inventory-prefer config run \
   --config labs/networka/small.yml --interactive-auth --store-results \
   --results-dir networka-results/before mlag-peers mlag_small_state
 ```
@@ -185,15 +185,15 @@ uv run --locked --extra checkpoints nw --inventory-prefer config run \
 For the Medium lab, run the core and access sequences into separate results directories:
 
 ```sh
-uv run --locked --extra checkpoints nw --inventory-prefer config run \
+uv run --locked nw --inventory-prefer config run \
   --config labs/networka/medium.yml --interactive-auth --store-results \
   --results-dir networka-results/medium-before-cores mlag-peers mlag_medium_core_state
-uv run --locked --extra checkpoints nw --inventory-prefer config run \
+uv run --locked nw --inventory-prefer config run \
   --config labs/networka/medium.yml --interactive-auth --store-results \
   --results-dir networka-results/medium-before-access access-switch mlag_medium_access_state
 ```
 
-Networka v0.2.0 can exit zero on a group run that contains failed devices. It also marked a command successful when RouterOS returned a syntax error. Check every CHR's saved output before using a checkpoint.
+Networka v0.3.0 exits with code 1 when a command or sequence failed on any device of a group. A RouterOS reply that starts with `syntax error`, `bad command name`, `expected end of command`, `input does not match any value`, `failure:` or `no such item` counts as a failed command. [Networka changelog](https://github.com/narrowin/networka/blob/v0.3.0/CHANGELOG.md)
 
 **OrbStack verification.** Networka v0.2.0 completed all eight reads of the earlier `mlag_small_state` list on both RouterOS 7.26beta7 peers in about **1.02 s**. That list began with the identity and resource reads and read only the client 1 MAC. Both reported `link-ok` on `ether3`, synchronized, collecting and distributing actor and partner flags on the two client bonds, connected MLAG, and the client 1 MAC on `client1` in VLAN 110. The current sequences, including `mlag_direct_state`, have not yet run through Networka. They use the same RouterOS reads that the runner sends to those labs on every run.
 
@@ -202,7 +202,7 @@ Networka v0.2.0 can exit zero on a group run that contains failed devices. It al
 This command executes RouterOS ICMP probes from each of the three CHRs to `dc1-traffic-host1` over the management VRF.
 
 ```sh
-uv run --locked --extra checkpoints nw --inventory-prefer config run \
+uv run --locked nw --inventory-prefer config run \
   --config labs/networka/medium.yml --interactive-auth --store-results \
   --results-dir networka-results/dc1-management-ping dc1-routeros \
   '/ping address=172.30.218.16 vrf=mgmt count=3 interval=200ms'
