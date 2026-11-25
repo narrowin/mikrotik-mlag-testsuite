@@ -136,9 +136,8 @@ class Lab:
         self.validate_links()
 
     def networka(self):
-        """A Networka client for the lab's profile that records each CHR's host key in the run's own file."""
+        """A Networka client for the lab's profile, with strict host key checking off."""
         client = NetworkaClient(self.profile)
-        client.config.general.ssh_known_hosts_file = str(self.runtime / "known_hosts")
         client.config.general.ssh_strict_host_key_checking = False
         return client
 

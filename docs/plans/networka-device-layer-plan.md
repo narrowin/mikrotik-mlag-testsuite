@@ -45,6 +45,7 @@ Facts checked on 25 November 2026:
 - One `client.run()` call spends a median of 18 ms, at most 24 ms, on setup before it talks to a device. It rebuilds the sequence manager on every call, `api/run.py:447`.
 - Networka's library path is synchronous. Async code exists only in the CLI and the terminal UI. The transport calls scrapli's `send_input` under a lock, `transport/scrapli_sync.py:138-145`, so one session runs one command at a time.
 - The session pool holds exactly one session per device, `session_pool.py:52`.
+- Step 2 passed on 25 November 2026: a 76 ms median state read (maximum 158 ms), a 151 ms maximum wait for a short command while polling, parsed state equal to plain SSH, and recovery of the same client after a reboot.
 - Networka appends `+ct511w4098h` to the RouterOS username, `transport/scrapli_sync.py:35`. That gives a 511-column console without colours, so multi-port monitor output is not wrapped at 80 columns.
 - A local Networka checkout exists at `~/git/narrowin/networka`, on branch `codex/networka-0.2`, one commit after v0.2.0. It has one uncommitted file that this plan must not touch.
 
@@ -408,7 +409,7 @@ Start after step 2 was reported and the Networka changes it requires pass in the
 - `check_logins`, `run.py:208`: open a new `NetworkaClient`, send `:put login-ok`, and close it.
 - `close()`, `run.py:250`: call `client.close()`.
 - `observe_router`, `root_run.py:55`: delete the branch that closes the SSH connection after an error. N4 drops a dead session, so the read recovers on the next call with the same client.
-- Host keys: use N5 with a known-hosts file in the run's temporary folder.
+- Host keys: the runner turns strict host key checking off, because Networka records no keys in that mode. Live runs already check each RouterOS peer's address against `docker inspect`.
 - Delete the SSH argument list at `run.py:145-151`, `open_ssh`, the `SSHPASS` environment at `run.py:128`, and `sshpass` from `HOST_TOOLS` at `run.py:41`. Keep `ssh`; Networka's system transport uses it.
 - Remove `sshpass` from `.devcontainer/Dockerfile:7` and from the prerequisites in `docs/operator-guide.md:23` and `docs/test-framework.md:27`.
 - Set `timeout: 3`, `connection_retries: 1` and `command_timeout: 5` in the four profiles, to match today's 3 s connect timeout and 5 s stall limit.
