@@ -46,6 +46,7 @@ Facts checked on 25 November 2026:
 - Networka's library path is synchronous. Async code exists only in the CLI and the terminal UI. The transport calls scrapli's `send_input` under a lock, `transport/scrapli_sync.py:138-145`, so one session runs one command at a time.
 - The session pool holds exactly one session per device, `session_pool.py:52`.
 - Step 2 passed on 25 November 2026: a 76 ms median state read (maximum 158 ms), a 151 ms maximum wait for a short command while polling, parsed state equal to plain SSH, and recovery of the same client after a reboot.
+- The first live run of step 3 ended both power-loss cases in error: the QMP helper child, started as `python -m mlag_lab.run _qmp` inside the CHR's namespace, imported Networka with the runner and had none. The helper now lives in `src/mlag_lab/qmp.py`, which imports only the standard library.
 - Networka appends `+ct511w4098h` to the RouterOS username, `transport/scrapli_sync.py:35`. That gives a 511-column console without colours, so multi-port monitor output is not wrapped at 80 columns.
 - A local Networka checkout exists at `~/git/narrowin/networka`, on branch `codex/networka-0.2`, one commit after v0.2.0. It has one uncommitted file that this plan must not touch.
 

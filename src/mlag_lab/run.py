@@ -9,7 +9,6 @@ import re
 from pathlib import Path
 import shutil
 import signal
-import socket
 import subprocess
 import sys
 import tempfile
@@ -23,6 +22,7 @@ from .cases import FLAP_CYCLES, FLAP_DOWN_S, FLAP_UP_S, MAC_AGE_DEFAULT, MAC_AGE
 from .direct_topology import DIRECT_CASES, DIRECT_NODES as PEERS
 from .evaluate import analyze
 from .proof import keep_proof
+from .qmp import QMP_PORT
 from .evidence import seal_captures
 from .external_topology import EXTERNAL_CASES
 from .legacy import CASES, CAPTURES, FLOWS, PEER_LINK_PORTS, case_captures, case_name
@@ -38,7 +38,6 @@ HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parents[1]
 LAB_FOLDERS = {"small": "small", "medium": "medium", "medium-pair-root": "medium", "medium-two-pair": "medium"}
 PORTS = {"p1": "eth2", "c1": "eth1"}
-QMP_PORT = 5001
 UV = os.environ.get("UV", "uv")
 HOST_TOOLS = (UV, "docker", "nsenter", "ip", "tc", "ping", "tcpdump", "tshark", "ssh", "containerlab")
 BRIDGE_MODES = ("rstp", "none", "mstp")
@@ -78,27 +77,6 @@ SET_BRIDGE = "/interface bridge set bridge "
 
 def run(args, **kwargs):
     return subprocess.run(args, capture_output=True, text=True, timeout=12, check=True, **kwargs).stdout
-
-
-def qmp_client(command, arguments=None):
-    with socket.create_connection(("127.0.0.1", QMP_PORT), timeout=3) as conn, conn.makefile("rwb") as stream:
-        if "QMP" not in json.loads(stream.readline()):
-            raise RuntimeError("Invalid QEMU monitor greeting")
-        action = {"execute": command, "id": 2}
-        if arguments is not None:
-            action["arguments"] = arguments
-        for request in ({"execute": "qmp_capabilities", "id": 1}, action):
-            started = time.time_ns()
-            stream.write((json.dumps(request) + "\n").encode())
-            stream.flush()
-            while True:
-                reply = json.loads(stream.readline())
-                if reply.get("id") == request["id"]:
-                    break
-            if "return" not in reply:
-                raise RuntimeError(f"QEMU rejected {request['execute']}: {reply}")
-        print(json.dumps({"started_ns": started, "done_ns": time.time_ns(),
-                          "request": request, "reply": reply}))
 
 
 class Lab:
@@ -240,7 +218,7 @@ class Lab:
 
     def qmp_action(self, target, action, nic=None):
         command = self.ns(target, UV, "run", "--no-sync", "--project", str(PROJECT),
-                          "python", "-m", "mlag_lab.run", "_qmp", action, *((nic,) if nic else ()))
+                          "python", "-m", "mlag_lab.qmp", "_qmp", action, *((nic,) if nic else ()))
         return json.loads(run(command))
 
     def reset_bridges(self, settings, extra=None):
@@ -872,15 +850,3 @@ def interrupt(_sig, _frame):
     global INTERRUPTED
     INTERRUPTED = True
     raise RuntimeError("Run interrupted")
-
-
-if __name__ == "__main__":
-    if len(sys.argv) in (3, 4) and sys.argv[1] == "_qmp":
-        action = sys.argv[2]
-        nic = sys.argv[3] if len(sys.argv) == 4 else "nic2"
-        if action in ("up", "down") and re.fullmatch(r"nic[1-4]", nic):
-            qmp_client("set_link", {"name": nic, "up": action == "up"})
-        elif action in ("stop", "cont", "query-status", "system_reset") and len(sys.argv) == 3:
-            qmp_client(action)
-        else:
-            sys.exit(f"Unknown lab QMP action: {' '.join(sys.argv[2:])}")
