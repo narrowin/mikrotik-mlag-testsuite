@@ -25,7 +25,9 @@ GOOD, CRITICAL = "#0ca30c", "#d03b3b"
 FONT = 'system-ui, -apple-system, "Segoe UI", sans-serif'
 # Failed checks that mean a frame came back to its sender or reached a host twice, not lost traffic.
 LOOP_CHECKS = ("second sighting", "second copy", "reflected")
-LOOP_TEXT = "frames looped back to the sender"
+# The loop is proven in the RouterOS software bridge on CHR; a CRS forwards in its switch chip, which is untested.
+LOOP_TEXT = "frames looped back to the sender on CHR, not yet tested on hardware"
+LOOP_NOTE = "loss in limit; looped back on CHR, hardware untested"
 UNCHECKED_TEXT = "not tested for looped-back frames"
 
 
@@ -158,7 +160,7 @@ def chart_note(g, limit):
     if g["reboot_unchecked"]:
         return UNCHECKED_TEXT
     if g["reboot_loop"] and g["reboot"] is not None and g["reboot"] <= limit:
-        return f"loss within limit; {LOOP_TEXT}"
+        return LOOP_NOTE
     return dark_note(g)
 
 
