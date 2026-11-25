@@ -426,8 +426,8 @@ Start after step 2 was reported and the Networka changes it requires pass in the
 
 Do this only when steps 1 to 3 and the Networka changes pass every check in the loop.
 
-1. **Networka.** Done on 25 November 2026. Networka 0.3.0 is merged to `main` and tagged `v0.3.0`. Its release workflow failed at the PyPI upload, so there is no PyPI package and no GitHub release file yet.
-2. **Runner dependency.** Done. `networka` moved from the `checkpoints` extra into `dependencies`, and `[project.optional-dependencies]` is gone. Until a release file exists, `[tool.uv.sources]` pins Networka by Git tag: `networka = { git = "https://github.com/narrowin/networka", tag = "v0.3.0" }`. `uv lock` records the tag's commit. When the release file is published, point the source at it and run `uv lock` again.
+1. **Networka.** Done on 25 November 2026. Networka 0.3.0 is tagged `v0.3.0` and published on PyPI and as a GitHub release. The release workflow's PyPI upload still fails on a trusted-publisher setting, so 0.3.0 was uploaded by hand.
+2. **Runner dependency.** Done. `networka==0.3.0` from PyPI moved from the `checkpoints` extra into `dependencies`. `[project.optional-dependencies]` and `[tool.uv.sources]` are gone. `uv lock` records the PyPI wheel and its hash.
 3. **Runner docs.** Done. No command uses `--extra checkpoints`, and the operator guide describes the 0.3.0 behaviour instead of the two v0.2.0 warnings.
 4. **Final check without the worktree.** Open. In the lab VM, run `uv sync --locked` and one baseline case without `--with-editable`. It must pass from the pinned version alone.
 5. Commit and push the runner. The branch is rebased onto `main` with its `--settle` option and committed locally; it is not pushed.

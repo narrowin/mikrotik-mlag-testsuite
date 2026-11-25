@@ -145,7 +145,7 @@ Networka (`nw`) saves a read-only view of every CHR in a lab before a fault, whi
 
 ### Install Networka
 
-Networka is a dependency of the runner, so `uv sync` installs it in the same uv project. The lockfile pins Networka **v0.3.0** by its Git tag and commit, because the release has no PyPI package or GitHub release file yet. [Networka v0.3.0](https://github.com/narrowin/networka/tree/v0.3.0)
+Networka **0.3.0** from PyPI is a dependency of the runner, so `uv sync` installs it in the same uv project. The lockfile records the wheel and its hash. [Networka 0.3.0](https://pypi.org/project/networka/0.3.0/)
 
 ```sh
 uv sync --locked
