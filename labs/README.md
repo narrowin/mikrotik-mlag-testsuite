@@ -7,7 +7,7 @@ Each folder holds one lab: its Containerlab topology, the RouterOS startup confi
 | [Small](small/README.md) | Does one MLAG pair keep directly bonded hosts forwarding through link, LACP, MAC and reboot faults? | `small/small.clab.yml` | `mlag-small` | `172.30.215.0/27` |
 | [Medium](medium/README.md) | Does a downstream access switch change the outcome with STP off or RSTP on? | `medium/medium.clab.yml` | `mlag-medium` | `172.30.218.0/27` |
 | [Medium, pair-root variant](medium/README.md#pair-root-variant) | What happens when the MLAG pair itself is the RSTP root? | `medium/medium-pair-root.clab.yml` | `mlag-medium` | `172.30.216.0/27` |
-| [Large](large/README.md) | Do two sites with core and access pairs and a VRRP firewall recover from site faults? Planned. | Pending | `mlag-large` | Pending |
+| [Large](large/README.md) | Do two sites with core and access pairs and a VRRP firewall recover from site faults? Not yet deployed; the runner has no Large cases yet. | `large/large.clab.yml` | `mlag-large` | `172.30.220.0/27` |
 
 Both Medium topologies use the deployment name `mlag-medium`, so deploy only one at a time. Local campaign runs use the `mlag-external` OrbStack VM. For a browser-based first run, see the [quickstart](../README.md#quick-start).
 

@@ -166,8 +166,11 @@ Each lab has a profile that names its management addresses and device groups. Al
 | Medium, pair-root variant | [medium-pair-root.yml](../labs/networka/medium-pair-root.yml) | `access-switch` | `mlag_medium_access_state` |
 | Medium, two-pair variant | [medium-two-pair.yml](../labs/networka/medium-two-pair.yml) | `core-peers` | `mlag_two_pair_core_state` |
 | Medium, two-pair variant | [medium-two-pair.yml](../labs/networka/medium-two-pair.yml) | `access-peers` | `mlag_two_pair_access_state` |
+| Large | [large.yml](../labs/networka/large.yml) | `core-peers` | `mlag_large_core_state` |
+| Large | [large.yml](../labs/networka/large.yml) | `access-peers` | `mlag_large_access_state` |
+| Large | [large.yml](../labs/networka/large.yml) | `firewalls` | `mlag_large_firewall_state` |
 
-The Medium profiles also have a `dc1-routeros` group with every CHR in the lab. The Large lab gets a profile once its topology and management addresses exist.
+The Medium profiles also have a `dc1-routeros` group with every CHR in the lab. The Large profile has `dc1-routeros` and `dc2-routeros` groups with every CHR at each site, and one group per pair, such as `dc1-core-peers`. The Large sequences have not run through Networka, because the Large lab is not yet deployed. The runner has no Large cases yet.
 
 ### Run a checkpoint
 

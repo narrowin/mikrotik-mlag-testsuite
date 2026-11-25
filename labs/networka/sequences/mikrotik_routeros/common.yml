@@ -70,3 +70,41 @@ sequences:
       - /interface bridge host print detail without-paging where mac-address=02:00:00:11:00:12
       - /interface bonding monitor-slaves bond=interpair once=yes
       - /interface bonding monitor-slaves bond=client1 once=yes
+  mlag_large_core_state:
+    description: Base state read for a core MLAG peer in the Large lab
+    commands:
+      - /interface ethernet monitor ether2 once
+      - /interface ethernet monitor ether3 once
+      - /interface ethernet monitor ether4 once
+      - /interface ethernet monitor ether5 once
+      - /interface bridge monitor bridge once
+      - /interface bridge port monitor [find where bridge=bridge] once
+      - /interface bridge host print detail without-paging where mac-address=02:00:00:42:00:16
+      - /interface bridge host print detail without-paging where mac-address=02:00:00:42:00:26
+      - /interface bonding monitor-slaves bond=access-downlink once=yes
+      - /interface bonding monitor-slaves bond=dci once=yes
+      - /interface bonding monitor-slaves bond=firewall1 once=yes
+  mlag_large_access_state:
+    description: Base state read for a distribution MLAG peer in the Large lab
+    commands:
+      - /interface ethernet monitor ether2 once
+      - /interface ethernet monitor ether3 once
+      - /interface ethernet monitor ether4 once
+      - /interface ethernet monitor ether5 once
+      - /interface bridge monitor bridge once
+      - /interface bridge port monitor [find where bridge=bridge] once
+      - /interface bridge host print detail without-paging where mac-address=02:00:00:42:00:16
+      - /interface bridge host print detail without-paging where mac-address=02:00:00:42:00:17
+      - /interface bridge host print detail without-paging where mac-address=02:00:00:42:00:26
+      - /interface bridge host print detail without-paging where mac-address=02:00:00:42:00:27
+      - /interface bonding monitor-slaves bond=core-uplink once=yes
+      - /interface bonding monitor-slaves bond=traffic1 once=yes
+      - /interface bonding monitor-slaves bond=service1 once=yes
+  mlag_large_firewall_state:
+    description: Base state read for a VRRP CHR firewall in the Large lab
+    commands:
+      - /interface ethernet monitor ether2 once
+      - /interface ethernet monitor ether3 once
+      - /interface bonding monitor-slaves bond=core-uplink once=yes
+      - /interface vrrp print detail without-paging
+      - /ip address print detail without-paging where interface=vrrp-test or interface=vrrp390

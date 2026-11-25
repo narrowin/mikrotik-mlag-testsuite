@@ -1,0 +1,67 @@
+general:
+  transport: system
+  ssh_config_file: false
+  ssh_strict_host_key_checking: true
+  timeout: 3
+  connection_retries: 1
+  command_timeout: 5
+  results_format: json
+devices:
+  dc1-core-mlag1:
+    host: 172.30.220.11
+    device_type: mikrotik_routeros
+  dc1-core-mlag2:
+    host: 172.30.220.12
+    device_type: mikrotik_routeros
+  dc1-access-mlag1:
+    host: 172.30.220.13
+    device_type: mikrotik_routeros
+  dc1-access-mlag2:
+    host: 172.30.220.14
+    device_type: mikrotik_routeros
+  dc1-firewall1:
+    host: 172.30.220.15
+    device_type: mikrotik_routeros
+  dc2-core-mlag1:
+    host: 172.30.220.21
+    device_type: mikrotik_routeros
+  dc2-core-mlag2:
+    host: 172.30.220.22
+    device_type: mikrotik_routeros
+  dc2-access-mlag1:
+    host: 172.30.220.23
+    device_type: mikrotik_routeros
+  dc2-access-mlag2:
+    host: 172.30.220.24
+    device_type: mikrotik_routeros
+  dc2-firewall1:
+    host: 172.30.220.25
+    device_type: mikrotik_routeros
+groups:
+  dc1-routeros:
+    description: The five RouterOS CHR guests at Site A
+    members: [dc1-core-mlag1, dc1-core-mlag2, dc1-access-mlag1, dc1-access-mlag2, dc1-firewall1]
+  dc2-routeros:
+    description: The five RouterOS CHR guests at Site B
+    members: [dc2-core-mlag1, dc2-core-mlag2, dc2-access-mlag1, dc2-access-mlag2, dc2-firewall1]
+  dc1-core-peers:
+    description: The Site A core MLAG pair
+    members: [dc1-core-mlag1, dc1-core-mlag2]
+  dc1-access-peers:
+    description: The Site A distribution MLAG pair
+    members: [dc1-access-mlag1, dc1-access-mlag2]
+  dc2-core-peers:
+    description: The Site B core MLAG pair
+    members: [dc2-core-mlag1, dc2-core-mlag2]
+  dc2-access-peers:
+    description: The Site B distribution MLAG pair
+    members: [dc2-access-mlag1, dc2-access-mlag2]
+  core-peers:
+    description: Both core MLAG pairs
+    members: [dc1-core-mlag1, dc1-core-mlag2, dc2-core-mlag1, dc2-core-mlag2]
+  access-peers:
+    description: Both distribution MLAG pairs
+    members: [dc1-access-mlag1, dc1-access-mlag2, dc2-access-mlag1, dc2-access-mlag2]
+  firewalls:
+    description: The two VRRP CHR firewalls
+    members: [dc1-firewall1, dc2-firewall1]
