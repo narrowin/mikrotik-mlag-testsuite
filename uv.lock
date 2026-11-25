@@ -336,25 +336,20 @@ name = "mlag-lab"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
-    { name = "typer" },
-]
-
-[package.optional-dependencies]
-checkpoints = [
     { name = "networka" },
+    { name = "typer" },
 ]
 
 [package.metadata]
 requires-dist = [
-    { name = "networka", marker = "extra == 'checkpoints'", url = "https://github.com/narrowin/networka/releases/download/v0.2.0/networka-0.2.0-py3-none-any.whl" },
+    { name = "networka", git = "https://github.com/narrowin/networka?tag=v0.3.0" },
     { name = "typer", specifier = ">=0.16,<1" },
 ]
-provides-extras = ["checkpoints"]
 
 [[package]]
 name = "networka"
-version = "0.2.0"
-source = { url = "https://github.com/narrowin/networka/releases/download/v0.2.0/networka-0.2.0-py3-none-any.whl" }
+version = "0.3.0"
+source = { git = "https://github.com/narrowin/networka?tag=v0.3.0#c77c0817fccf196c1b98fd475b76d5da049de79d" }
 dependencies = [
     { name = "libtmux" },
     { name = "paramiko" },
@@ -366,41 +361,6 @@ dependencies = [
     { name = "textual" },
     { name = "typer" },
 ]
-wheels = [
-    { url = "https://github.com/narrowin/networka/releases/download/v0.2.0/networka-0.2.0-py3-none-any.whl", hash = "sha256:246902338818ef96d0eee87b97cf2739c44b356cd8d4d9bd9cb1281fc2a7f223" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "bandit", marker = "extra == 'dev'", specifier = ">=1.7.0" },
-    { name = "build", marker = "extra == 'dev'", specifier = ">=0.10.0" },
-    { name = "cffconvert", marker = "extra == 'dev'", specifier = ">=2.0.0" },
-    { name = "detect-secrets", marker = "extra == 'dev'", specifier = ">=1.4.0" },
-    { name = "libtmux", specifier = ">=0.67.1,<0.68" },
-    { name = "libtmux", marker = "extra == 'tmux'", specifier = ">=0.21.0" },
-    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.5.0" },
-    { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.0.0" },
-    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.24.0" },
-    { name = "mypy", marker = "extra == 'dev'", specifier = "==2.4.1" },
-    { name = "paramiko", specifier = ">=5.1.0,<6" },
-    { name = "pydantic", specifier = ">=2.5.0" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=7.4.0" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.21.0" },
-    { name = "pytest-cov", marker = "extra == 'dev'", specifier = ">=4.1.0" },
-    { name = "pytest-mock", marker = "extra == 'dev'", specifier = ">=3.14.0" },
-    { name = "pytest-xdist", marker = "extra == 'dev'", specifier = ">=3.8.0" },
-    { name = "python-dotenv", specifier = ">=1.0.0" },
-    { name = "pyyaml", specifier = ">=6.0" },
-    { name = "rich", specifier = ">=13.0.0" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = "==0.17.6" },
-    { name = "scrapli", specifier = "==2026.11.12" },
-    { name = "textual", specifier = ">=0.58.0" },
-    { name = "twine", marker = "extra == 'dev'", specifier = ">=4.0.0" },
-    { name = "typer", specifier = ">=0.12.0" },
-    { name = "types-paramiko", marker = "extra == 'dev'", specifier = ">=3.0.0" },
-    { name = "types-pyyaml", marker = "extra == 'dev'", specifier = ">=6.0.0" },
-]
-provides-extras = ["dev", "docs", "tmux"]
 
 [[package]]
 name = "paramiko"
