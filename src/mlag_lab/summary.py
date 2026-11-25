@@ -193,6 +193,9 @@ def write_summary(results):
         counts.append(f"- **{lab}:** {len(found)} setup{'s' if len(found) != 1 else ''} tested: {found.count('pass')} pass, {found.count('fail')} fail, "
                       f"{found.count('incomplete')} incomplete, {found.count('invalid')} invalid.")
     lines += ["## At a glance", "", *counts, ""]
+    # Imported here: faults builds on overview, which imports this module.
+    from .faults import section as fault_section
+    lines += fault_section(rows, results)
     lines += ["## How to read the tables", "", *INDICATOR, ""]
     order = {"pass": 0, "fail": 1, "incomplete": 2, "invalid": 3}
     for lab in sorted({row["lab"] for row in table}):

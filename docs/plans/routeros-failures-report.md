@@ -1,6 +1,6 @@
 # RouterOS 7.26beta7 MLAG: two faults
 
-Checked on 24 November 2026 from saved packet captures and RouterOS state. No lab was run for this report.
+Checked on 24 November 2026 from saved packet captures and RouterOS state. No lab was run for this report. Updated on 25 November 2026: how often each fault showed, and the loss ranges, now come from the generated [Faults across runs](../../results/README.md#faults-across-runs) table instead of hand counts. That table also shows that some of the MSTP reboots this report first listed as "MLAG pair as root" had the access switch as root of VLAN 110.
 
 This report is written for filing bug reports with MikroTik. We do not plan to file them ourselves. Anyone who wants to may use it.
 
@@ -8,7 +8,7 @@ This report is written for filing bug reports with MikroTik. We do not plan to f
 
 - Both faults are RouterOS behaviour, not errors of the test checks.
 - Fault 1: after a bond member or an MLAG peer returns, an MLAG peer sends frames from the peer port back out a dual-connected MLAG bond. The 7.26beta7 changelog fix "packets looped back to a dual-connected bond" does not fully hold.
-- Fault 2: with two MLAG pairs, rebooting one pair's MLAG primary stops traffic for 19.8–23.3 s. The other pair keeps sending into the rebooting switch.
+- Fault 2: with two MLAG pairs, rebooting one pair's MLAG primary stops traffic for about 20 s. The other pair keeps sending into the rebooting switch.
 - Likely common cause: an MLAG bond whose local member has link up but is not LACP-distributing stays a forwarding bridge port.
 
 ## Setup
@@ -28,7 +28,7 @@ This report is written for filing bug reports with MikroTik. We do not plan to f
 **What was done and tested.**
 
 - Broadcast and unknown-unicast streams from traffic host 1 were captured on every host interface and every CHR port, during a repeated bond member flap, reboots and power losses. This was the Small lab, mostly with STP off.
-- Every looped copy was traced frame by frame through the captures: 11 Small lab runs and 5 Medium lab runs.
+- Looped copies were traced frame by frame through the captures in every Small lab run with the fault and in five Medium lab runs.
 - RouterOS LACP member flags, bridge port state, bridge host table and syslog were read for the same moments.
 
 **Results.**
@@ -39,18 +39,11 @@ This report is written for filing bug reports with MikroTik. We do not plan to f
   2. CHR 2 sends it out the peer port, tagged VLAN 110.
   3. CHR 1 sends it out `ether3`, back to host 1's eth1. That is 2.3 ms after the original.
 - At that moment CHR 1's `ether3` had just come back up. Its first LACPDU came 88 ms later, with the member not in sync and not distributing. `/interface bonding monitor` showed `flags="ATG---FE"`, while the bridge port `client1` showed `forwarding: yes`.
-- In a reboot, it starts right after the rebooted MLAG peer logs `peer connected`. In one run, 10 frames looped within 1 s.
+- In a reboot, it starts right after the rebooted MLAG peer logs `peer connected`. In [one run](../../results/2026-11-24-forwarding-checks/validation-none-reboot-power/01-secondary-reboot), 10 frames looped within 1 s.
 - Host 1's bond dropped its returned copies. Host 2 received duplicates.
 
-| Case, Small lab | Runs with the fault |
-| --- | --- |
-| Repeated bond member flap | 4 of 4 |
-| MLAG primary reboot | 3 of 3 |
-| MLAG secondary reboot | 2 of 2 |
-| MLAG secondary power loss | 2 of 2 |
-| Primary power loss, single member loss, peer link loss, MAC move | 0 of 11 |
-
-- On the Medium lab, a unicast request from host 2 comes back to host 2 the same way. It happened in 5 of 6 graded RSTP reboots and 6 of 28 graded MSTP reboots with the MLAG pair as root. It did not happen in 16 graded Medium reboots with STP off on the MLAG pair.
+- With STP off on the Small lab, it shows in the repeated bond member flap, the MLAG primary and secondary reboot and the MLAG secondary power loss. It did not show in primary power loss, single member loss, peer link loss or MAC move. How often, per case: [Faults across runs](../../results/README.md#faults-across-runs), rows "Flood frame back at its sender or twice at a host".
+- On the Medium lab, a unicast request from host 2 comes back to host 2 the same way during MLAG peer reboots with RSTP or MSTP. It shows with the MLAG pair as root and with the access switch as root of VLAN 110 only. It did not show in any Medium reboot with STP off on the MLAG pair. How often, per setup and case: [Faults across runs](../../results/README.md#faults-across-runs), rows "Unicast request sent back to its sender".
 - Neither `lacp-strict=yes` nor `mlag-lacp-fallback=no` prevented it on the Medium lab.
 
 **Not verified.**
@@ -67,7 +60,7 @@ This report is written for filing bug reports with MikroTik. We do not plan to f
 
 ## Fault 2: two MLAG pairs keep sending into a rebooting switch
 
-**Problem.** When one MLAG pair's primary reboots, the other pair keeps sending traffic out its member toward the rebooting switch for the whole reboot. Traffic between the pairs stops for 19.8–23.3 s.
+**Problem.** When one MLAG pair's primary reboots, the other pair keeps sending traffic out its member toward the rebooting switch for the whole reboot. Traffic between the pairs stops for about 20 s.
 
 **Expected.** Traffic moves over the peer port to the MLAG peer whose member of the same MLAG bond is active, within the 5 s limit.
 
@@ -79,7 +72,7 @@ This report is written for filing bug reports with MikroTik. We do not plan to f
 
 **Results.**
 
-- Primary reboots: 4 of 4 lost 19.8–23.3 s. The earlier saved two-pair run lost 19.7–19.9 s.
+- Every primary reboot of either pair lost about 20 s, against 5 s. Runs and loss ranges: [Faults across runs](../../results/README.md#faults-across-runs), Medium lab, STP off, rows "Pair A primary reboot" and "Pair B primary reboot".
 - Example, reboot of p1:
   - The last LACPDU from p1 came at 8.89 s.
   - At 12.39 s, q1 marked its member `ether3` expired. It was not collecting or distributing, as expected with `lacp-rate=1sec`.
@@ -88,7 +81,7 @@ This report is written for filing bug reports with MikroTik. We do not plan to f
 - During the outage, q1 showed `ether3` as `ATGS---E`, then `ATGS--F-` with no partner. The bridge port `interpair` stayed `forwarding: yes`, and host 2's MAC stayed on `interpair`.
 - The surviving peer p2 stayed `mlag-state: connected` and only logged `MLAG: remote heartbeat timeout`.
 - Secondary reboots lost nothing, but no test traffic used the secondary's links, so they do not test this path.
-- One MLAG pair recovers normally: on the Medium lab a primary reboot lost 2.2–2.4 s. There the access switch has a plain LACP bond with a member to each peer.
+- One MLAG pair recovers normally: on the Medium lab with STP off a primary reboot stays within 5 s. There the access switch has a plain LACP bond with a member to each peer.
 
 **Not verified.**
 

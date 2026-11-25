@@ -10,6 +10,7 @@ import json
 import re
 from pathlib import Path
 
+from .faults import write_tsv as write_faults
 from .measurements import COLUMNS, rows as measurement_rows
 from .readme import DEVICES, find_suites, startup_mode
 
@@ -51,6 +52,21 @@ FIELDS = (
     ("evidence.path", "Run folder in the repository. Read it at the same commit as this export."),
     ("evidence.files", "Committed evidence files in that folder."),
     ("evidence.blobs", "Files not in git, as {name, sha256}. Fetch by hash and verify after download."),
+)
+FAULT_FIELDS = (
+    ("lab, setup, case", "Lab, setup variant as in the results README, and case title. Only valid runs of valid "
+                         "suites count."),
+    ("fault", "Kind of failed check: loss over the limit, baseline traffic lost before any fault, unicast request "
+              "sent back to its sender, flood frame back at its sender or twice at a host, STP root moved, MAC move "
+              "check failed, or other."),
+    ("phase", "Phase name for loss, which counts once per run and phase. Empty for the other kinds, which count once "
+              "per run."),
+    ("runs_with_fault, runs_checked", "Runs that failed this check, out of the runs of the same lab, setup and case "
+                                      "that ran it. Zero rows are kept only for the looped-frame checks of cases "
+                                      "that apply a fault."),
+    ("loss_lower_s, loss_upper_s", "Loss only: shortest lower bound and longest upper bound of the worst stream in "
+                                   "the runs with the fault. An empty upper bound means open-ended."),
+    ("runs", "Repository paths of the runs with the fault, separated by spaces."),
 )
 
 
@@ -154,13 +170,15 @@ def write_export(results, output=None):
     output = (output or results / "index").resolve()
     repo_root = results.parent
     output.mkdir(parents=True, exist_ok=True)
-    phase_count = 0
+    exported = []
     with (output / "phases.jsonl").open("w") as file:
         for campaign in campaigns(results):
             for suite in find_suites(campaign):
                 for row in suite_rows(campaign, suite, repo_root):
                     file.write(json.dumps(row, ensure_ascii=False) + "\n")
-                    phase_count += 1
+                    exported.append(row)
+    phase_count = len(exported)
+    write_faults(exported, results, output / "faults.tsv")
     with (output / "streams.tsv").open("w", newline="") as file:
         writer = csv.DictWriter(file, ("campaign", *COLUMNS), delimiter="\t")
         writer.writeheader()
@@ -170,8 +188,12 @@ def write_export(results, output=None):
              "", "- `phases.jsonl`: one JSON object per run and phase, with the setup copied onto each row. "
              "Runs that stopped before grading have one row with `phase` null.",
              "- `streams.tsv`: loss bounds per run, phase and probe stream (graded and control), the same columns "
-             "as each campaign's `measurements.tsv` plus `campaign`.", "",
+             "as each campaign's `measurements.tsv` plus `campaign`.",
+             "- `faults.tsv`: how often each kind of failed check showed, per lab, setup variant and case. Write-ups "
+             "quote these counts instead of counting by hand. `results/README.md` shows them per setup group.", "",
              f"## phases.jsonl fields (schema {SCHEMA})", "", "| Field | Meaning |", "| --- | --- |",
-             *(f"| `{name}` | {meaning} |" for name, meaning in FIELDS), ""]
+             *(f"| `{name}` | {meaning} |" for name, meaning in FIELDS), "",
+             "## faults.tsv columns", "", "| Column | Meaning |", "| --- | --- |",
+             *(f"| `{name}` | {meaning} |" for name, meaning in FAULT_FIELDS), ""]
     (output / "schema.md").write_text("\n".join(lines))
     return output, phase_count
