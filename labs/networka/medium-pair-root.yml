@@ -1,0 +1,28 @@
+general:
+  transport: system
+  ssh_config_file: false
+  ssh_strict_host_key_checking: true
+  timeout: 3
+  connection_retries: 1
+  command_timeout: 5
+  results_format: json
+devices:
+  dc1-core-mlag1:
+    host: 172.30.216.11
+    device_type: mikrotik_routeros
+  dc1-core-mlag2:
+    host: 172.30.216.12
+    device_type: mikrotik_routeros
+  dc1-access-switch1:
+    host: 172.30.216.13
+    device_type: mikrotik_routeros
+groups:
+  dc1-routeros:
+    description: The three RouterOS CHR guests in the pair-root lab
+    members: [dc1-core-mlag1, dc1-core-mlag2, dc1-access-switch1]
+  mlag-peers:
+    description: The pair-root lab MLAG pair
+    members: [dc1-core-mlag1, dc1-core-mlag2]
+  access-switch:
+    description: The pair-root lab access switch
+    members: [dc1-access-switch1]

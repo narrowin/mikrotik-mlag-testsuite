@@ -15,22 +15,12 @@ from .evaluate import analyze
 from .proof import keep_proof
 from .evidence import seal_captures
 from .legacy import NS, case_name
+from .networka import reads
 from .root_state import uptime, verify_root
 from .root_topology import (
     MANAGEMENT_PROBES, POWER_OFF_HOLD_S, ROOT_CAPTURES, ROOT_FLOWS, ROOT_LINKS, ROOT_NODES, ROOT_PORTS, target_for,
 )
 from .run import CONFIG, UPTIME, UV, Capture, Lab, filter_fault, run, sample_loop
-
-STATE = (
-    UPTIME,
-    "/interface ethernet monitor ether2 once",
-    "/interface ethernet monitor ether3 once",
-    "/interface ethernet monitor ether4 once",
-    "/interface bridge monitor bridge once",
-    "/interface bridge port monitor [find where bridge=bridge] once",
-    "/interface bridge host print detail without-paging where mac-address=02:00:00:11:00:11",
-    "/interface bridge host print detail without-paging where mac-address=02:00:00:11:00:12",
-)
 
 
 class RootLab(Lab):
@@ -48,20 +38,12 @@ class RootLab(Lab):
             self.verify_veth(left, right)
 
     def read_router(self, peer):
-        bonds = ("uplink",) if peer == "witness" else ("access-uplink", "client2")
-        monitors = tuple(f"/interface bonding monitor-slaves bond={bond} once=yes" for bond in bonds)
-        return self.ros(peer, ";".join((*STATE, *monitors)))
+        sequence = "mlag_medium_access_state" if peer == "witness" else "mlag_medium_core_state"
+        return self.ros(peer, ";".join((UPTIME, *reads(sequence))))
 
     def observe_router(self, peer):
-        try:
-            return self.read_router(peer)
-        except subprocess.SubprocessError:
-            ssh = self.ssh[peer]
-            subprocess.run([*ssh[:-1], "-O", "exit", ssh[-1]], capture_output=True, timeout=2)
-            self.master.pop(peer, None)
-            if self.open_ssh(peer):
-                return self.read_router(peer)
-            raise
+        # Networka drops a dead session, so the next read opens a new one.
+        return self.read_router(peer)
 
     def read_linux(self):
         return run(self.ns("c2", "cat", "/proc/net/bonding/bond0"))
@@ -88,14 +70,10 @@ class RootLab(Lab):
         last_error = "management SSH unavailable"
         deadline = time.monotonic() + self.management_timeout_s
         while time.monotonic() < deadline:
-            for peer in self.peers:
-                if peer not in self.master:
-                    self.open_ssh(peer)
-            if len(self.master) == len(self.peers):
-                try:
-                    return self.readiness()
-                except (RuntimeError, subprocess.SubprocessError) as error:
-                    last_error = str(error)
+            try:
+                return self.readiness()
+            except (RuntimeError, subprocess.SubprocessError) as error:
+                last_error = str(error)
             time.sleep(1)
         raise RuntimeError(f"Root baseline did not settle: {last_error}")
 
@@ -371,7 +349,7 @@ def root_attempt(lab, path, name, build_hash):
                     try:
                         for peer in lab.peers:
                             lab.ros(peer, f':log info "{lab.name}-{path.name}-begin"')
-                        config = {peer: lab.ros(peer, CONFIG) for peer in lab.peers}
+                        config = lab.ros_peers(CONFIG)
                         (path / "effective-config.json").write_text(json.dumps(config, indent=2) + "\n")
                         time.sleep(2)
                         baseline = capture.mark("baseline_start")

@@ -12,6 +12,7 @@ import json
 import re
 import subprocess
 
+from .direct_topology import DIRECT_NODES
 from .legacy import CAPTURES, CLIENT_MAC, FLOOD_FLOWS, FLOWS, MOBILE_MAC, NS
 from .measure import seconds, within
 
@@ -161,7 +162,7 @@ def read_legacy_state(path, name, marks, start, down, up, check, timeline):
     for phase in ("begin", "end"):
         marker = f"mlag-suite-{path.name}-{phase}"
         sources = {log["source_ip"] for log in logs if marker in log["raw"]}
-        check("error", sources == {"172.30.215.11", "172.30.215.12"}, f"Syslog {phase} markers from both peers")
+        check("error", sources == set(DIRECT_NODES.values()), f"Syslog {phase} markers from both peers")
     for log in logs:
         stamp = int(datetime.fromisoformat(log["received_at"]).timestamp() * NS)
         timeline.append((stamp, f"syslog-{log['source_ip']}", log["raw"]))

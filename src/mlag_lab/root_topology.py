@@ -1,11 +1,13 @@
 """The root pair, downstream RSTP witness and independent bypass."""
 
+from .networka import addresses
+
 ROOT_CASES = ("root-calibrate", "reboot-secondary", "reboot-primary", "primary-sustained-stop",
               "reboot-primary-no-fallback")
 ROOT_ID = "0x1000.02:00:00:21:00:11"
-ROOT_NODES = {"p1": "172.30.216.11", "p2": "172.30.216.12", "witness": "172.30.216.13"}
+ROOT_NODES = addresses("medium-pair-root", {"p1": "dc1-core-mlag1", "p2": "dc1-core-mlag2", "witness": "dc1-access-switch1"})
 ACCESS_ROOT_ID = "0x0000.02:00:00:21:00:13"
-MEDIUM_NODES = {node: address.replace(".216.", ".218.") for node, address in ROOT_NODES.items()}
+MEDIUM_NODES = addresses("medium", {"p1": "dc1-core-mlag1", "p2": "dc1-core-mlag2", "witness": "dc1-access-switch1"})
 MEDIUM_TARGETS = {
     f"medium-{mode}-{case}": target
     for mode in ("stp-off", "pair-root", "access-root", "mstp-pair-root", "mstp-access-root")

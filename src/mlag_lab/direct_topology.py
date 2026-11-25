@@ -1,11 +1,12 @@
 """The existing small lab with both client bonds terminating on Linux hosts."""
 
 from .legacy import FLOOD_FLOWS
+from .networka import addresses
 from .root_topology import ROOT_FLOWS
 
 DIRECT_CASES = ("direct-baseline", "direct-calibrate", "direct-reboot-secondary", "direct-reboot-primary",
                 "direct-power-loss-secondary", "direct-power-loss-primary")
-DIRECT_NODES = {"p1": "172.30.215.11", "p2": "172.30.215.12"}
+DIRECT_NODES = addresses("small", {"p1": "dc1-core-mlag1", "p2": "dc1-core-mlag2"})
 DIRECT_LINKS = (
     (("p1", "eth1"), ("p2", "eth1")),
     (("p1", "eth2"), ("c1", "eth1")),

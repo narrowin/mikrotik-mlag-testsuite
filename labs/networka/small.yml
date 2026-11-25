@@ -2,8 +2,9 @@ general:
   transport: system
   ssh_config_file: false
   ssh_strict_host_key_checking: true
-  timeout: 8
-  command_timeout: 10
+  timeout: 3
+  connection_retries: 1
+  command_timeout: 5
 devices:
   dc1-core-mlag1:
     host: 172.30.215.11

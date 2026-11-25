@@ -17,8 +17,9 @@ from .evidence import packets, seal_captures
 from .external_evaluate import baseline_issues, bpdu_coverage, broadcast_counts, direct_baseline_issues
 from .legacy import case_name
 from .measure import score_flows
+from .networka import reads
 from .root_run import (
-    CONFIG, STATE, RootLab, power_loss, rebind_syslog, reboot_guest, sample_loop, verify_live_collectors,
+    CONFIG, RootLab, power_loss, rebind_syslog, reboot_guest, sample_loop, verify_live_collectors,
     verify_live_delivery,
 )
 from .root_run import confirm_carrier
@@ -27,7 +28,7 @@ from .root_topology import (
     ROOT_CAPTURES, ROOT_FLOWS, ROOT_LINKS, ROOT_PORTS, medium_mode, medium_root_id,
 )
 from .root_state import ACCESS_GUARDS_READBACK, access_guards, router_state
-from .run import Capture, filter_fault, remove_flood_neighbour, run, start_floods
+from .run import UPTIME, Capture, filter_fault, remove_flood_neighbour, run, start_floods
 
 # Access switch port settings per Medium family, applied in every bridge reset so none leaks into the next.
 ACCESS_GUARDS = {
@@ -138,8 +139,8 @@ class MediumLab(BridgeComparisonLab):
                 raise RuntimeError("Redeploy the three-CHR Medium lab before running these cases")
 
     def read_router(self, peer):
-        bonds = ("uplink",) if peer == "witness" else ("access-uplink", "client2")
-        return observe_ports(self, peer, (2, 3, 4), bonds)
+        sequence = "mlag_medium_access_state" if peer == "witness" else "mlag_medium_core_state"
+        return observe_ports(self, peer, sequence)
 
     def case_target(self, name):
         return MEDIUM_TARGETS[name]
@@ -180,7 +181,7 @@ class DirectLab(BridgeComparisonLab):
     client1_probe_port = "bond0"
 
     def read_router(self, peer):
-        return observe_ports(self, peer, (2, 3, 4, 5), ("client1", "client2"))
+        return observe_ports(self, peer, "mlag_direct_state")
 
     def readiness(self):
         state = super().readiness()
@@ -212,10 +213,8 @@ class DirectLab(BridgeComparisonLab):
         yield self.apply_bridge_mode(self.bridge_mode)
 
 
-def observe_ports(lab, peer, ports, bonds, extra=()):
-    command = (STATE[0], *(f"/interface ethernet monitor ether{port} once" for port in ports), *STATE[4:],
-               *(f"/interface bonding monitor-slaves bond={bond} once=yes" for bond in bonds), *extra)
-    return lab.ros(peer, ";".join(command))
+def observe_ports(lab, peer, sequence, extra=()):
+    return lab.ros(peer, ";".join((UPTIME, *reads(sequence), *extra)))
 
 
 def interpair_member(capture, up):
@@ -328,7 +327,7 @@ def external_attempt(lab, path, name, build_hash, changes):
                     try:
                         for peer in lab.peers:
                             lab.ros(peer, f':log info "{lab.name}-{path.name}-begin"')
-                        config = {peer: lab.ros(peer, CONFIG) for peer in lab.peers}
+                        config = lab.ros_peers(CONFIG)
                         (path / "effective-config.json").write_text(json.dumps(config, indent=2) + "\n")
                         lab.wait_for_baseline_state(name, config, target)
                         if settle:
@@ -391,7 +390,7 @@ def external_attempt(lab, path, name, build_hash, changes):
                                 for job in jobs:
                                     job.result()
                                 after = lab.readiness()
-                                config = {peer: lab.ros(peer, CONFIG) for peer in lab.peers}
+                                config = lab.ros_peers(CONFIG)
                                 capture.mark("baseline_restored", **after, issues=lab.check_baseline(name, after, config, target))
                         for peer in lab.peers:
                             lab.ros(peer, f':log info "{lab.name}-{path.name}-end"')

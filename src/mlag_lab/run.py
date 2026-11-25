@@ -17,8 +17,10 @@ from threading import Event
 import time
 from datetime import datetime, timezone
 
+from network_toolkit import InteractiveCredentials, NetworkaClient, NetworkToolkitError
+
 from .cases import FLAP_CYCLES, FLAP_DOWN_S, FLAP_UP_S, MAC_AGE_DEFAULT, MAC_AGE_RETURN_S, MAC_AGE_SILENCE_S, MAC_AGE_TIME
-from .direct_topology import DIRECT_CASES
+from .direct_topology import DIRECT_CASES, DIRECT_NODES as PEERS
 from .evaluate import analyze
 from .proof import keep_proof
 from .evidence import seal_captures
@@ -26,6 +28,7 @@ from .external_topology import EXTERNAL_CASES
 from .legacy import CASES, CAPTURES, FLOWS, PEER_LINK_PORTS, case_captures, case_name
 from .legacy import FLOOD_FLOWS, FLOOD_NEIGHBOUR
 from .legacy import CLIENT_MAC, MOBILE_MAC
+from .networka import PROFILES, reads
 from .report import write_suite
 from .root_state import uptime
 from .root_topology import MEDIUM_TARGETS, ROOT_CASES
@@ -34,22 +37,12 @@ from .two_pair_topology import TWO_PAIR_TARGETS
 HERE = Path(__file__).resolve().parent
 PROJECT = HERE.parents[1]
 LAB_FOLDERS = {"small": "small", "medium": "medium", "medium-pair-root": "medium", "medium-two-pair": "medium"}
-PEERS = {"p1": "172.30.215.11", "p2": "172.30.215.12"}
 PORTS = {"p1": "eth2", "c1": "eth1"}
 QMP_PORT = 5001
 UV = os.environ.get("UV", "uv")
-HOST_TOOLS = (UV, "docker", "nsenter", "ip", "tc", "ping", "tcpdump", "tshark", "ssh", "sshpass", "containerlab")
+HOST_TOOLS = (UV, "docker", "nsenter", "ip", "tc", "ping", "tcpdump", "tshark", "ssh", "containerlab")
 BRIDGE_MODES = ("rstp", "none", "mstp")
-STATE = ";".join((
-    "/interface/ethernet/monitor ether3 once",
-    "/interface/bonding/monitor-slaves bond=client1 once=yes",
-    "/interface/bonding/monitor-slaves bond=client2 once=yes",
-    "/interface/bridge/monitor bridge once",
-    "/interface/bridge/port/monitor [find where bridge=bridge] once",
-    "/interface/bridge/host/print detail without-paging where mac-address=02:00:00:11:00:11",
-    "/interface/bridge/host/print detail without-paging where mac-address=02:00:00:11:00:12",
-    "/interface/bridge/host/print detail without-paging where mac-address=02:00:00:11:00:50",
-))
+STATE = ";".join(reads("mlag_small_state"))
 # The peer-link case also polls the peer port and each MLAG bond's LACP system ID.
 PEER_LINK_STATE = ";".join((
     STATE,
@@ -125,10 +118,10 @@ class Lab:
     def __init__(self, topology, runtime, username, password):
         self.topology = topology
         self.runtime = runtime
-        self.env = {**os.environ, "SSHPASS": password, "LC_ALL": "C", "TZ": "UTC"}
+        self.profile = PROFILES / f"{topology.name.removesuffix('.clab.yml')}.yml"
+        self.credentials = InteractiveCredentials(username, password)
+        self.client = self.networka()
         self.containers = {}
-        self.ssh = {}
-        self.master = {}
         inspections = json.loads(run(["docker", "inspect", *[self.container_name(n) for n in self.nodes]]))
         for node, cfg in zip(self.nodes, inspections, strict=True):
             labels = cfg["Config"]["Labels"]
@@ -141,15 +134,13 @@ class Lab:
                 raise RuntimeError(f"{device} has an unexpected management address")
             self.containers[node] = cfg
         self.validate_links()
-        for peer, address in self.peers.items():
-            self.ssh[peer] = [
-                "ssh", "-F", "/dev/null", "-S", str(runtime / peer), "-o", "ConnectTimeout=3",
-                "-o", "NumberOfPasswordPrompts=1", "-o", "PubkeyAuthentication=no",
-                "-o", "ServerAliveInterval=2", "-o", "ServerAliveCountMax=2",
-                "-o", f"UserKnownHostsFile={runtime / 'known_hosts'}", "-o",
-                "StrictHostKeyChecking=accept-new", "-o", "LogLevel=ERROR",
-                f"{username}@{address}",
-            ]
+
+    def networka(self):
+        """A Networka client for the lab's profile that records each CHR's host key in the run's own file."""
+        client = NetworkaClient(self.profile)
+        client.config.general.ssh_known_hosts_file = str(self.runtime / "known_hosts")
+        client.config.general.ssh_strict_host_key_checking = False
+        return client
 
     def device_name(self, node):
         return self.device_names.get(node, node)
@@ -186,70 +177,59 @@ class Lab:
         return json.loads(run(self.ns(node, "ip", "-j", "-d", "link", "show", "dev", port)))[0]
 
     def ros(self, peer, command):
-        # Batch mode prevents a missing master from silently retrying password authentication.
-        return run([*self.ssh[peer][:-1], "-o", "BatchMode=yes", self.ssh[peer][-1], command])
+        return self.ros_peers(command, (peer,))[peer]
 
-    def open_ssh(self, peer):
-        ssh = self.ssh[peer]
-        # A master that died without cleanup leaves its socket behind. ssh -M then logs in without
-        # multiplexing and returns 0, and every batch-mode command fails as "Permission denied".
-        control = self.runtime / peer
-        if control.exists() and subprocess.run([*ssh[:-1], "-O", "check", ssh[-1]],
-                                               capture_output=True, timeout=5).returncode != 0:
-            control.unlink(missing_ok=True)
-        opened = subprocess.run(["sshpass", "-e", *ssh[:-1], "-M", "-fN", ssh[-1]],
-                                capture_output=True, timeout=8, env=self.env)
-        if opened.returncode == 5:
-            raise RuntimeError(f"{peer} rejected the supplied lab SSH credential")
-        if opened.returncode == 0:
-            self.master[peer] = ssh
-        return opened.returncode == 0
+    def ros_peers(self, command, peers=None, client=None):
+        """Send one command line to each CHR, all CHRs of a group in one Networka run, and return each reply."""
+        peers = peers or tuple(self.peers)
+        devices = {self.device_name(peer): peer for peer in peers}
+        try:
+            results = (client or self.client).run(",".join(devices), command,
+                                                  interactive_creds=self.credentials).command_results
+        except NetworkToolkitError as error:
+            raise RuntimeError(f"{', '.join(peers)}: {error.message}") from error
+        replies = {devices[result.device]: result for result in results}
+        for peer in peers:
+            if peer not in replies or replies[peer].error:
+                error = replies[peer].error if peer in replies else "no result"
+                raise RuntimeError(f"{peer}: {command} failed: {error}")
+        return {peer: replies[peer].output for peer in peers}
 
     def check_logins(self, timeout=30):
-        """Log in afresh to every CHR with the lab credential: a lasting SSH master would hide a rejected password."""
-        for peer, ssh in self.ssh.items():
-            control = ssh.index("-S")
-            command = ["sshpass", "-e", *ssh[:control], *ssh[control + 2:-1], "-o", "ControlPath=none",
-                       "-o", "BatchMode=no", ssh[-1], ":put login-ok"]
-            deadline = time.monotonic() + timeout
-            while True:
-                try:
-                    login = subprocess.run(command, capture_output=True, text=True, timeout=12, env=self.env)
-                except subprocess.TimeoutExpired:
-                    login = None
-                if login is not None and login.returncode == 5:
-                    raise RuntimeError(f"{peer} rejected a fresh login with the lab SSH credential")
-                if login is not None and "login-ok" in login.stdout:
-                    break
-                if time.monotonic() >= deadline:
-                    raise RuntimeError(f"{peer} did not accept a fresh lab SSH login within {timeout} s: "
-                                       f"{login.stderr.strip() if login else 'timed out'}")
-                time.sleep(2)
+        """Log in afresh to every CHR with the lab credential: a lasting session would hide a rejected password."""
+        with self.networka() as fresh:
+            for peer in self.peers:
+                deadline = time.monotonic() + timeout
+                while True:
+                    try:
+                        if "login-ok" in self.ros_peers(":put login-ok", (peer,), fresh)[peer]:
+                            break
+                        error = "no login-ok reply"
+                    except RuntimeError as failure:
+                        error = str(failure)
+                    if time.monotonic() >= deadline:
+                        raise RuntimeError(f"{peer} did not accept a fresh lab SSH login within {timeout} s: {error}")
+                    time.sleep(2)
 
     def wait_ready(self):
         deadline = time.monotonic() + 90
         while time.monotonic() < deadline:
-            for peer in self.ssh:
-                if peer not in self.master:
-                    self.open_ssh(peer)
             try:
-                if len(self.master) == 2:
-                    for peer in PEERS:
-                        result = self.ros(peer, STATE)
-                        if ("mlag-state: connected" not in result
-                                or result.count(' flags="ATGSCD--"') < 2
-                                or result.count('partner-flags="ATGSCD--"') < 2):
-                            raise RuntimeError(f"{peer} MLAG or LACP still settling")
-                    if "LOWER_UP" in self.link("c1", "eth1")["flags"]:
-                        return
+                for peer in PEERS:
+                    result = self.ros(peer, STATE)
+                    if ("mlag-state: connected" not in result
+                            or result.count(' flags="ATGSCD--"') < 2
+                            or result.count('partner-flags="ATGSCD--"') < 2):
+                        raise RuntimeError(f"{peer} MLAG or LACP still settling")
+                if "LOWER_UP" in self.link("c1", "eth1")["flags"]:
+                    return
             except (RuntimeError, subprocess.SubprocessError):
                 pass
             time.sleep(1)
         raise RuntimeError("Both peers did not reach connected MLAG and active LACP within 90 s")
 
     def close(self):
-        for ssh in self.master.values():
-            subprocess.run([*ssh[:-1], "-O", "exit", ssh[-1]], capture_output=True, timeout=5)
+        self.client.close()
 
     def snapshot(self, peer, command=STATE):
         start = time.time_ns()
@@ -313,7 +293,7 @@ class Lab:
             "tshark": run(["tshark", "--version"]).splitlines()[0],
             "images": {node: {"reference": cfg["Config"]["Image"], "id": cfg["Image"]}
                        for node, cfg in self.containers.items()},
-            "routeros": {peer: self.ros(peer, "/system/resource/print") for peer in self.peers},
+            "routeros": self.ros_peers("/system/resource/print"),
         }
 
 
@@ -653,7 +633,7 @@ def run_case(lab, path, name, changes, hold=8):
                     if mac_age:
                         pin_neighbours(capture)
                         bridge_ageing(capture, MAC_AGE_TIME, "bridge_ageing_set")
-                    config = {peer: lab.ros(peer, CONFIG) for peer in PEERS}
+                    config = lab.ros_peers(CONFIG)
                     (path / "effective-config.json").write_text(json.dumps(config, indent=2) + "\n")
                     # Allow neighbor discovery and establish a separate quiet baseline.
                     time.sleep(2)
@@ -823,7 +803,8 @@ def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp", sett
                     inputs = (topology, campaign_image, topology.parent / f"{topology_name}.rsc",
                               shared / "client.Dockerfile", shared / "client-network.sh",
                               shared / "qemu-data-link.sh", shared / "forward-control.sh", shared / "rsyslog.conf",
-                              PROJECT / "uv.lock", PROJECT / "pyproject.toml", *sorted(HERE.glob("*.py")))
+                              PROJECT / "uv.lock", PROJECT / "pyproject.toml", *sorted(HERE.glob("*.py")),
+                              PROFILES / f"{topology_name}.yml", PROFILES / "sequences" / "mikrotik_routeros" / "common.yml")
                     if is_root or is_medium:
                         inputs += (shared / "root-client.sh",)
                     saved_inputs = output / "inputs"
