@@ -38,7 +38,7 @@ The first command runs the test. The second one judges the saved folder again wi
 
 ## What came out
 
-Live run on 26 November 2026. The verdict was pass, and the replay gave the same result.
+Live run on 26 November 2026. The verdict was pass, and the replay gave the same result. Every stream sent one ping every 100 ms, so 24 lost pings mean that traffic stopped for about 2.4 s. All five streams run through the two switches.
 
 | Stream | Cable down | Cable back | Limit |
 | --- | --- | --- | --- |
@@ -56,6 +56,7 @@ That run used the same test with the earlier file layout. The layout with `lab.y
 ## Not built yet
 
 - The lab is deployed by `labs/campaign.sh`, and spanning tree is switched off by hand before the test.
+- The lab still has a direct cable between the two clients. No stream uses it.
 - Nothing checks that the cable that goes down carried the test streams.
 - The only action is a cable that goes down or comes back.
 - The engine has not been reviewed.
