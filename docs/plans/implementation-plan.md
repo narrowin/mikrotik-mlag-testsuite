@@ -24,7 +24,7 @@ On 26 November 2026 the operator moved both working checkouts to local `main` an
 | Part | Checkout or evidence | State |
 | --- | --- | --- |
 | Networka engine | `/Users/md/git/narrowin/networka`, runtime commit `32f4bb4` on local `main` | The tested engine and RouterOS adapter are published. GitHub `main` was verified at `9653dd4`, including the docs-only follow-up. |
-| Small lab | `/Users/md/git/narrowin/mlag-suite-yaml`, runtime commit `d958b77` on local `main` | The qualified native startup and both test files passed from a clean deployment. The validated publish was `a47f8ef`. The final plan-only update and remote tip are recorded in `09-lab-final-plan-publish.log`. |
+| Small lab | `/Users/md/git/narrowin/mikrotik-mlag-testsuite`, runtime commit `d958b77` on local `main` | The qualified native startup and both test files passed from a clean deployment. The validated publish was `a47f8ef`. The final plan-only update and remote tip are recorded in `09-lab-final-plan-publish.log`. |
 | Previous worktrees and branches | [Handover plan at a324af6](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/a324af6/docs/plans/implementation-plan.md) | The three retired Networka worktrees and their local branches were removed. Their remote refs and the lab handover branch are absent. The original progress note was moved and hash-verified. |
 | Review findings | [70 decisions and verification status](clean-setup-open-findings.md) | Wrong-result findings were resolved first. The ledger records any verification limits. |
 | Evidence | `test-results/suite-yaml-verify/clean/phase1-close/` | Keep command output, raw device observations, verdicts and replay comparisons here or under the README-generated run directory. |
