@@ -1,0 +1,47 @@
+general:
+  # A redeployed lab has new host keys, so none are stored.
+  ssh_known_hosts_file: /dev/null
+devices:
+  dc1-core1: &routeros
+    device_type: mikrotik_routeros
+  dc1-core2: *routeros
+  dc1-dist1: *routeros
+  dc1-dist2: *routeros
+  dc1-firewall: *routeros
+  dc2-core1: *routeros
+  dc2-core2: *routeros
+  dc2-dist1: *routeros
+  dc2-dist2: *routeros
+  dc2-firewall: *routeros
+  dc1-traffic: &linux
+    device_type: linux
+  dc1-service: *linux
+  dc2-traffic: *linux
+  dc2-service: *linux
+groups:
+  routeros:
+    description: Switches and firewalls using the CHR default login
+    members:
+      - dc1-core1
+      - dc1-core2
+      - dc1-dist1
+      - dc1-dist2
+      - dc1-firewall
+      - dc2-core1
+      - dc2-core2
+      - dc2-dist1
+      - dc2-dist2
+      - dc2-firewall
+    credentials:
+      user: admin
+      password: admin
+  hosts:
+    description: Linux traffic and service hosts
+    members:
+      - dc1-traffic
+      - dc1-service
+      - dc2-traffic
+      - dc2-service
+    credentials:
+      user: root
+      password: admin
