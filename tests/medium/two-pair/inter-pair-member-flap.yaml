@@ -1,0 +1,64 @@
+name: inter-pair-member-flap
+purpose: >-
+  Take the inter-pair bond member between switch-a1 and switch-b1 down and back. Measure both host
+  streams, which cross the inter-pair bond, and sample the host entries of both hosts on all four switches.
+source: https://forum.mikrotik.com/t/7-25-1-stable-is-released/274226/22
+lab: lab.yaml
+# A field report saw unrelated MACs move to the peer port and the host table shrink after this flap.
+watch_host_entries:
+  interval_s: 0.35  # The interval of the Small member flap watch.
+  bridge: bridge
+  devices:
+    - switch-a1
+    - switch-a2
+    - switch-b1
+    - switch-b2
+  macs:
+    - "02:00:00:22:00:11"  # host1
+    - "02:00:00:22:00:12"  # host2
+log:
+  # RouterOS has logged "bridge,warning MLAG: remote heartbeat timeout" on peer loss.
+  must_not:
+    - switch: every
+      text: heartbeat timeout
+steps:
+  - name: Inter-pair member down
+    cable: switch-a1:eth2
+    state: down
+    hold_s: 8  # Hold past two 3 s fast LACP timeouts so a delayed failure is measured.
+    max_outage_s: &limits
+      host1-to-host2: &member-limit 3  # One fast LACP timeout, three 1 s LACP intervals.
+      host2-to-host1: *member-limit
+      bypass-host1-to-host2: 0
+      bypass-host2-to-host1: 0
+    expected: >-
+      switch-a1 and switch-b1 each lose their only inter-pair bond member. The bond keeps forwarding over
+      the member between switch-a2 and switch-b2, and traffic that reaches switch-a1 or switch-b1 crosses its peer link.
+    log:
+      must:
+        - switch: switch-a1
+          text: ether3 link down
+        - switch: switch-b1
+          text: ether3 link down
+  - name: Inter-pair member back
+    cable: switch-a1:eth2
+    state: up
+    hold_s: 8  # Watch for delayed member rejoin beyond two fast LACP timeouts.
+    max_outage_s: *limits
+    expected: Carrier returns at both ends and LACP adds ether3 back to the inter-pair bond on switch-a1 and switch-b1.
+    log:
+      must:
+        - switch: switch-a1
+          text: ether3 link up
+        - switch: switch-b1
+          text: ether3 link up
+  - name: Flap recovery
+    action:
+      observe: true
+    hold_s: 3  # Continue for one fast LACP timeout after the return.
+    max_outage_s:
+      host1-to-host2: 0
+      host2-to-host1: 0
+      bypass-host1-to-host2: 0
+      bypass-host2-to-host1: 0
+    expected: Every stream delivers after the flap, and the final state check finds both inter-pair members in use.
