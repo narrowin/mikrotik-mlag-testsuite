@@ -9,6 +9,7 @@ Pick the page by what you need to do. New here? Start with the [quick start](../
 | [Operator guide](operator-guide.md) | How do I deploy each lab, run its cases and collect a Networka checkpoint? |
 | [Test framework](test-framework.md) | What does each case assert, what does a run write, how do I replay it or run it in CI? |
 | [Small lab walkthrough](walkthrough-small-lab.md) | How does one Small lab run go from wiring to verdict, step by step with links into the code? |
+| [Networka lab test walkthrough](walkthrough-networka-tests.md) | How does one `nw test run` of the Small lab tests go, what ran where, and what did the live run show? |
 | [Syslog](syslog/README.md) | How does RouterOS logging reach the collector, and how do I check it? |
 | [Diagrams](diagrams/README.md) | How do I edit the lab drawings and where is each scenario's evidence? |
 

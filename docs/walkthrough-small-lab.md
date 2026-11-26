@@ -1,5 +1,7 @@
 # Small lab walkthrough
 
+This page describes the suite's own Python runner. The [Networka lab test walkthrough](walkthrough-networka-tests.md) follows the same lab through `nw test run`.
+
 This page follows the Small lab from its wiring to one graded run.
 Every link opens the file or function that does the step.
 Line anchors point at the code as of 2026-11-26.
