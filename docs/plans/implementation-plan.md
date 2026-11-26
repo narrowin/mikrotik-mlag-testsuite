@@ -62,6 +62,11 @@ Each package is done when its "done when" line holds on `main` of both repos.
 
 - Packet loss and delay on a cable, a switch reboot, and a switch power loss.
 - The commands and measured times are in `test-results/suite-yaml-verify/actions/research.md`. That file is not in git. Read it first.
+- Measured on RouterOS 7.26beta7: packet loss and delay work with `tc qdisc ... netem` inside the node's network namespace and only affect traffic that leaves the interface. `containerlab tools netem` exits with an error on this kernel.
+- Measured: `:execute {/system reboot}` reboots a switch without a prompt. SSH answers again after 17 to 18 s, and the lab is healthy after about 20 s.
+- Measured: RouterOS refuses password logins for about 30 s after a quick series of SSH logins. The engine must keep its SSH connections open and must not log in again for every command.
+- Not measured: power loss. The prepared script is `power-qmp.sh` in the same folder.
+- Found on the way: at 100 % packet loss on one cable the switch kept sending to the client on that cable, and every ping was lost for the 25 s of the trial, at one ping every 100 ms. This needs its own test.
 - Each action gets one test on the Small lab.
 - Done when: each test has run live, the engine proves that the action took effect, and the test waits for the healthy state before it ends.
 
