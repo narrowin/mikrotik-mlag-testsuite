@@ -9,7 +9,7 @@ The live checks are in test-results/suite-yaml-verify/prototype/audit-live/. All
 ## Remove
 
 | Part | Where (file) | Why it is not needed | What to do |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | The whole baseline test | tests/small/baseline.yaml | Every test already checks the state, runs a 5 s baseline that must lose nothing, and refuses to cut a cable otherwise. | Delete the file and its mentions in tests/README.md and the walkthrough. |
 | Syslog collector node | labs/small/small.clab.yml | Neither the new tests nor Networka read RouterOS syslog. It also pulls an unpinned rsyslog:latest image on every deploy. | Delete the node, its logs bind and the Small syslog image steps in labs/campaign.sh (lines 149-156). Keep labs/shared/rsyslog.conf, because Medium and Large bind it. |
 | CHRs wait for the collector at startup | labs/small/small.clab.yml | It exists only for the collector. | Delete it in the same change as the collector, or the deploy waits on a missing node. |
@@ -33,7 +33,7 @@ The live checks are in test-results/suite-yaml-verify/prototype/audit-live/. All
 ## Simplify
 
 | Part | Where (file) | Why it is not needed as it is | What to do |
-|---|---|---|---|
+| --- | --- | --- | --- |
 | Campaign wrapper that always runs an old suite case | labs/campaign.sh lines 39, 192-205 | The new tests got their lab by running an unrelated old baseline case in a second uv environment. | Add a deploy-only path that keeps the health wait and the cable mode step. |
 | Cable mode (MAC learning off) set after the health wait | labs/shared/forward-control.sh, labs/campaign.sh 178-181, quickstart.sh 42 | The audit called it unclear, but the review found a case where a learning two-port bridge drops replies in this very failover, so learning stays off. | Put --wire into the Small kind exec as Medium and Large do, and drop the separate step from campaign.sh, quickstart.sh and the operator guide. |
 | Second leg of the third host to CHR 2 | labs/small/small.clab.yml, client-network.sh | The tests need a host on CHR 1 only. The CHR 2 leg carried no probe. | Use one cable to CHR 1. CHR 2 then has no ether5, and the shared small.rsc would fail at its ether5 lines, so CHR 2 needs a config without ether5. |
@@ -73,7 +73,7 @@ The live checks are in test-results/suite-yaml-verify/prototype/audit-live/. All
 ## Unclear
 
 | Part | The open question | The check that settles it |
-|---|---|---|
+| --- | --- | --- |
 | Spanning tree settings at boot (RSTP, priority, costs, edge) | Does MLAG come up cleanly with protocol-mode=none from boot, so the manual STP-off step and its state check can go? | One fresh deploy with protocol-mode=none in small.rsc and no manual step, then the state file passes and the loss matches the earlier runs. |
 | Limit 3 s in Member back | Is 3 s right? The export's six runs reach 2.92 s, which leaves 0.08 s of margin, and today's runs reached 2.83 s. | A loss spread row per phase in mlag-lab export, then a decision on the limit. |
 | No check of the third host's attachment | Nothing confirms the host uses CHR 1, and that decides whether stream 101 crosses the peer link. | The single cable to CHR 1 settles it by construction. If the second leg stays, set primary eth1 and add a Networka active-backup check, which does not exist yet. |
@@ -82,7 +82,7 @@ The live checks are in test-results/suite-yaml-verify/prototype/audit-live/. All
 ## Keep
 
 | Part | Why it earns its place |
-|---|---|
+| --- | --- |
 | VLAN 110 with VLAN filtering and the peer link tagged | MLAG needs the client VLANs carried on the peer port. A setup without filtering was not tested. |
 | lacp-rate=1sec on the RouterOS bonds | It sets the return timing that the limits were measured with. |
 | Fast LACP rate on the Linux clients | It matches the RouterOS rate. |
@@ -118,7 +118,7 @@ The live checks are in test-results/suite-yaml-verify/prototype/audit-live/. All
 ## Unexplained numbers
 
 | Value | Name or place | File |
-|---|---|---|
+| --- | --- | --- |
 | 0.1 s | Probe interval, also the start_stream default | Networka labtest.py, lab.py |
 | 2 s | NEIGHBOUR_S, wait before the baseline | Networka labtest.py |
 | 5 s | BASELINE_S, baseline window (old suite 4 s) | Networka labtest.py |
