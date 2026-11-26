@@ -23,12 +23,12 @@ On 26 November 2026 the operator moved both working checkouts to local `main` an
 
 | Part | Checkout or evidence | State |
 | --- | --- | --- |
-| Networka engine | `/Users/md/git/narrowin/networka`, runtime commit `32f4bb4` on local `main` | Phase 1 engine and RouterOS adapter accepted on the owned native Small lab. A docs-only follow-up is on local main at `9653dd4`. |
-| Small lab | `/Users/md/git/narrowin/mlag-suite-yaml`, runtime commit `d958b77` on local `main` | The qualified native startup and both test files passed the final live checks from a clean deployment. |
-| Previous worktrees and branches | [Handover plan at a324af6](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/a324af6/docs/plans/implementation-plan.md) | The three Networka worktrees were audited. Their branches and the lab handover branch remain until the operator approves cleanup. The progress note is copied and hash-verified. |
+| Networka engine | `/Users/md/git/narrowin/networka`, runtime commit `32f4bb4` on local `main` | The tested engine and RouterOS adapter are published. GitHub `main` was verified at `9653dd4`, including the docs-only follow-up. |
+| Small lab | `/Users/md/git/narrowin/mlag-suite-yaml`, runtime commit `d958b77` on local `main` | The qualified native startup and both test files passed from a clean deployment. The validated publish was `a47f8ef`. The final plan-only update and remote tip are recorded in `09-lab-final-plan-publish.log`. |
+| Previous worktrees and branches | [Handover plan at a324af6](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/a324af6/docs/plans/implementation-plan.md) | The three retired Networka worktrees and their local branches were removed. Their remote refs and the lab handover branch are absent. The original progress note was moved and hash-verified. |
 | Review findings | [70 decisions and verification status](clean-setup-open-findings.md) | Wrong-result findings were resolved first. The ledger records any verification limits. |
 | Evidence | `test-results/suite-yaml-verify/clean/phase1-close/` | Keep command output, raw device observations, verdicts and replay comparisons here or under the README-generated run directory. |
-| Lab ownership | OrbStack VM `mlag-external` | Only the Small instance started for this prototype is in scope. |
+| Lab ownership | OrbStack VM `mlag-external` | The owned Small instance was removed with the qualified Containerlab binary. The other session's Medium lab remained in place. |
 
 The times below are Europe/Zurich. Evidence paths are relative to the phase 1 evidence directory unless specified. A named verifier is the person or agent who actually checked that entry.
 
@@ -69,12 +69,15 @@ The times below are Europe/Zurich. Evidence paths are relative to the phase 1 ev
 | 14:08 | Stopping the collector returned preflight error 2. Pausing the collector yielded a saved error with all four markers missing and byte-identical replay. The collector was restored. | VM operator / Sol lab reviewer | `08-native-main-matrix.log`, `test-results/small/run.76gHZV/bond-member-loss/` |
 | 14:09 | The named reboot proved a new boot of secondary switch1 and return of every health check. Both end markers arrived. The run and replay passed. Independently judging all five saved native runs reproduced the original result and report bytes. | VM operator / Sol lab reviewer | `08-native-main-matrix.log`, `08-sol-native-final-review.log`, `test-results/small/run.NIMPbO/switch-reboot/` |
 | 14:12 | A fresh Networka documentation review corrected host prerequisites, reboot and closing proof, cleanup, interrupt status and replay guidance. A separate peer reviewed the fixes and the Small YAML links. The actual CLI help, regenerated reference, five native replays, strict MkDocs build and rendered links passed. The docs-only commit kept the proven runtime unchanged. | Sol High docs author / Sol High lab reviewer | `08-networka-docs-checks.log`, `08-networka-docs-commit.log` |
+| 14:16 | The operator approved publication and cleanup. Networka `main` fast-forwarded from `e0c71bf` to `9653dd4`, and the lab from `3e96460` to `a47f8ef`. Server reads confirmed both tips. GitHub accepted the lab's direct push and reported bypassing its pull-request and markdownlint rules. | Sol High engine and lab authors | `09-networka-publish.log`, `09-lab-main-publish.log` |
+| 14:17 | After both publishes, the lab handover branch was verified at `a324af6`, merged and unused by a worktree, then removed locally and remotely. Networka preserved and hash-verified the original progress note, removed the three task worktrees and local branches, and verified the task refs absent remotely. | Sol High engine and lab authors | `09-lab-branch-cleanup.log`, `09-networka-retired-audit.log`, `09-networka-local-cleanup.log`, `09-networka-remote-cleanup.log` |
+| 14:18 | The qualified Containerlab binary removed the owned Small deployment. All six containers, the management network and the generated directory were absent. Other VM resources matched their pre-teardown inventory, and 47 evidence checksums matched. | VM operator / Sol High lab reviewer | `09-native-main-final-destroy.log`, `09-native-evidence-before.sha256`, `09-native-evidence-after.sha256` |
 
 The strict documentation build used the available locked environment. A cold offline sync could not fetch the uncached Babel dependency.
 
 Sol took over the Phase 1 handoff on local main, with separate lab, engine and VM roles. Sol High continued the lab review after the candidate runs.
 
-Phase 1 implementation and acceptance are complete on the local runtime commits. The owned native Small lab stayed healthy for the operator's [walkthrough](../walkthrough-networka-tests.md). The changes are local. The recorded `origin/main` refs are `e0c71bf` in Networka and `3e96460` in the lab repo. Publication, branch and worktree cleanup, removal of the owned lab and Phase 2 require the operator's go.
+Phase 1 implementation, acceptance, publication and cleanup are complete. The operator approved publication and cleanup with “Publish and clean up.” The [walkthrough](../walkthrough-networka-tests.md) uses the saved evidence from the published runtime revisions. Phase 2 awaits the operator's separate go.
 
 ### Named switch reboot brought forward
 
