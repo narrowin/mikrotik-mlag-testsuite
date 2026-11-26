@@ -1,0 +1,29 @@
+general:
+  # A redeployed lab has new host keys, so none are stored.
+  ssh_known_hosts_file: /dev/null
+devices:
+  switch1: &switch
+    device_type: mikrotik_routeros
+  switch2: *switch
+  access-switch: *switch
+  host1: &host
+    device_type: linux
+  host2: *host
+groups:
+  switches:
+    description: MLAG peers and the access switch, using the CHR default login
+    members:
+      - switch1
+      - switch2
+      - access-switch
+    credentials:
+      user: admin
+      password: admin
+  hosts:
+    description: Linux hosts
+    members:
+      - host1
+      - host2
+    credentials:
+      user: root
+      password: admin
