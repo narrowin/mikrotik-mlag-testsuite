@@ -254,6 +254,9 @@ This attempt is local evidence: `test-results/` is ignored by Git, so the files 
 Path: `test-results/suite-yaml-verify/live/w2-small-link/link/01-bond-member-loss/`.
 It ran on Small instance 1 with STP off, RouterOS 7.26beta7, git revision `3e2489b`, on 2026-11-26.
 It predates the gate folders, so it has no `gate-baseline/`; the pcaps are still there.
+A newer local attempt with both gate folders, on code commit 4763100, is in `test-results/suite-yaml-verify/live/final-4763100/w1-small-link/link/01-bond-member-loss/`.
+It failed on the flood check: flood frame 501 came back at its sender in restoration.
+The numbers below are from the 3e2489b run.
 
 `result.json` says `"status": "pass"`, with 95 of 95 checks passing.
 The per-phase loss bounds of the graded streams:
