@@ -7,6 +7,7 @@ from typing import Annotated
 from pydantic import ConfigDict, Field, TypeAdapter
 import yaml
 
+from .direct_topology import DIRECT_FLOWS
 from .small_06 import Small06Intent
 
 INTENT_DIR = Path(__file__).with_name("intent")
@@ -122,12 +123,22 @@ def save_case(spec, path):
     (path / CASE_INTENT_FILE).write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=True))
 
 
+# SMALL-06 fields that graded_flows, control_flows and limit_s now hold.
+_REMOVED_TRAFFIC_FIELDS = {"client_streams", "max_client_outage_seconds", "loss_free_bypass_streams"}
+
+
 def recorded_case(spec, path):
     """The rules saved with the attempt. Replay never falls back to the catalogue."""
     source = path / CASE_INTENT_FILE
     if not source.is_file():
         raise ValueError(f"{source}: missing; write it from the catalogue with `mlag-lab write-intent {path}`")
-    recorded = validate_case(read_yaml(source), source)
+    data = read_yaml(source)
+    traffic = ((data.get("reboot_intent") or {}).get("traffic") or {}) if isinstance(data, dict) else {}
+    if isinstance(traffic, dict) and traffic.keys() & _REMOVED_TRAFFIC_FIELDS:
+        raise ValueError(f"{source}: saved by an older suite with reboot_intent.traffic fields "
+                         f"{', '.join(sorted(traffic.keys() & _REMOVED_TRAFFIC_FIELDS))}; delete {source} "
+                         f"and run `mlag-lab write-intent {path}`")
+    recorded = validate_case(data, source)
     if recorded.name != spec.name:
         raise ValueError(f"{source}: does not identify {spec.name}")
     return recorded
@@ -180,6 +191,14 @@ def _index(cases):
             raise ValueError(f"{case.name}: unsupported phases {keys}")
         if set(case.graded_flows) & set(case.control_flows):
             raise ValueError(f"{case.name}: a flow is both graded and a control")
+        if case.reboot_intent:
+            if any(phase.limit_s is None for phase in case.phases):
+                raise ValueError(f"{case.name}: every phase needs limit_s")
+            flows = (case.graded_flows, case.control_flows)
+            if (not all(flows) or any(len(set(ids)) != len(ids) for ids in flows)
+                    or set(case.graded_flows + case.control_flows) - DIRECT_FLOWS.keys()):
+                raise ValueError(f"{case.name}: graded_flows and control_flows must each list unique stream IDs "
+                                 "of the Small topology")
         for selector in {case.name, *case.selectors}:
             if selector in index:
                 raise ValueError(f"Selector {selector} appears in more than one case")

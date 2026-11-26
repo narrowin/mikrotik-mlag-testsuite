@@ -31,4 +31,4 @@ Eight complete attempts replayed on 15b2960 and on this branch gave identical ex
 
 Lowering the recorded SMALL-06 withdrawal limit from 5 to 2 seconds failed the 101 and 201 outage checks and kept the packet measurements. Raising the calibration lower bound from 1.9 to 2.2 seconds changed one check. A pruned SMALL-06 attempt without flood evidence writes its flood rows as unverified.
 
-Fresh live qualification is the remaining gate before adopting the branch. It must exercise the Networka bridge-port read in the Small secondary reboot.
+The live passes, including the Networka bridge-port read in the Small secondary reboot, and the remaining gaps are in [the verification record](suite-intent-verification.md).
