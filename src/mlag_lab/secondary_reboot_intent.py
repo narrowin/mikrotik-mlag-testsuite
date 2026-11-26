@@ -5,7 +5,8 @@ import json
 from math import isfinite
 import re
 
-from .bridge_intent import bridge_port_verdicts
+from network_toolkit.platforms.mikrotik_routeros.intent import check_bridge_port_forwarding
+
 from .evidence import load_jsonl
 from .legacy import FLOOD_SENDER_MEMBERS
 from .measure import seconds
@@ -111,17 +112,19 @@ def secondary_reboot_intent(path, spec, result):
         read_times[phase] = (seconds(finished - started)
                              if type(started) is int and type(finished) is int and 0 <= started <= finished else None)
         replies = mapping(native.get("replies"))
-        for port, verdict in zip(bridge_ports, bridge_port_verdicts(bridge_ports, replies), strict=True):
+        for port in bridge_ports:
+            verdict = check_bridge_port_forwarding(mapping(replies.get(port.target)), port.bridge, port.port,
+                                                   port.forwarding)
             cli_value = cli_ports[port.node].get(port.port, {}).get("forwarding")
             cli_observed = {"yes": True, "no": False}.get(cli_value)
-            observed = verdict["observed"]
+            observed = verdict.observed
             record(phase, f"{port.target} forwarding", port.forwarding, observed,
-                   {"match": True, "mismatch": False, "unavailable": None}[verdict["verdict"]],
+                   {"match": True, "mismatch": False, "unavailable": None}[verdict.verdict],
                    f"{native_evidence}.replies[{port.target}]", source="RouterOS native JSON",
                    cli_reference={
                        "observed": cli_observed, "evidence": f"{evidence}.routers.{port.node}",
                        "agrees": cli_observed == observed if cli_observed is not None and observed is not None else None,
-                   }, **({"reason": verdict["reason"]} if "reason" in verdict else {}))
+                   }, **({"reason": verdict.reason} if verdict.reason else {}))
 
     down, started_at = event("down_start")
     boot, boot_at = event("guest_boot_observed")
@@ -181,7 +184,8 @@ def secondary_reboot_intent(path, spec, result):
                evidence + "/stable_recovery")
 
     floods = mapping(result.get("floods"))
-    proof = "proof.tar.gz: " if (path / "proof.tar.gz").is_file() else ""
+    # The prune packs the captures of every failed run into proof.tar.gz, so live and replay name the same place.
+    proof = "proof.tar.gz: " if result.get("status") == "fail" else ""
     sender_captures = ", ".join(f"captures/{point}.pcap" for point in FLOOD_SENDER_MEMBERS)
     for ident in traffic.no_sender_return_streams:
         flow = mapping(floods.get(ident, floods.get(str(ident))))

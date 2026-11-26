@@ -1,6 +1,6 @@
 # SMALL-06 secondary reboot verification
 
-The SMALL-06 test reads its [intent YAML](../../src/mlag_lab/small-06.yaml), checks a clean baseline, reboots the elected secondary and measures both the disruption and recovery. Each attempt saves the exact YAML and the switch replies so the same checks can be replayed.
+The SMALL-06 test reads its [intent YAML](../../src/mlag_lab/intent/small.yaml), checks a clean baseline, reboots the elected secondary and measures both the disruption and recovery. Each attempt saves the exact YAML and the switch replies so the same checks can be replayed.
 
 ## Result on RouterOS 7.26beta7
 

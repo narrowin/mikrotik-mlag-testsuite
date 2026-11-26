@@ -90,6 +90,21 @@ def evaluate(evidence: Annotated[Path, typer.Argument(help="Evidence suite or on
     raise typer.Exit(status)
 
 
+@app.command("write-intent")
+def write_intent(evidence: Annotated[Path, typer.Argument(help="Saved attempt, suite or campaign.")]):
+    """Write case-intent.yaml from the current catalogue into each attempt that has none, so it can be replayed."""
+    from .cases import CASE_INTENT_FILE, case_spec, save_case
+    from .evaluate import attempt_folders, case_id
+    try:
+        for attempt in attempt_folders(evidence):
+            if not (attempt / CASE_INTENT_FILE).exists():
+                save_case(case_spec(case_id(attempt)), attempt)
+                typer.echo(attempt / CASE_INTENT_FILE)
+    except (OSError, ValueError) as error:
+        typer.echo(str(error), err=True)
+        raise typer.Exit(2)
+
+
 @app.command()
 def verify(
     results: Annotated[Path, typer.Argument(help="results/ folder with one folder per campaign.")] = Path("results"),

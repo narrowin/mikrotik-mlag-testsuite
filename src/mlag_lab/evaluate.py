@@ -43,8 +43,7 @@ def case_id(path):
     return name
 
 
-def evaluate_legacy(path, name, checks, result, *, spec=None):
-    spec = spec or case_spec(name)
+def evaluate_legacy(path, name, checks, result, *, spec):
     manifest = path / "attempt.json"
     nodes = recorded(DIRECT_NODES, json.loads(manifest.read_text()) if manifest.exists() else {})
     events = load_jsonl(path / "events.jsonl")
@@ -152,6 +151,7 @@ def analyze(path):
         spec = BY_NAME.get(result.get("name"))
         if spec and spec.reboot_intent and "secondary_reboot_intent" not in result:
             result["secondary_reboot_intent"] = secondary_reboot_intent(path, recorded_case(spec, path), result)
+            write_result(path, result)
         return result
     name = spec = None
     checks = []

@@ -3,7 +3,6 @@
 import json
 import re
 
-from .cases import case_spec
 from .evidence import load_jsonl, packets
 from .networka import recorded
 from .forwarding_checks import TWO_PAIR_HOSTS, TWO_PAIR_OUTSIDE, TWO_PAIR_PARTNER_BONDS, forwarding, grade
@@ -181,8 +180,7 @@ def check_interpair_flap(spec, path, marks, flows, start, down, up, end, stp, ro
                   phase)
 
 
-def evaluate_two_pair(path, name, checks, result, *, spec=None):
-    spec = spec or case_spec(name)
+def evaluate_two_pair(path, name, checks, result, *, spec):
 
     def check(level, ok, detail, phase=None):
         checks.append({"level": level, "ok": bool(ok), "detail": detail} | ({"phase": phase} if phase else {}))

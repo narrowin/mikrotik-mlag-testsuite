@@ -49,6 +49,8 @@ Use `--lab-dir /path/to/deployed/checkout/labs` when the source checkout and dep
 
 ## What the cases assert
 
+[Case fields and stream IDs per lab](cases/README.md#case-fields)
+
 | CLI case | Controlled event | Evidence and acceptance |
 | --- | --- | --- |
 | `calibrate` | Drop forward ICMP echo requests for approximately 2 s on the independent bypass. | The bound around the missed sequences encloses the measured actuation interval. All requests were emitted at the sender. The reverse bypass and VLAN streams stay clean. |

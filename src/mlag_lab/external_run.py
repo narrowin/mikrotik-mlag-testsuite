@@ -10,7 +10,8 @@ import subprocess
 from threading import Event
 import time
 
-from .bridge_intent import collect_bridge_port_replies
+from network_toolkit.platforms.mikrotik_routeros.intent import collect_bridge_port
+
 from .cases import case_spec, save_case
 from .direct_topology import DIRECT_CAPTURES, DIRECT_FLOWS, DIRECT_LINKS, DIRECT_NODES, DIRECT_PORTS
 from .direct_topology import DIRECT_FLOOD_FLOWS
@@ -274,7 +275,8 @@ def repair_missing_syslog(capture, logs):
         time.sleep(2)
 
 
-def verify_probe_window(capture, start, end, definitions):
+def verify_probe_window(capture, start, end):
+    definitions = capture.lab.flows
     seen = {}
     fields = ("frame.time_epoch", "icmp.ident", "icmp.type", "icmp.seq")
     for point in sorted({point for source, dest, _, _ in definitions.values() for point in (source, dest)}):
@@ -299,7 +301,9 @@ def verify_probe_window(capture, start, end, definitions):
 
 def capture_bridge_port_intent(capture, name, intents):
     started_mono_ns = time.monotonic_ns()
-    replies = collect_bridge_port_replies(capture.lab.ros, intents)
+    lab = capture.lab
+    replies = {i.target: collect_bridge_port(lab.client, lab.device_name(i.node), i.bridge, i.port,
+                                             interactive_creds=lab.credentials) for i in intents}
     capture.mark(name, started_mono_ns=started_mono_ns, replies=replies)
     return replies
 
@@ -311,7 +315,6 @@ def external_attempt(lab, path, name, build_hash, changes):
     save_case(spec, path)
     intent = spec.reboot_intent
     fault = intent.fault if intent else None
-    flows = intent.probe_flows if intent else lab.flows
     flood_flows = intent.flood_flows if intent else lab.flood_flows
     reboot_intents = intent.bridge_ports if intent else ()
     manifest = {"schema": 2, "case": name, "name": case_name(name), "topology": lab.name,
@@ -334,7 +337,7 @@ def external_attempt(lab, path, name, build_hash, changes):
         with feed_path.open() as feed:
             feed.seek(0, os.SEEK_END)
             try:
-                capture.observe(lab.captures, lab.ports, flows, named_ports=True, immediate=True)
+                capture.observe(lab.captures, lab.ports, lab.flows, named_ports=True, immediate=True)
                 if flood_flows:
                     start_floods(capture, flood_flows)
                 for peer, ident in lab.management_probes.items():
@@ -370,12 +373,11 @@ def external_attempt(lab, path, name, build_hash, changes):
                         links, link_issues = lab.check_links()
                         capture.mark("baseline_links", **links)
                         issues += link_issues
-                        probes, probe_issues = verify_probe_window(capture, baseline["epoch_ns"], finished["epoch_ns"],
-                                                                  flows)
+                        probes, probe_issues = verify_probe_window(capture, baseline["epoch_ns"], finished["epoch_ns"])
                         capture.mark("baseline_packets", flows=probes)
                         issues += probe_issues
                         try:
-                            verify_live_delivery(capture, baseline, flows)
+                            verify_live_delivery(capture, baseline)
                         except RuntimeError as error:
                             issues.append(str(error))
                         if name in MEDIUM_PAIR_STP_OFF and not issues:

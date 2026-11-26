@@ -128,7 +128,13 @@ reboot-calibration:
 secondary-reboot:
   lab: Small
   title: MLAG secondary reboot
+  action: Resets the bridge on CHR 1 and CHR 2 over management SSH with the bridge mode of the run, picks the
+    MLAG peer that reports mlag-state connected as secondary, and after a loss-free baseline reboots it with
+    `/system reboot` (1 s delay). The runner waits for the guest uptime to reset, then keeps probing for 16
+    s plus a 3 s recovery window.
   selectors: [direct-reboot-secondary]
+  graded_flows: [101, 201]    # dc1-traffic-host1/bond0 <-> dc1-traffic-host2/bond0
+  control_flows: [301, 303]   # the same hosts over eth3, the bypass link
   phases:
   - key: withdrawal
     name: Secondary down
@@ -136,6 +142,7 @@ secondary-reboot:
       forward over their bond member to the primary, which delivers locally without the peer port. The virtual
       links keep carrier, so each host drops its member to the secondary only at the LACP short timeout (3
       × 1 s). Only traffic hashed to that member sees brief loss.
+    limit_s: 5.0
     source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
   - key: restoration
     name: Secondary back
@@ -143,7 +150,41 @@ secondary-reboot:
       ID syncs with the primary (mlag-init-delay, default 1 min), then adds them under the unchanged shared
       system ID. The MLAG bonds client1 and client2 are edge ports and forward at once, so loss is brief or
       none.
+    limit_s: 5.0
     source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+  # SMALL-06 rules that no other field holds. The runner checks the state before the reboot and again after
+  # recovery (events baseline_observed / baseline_restored); the native bridge-port replies are the events
+  # baseline_bridge_port_intent / restored_bridge_port_intent.
+  reboot_intent:
+    fault:
+      reboot_role: secondary
+      surviving_role: primary
+      require_uptime_reset: true
+      baseline_seconds: 4
+      observe_after_boot_seconds: 16
+      recovery_seconds: 3
+    expected_state:
+      peers: [p1, p2]  # dc1-core-mlag1, dc1-core-mlag2
+      mlag_state: connected
+      bridge_forwarding:
+        bridge: bridge
+        ports: [client1, client2]  # RouterOS bond interface names on each switch
+        forwarding: true           # Boolean from /interface/bridge/port/monitor
+      router_lacp:
+        members: [ether3, ether4]
+        actor_and_partner_flags: SCD  # synchronized, collecting, distributing
+      client_lacp:
+        members:
+          c1: [eth1, eth2]  # dc1-traffic-host1, members of bond0
+          c2: [eth1, eth2]  # dc1-traffic-host2, members of bond0
+        carrier: true
+        eligible: true
+    traffic:  # ICMP identifiers in the packet captures
+      loss_free_baseline: true
+      recovery_consecutive_replies: 10
+      no_sender_return_streams:
+        - 501  # dc1-traffic-host1/bond0 -> 10.110.0.255 (broadcast)
+        - 502  # dc1-traffic-host1/bond0 -> 10.110.0.99 (unknown unicast)
 
 primary-reboot:
   lab: Small

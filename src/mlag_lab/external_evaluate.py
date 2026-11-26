@@ -12,7 +12,6 @@ from .external_topology import (
     EXTERNAL_NODES, EXTERNAL_TARGETS, NO_STP_CASES,
     ROOT_ATTACHMENTS, ROOT_MACS, election_ids, preferred_root,
 )
-from .cases import case_spec
 from .flood_checks import check_floods
 from .forwarding_checks import DIRECT_OUTSIDE, MEDIUM_HOSTS, MEDIUM_OUTSIDE, SMALL_HOSTS, forwarding, grade
 from .forwarding_checks import MEDIUM_PARTNER_BONDS, grade_system_ids, lacp_system_ids
@@ -276,8 +275,7 @@ def election_samples(path, start, end):
     return summaries
 
 
-def evaluate_external(path, name, checks, result, *, spec=None):
-    spec = spec or case_spec(name)
+def evaluate_external(path, name, checks, result, *, spec):
     intent = spec.reboot_intent
 
     def check(level, ok, detail, phase=None):
@@ -321,7 +319,6 @@ def evaluate_external(path, name, checks, result, *, spec=None):
         flood_flows = DIRECT_FLOOD_FLOWS if direct else {}
         recovery_probes, recovery_label = 10, "ten"
         if intent:
-            definitions = intent.probe_flows
             flood_flows = intent.flood_flows
             recovery_probes = intent.traffic.recovery_consecutive_replies
             recovery_label = intent.traffic.recovery_count_label

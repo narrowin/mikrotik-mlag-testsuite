@@ -204,7 +204,7 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "networka", url = "https://github.com/narrowin/networka/releases/download/v0.4.1/networka-0.4.1-py3-none-any.whl" },
+    { name = "networka", git = "https://github.com/narrowin/networka?rev=8409e4a68d8ebac247e9b7112f17a27c1ab8aa12" },
     { name = "pydantic", specifier = ">=2,<3" },
     { name = "pyyaml", specifier = ">=6,<7" },
     { name = "typer", specifier = ">=0.16,<1" },
@@ -213,7 +213,7 @@ requires-dist = [
 [[package]]
 name = "networka"
 version = "0.4.1"
-source = { url = "https://github.com/narrowin/networka/releases/download/v0.4.1/networka-0.4.1-py3-none-any.whl" }
+source = { git = "https://github.com/narrowin/networka?rev=8409e4a68d8ebac247e9b7112f17a27c1ab8aa12#8409e4a68d8ebac247e9b7112f17a27c1ab8aa12" }
 dependencies = [
     { name = "libtmux" },
     { name = "paramiko" },
@@ -225,26 +225,6 @@ dependencies = [
     { name = "scrapli" },
     { name = "typer" },
 ]
-wheels = [
-    { url = "https://github.com/narrowin/networka/releases/download/v0.4.1/networka-0.4.1-py3-none-any.whl", hash = "sha256:80f785abc1ce771f280028cc5020fd15b898731d3be5d3e9baad67f1b542d399" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "libtmux", specifier = ">=0.68.0,<0.69" },
-    { name = "mkdocs", marker = "extra == 'docs'", specifier = ">=1.5.0" },
-    { name = "mkdocs-material", marker = "extra == 'docs'", specifier = ">=9.0.0" },
-    { name = "mkdocstrings", extras = ["python"], marker = "extra == 'docs'", specifier = ">=0.24.0" },
-    { name = "paramiko", specifier = ">=5.1.0,<6" },
-    { name = "platformdirs", specifier = ">=3.6.0,<5" },
-    { name = "pydantic", specifier = ">=2.5.0" },
-    { name = "python-dotenv", specifier = ">=1.0.0" },
-    { name = "pyyaml", specifier = ">=6.0" },
-    { name = "rich", specifier = ">=13.0.0" },
-    { name = "scrapli", specifier = "==2026.11.12" },
-    { name = "typer", specifier = ">=0.12.0" },
-]
-provides-extras = ["docs"]
 
 [[package]]
 name = "paramiko"

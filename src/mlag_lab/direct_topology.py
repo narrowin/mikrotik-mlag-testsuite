@@ -31,14 +31,3 @@ DIRECT_CAPTURES = (
 # The same flood streams as the original small lab. The MAC-move host is captured per bond member here.
 DIRECT_FLOOD_FLOWS = FLOOD_FLOWS
 DIRECT_FLOOD_RECEIVERS = {"client 2": ("c2-bond0",), "MAC-move host": ("mobile-eth1", "mobile-eth2")}
-
-# Earlier SMALL-06 prototypes saved these labels in their attempt YAML.
-# New attempts use the packet's ICMP identifier directly.
-DIRECT_STREAM_IDS = {
-    "client 1 to client 2": 101,
-    "client 2 to client 1": 201,
-    "client 1 to client 2 on the bypass link": 301,
-    "client 2 to client 1 on the bypass link": 303,
-    "broadcast from client 1": 501,
-    "unknown unicast from client 1": 502,
-}

@@ -7,14 +7,14 @@ from typing import Annotated
 from pydantic import ConfigDict, Field, TypeAdapter
 import yaml
 
-from .small_06 import SMALL_06_PATH, SMALL_06_YAML, Small06Intent, load_small_06
+from .small_06 import Small06Intent
 
 INTENT_DIR = Path(__file__).with_name("intent")
 CASE_INPUTS = tuple(INTENT_DIR / f"{family}.yaml" for family in (
     "small", "medium", "small-link", "planned", "medium-mstp", "two-pair",
 ))
 LIMITS_PATH = INTENT_DIR / "limits.yaml"
-INTENT_INPUTS = (*CASE_INPUTS, LIMITS_PATH, SMALL_06_PATH)
+INTENT_INPUTS = (*CASE_INPUTS, LIMITS_PATH)
 CASE_INTENT_FILE = "case-intent.yaml"
 PHASE_KEYS = ("baseline", "calibration", "withdrawal", "restoration")
 
@@ -96,19 +96,6 @@ class Case:
 CASE_SCHEMA = TypeAdapter(Case)
 
 
-def configure_small_06(case, intent):
-    fault, traffic = intent.fault, intent.traffic
-    action = ("Resets the bridge on CHR 1 and CHR 2 over management SSH with the bridge mode of the run, "
-              f"picks the MLAG peer that reports mlag-state connected as {fault.reboot_role}, and after a loss-free "
-              "baseline reboots it with `/system reboot` (1 s delay). The runner waits for the guest uptime to reset, "
-              f"then keeps probing for {fault.observe_after_boot_seconds:g} s plus a "
-              f"{fault.recovery_seconds:g} s recovery window.")
-    limits = traffic.max_client_outage_seconds
-    return replace(case, reboot_intent=intent, action=action,
-                   graded_flows=traffic.client_streams, control_flows=traffic.loss_free_bypass_streams,
-                   phases=tuple(replace(phase, limit_s=getattr(limits, phase.key)) for phase in case.phases))
-
-
 def validate_case(data, source):
     try:
         case = CASE_SCHEMA.validate_python(data)
@@ -126,10 +113,7 @@ def load_cases():
         for name, definition in data.items():
             if not isinstance(definition, dict) or "name" in definition:
                 raise ValueError(f"{path}: invalid case definition for {name!r}")
-            case = validate_case({"name": name, **definition}, path)
-            if name == "secondary-reboot":
-                case = configure_small_06(case, load_small_06(SMALL_06_YAML, SMALL_06_PATH))
-            yield case
+            yield validate_case({"name": name, **definition}, path)
 
 
 def save_case(spec, path):
@@ -139,16 +123,14 @@ def save_case(spec, path):
 
 
 def recorded_case(spec, path):
+    """The rules saved with the attempt. Replay never falls back to the catalogue."""
     source = path / CASE_INTENT_FILE
-    if source.is_file():
-        recorded = validate_case(read_yaml(source), source)
-        if recorded.name != spec.name:
-            raise ValueError(f"{source}: does not identify {spec.name}")
-        return recorded
-    source = path / SMALL_06_PATH.name
-    if spec.reboot_intent and source.is_file():
-        return configure_small_06(spec, load_small_06(source.read_text(), source))
-    return spec
+    if not source.is_file():
+        raise ValueError(f"{source}: missing; write it from the catalogue with `mlag-lab write-intent {path}`")
+    recorded = validate_case(read_yaml(source), source)
+    if recorded.name != spec.name:
+        raise ValueError(f"{source}: does not identify {spec.name}")
+    return recorded
 
 
 def _changelog(version):

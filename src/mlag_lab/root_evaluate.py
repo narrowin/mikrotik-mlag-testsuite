@@ -7,7 +7,6 @@ from .evidence import load_jsonl
 from .networka import recorded
 from .forwarding_checks import MEDIUM_HOSTS, MEDIUM_OUTSIDE, MEDIUM_PARTNER_BONDS, forwarding, grade
 from .forwarding_checks import access_bpdus, grade_access_bpdus, grade_system_ids, lacp_system_ids
-from .cases import case_spec
 from .legacy_checks import check_calibration
 from .measure import number, score_flows, seconds
 from .reboot_checks import cadence_ok, cadence_text, check_reboot_flows, guest_window, peer_observations
@@ -18,8 +17,7 @@ from .root_state import verify_root
 from .root_topology import ROOT_CAPTURES, ROOT_CAPTURES_V1, ROOT_FLOWS, ROOT_ID, ROOT_NODES, target_for
 
 
-def evaluate_root(path, name, checks, result, *, spec=None):
-    spec = spec or case_spec(name)
+def evaluate_root(path, name, checks, result, *, spec):
     events = load_jsonl(path / "events.jsonl")
     marks = {event["name"]: event for event in events}
     if "runner_error" in marks:
