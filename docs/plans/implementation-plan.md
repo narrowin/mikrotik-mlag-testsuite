@@ -23,10 +23,10 @@ On 26 November 2026 the operator moved both working checkouts to local `main` an
 
 | Part | Checkout or evidence | State |
 | --- | --- | --- |
-| Networka engine | `/Users/md/git/narrowin/networka`, local `main` at `f782c39` | Includes the previous engine and merge. Phase 1 edits are in progress. Remote publication awaits review and live proof. |
-| Small lab | `/Users/md/git/narrowin/mlag-suite-yaml`, local `main` at `a324af6` | Work in `tests/small/` only. Branch switch preserved the three startup/README edits byte-for-byte. |
+| Networka engine | `/Users/md/git/narrowin/networka`, local `main` at `32f4bb4` | Phase 1 engine and RouterOS adapter accepted on the owned Small lab. |
+| Small lab | `/Users/md/git/narrowin/mlag-suite-yaml`, runtime commit `6fd8cac` on local `main` | The startup and both test files passed the final live checks from a clean deployment. |
 | Previous worktrees and branches | [Handover plan at a324af6](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/a324af6/docs/plans/implementation-plan.md) | The three retired Networka worktrees have been audited. The progress note is copied and hash-verified outside them. |
-| Review findings | [70 decisions and verification status](clean-setup-open-findings.md) | Wrong-result findings were examined first. Live comparisons and independent verification are in progress. |
+| Review findings | [70 decisions and verification status](clean-setup-open-findings.md) | Wrong-result findings were resolved first. The ledger records any verification limits. |
 | Evidence | `test-results/suite-yaml-verify/clean/phase1-close/` | Keep command output, raw device observations, verdicts and replay comparisons here or under the README-generated run directory. |
 | Lab ownership | OrbStack VM `mlag-external` | Only the Small instance started for this prototype is in scope. |
 
@@ -54,16 +54,39 @@ The times below are Europe/Zurich. Evidence paths are relative to the phase 1 ev
 | 13:33 | Rejudging the first reboot distinguished repeated sequences by their ICMP payloads. The original sequence-only loss counts were invalid. For client1 to client2, 7 lost pings at one ping every 100 ms meant a stop of 0.623 to 0.832 s. For client2 to client3, 6 lost pings at that cadence meant a stop of 0.514 to 0.718 s. Source intervals peaked at 112.194 ms and 111.310 ms. The missing end marker still invalidated the run. | Sol engine author / VM packet capture and Sol lab reviewer | `04-engine-replay.log`, `04-reboot-sender-diagnosis.log` |
 | 13:35 | A disposable startup scheduler restored switch1's logs after a typed reboot. Both end markers arrived. Live and replay passed with identical result and report bytes. After removing that lab, the lab author put the working scheduler in the startup configuration. | VM operator / Sol lab reviewer | `04-boot-scheduler-live.log`, `test-results/small/run.2Rn1KE/switch-reboot/` |
 | 13:36 | Independent engine review accepted the candidate timestamp and payload handling, report and reboot proof for the Small lab. Three historical results and the disposable reboot recomputed to the saved bytes. The 16 existing lab, traffic and intent tests and the strict guide build passed. | Sol lab reviewer | `04-sol-engine-local-checks.log`, `04-sol-engine-evidence-checks.log` |
+| 13:37 | The source startup file deployed from an absent lab directory in 51.943 s. Each switch imported the scheduler and delivered its startup marker. | VM operator / Sol lab reviewer | `05-canonical-candidate-start.log` |
+| 13:39 | Fresh candidate cable and reboot runs passed and reproduced the saved result and report bytes. The scheduler ran once after the reboot, retained the management VRF and resumed switch1 delivery. | VM operator / Sol engine and lab reviewers | `05-canonical-candidate-live.log`, `05-engine-canonical.log` |
+| 13:42 | Both local main checkouts reached their Phase 1 runtime revisions. The adapter and guide, lab runtime and engine commits are recorded. | Sol lab and engine authors | `06-networka-adapter-guide-commit.log`, `06-lab-main-commit.log`, `06-networka-engine-commit.log` |
+| 13:43 | The final preflight recorded both clean tracked runtime revisions and the absence of the owned Small lab. The README startup deployed all six nodes in 52.366 s. Both switches were healthy with spanning tree off. | VM operator / Sol lab reviewer | `07-main-start.log` |
+| 13:45 | The first committed cable run and replay passed. The result and rebuilt report bytes matched. The VM resumed the remaining checks using pinned uv after the transcript wrapper encountered a missing jq command. | VM operator / Sol lab reviewer | `07-main-matrix.log`, `test-results/small/run.fFnCUg/bond-member-loss/` |
+| 13:46 | The second cable run and replay passed. A manually down cable caused fail and no engine action. The interface snapshots before and after the failure matched. | VM operator / Sol lab reviewer | `07-main-matrix-resumed.log`, `test-results/small/run.zcBo6Q/bond-member-loss/`, `test-results/small/run.mD1nI1/bond-member-loss/` |
+| 13:46 | With the collector container stopped, preflight exited 2 and named that container. It produced no run folder. The collector was restarted at its expected address. | VM operator / Sol lab reviewer | `07-main-matrix-resumed.log` |
+| 13:49 | Reboot and replay passed for switch1 in its primary role. Native uptime and all ten health checks established recovery. Both switches recorded their start and end markers. | VM operator / Sol lab reviewer | `07-main-reboot.log`, `test-results/small/run.IenYdj/switch-reboot/` |
+| 13:57 | Pausing the collector while its container remained present produced a saved error with all four markers missing. After restoring delivery, replay reproduced the result and report bytes. | VM operator / Sol lab reviewer | `07-main-collector-paused.log`, `test-results/small/run.qsfIJv/bond-member-loss/`, `07-sol-matrix-review.log` |
 
 Sol took over the Phase 1 handoff on local main, with separate lab, engine and VM roles. Sol High continued the lab review after the candidate runs.
 
-The next checkpoint is a fresh candidate reboot with working log coverage and valid ping measurements in both directions. Then verify the final cable passes and replays, the fail with an untouched cable, and the stopped-collector error on the coordinated local main commits. Complete the walkthrough and bring publication and cleanup to the operator.
+The committed Small baseline passed live acceptance, and the operator approved the qualified native CHR launcher with standard bridge learning. The [walkthrough](../walkthrough-networka-tests.md) records the committed baseline until the final matrix on the native topology. Publication, removal of the owned lab and Phase 2 require the operator's go.
 
 ### Named switch reboot brought forward
 
 Reboot only `switch1` of the owned Small lab, independent of its elected role. Both streams traverse dual-attached clients and may use that switch. Before running the test the operator's coordinator set a provisional 4 s outage limit per stream, allowing one fast LACP timeout plus one message interval. Keep its measured verdict at that limit. Allow 60 s for boot and health recovery, covering the previous 21 s recovery, a possible 30 s SSH login cooldown and a 5 s retry. After recovery observe another 5 s, longer than one fast LACP timeout.
 
 The RouterOS adapter issues one typed background reboot through the pooled client. Prove a new boot from native uptime before and after, including elapsed time since dispatch. Retain the samples and the successful recovery-state evidence for replay. See the retained research in `test-results/suite-yaml-verify/actions/research.md`, section 2, and its two raw timelines.
+
+### Native Containerlab CHR qualification
+
+After the final clean preflight, the operator requested an isolated Small deployment using the ARM64 Containerlab build of `06ac3ca4d` at `/mnt/mac/tmp/containerlab-chr-06ac3ca4d.YXKSaT/containerlab`. The experiment uses a separate name and management subnet and omits the CHR QEMU and bridge binds and bridge startup command. Its evidence is in `native-chr/` under the Phase 1 directory.
+
+Qualify guest speed and duplex, forwarding masks, both bond members, an actual Linux client restart and cable run with replay before replacing the canonical wrapper files. The source defaults to 10 Gbit/s full duplex on both QEMU architectures and can set different data-port speeds. Its bridge setup enables LACP and LLDP forwarding and leaves learning enabled. The previous bridge script explicitly forwarded BPDUs and disabled learning. The trial proved the current Small tests with standard bridge learning. The operator approved removing both CHR helper scripts, their mounts and the bridge startup command. The logger repair, client setup and collector setup carry forward.
+
+The native launcher deployed the isolated lab in 52.767 s. All eight RouterOS data ports reported 10 Gbit/s full duplex and the six Linux bond members passed their checks. A real restart of client1 changed the Linux PID and network namespace. Containerlab restored the parked connections, the bond recovered both members and both traffic directions returned. The native veth and tap ports used mask 4 and learned MAC addresses. The upstream kernel forwards bridge-group BPDUs when host bridge STP is off, as it was here. No BPDU was injected for this trial. [Linux bridge input](https://github.com/torvalds/linux/blob/master/net/bridge/br_input.c)
+
+- `run.kLThs2` passed and matched replay. On the return of client1's cable to switch2, client1 to client2 lost 24 pings at one ping every 100 ms. The stop was 2.407 to 2.611 s.
+- `run.XWacPB` passed and matched replay. The same direction lost 24 pings at one ping every 100 ms on the same cable return. The stop was 2.404 to 2.606 s.
+- `run.mkYgKc` rebooted switch1 and matched replay. Client1 to client2 lost 7 pings at one ping every 100 ms for 0.615 to 0.826 s. Client2 to client3 lost 13 at one ping every 100 ms for 1.233 to 1.443 s. Health returned after 24.794 s and both end markers arrived.
+
+The isolated lab was removed and both the committed Small and the other session's Medium lab were preserved. See `native-chr/09-destroy.log` and the independent replay in `native-chr/10-sol-matrix-review.log`. The report of learning-related losses in the older audit has no cited capture matching this two-stream lab. The pinned launcher exposes no bridge learning setting. Standard native learning is the approved Phase 1 behavior. The previous baseline lab was removed with its original binary before editing the bound topology (`08-wrapped-small-final-destroy.log`).
 
 ## Previous live evidence
 

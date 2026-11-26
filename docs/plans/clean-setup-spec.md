@@ -6,7 +6,7 @@ The [Small lab](../../tests/small/README.md) boots two RouterOS MLAG peers with 
 
 - The [topology](../../tests/small/topology.clab.yml) declares the images, links, management network and mounts. The [switch startup configuration](../../tests/small/switch.rsc) sets up MLAG, the client VLAN and remote logging before testing begins.
 - Each [client](../../tests/small/client-setup.sh) has a stable bond MAC so the choice of cable is reproducible across deployments.
-- The CHR virtual ports need equal speed and full duplex. Their host-side bridges must pass LACP and any accidental BPDU to the peer and forward data like a cable. [QEMU wrapper](../../tests/small/chr-qemu.sh) · [Bridge setup](../../tests/small/chr-bridges.sh)
+- The qualified Containerlab launcher defaults the CHR data ports to 10 Gbit/s full duplex and passes LACP through its standard Linux bridges. These bridges learn MAC addresses. Host bridge STP is off, allowing accidental BPDUs to reach the peer. [Native CHR evidence](implementation-plan.md#native-containerlab-chr-qualification)
 - Three values span separate programs. RouterOS needs the collector address declared in the topology, Docker builds the client image tag that containerlab deploys, and both ends of the bond need the fast LACP rate.
 - Switch logs must keep the UTC receive time, sender, topics and message. The engine must be able to distinguish an absent warning from a silent switch. [Collector](../../tests/small/rsyslog.conf)
 

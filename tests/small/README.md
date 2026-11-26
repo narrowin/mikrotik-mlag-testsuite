@@ -6,10 +6,13 @@ A collector node, `syslog`, receives the log of both switches.
 
 ## Commands
 
-Run from the repository root on a Linux host with Docker, containerlab and sudo. Set `NETWORKA` to the absolute path of the Networka checkout. Put uv 0.13.10 on `PATH` (`export PATH=/var/tmp/pt1-tools:$PATH` on the lab VM).
+Run from the repository root on a Linux host with Docker, sudo, tcpdump, tshark, ping and nsenter. Set `NETWORKA` to the absolute path of the Networka checkout. Put uv 0.13.10 on `PATH` (`export PATH=/var/tmp/pt1-tools:$PATH` on the lab VM).
+
+Use Containerlab with native CHR support from commit `06ac3ca4d442ce4f937b50bd7c04d5f32fb3173b`. Set `CLAB` to the absolute path of that binary. On the lab VM, use the qualified ARM64 build. Its SHA-256 is `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`.
 
 ```sh
-sudo tests/small/start.sh
+CLAB=/mnt/mac/tmp/containerlab-chr-06ac3ca4d.YXKSaT/containerlab
+sudo env "CLAB=$CLAB" tests/small/start.sh
 ```
 
 In the same shell, use a VM-local uv environment for this checkout.
@@ -40,7 +43,11 @@ Replay the saved run, then remove the lab when finished.
 
 ```sh
 lab_nw test replay "$RUN/$CASE"
-sudo containerlab destroy -t tests/small/topology.clab.yml --cleanup
+sudo "$CLAB" destroy -t tests/small/topology.clab.yml --cleanup
 ```
 
 The [Networka lab test guide](https://github.com/narrowin/networka/blob/main/docs/lab-tests.md) explains the evidence and replay.
+
+## Measured cable return
+
+In the 26 November 2026 baseline before the native launcher change, when client1's cable to switch2 came back, client1 to client2 lost 25 pings at one ping every 100 ms. The measured stop was 2.504 to 2.709 s, within its 4 s limit. [Walkthrough](../../docs/walkthrough-networka-tests.md)
