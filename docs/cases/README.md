@@ -1,19 +1,12 @@
 # Case index
 
-Run these stages in order. Restore and verify the baseline before every fault. Keep the case ID when comparing STP disabled and RSTP enabled. Record mode, root placement and repeat separately.
+This page lists every case of the suite by lab. Run the cases of a lab in the order of its table. Before every fault, bring the lab back to its normal state and check that state again. When you compare a run with spanning tree off and a run with RSTP on, keep the same case ID. Record the bridge mode, the bridge that is root and the number of the run separately.
 
-CLI selectors map each case to the existing runner and archived evidence. Pending selectors identify planned work.
+The CLI selector is the name that you pass to `mlag-lab run --case`. It tells the suite which case to run and links the case to its archived evidence. A case marked Pending or Planned has no selector yet.
 
-Case definitions are grouped by lab and fault family in the [intent catalogue](../../src/mlag_lab/intent).
-Every new attempt saves its resolved rules as `case-intent.yaml`. The evaluator grades a replay only from
-that file, so later changes to the catalogue do not change the recorded limits. An attempt without the file
-stops with an error that names it.
+The [case catalogue](../../src/mlag_lab/intent) defines every case. It has one file per lab and kind of fault. Each new run of a case saves the rules it used in the file `case-intent.yaml`. When the suite scores a saved run again, it uses only that file. A later change to the catalogue therefore does not change the limits of a recorded run. A run without that file stops with an error that names the run.
 
-The catalogue holds what the suite grades from packets: phases, loss limits, graded and control streams.
-The switch and host state each case requires before the fault and after recovery is Networka intent in
-[intent/state/](../../src/mlag_lab/intent/state), one file per lab and one per setup. Networka collects
-and checks it; each attempt saves the result in `gate-baseline/` and `gate-restored/`.
-[Device state and packet grading](../test-framework.md#device-state-and-packet-grading)
+The catalogue holds what the suite judges from the captured packets. These are the phases, the loss limits, the streams that must recover within a limit and the streams that must lose nothing. The state that the switches and hosts must show before the fault and after it is kept separately. It is Networka intent in [intent/state/](../../src/mlag_lab/intent/state), with one file per lab and one file per setup. Networka collects that state and checks it. Each run saves the result in the folders `gate-baseline/` and `gate-restored/`. The section [Device state and packet grading](../test-framework.md#device-state-and-packet-grading) explains both parts.
 
 ## Small lab
 
@@ -30,15 +23,14 @@ and checks it; each attempt saves the result in `gate-baseline/` and `gate-resto
 | SMALL-09 | Silent host past bridge ageing, then relearn (catalogue M2) | `silent-mobile` (`mac-age-relearn`) |
 | SMALL-10 | Repeated MLAG bond member flap (catalogue M4, one pair) | `carrier-flap` (`member-flap-repeat`) |
 
-Small lab selectors default to RSTP. Use `--bridge-mode none` to test with STP off.
+The Small lab cases run with RSTP unless you choose otherwise. Add `--bridge-mode none` to run them with spanning tree off.
 
-The `secondary-reboot` entry in the [Small catalogue](../../src/mlag_lab/intent/small.yaml) defines SMALL-06.
-Its outage limits and streams sit in the same fields as every other case. `reboot_intent` holds only the
-reboot timing and the flood streams that must not return to the sender. The switch and client state it
-requires is the Small gate: [direct.yaml](../../src/mlag_lab/intent/state/direct.yaml),
-[hosts.yaml](../../src/mlag_lab/intent/state/hosts.yaml) and the file of the run's bridge mode.
+The entry `secondary-reboot` in the [Small catalogue](../../src/mlag_lab/intent/small.yaml) defines SMALL-06. Its loss limits and streams are in the same fields as in every other case. The extra field `reboot_intent` holds only two things. These are the timing of the reboot and the flooded streams that must not come back to their sender. The state that the switches and clients must show is the Small lab check. It consists of [direct.yaml](../../src/mlag_lab/intent/state/direct.yaml), [hosts.yaml](../../src/mlag_lab/intent/state/hosts.yaml) and the file of the bridge mode of the run.
 
-[Inventory](../../labs/small/README.md) · [Link-loss procedure](small-client-link.md) · [Reboot commands](../operator-guide.md#reboot-the-direct-client-pair) · [Results](../../results/2026-11-24-small-lab/README.md)
+- [Devices of the Small lab](../../labs/small/README.md)
+- [Client link loss and return](small-client-link.md)
+- [Commands for the reboot cases](../operator-guide.md#reboot-the-direct-client-pair)
+- [Results](../../results/2026-11-24-small-lab/README.md)
 
 ## Medium lab
 
@@ -50,11 +42,15 @@ requires is the Small gate: [direct.yaml](../../src/mlag_lab/intent/state/direct
 | MEDIUM-04 | Primary reboot | `medium-stp-off-reboot-primary` | `medium-pair-root-reboot-primary` | `medium-access-root-reboot-primary` |
 | MEDIUM-07 | Both cores down and return | Planned | Planned | Planned |
 
-MEDIUM-08 uses a separate two-pair deployment: two MLAG pairs joined by one distributed bond, with equal bridge priorities and with the field per-pair priorities. [Why, setup and commands](medium-two-pair-root.md)
+MEDIUM-08 uses a separate lab with two MLAG pairs. One distributed bond joins the two pairs. The case runs once with the same bridge priority on all switches and once with one priority per pair, as in the field network. The [two-pair page](medium-two-pair-root.md) explains why the case exists, how the lab is built and how to run it.
 
-MEDIUM-08 also has the step `interpair-member-flap` for every two-pair setup, for example `two-pair-equal-interpair-member-flap`. It takes the inter-pair bond member between CHR 1 and CHR 3 down for 8 s and up again, the trigger of the four-switch report (catalogue M4).
+MEDIUM-08 also has the step `interpair-member-flap` for every two-pair setup, for example `two-pair-equal-interpair-member-flap`. It takes the inter-pair bond member between CHR 1 and CHR 3 down for 8 s and then brings it back. In the four-switch field report, such a member flap set off the problem (catalogue M4).
 
-MEDIUM-05 and MEDIUM-06 identify the archived single-homed root attachment experiments. [Wiring and root placement](medium-spanning-tree.md) · [Commands](../operator-guide.md#introduce-rstp-after-the-all-bridges-off-run) · [Archived results](medium-spanning-tree.md#archived-diagnostics)
+MEDIUM-05 and MEDIUM-06 are the archived experiments in which each root bridge had a single cable to the MLAG pair.
+
+- [Wiring and placement of the root](medium-spanning-tree.md)
+- [Commands](../operator-guide.md#introduce-rstp-after-the-all-bridges-off-run)
+- [Archived results](medium-spanning-tree.md#archived-diagnostics)
 
 ## Large lab
 
@@ -68,39 +64,39 @@ MEDIUM-05 and MEDIUM-06 identify the archived single-homed root attachment exper
 | LARGE-06 | Whole-site loss and restoration | DC-05 | Pending |
 | LARGE-07 | Active firewall CHR loss and return | BASE-05, G1 | Pending |
 
-Run the same faults in both bridge modes after each passes baseline. The Large lab remains planned.
+The Large lab is still planned. Each fault will run in both bridge modes, after the baseline of that mode has passed.
 
-[Inventory](../../labs/large/README.md) · [Fault definitions](../reference/site-cases.md#core-and-data-center-outage-matrix) · [Bridge-mode plan](../validation-plan.md#large-lab-bridge-mode-comparison)
+- [Devices of the Large lab](../../labs/large/README.md)
+- [Definitions of the faults](../reference/site-cases.md#core-and-data-center-outage-matrix)
+- [Plan for the two bridge modes](../validation-plan.md#large-lab-bridge-mode-comparison)
 
 ## Case fields
 
-Each catalogue entry and each saved `case-intent.yaml` has these fields. The saved file also carries
-`grading_limits` and `fixes` as resolved for that attempt.
+Each entry of the catalogue and each saved `case-intent.yaml` has these fields. The saved file also holds `grading_limits` and `fixes` with the values that applied to that run.
 
 | Field | Meaning |
 | --- | --- |
-| `name` | Case name: the catalogue key. Saved files carry it as a field. |
-| `lab`, `title`, `action` | Lab, short title and what the runner does, as shown in run READMEs. |
-| `selectors` | CLI selectors that run the case. Every selector and name is unique across the catalogue. A case without selectors or phases is planned. |
-| `graded_flows` | Streams the fault is expected to hit. Their loss is reported per phase and must stay within that phase's `limit_s`. |
-| `control_flows` | Streams that must lose nothing. Loss fails the case or, where the check uses the stream to prove the evidence, as for the bypass, makes the run an error. A stream is never both graded and a control. |
-| `phases[].key` | `baseline`, `calibration`, or `withdrawal` followed by `restoration`. |
-| `phases[].name`, `expected`, `source` | Phase title, the behaviour the manual or a support answer predicts, and the link to that source. |
-| `phases[].limit_s` | Longest allowed loss in seconds for each graded stream in that phase. It also bounds flood-stream loss at each receiver in cases that send floods. `0.0` means no loss. Calibration has none and uses `calibration_cut_s`. |
-| `grading_limits.calibration_cut_s` | Lower and upper bound in seconds for the measured one-way cut of a calibration. |
-| `grading_limits.outside_flood_s` | Longest time unicast may reach a host outside the conversation, for example after a table flush. |
-| `grading_limits.mac_relearn_s` | Time from the silent host's first frame until flooding stops and its streams deliver again (`silent-mobile`). |
-| `fixes` | MikroTik changelog fixes the case checks: RouterOS version, wording and link. The code fills it from [MikroTik MLAG fixes](../reference/mlag-fixes.md); it is not written in the catalogue. |
-| `reboot_intent` | SMALL-06 only: reboot timing and the flood streams that must not return to the sender. |
+| `name` | The name of the case. In the catalogue it is the key of the entry. A saved file holds it as a field. |
+| `lab`, `title`, `action` | The lab, a short title, and what the runner does. The README of a run shows all three. |
+| `selectors` | The CLI selectors that run the case. No selector and no name appears twice in the catalogue. A case without selectors or phases is planned. |
+| `graded_flows` | The streams that the fault is expected to interrupt. The report shows their loss for each phase. The loss must stay within the `limit_s` of that phase. |
+| `control_flows` | The streams that must lose nothing. Loss on such a stream fails the case. Some checks use a stream to prove that the measurement works, for example the streams on the direct cable. Loss on such a stream makes the run an error instead. No stream is in both lists. |
+| `phases[].key` | The name of the phase. It is `baseline`, `calibration`, or `withdrawal` followed by `restoration`. `withdrawal` is the time after the fault starts, for example after a cable goes down. `restoration` is the time after the fault ends, for example after the cable comes back. |
+| `phases[].name`, `expected`, `source` | The title of the phase, the behaviour that the MikroTik manual or a MikroTik support answer predicts, and the link to that source. |
+| `phases[].limit_s` | The longest loss in seconds that each graded stream may have in that phase. In cases that send flooded streams, it also limits the loss of those streams at each receiver. `0.0` means that no loss is allowed. A calibration has no `limit_s`. It uses `calibration_cut_s` instead. |
+| `grading_limits.calibration_cut_s` | The lower and the upper bound in seconds for the measured one-way cut of a calibration. |
+| `grading_limits.outside_flood_s` | The longest time during which unicast traffic may reach a host that is not part of the conversation, for example after the MAC table was flushed. |
+| `grading_limits.mac_relearn_s` | The time from the first frame of the silent host until flooding stops and its streams arrive again. It applies to `silent-mobile`. |
+| `fixes` | The fixes from MikroTik changelogs that the case checks, each with RouterOS version, wording and link. The code fills this field from [MikroTik MLAG fixes](../reference/mlag-fixes.md). The catalogue does not contain it. |
+| `reboot_intent` | Used by SMALL-06 only. It holds the timing of the reboot and the flooded streams that must not come back to their sender. |
 
-`grading_limits` defaults to [limits.yaml](../../src/mlag_lab/intent/limits.yaml).
+When a case sets no `grading_limits`, the values in [limits.yaml](../../src/mlag_lab/intent/limits.yaml) apply.
 
 ## Stream IDs
 
-A stream ID is the ICMP identifier in the packet captures. The same ID means different endpoints in different
-labs and runners, so read a stream ID with the lab and case of its run. `c1` is dc1-traffic-host1, `c2`
-dc1-traffic-host2 and `mobile` dc1-mac-move-host. The tables are printed from the runner's flow tables
-(`legacy.py`, `direct_topology.py`, `root_topology.py`, `two_pair_topology.py`).
+A stream is one series of pings from one host to another. Its stream ID is the ICMP identifier of those pings in the packet captures. The same ID stands for different hosts in different labs and runners. Always read a stream ID together with the lab and the case of its run.
+
+In the tables, `c1` is dc1-traffic-host1 and `c2` is dc1-traffic-host2. `mobile` is dc1-mac-move-host. The tables are printed from the stream tables of the runner in `legacy.py`, `direct_topology.py`, `root_topology.py` and `two_pair_topology.py`.
 
 ### Small lab, link and MAC cases (`calibrate`, `mobile-move`, `carrier`, `silent-lacp`, `peer-link-loss`, `silent-mobile`, `carrier-flap`)
 
@@ -147,7 +143,7 @@ dc1-traffic-host2 and `mobile` dc1-mac-move-host. The tables are printed from th
 
 ## Broader catalogue
 
-The IDs above track operator runs by lab and sequence. Existing BASE, MOVE, L, S, P, G and DC catalogue IDs track protocol and field-report coverage. [Catalogue and sources](../case-catalog.md)
+The IDs on this page number the runs of each lab in order. The older IDs BASE, MOVE, L, S, P, G and DC come from the [list of cases and their sources](../case-catalog.md). They show which protocol behaviour and which field report a case covers.
 
 ## Future cases
 
