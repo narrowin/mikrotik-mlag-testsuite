@@ -69,7 +69,28 @@ Where a test repeats a fault kind measured on Small or Medium, its row names the
 
 Each verdict is the first line of the generated `report.md` of a live run on 26 November 2026. Each saved run replayed with identical `result.json` and `report.md`. The evidence stays under `test-results/large/`, outside git.
 
-| Test | Live verdict | Old result of the same fault kind |
+| Test | Live verdict and measured stops | Old result of the same fault kind |
 | --- | --- | --- |
-| [Baseline](baseline.yaml) | PASS — baseline, in two runs | None: the old Large baseline was only planned. |
+| [Baseline](baseline.yaml) | PASS — baseline, in `run.7FWsWH` and `run.u56VIq`. No ping lost. | None: the Large baseline was only planned. |
+| [DCI member loss](dci-member-loss.yaml) | PASS — dci-member-loss, `run.B2IMcg`. Member down: each DCI direction lost 1 ping at one ping every 100 ms, a stop of 0 to 0.21 s. Member back: each lost 4, a stop of 0.21 to 0.41 s. | Two-pair inter-pair member flap with spanning tree off, `streams.tsv` row `debian-two-pair-stp-off-suite 02-two-pair-stp-off-interpair-member-flap Inter-pair member down`, stream 101: 0.316 to 0.527 s. Same order. |
+| [Core reboot](core-reboot.yaml) | FAIL — core-reboot, in `run.af0N9Q` and `run.04fCIw`. Both DCI directions stopped from the reboot of the MLAG primary until its peer logged `peer disconnected` about 20 s later. In `run.04fCIw` dc1-core1 cost 200 and 198 pings, stops of 20.64 to 20.85 s and 20.42 to 20.63 s; dc2-core1 cost 190 and 191, stops of 19.40 to 19.60 s and 19.38 to 19.60 s, all at one ping every 100 ms against 5 s. The site streams and the bypass lost nothing. | Faults across runs, Medium lab: "Loss over the limit, Pair A primary down, STP off, Pair A primary reboot, 3 of 3, 19.67–23.34 s" and "Pair B primary down, 2 of 2, 20.66–22.18 s". Large shows the same fault: two MLAG pairs joined by one distributed bond keep sending into the rebooting MLAG primary. |
+| [Distribution reboot](distribution-reboot.yaml) | FAIL — distribution-reboot, `run.lwZPSU`. dc1-dist1 in its MLAG primary role: dc2 to dc1 over the DCI lost 212 pings at one ping every 100 ms, a stop of 19.88 to 20.09 s against 5 s; the dc1 site stream lost 10, a stop of 0.92 to 1.12 s, within 5 s. dc1-dist2 in its secondary role: the dc1 site stream lost 31, a stop of 2.92 to 3.13 s, within 5 s; the DCI lost nothing. | The DCI loss is the same two-pair fault as the core reboot. For the site stream, which crosses only one pair, Medium spanning-tree-off rows `ext-medium-stp-off 01-medium-stp-off-reboot-primary Primary down`, stream 101: 2.188 to 2.393 s, and `01-medium-stp-off-reboot-secondary Secondary down`, stream 101: 2.914 to 3.121 s. Same order. |
+| [Firewall loss](firewall-loss.yaml) | PASS — firewall-loss, `run.znXUHD`. No ping lost. The dc2 firewall was VRRP master after 20 s without power at dc1, and the dc1 firewall owned the address again when the lab was healthy, 44.5 s after power returned. | None: VRRP was never tested before. |
 
+The DCI streams of `run.af0N9Q` are partly marked unverified because the Linux sender did not keep its 100 ms cadence while the far host stopped answering. The verdict stands on the streams that kept it.
+
+## Limits
+
+The planned Large cases set no limit, so each limit comes from the Small test of the same fault kind.
+A stream whose path does not cross the fault has limit 0.
+
+| Test | Limit on an affected stream | Source |
+| --- | --- | --- |
+| Core reboot, distribution reboot | 5 s | [Small primary reboot](../small/mobile/primary-reboot.yaml), [Small secondary reboot](../small/mobile/secondary-reboot.yaml) |
+| DCI member loss | 1 s down, 4 s back | [Small cable test](../small/bond-member-loss.yaml) |
+| Firewall loss | No stream crosses a firewall. 20 s off and a 180 s recovery deadline. | [Small primary power loss](../small/mobile/primary-power-loss.yaml) |
+
+## Not covered
+
+- Site power loss has no test. Networka 0.5.1 powers off one CHR at a time and refuses a second `power_off` before the first `power_on`, and it cannot power off a Linux host.
+- No stream measures delivery to the VRRP address. A stream needs a Linux destination interface, and the address lives on a CHR firewall. The VRRP checks read the master and backup flags only.
