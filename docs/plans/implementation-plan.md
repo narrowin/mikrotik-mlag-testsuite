@@ -244,6 +244,23 @@ Done when every approved case runs live and its saved verdict replays identicall
 - Build `tests/medium/` and `tests/large/` the way `tests/small/` is built. Do not copy `labs/medium/` or `labs/large/`.
 - Done when: each lab starts with one command and its wanted tests have run live.
 
+Each folder below is one lab variant: one topology, one startup config and its lab file. Networka pushes no configuration during a test, so spanning tree off and `lacp-strict` are set in the startup config, not over SSH as the old suite did.
+
+| Step | Folder | Tests | New Networka work | Size |
+| --- | --- | --- | --- | --- |
+| 4a | `tests/medium/` | baseline, calibration, secondary reboot, primary reboot, secondary power loss, primary power loss | none expected | small |
+| 4b | `tests/medium/two-pair/` | baseline, calibration, reboot of each peer of pair A and pair B, inter-pair member flap | none expected | medium |
+| 4c | `tests/medium/two-pair-strict/` | the 4b tests with `lacp-strict=yes` on the inter-pair bond | none expected | small |
+| 4d | `tests/large/` | see below | likely a VRRP state check | large |
+
+- 4a: one MLAG pair, the access switch bonded to both peers, host 1 behind the access switch, host 2 bonded to both peers, and the bypass between the hosts. The lab file checks MLAG on both peers and the members of both bonds.
+- 4b: four switches and two MLAG pairs joined by one distributed bond. The member flap uses the `cable` action and watches the host entries. The old two-pair run lost the host-table count; this step brings it back.
+- 4c starts after 4b. First check whether a test can be run against another lab file; if not, the folder holds its own copies of the 4b tests.
+- 4d: Large was never deployed. First start all 10 switches and pass one baseline: streams inside each site and across the DCI, MLAG on all four pairs, and the VRRP owner at dc1. Then write core reboot at each site, DCI member loss, distribution pair reboot, firewall loss with VRRP failover and site power loss. Large counts as one of the three labs allowed at once.
+- 4a and 4b touch separate folders and can be built at the same time on separate lab instances.
+- Not planned, because spanning tree runs: pair-root, access-root, MSTP, core-off (RSTP on the access switch), and two-pair equal and field.
+- Not planned, because each needs a new action or startup variant and no one has asked for them: the 35 s guest pause with carrier up, and reboot with `mlag-lacp-fallback=no`.
+
 ### 5. Delete the old suite
 
 - Delete `src/mlag_lab/`, `labs/`, the entry points in `pyproject.toml` and the docs that describe them.
