@@ -62,6 +62,12 @@ def medium_mode(name):
     return "mstp" if name.startswith("medium-mstp-") else "rstp"
 
 
+def medium_setup(name):
+    """The Medium setup of a selector, as named by its gate file intent/state/medium-<setup>.yaml."""
+    return max((setup for setup in ("stp-off", "pair-root", "access-root", "mstp-pair-root", "mstp-access-root",
+                                    "core-off") if name.startswith(f"medium-{setup}-")), key=len)
+
+
 def medium_root_id(name):
     if name in MEDIUM_STP_OFF_CASES:
         return None

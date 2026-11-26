@@ -259,57 +259,42 @@ Networka (`nw`) saves a read-only view of each selected CHR before a fault, whil
 
 ### Install Networka
 
-The runner and checkpoint CLI use **Networka 0.4.1** and require Python 3.15 or later. `uv sync --locked` installs the GitHub release wheel into the project environment. The lockfile records the URL and SHA-256 digest. [Networka 0.4.1](https://github.com/narrowin/networka/releases/tag/v0.4.1)
+The runner and checkpoint CLI use **Networka 0.4.1** at the git commit that `pyproject.toml` pins, with its device-state intent layer, and require Python 3.15 or later. `uv sync --locked` installs that commit into the project environment; the lockfile records it. [Networka](https://github.com/narrowin/networka)
 
 ```sh
 uv sync --locked
 uv run --locked nw --version
 ```
 
-### Profiles for each lab
+### Profiles and intent files for each lab
 
-Each lab has a profile that names its management addresses and device groups. All profiles share one [sequence file](../labs/networka/sequences/mikrotik_routeros/common.yml) with one read-only sequence per switch role. Each sequence holds the base state read that the runner sends to that switch, in the same order and spelling. It reads guest carrier on the data ports, the actor and partner flags of the switch's bonds, bridge, MLAG and STP state, and where VLAN 110 learned the client MACs. The runner takes its device addresses and base state reads from these files and copies the lab's profile and the sequence file into each run's `inputs/` folder. Identity and resource are not part of the lab sequences; read them with Networka's built-in `system_info` sequence.
+Each lab has a profile that names its management addresses and device groups. The device state the runner requires is Networka intent in [src/mlag_lab/intent/state/](../src/mlag_lab/intent/state): one file per lab and one per setup. The runner copies the lab's profile and every intent file into each run's `inputs/` folder. The files of the traffic hosts (`hosts.yaml`, `host2.yaml`) name Linux containers that are not in the profiles; the runner reads their bonds itself, so `nw intent run` takes only the switch files.
 
-| Lab | Profile | Group | Sequence |
-| --- | --- | --- | --- |
-| Small | [small.yml](../labs/networka/small.yml) | `mlag-peers` | `mlag_small_state` |
-| Small, reboot and power-loss cases | [small.yml](../labs/networka/small.yml) | `mlag-peers` | `mlag_direct_state` |
-| Medium | [medium.yml](../labs/networka/medium.yml) | `mlag-peers` | `mlag_medium_core_state` |
-| Medium | [medium.yml](../labs/networka/medium.yml) | `access-switch` | `mlag_medium_access_state` |
-| Medium, pair-root variant | [medium-pair-root.yml](../labs/networka/medium-pair-root.yml) | `mlag-peers` | `mlag_medium_core_state` |
-| Medium, pair-root variant | [medium-pair-root.yml](../labs/networka/medium-pair-root.yml) | `access-switch` | `mlag_medium_access_state` |
-| Medium, two-pair variant | [medium-two-pair.yml](../labs/networka/medium-two-pair.yml) | `core-peers` | `mlag_two_pair_core_state` |
-| Medium, two-pair variant | [medium-two-pair.yml](../labs/networka/medium-two-pair.yml) | `access-peers` | `mlag_two_pair_access_state` |
-| Large | [large.yml](../labs/networka/large.yml) | `core-peers` | `mlag_large_core_state` |
-| Large | [large.yml](../labs/networka/large.yml) | `access-peers` | `mlag_large_access_state` |
-| Large | [large.yml](../labs/networka/large.yml) | `firewalls` | `mlag_large_firewall_state` |
+| Lab | Profile | Intent files |
+| --- | --- | --- |
+| Small | [small.yml](../labs/networka/small.yml) | `direct.yaml` and `direct-<bridge mode>.yaml` |
+| Medium | [medium.yml](../labs/networka/medium.yml) | `medium.yaml` and `medium-<setup>.yaml` |
+| Medium, pair-root variant | [medium-pair-root.yml](../labs/networka/medium-pair-root.yml) | `root.yaml` |
+| Medium, two-pair variant | [medium-two-pair.yml](../labs/networka/medium-two-pair.yml) | `two-pair.yaml` and `two-pair-<setup>.yaml` |
+| Large | [large.yml](../labs/networka/large.yml) | None yet: the Large lab is not deployed and the runner has no Large cases. |
 
-The Medium profiles also have a `dc1-routeros` group with every CHR in the lab. The Large profile has `dc1-routeros` and `dc2-routeros` groups with every CHR at each site, and one group per pair, such as `dc1-core-peers`. The Large sequences have not run through Networka, because the Large lab is not yet deployed. The runner has no Large cases yet.
+The Medium profiles also have a `dc1-routeros` group with every CHR in the lab. The Large profile has `dc1-routeros` and `dc2-routeros` groups with every CHR at each site, and one group per pair, such as `dc1-core-peers`.
 
 ### Run a checkpoint
 
-Run Networka on the host that runs the lab. The profiles hold the addresses of instance 0, so `nw` reaches only instance 0 of each lab. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. `--inventory-prefer config` selects the profile's entries when Containerlab's generated inventory also contains `p1` and `p2`. The command prompts for the lab credentials and stores a timestamped summary with separate command output files for each CHR. Use a distinct results directory for each case, repeat and phase. [Networka CLI reference](https://github.com/narrowin/networka/blob/v0.4.1/docs/reference/cli.md)
+Run Networka on the host that runs the lab. The profiles hold the addresses of instance 0, so `nw` reaches only instance 0 of each lab. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. The command prompts for the lab credentials, prints each item's verdict, and saves the intent, evidence and results. Use a distinct folder for each case, repeat and phase. The exit status is 0 for pass, 1 for fail and 2 when an item could not be verified. [Networka intent guide](https://github.com/narrowin/networka/blob/main/docs/intent.md)
 
 ```sh
-uv run --locked nw --inventory-prefer config run \
-  --config labs/networka/small.yml --interactive-auth --store-results \
-  --results-dir networka-results/before mlag-peers mlag_small_state
+uv run --locked nw intent run --config labs/networka/small.yml --interactive-auth \
+  --save networka-results/before src/mlag_lab/intent/state/direct.yaml
+uv run --locked nw intent replay networka-results/before
 ```
 
-For the Medium lab, run the core and access sequences into separate results directories:
+A saved gate of any attempt replays the same way, without the lab:
 
 ```sh
-uv run --locked nw --inventory-prefer config run \
-  --config labs/networka/medium.yml --interactive-auth --store-results \
-  --results-dir networka-results/medium-before-cores mlag-peers mlag_medium_core_state
-uv run --locked nw --inventory-prefer config run \
-  --config labs/networka/medium.yml --interactive-auth --store-results \
-  --results-dir networka-results/medium-before-access access-switch mlag_medium_access_state
+uv run --locked nw intent replay test-results/link-isolation/01-baseline/gate-baseline
 ```
-
-Networka exits with code 1 when a command or sequence failed on any device of a group. A RouterOS reply that starts with `syntax error`, `bad command name`, `expected end of command`, `input does not match any value`, `failure:` or `no such item` counts as a failed command. For a bridge-port forwarding check, Networka's offline intent example replays native RouterOS JSON collected from the two Medium cores and the access switch. [Networka changelog](https://github.com/narrowin/networka/blob/v0.4.1/CHANGELOG.md) · [Native JSON example](https://github.com/narrowin/networka/tree/v0.4.1/docs/examples/intent#medium-mikrotik-lab-replay)
-
-**OrbStack verification.** Networka v0.2.0 completed all eight reads of the earlier `mlag_small_state` list on both RouterOS 7.26beta7 peers in about **1.02 s**. That list began with the identity and resource reads and read only the client 1 MAC. Both reported `link-ok` on `ether3`, synchronized, collecting and distributing actor and partner flags on the two client bonds, connected MLAG, and the client 1 MAC on `client1` in VLAN 110. The current sequences, including `mlag_direct_state`, have not yet run through Networka. They use the same RouterOS reads that the runner sends to those labs on every run.
 
 **v0.4.1 verification.** In a fresh locked environment on `mlag-external`, the installed SDK loaded the Medium profile and read native bridge-port statistics and monitor JSON over SSH. It observed `forwarding: true` on both core `access-uplink` ports and on the access switch's `uplink`. The prior verified lab host keys were used for these reads.
 

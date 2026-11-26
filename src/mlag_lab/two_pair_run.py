@@ -2,18 +2,14 @@
 
 from contextlib import contextmanager
 
-from .external_run import BridgeComparisonLab, observe_ports
+from .device_state import TWO_PAIR_ACCESS_READS, TWO_PAIR_CORE_READS
+from .external_run import BridgeComparisonLab
 from .root_run import RootLab
-from .run import run
-from .two_pair_evaluate import baseline_issues, bpdu_coverage
+from .two_pair_evaluate import bpdu_coverage
 from .two_pair_topology import (
     SETUPS, TWO_PAIR_CAPTURES, TWO_PAIR_DEVICES, TWO_PAIR_FLOWS, TWO_PAIR_LAB, TWO_PAIR_LINKS,
     TWO_PAIR_NODES, TWO_PAIR_PORTS, TWO_PAIR_PROBES, TWO_PAIR_TARGETS, two_pair_lacp_strict, two_pair_mode, two_pair_setup,
 )
-
-
-# The inter-pair member flap also counts each CHR's bridge host table entries.
-HOST_COUNT = (':put ("host-entries=" . [:len [/interface bridge host find]])',)
 
 
 class TwoPairLab(BridgeComparisonLab):
@@ -28,22 +24,15 @@ class TwoPairLab(BridgeComparisonLab):
     management_probes = TWO_PAIR_PROBES
     log_dir = "two-pair-logs"
     client1_probe_port = "bond0"
-    count_hosts = False
 
-    def read_router(self, peer):
-        sequence = "mlag_two_pair_core_state" if peer in ("p1", "p2") else "mlag_two_pair_access_state"
-        return observe_ports(self, peer, sequence, HOST_COUNT if self.count_hosts else ())
+    def reads(self, peer):
+        return TWO_PAIR_CORE_READS if peer in ("p1", "p2") else TWO_PAIR_ACCESS_READS
 
-    def readiness(self):
-        state = super().readiness()
-        state["linux_client1"] = run(self.ns("c1", "cat", "/proc/net/bonding/bond0"))
-        return state
+    def gate(self, name=None):
+        return ("two-pair", "hosts", *(() if name is None else (f"two-pair-{two_pair_setup(name)}",)))
 
     def case_target(self, name):
         return TWO_PAIR_TARGETS[name]
-
-    def check_baseline(self, name, before, config, target):
-        return baseline_issues(name, before, config)
 
     def check_wire(self, path, name, start, end):
         wire = bpdu_coverage(path, name, start, end)
@@ -53,7 +42,6 @@ class TwoPairLab(BridgeComparisonLab):
 
     @contextmanager
     def case_mode(self, name):
-        self.count_hosts = name.endswith("-interpair-member-flap")
         priorities, mode, strict = SETUPS[two_pair_setup(name)], two_pair_mode(name), two_pair_lacp_strict(name)
         for node in self.peers:
             reply = self.ros(node, f"/interface bonding set [find where name=interpair] lacp-strict={strict}")

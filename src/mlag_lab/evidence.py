@@ -12,6 +12,7 @@ import json
 import re
 import subprocess
 
+from .device_state import SMALL_READS, carrier, complete, known, summary
 from .direct_topology import DIRECT_NODES
 from .legacy import CAPTURES, CLIENT_MAC, FLOOD_FLOWS, FLOWS, MOBILE_MAC, NS
 from .networka import recorded
@@ -131,33 +132,27 @@ def read_legacy_state(path, name, marks, start, down, up, check, timeline):
                 timeline.append((stamp, f"link-{path_link.stem}", match[2]))
                 if flags := re.search(r"<([^>]+)>", match[2]):
                     link_events[path_link.stem].append((stamp, set(flags[1].split(","))))
-    manifest = path / "attempt.json"
-    attempt = json.loads(manifest.read_text()) if manifest.exists() else {}
-    mode = attempt.get("bridge_mode", "rstp")
-    # With protocol-mode=none the bridge monitor prints no root bridge or topology-change fields.
-    required = ("status:", "partner-flags=", "mlag-state:", "forwarding:", "mac-address=") + (
-        () if mode == "none" else ("root-bridge-id:", "topology-changes:"))
+    attempt = json.loads((path / "attempt.json").read_text())
+    stp_on = attempt.get("bridge_mode") != "none"
     for peer in ("p1", "p2"):
         samples = load_jsonl(path / f"state-{peer}.jsonl")
         previous = None
-        complete = []
+        decided = []
         for sample in samples:
-            raw = sample.get("raw", "")
-            if all(field in raw for field in required):
-                complete.append(sample["started_ns"])
-                fields = tuple(line.strip() for line in raw.splitlines()
-                               if re.search(r"(status:|port=ether|partner-flags=|^\s*role:|mlag-state:|"
-                                            r"root-bridge-id:|topology-changes:|forwarding:|on-interface=)", line))
-                if fields != previous:
-                    timeline.append((sample["done_ns"], peer,
-                                     f"query start +{seconds(sample['started_ns'] - start)} s | " + " | ".join(fields)))
-                    previous = fields
-        cadence = [b - a for a, b in zip(complete, complete[1:])]
-        check("error", len(complete) == len(samples) and len(complete) >= 8
+            state = summary(sample, SMALL_READS, stp_on=stp_on)
+            if complete(state):
+                decided.append(sample["started_ns"])
+            if state != previous:
+                timeline.append((sample.get("done_ns", sample["started_ns"]), peer,
+                                 f"query start +{seconds(sample['started_ns'] - start)} s | "
+                                 + json.dumps(state, sort_keys=True)))
+                previous = state
+        cadence = [b - a for a, b in zip(decided, decided[1:])]
+        check("error", len(decided) == len(samples) and len(decided) >= 8
               and max(cadence, default=0) <= 1.5 * NS, f"{peer} complete state samples no more than 1.5 s apart")
         if name == "silent-lacp" and peer == "p1":
             during = [s for s in samples if within(s["started_ns"], down, up)]
-            check("error", bool(during) and all("status: link-ok" in s.get("raw", "") for s in during),
+            check("error", bool(during) and all(known(carrier, s, "ether3") is True for s in during),
                   "p1 guest carrier stayed up during LACP suppression")
 
     logs = load_jsonl(path / "syslog.jsonl")

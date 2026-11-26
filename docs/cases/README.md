@@ -9,13 +9,11 @@ Every new attempt saves its resolved rules as `case-intent.yaml`. The evaluator 
 that file, so later changes to the catalogue do not change the recorded limits. An attempt without the file
 stops with an error that names it.
 
-To grade an attempt saved before attempts recorded their rules, write the current catalogue rules into a copy
-of it first. The command adds `case-intent.yaml` to each attempt below the path that has none:
-
-```sh
-uv run mlag-lab write-intent COPY
-uv run mlag-lab evaluate COPY
-```
+The catalogue holds what the suite grades from packets: phases, loss limits, graded and control streams.
+The switch and host state each case requires before the fault and after recovery is Networka intent in
+[intent/state/](../../src/mlag_lab/intent/state), one file per lab and one per setup. Networka collects
+and checks it; each attempt saves the result in `gate-baseline/` and `gate-restored/`.
+[Device state and packet grading](../test-framework.md#device-state-and-packet-grading)
 
 ## Small lab
 
@@ -36,7 +34,9 @@ Small lab selectors default to RSTP. Use `--bridge-mode none` to test with STP o
 
 The `secondary-reboot` entry in the [Small catalogue](../../src/mlag_lab/intent/small.yaml) defines SMALL-06.
 Its outage limits and streams sit in the same fields as every other case. `reboot_intent` holds only the
-reboot timing, the required switch and client state, and the flood streams that must not return to the sender.
+reboot timing and the flood streams that must not return to the sender. The switch and client state it
+requires is the Small gate: [direct.yaml](../../src/mlag_lab/intent/state/direct.yaml),
+[hosts.yaml](../../src/mlag_lab/intent/state/hosts.yaml) and the file of the run's bridge mode.
 
 [Inventory](../../labs/small/README.md) · [Link-loss procedure](small-client-link.md) · [Reboot commands](../operator-guide.md#reboot-the-direct-client-pair) · [Results](../../results/2026-11-24-small-lab/README.md)
 
@@ -91,7 +91,7 @@ Each catalogue entry and each saved `case-intent.yaml` has these fields. The sav
 | `grading_limits.outside_flood_s` | Longest time unicast may reach a host outside the conversation, for example after a table flush. |
 | `grading_limits.mac_relearn_s` | Time from the silent host's first frame until flooding stops and its streams deliver again (`silent-mobile`). |
 | `fixes` | MikroTik changelog fixes the case checks: RouterOS version, wording and link. The code fills it from [MikroTik MLAG fixes](../reference/mlag-fixes.md); it is not written in the catalogue. |
-| `reboot_intent` | SMALL-06 only: reboot timing, the switch and client state required before and after, and the flood streams that must not return to the sender. |
+| `reboot_intent` | SMALL-06 only: reboot timing and the flood streams that must not return to the sender. |
 
 `grading_limits` defaults to [limits.yaml](../../src/mlag_lab/intent/limits.yaml).
 

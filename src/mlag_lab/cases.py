@@ -21,6 +21,8 @@ PHASE_KEYS = ("baseline", "calibration", "withdrawal", "restoration")
 
 # Inputs to the legacy fault actuators.
 MAC_AGE_TIME, MAC_AGE_DEFAULT = "10s", "5m"
+# The same durations as RouterOS returns them in JSON, where Networka reads them back.
+AGEING_JSON = {MAC_AGE_TIME: "00:00:10", MAC_AGE_DEFAULT: "00:05:00"}
 MAC_AGE_SILENCE_S, MAC_AGE_RETURN_S = 25, 5
 FLAP_CYCLES, FLAP_DOWN_S, FLAP_UP_S = 5, 1, 3
 
@@ -123,22 +125,12 @@ def save_case(spec, path):
     (path / CASE_INTENT_FILE).write_text(yaml.safe_dump(data, sort_keys=False, allow_unicode=True))
 
 
-# SMALL-06 fields that graded_flows, control_flows and limit_s now hold.
-_REMOVED_TRAFFIC_FIELDS = {"client_streams", "max_client_outage_seconds", "loss_free_bypass_streams"}
-
-
 def recorded_case(spec, path):
     """The rules saved with the attempt. Replay never falls back to the catalogue."""
     source = path / CASE_INTENT_FILE
     if not source.is_file():
-        raise ValueError(f"{source}: missing; write it from the catalogue with `mlag-lab write-intent {path}`")
-    data = read_yaml(source)
-    traffic = ((data.get("reboot_intent") or {}).get("traffic") or {}) if isinstance(data, dict) else {}
-    if isinstance(traffic, dict) and traffic.keys() & _REMOVED_TRAFFIC_FIELDS:
-        raise ValueError(f"{source}: saved by an older suite with reboot_intent.traffic fields "
-                         f"{', '.join(sorted(traffic.keys() & _REMOVED_TRAFFIC_FIELDS))}; delete {source} "
-                         f"and run `mlag-lab write-intent {path}`")
-    recorded = validate_case(data, source)
+        raise ValueError(f"{source}: missing")
+    recorded = validate_case(read_yaml(source), source)
     if recorded.name != spec.name:
         raise ValueError(f"{source}: does not identify {spec.name}")
     return recorded

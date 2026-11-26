@@ -152,9 +152,9 @@ secondary-reboot:
       none.
     limit_s: 5.0
     source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
-  # SMALL-06 rules that no other field holds. The runner checks the state before the reboot and again after
-  # recovery (events baseline_observed / baseline_restored); the native bridge-port replies are the events
-  # baseline_bridge_port_intent / restored_bridge_port_intent.
+  # SMALL-06 rules that no other field holds. The switch and host state required before the reboot and after
+  # recovery is the Networka intent in state/direct.yaml and state/direct-<bridge mode>.yaml; the runner saves
+  # each check in the attempt folders gate-baseline/ and gate-restored/.
   reboot_intent:
     fault:
       reboot_role: secondary
@@ -163,22 +163,6 @@ secondary-reboot:
       baseline_seconds: 4
       observe_after_boot_seconds: 16
       recovery_seconds: 3
-    expected_state:
-      peers: [p1, p2]  # dc1-core-mlag1, dc1-core-mlag2
-      mlag_state: connected
-      bridge_forwarding:
-        bridge: bridge
-        ports: [client1, client2]  # RouterOS bond interface names on each switch
-        forwarding: true           # Boolean from /interface/bridge/port/monitor
-      router_lacp:
-        members: [ether3, ether4]
-        actor_and_partner_flags: SCD  # synchronized, collecting, distributing
-      client_lacp:
-        members:
-          c1: [eth1, eth2]  # dc1-traffic-host1, members of bond0
-          c2: [eth1, eth2]  # dc1-traffic-host2, members of bond0
-        carrier: true
-        eligible: true
     traffic:  # ICMP identifiers in the packet captures
       loss_free_baseline: true
       recovery_consecutive_replies: 10

@@ -1,17 +1,17 @@
-"""Explain the SMALL-06 intent using the existing grader and checkpoint readers."""
+"""Explain the SMALL-06 intent from the saved Networka gates and the packet grader's measurements."""
 
 from collections import defaultdict
 import json
 from math import isfinite
-import re
 
-from network_toolkit.platforms.mikrotik_routeros.intent import check_bridge_port_forwarding
+from network_toolkit import intent as networka
 
+from .device_state import BRIDGE, DEVICES, ROUTEROS, reading, relative, replay_gate
 from .evidence import load_jsonl
 from .legacy import FLOOD_SENDER_MEMBERS
-from .measure import seconds
 from .reboot_checks import cadence_ok
-from .root_state import linux_members, router_members, router_state
+
+VERDICTS = {"pass": "match", "fail": "mismatch", "error": "unverified"}
 
 
 def duration(value):
@@ -31,13 +31,9 @@ def phase_window(phase):
 
 
 def secondary_reboot_intent(path, spec, result):
-    """Build an additive report, including from a pruned attempt's saved measurements."""
+    """Build an additive report: device state from the Networka gates, traffic from the graded flows."""
     intent = spec.reboot_intent
-    fault, stable, traffic = intent.fault, intent.expected_state, intent.traffic
-    client_lacp = stable.client_lacp
-    expected_client_member = {"carrier": client_lacp.carrier, "eligible": client_lacp.eligible}
-    switch_flags = stable.router_lacp.actor_and_partner_flags
-    bridge_ports = intent.bridge_ports
+    fault, traffic = intent.fault, intent.traffic
     rows = []
     marks = defaultdict(list)
 
@@ -59,72 +55,28 @@ def secondary_reboot_intent(path, spec, result):
         target = json.loads((path / "attempt.json").read_text()).get("target")
     except (OSError, KeyError, ValueError, TypeError, AttributeError):
         target = None
-    peers = stable.peers
+    peers = ("p1", "p2")
     valid_target = target in peers
-    read_times = {}
-    for phase, mark, native_mark in (
-        ("baseline", "baseline_observed", "baseline_bridge_port_intent"),
-        ("restoration", "baseline_restored", "restored_bridge_port_intent"),
-    ):
-        state, evidence = event(mark)
-        routers = state.get("routers")
-        cli_ports = {}
+    for phase, folder in (("baseline", "gate-baseline"), ("restoration", "gate-restored")):
+        evidence = f"{folder}/{networka.RESULTS_FILE}"
+        try:
+            report = replay_gate(path / folder)
+        except networka.IntentError as error:
+            record(phase, folder, "saved Networka intent", None, None, folder,
+                   reason=relative(error.message, path / folder))
+            continue
+        for number, (item, found) in enumerate(report.results):
+            rows.append({"phase": phase, "target": item.name, "expected": found.expected, "observed": found.observed,
+                         "verdict": VERDICTS[found.verdict], "evidence": f"{evidence}#/items/{number}",
+                         **({"reason": found.reason} if found.reason else {})})
         for node in peers:
-            raw = mapping(routers).get(node)
-            raw = raw if isinstance(raw, str) else ""
-            bridge, ports = router_state(raw)
-            cli_ports[node] = ports
-            role = bridge.get("mlag-active-role")
-            connected = bridge.get("mlag-state")
             expected_role = fault.reboot_role if node == target else fault.surviving_role
-            known = (valid_target and role in {fault.reboot_role, fault.surviving_role}
-                     and connected in {"connected", "disconnected", "connecting", "disabled"}
-                     and all(len(re.findall(rf"^\s*{key}:", raw, re.M)) == 1
-                             for key in ("mlag-state", "mlag-active-role")))
-            record(phase, node, {"role": expected_role if valid_target else None, "mlag_state": stable.mlag_state},
-                   {"role": role, "mlag_state": connected},
-                   role == expected_role and connected == stable.mlag_state if known else None, evidence)
-            members = router_members(raw)
-            for port in stable.router_lacp.members:
-                member = members.get(port, {})
-                flags = {side: member.get(side) for side in ("actor", "partner")}
-                known = (len(re.findall(rf"\bport={port}\b", raw)) == 1
-                         and all(value and len(value) == 8 for value in flags.values()))
-                record(phase, f"{node}:{port} LACP", f"actor and partner {switch_flags}", flags,
-                       all(value[3:6] == switch_flags for value in flags.values()) if known else None, evidence)
-        for client, field in (("c1", "linux_client1"), ("c2", "linux")):
-            raw = state.get(field)
-            raw = raw if isinstance(raw, str) else ""
-            members = linux_members(raw)
-            for port in client_lacp.members[client]:
-                sections = re.findall(rf"(?m)^Slave Interface: {port}\n([\s\S]*?)(?=^Slave Interface: |\Z)",
-                                      raw or "")
-                known = (len(sections) == 1
-                         and len(re.findall(r"(?m)^Active Aggregator Info:\n\s*Aggregator ID: \d+$", raw)) == 1
-                         and all(len(re.findall(pattern, sections[0], re.M)) == count for pattern, count in (
-                             (r"^\s*port state: \d+$", 2), (r"^Aggregator ID: \d+$", 1),
-                             (r"^MII Status: (?:up|down)$", 1))))
-                member = members.get(port)
-                record(phase, f"{client}:{port} LACP", expected_client_member, member,
-                       member == expected_client_member if known and member else None, f"{evidence}.{field}")
-        native, native_evidence = event(native_mark)
-        started, finished = native.get("started_mono_ns"), native.get("mono_ns")
-        read_times[phase] = (seconds(finished - started)
-                             if type(started) is int and type(finished) is int and 0 <= started <= finished else None)
-        replies = mapping(native.get("replies"))
-        for port in bridge_ports:
-            verdict = check_bridge_port_forwarding(mapping(replies.get(port.target)), port.bridge, port.port,
-                                                   port.forwarding)
-            cli_value = cli_ports[port.node].get(port.port, {}).get("forwarding")
-            cli_observed = {"yes": True, "no": False}.get(cli_value)
-            observed = verdict.observed
-            record(phase, f"{port.target} forwarding", port.forwarding, observed,
-                   {"match": True, "mismatch": False, "unavailable": None}[verdict.verdict],
-                   f"{native_evidence}.replies[{port.target}]", source="RouterOS native JSON",
-                   cli_reference={
-                       "observed": cli_observed, "evidence": f"{evidence}.routers.{port.node}",
-                       "agrees": cli_observed == observed if cli_observed is not None and observed is not None else None,
-                   }, **({"reason": verdict.reason} if verdict.reason else {}))
+            replies = reading(report.evidence, DEVICES[node], "collect_bridge", BRIDGE)
+            found = networka.check_mlag(replies, ROUTEROS, BRIDGE, {"connected": True, "role": expected_role})
+            record(phase, f"{node} MLAG role", {"role": expected_role if valid_target else None, "connected": True},
+                   found.observed, found.verdict == "pass" if valid_target and found.verdict != "error" else None,
+                   f"{folder}/{networka.EVIDENCE_FILE}#/devices/{DEVICES[node]}",
+                   **({"reason": found.reason} if found.reason else {}))
 
     down, started_at = event("down_start")
     boot, boot_at = event("guest_boot_observed")
@@ -211,4 +163,4 @@ def secondary_reboot_intent(path, spec, result):
 
     verdicts = {row["verdict"] for row in rows}
     verdict = "mismatch" if "mismatch" in verdicts else "unverified" if "unverified" in verdicts else "match"
-    return {"verdict": verdict, "native_read_elapsed_s": read_times, "assertions": rows}
+    return {"verdict": verdict, "assertions": rows}

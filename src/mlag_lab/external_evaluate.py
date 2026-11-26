@@ -1,20 +1,21 @@
 """Replay the external-root gate, elections and service bounds from saved evidence."""
 
 import json
-import re
 
+from .cases import case_spec
+from .device_state import DEVICES, MEDIUM_NODE_READS, SMALL_NODE_READS, bridge_port, gate_roles, grade_gate
+from .device_state import lacp_system_ids
 from .direct_topology import DIRECT_CAPTURES, DIRECT_CASES, DIRECT_FLOWS, DIRECT_NODES
 from .direct_topology import DIRECT_FLOOD_FLOWS, DIRECT_FLOOD_RECEIVERS
 from .evidence import load_jsonl, packets
 from .networka import recorded
 from .external_topology import (
     ALL_STP_OFF_CASES, ARCHIVED_EXTERNAL_MANAGEMENT, EXTERNAL_CAPTURES, EXTERNAL_LAB_NAME,
-    EXTERNAL_NODES, EXTERNAL_TARGETS, NO_STP_CASES,
-    ROOT_ATTACHMENTS, ROOT_MACS, election_ids, preferred_root,
+    EXTERNAL_NODES, EXTERNAL_TARGETS, NO_STP_CASES, ROOT_ATTACHMENTS, ROOT_MACS, election_ids, preferred_root,
 )
 from .flood_checks import check_floods
 from .forwarding_checks import DIRECT_OUTSIDE, MEDIUM_HOSTS, MEDIUM_OUTSIDE, SMALL_HOSTS, forwarding, grade
-from .forwarding_checks import MEDIUM_PARTNER_BONDS, grade_system_ids, lacp_system_ids
+from .forwarding_checks import MEDIUM_PARTNER_BONDS, grade_system_ids
 from .forwarding_checks import access_bpdus, grade_access_bpdus
 from .legacy import FLOOD_SENDER_MEMBERS
 from .legacy_checks import check_calibration
@@ -22,155 +23,41 @@ from .measure import number, score_flows, seconds, within
 from .reboot_checks import cadence_ok, cadence_text, check_power_loss, check_reboot_flows, guest_window
 from .reboot_checks import bypass_kept_pace, pause_case, peer_observations, sender_pause_rule
 from .report import write_timeline
-from .root_evidence import read_root_packets, read_root_state, read_root_syslog, summarize_router
-from .root_state import access_guards, linux_members, router_members, router_state, uptime
+from .root_evidence import read_root_packets, read_root_state, read_root_syslog
 from .root_topology import (
-    ACCESS_ROOT_ID, MEDIUM_CORE_OFF_CASES, MEDIUM_NODES, MEDIUM_STP_OFF_CASES, MEDIUM_TARGETS, ROOT_CAPTURES,
-    ROOT_FLOWS, medium_root_id,
+    MEDIUM_CORE_OFF_CASES, MEDIUM_NODES, MEDIUM_STP_OFF_CASES, MEDIUM_TARGETS, ROOT_CAPTURES, ROOT_FLOWS,
+    medium_mode, medium_root_id,
 )
-
-CARRIER_COUNTS = {"p1": 4, "p2": 4, "witness": 3, "r1": 1, "r2": 1}
-MEDIUM_CARRIERS = dict.fromkeys(MEDIUM_NODES, 3)
 # Capture points a BPDU reaches only if an MLAG peer relays it: the peer link and the client 2 bond.
 PAIR_RELAY_POINTS = ("p1-tap1", "p2-tap1", "p1-tap3", "p2-tap3", "c2-eth1", "c2-eth2", "c2-bond0")
 PAIR_BRIDGE_MACS = ("02:00:00:21:00:11", "02:00:00:21:00:12")
 
 
-def normalized_id(value):
-    return "0x0000." + value[2:] if value and value.startswith("0.") else value
+def direct_role_issues(name, roles, target, mode):
+    """Opposite MLAG roles, one shared root with spanning tree on, and the target in the role its case reboots.
 
-
-def baseline_issues(name, state, config):
-    medium = name in MEDIUM_TARGETS
-    preferred = preferred_root(name)
-    root_id, backup_id = election_ids(preferred)
-    if medium:
-        root_id = medium_root_id(name)
-    no_stp = name in NO_STP_CASES
-    all_off = name in (*ALL_STP_OFF_CASES, *MEDIUM_STP_OFF_CASES)
-    core_off = name in MEDIUM_CORE_OFF_CASES
+    roles holds each MLAG peer's role and root bridge ID as Networka read them in the gate.
+    """
     issues = []
-    for node, raw in state["routers"].items():
-        bridge, ports = router_state(raw)
-        core = node in ("p1", "p2")
-        mode = ("none" if all_off or core and (no_stp or core_off)
-                else "mstp" if name.startswith("medium-mstp-") else "rstp")
-        bridge_config = config[node].replace("witness-bond", "access-uplink")
-        if not re.search(rf"\bprotocol-mode={mode}\b", bridge_config):
-            issues.append(f"{node} effective protocol-mode is not {mode}")
-        if core:
-            role = "primary" if node == "p1" else "secondary"
-            if (bridge.get("mlag-state"), bridge.get("mlag-active-role")) != ("connected", role):
-                issues.append(f"{node} MLAG did not establish as {role}: {bridge}")
-            priority = 10 if node == "p1" else 20
-            required = ("mlag-peer-port=ether2", f"mlag-priority={priority}", "mlag-heartbeat=5s",
-                        "mlag-init-delay=1m", "vlan-ids=110 tagged=ether2")
-            for setting in required:
-                if setting not in bridge_config:
-                    issues.append(f"{node} configuration did not contain {setting}")
-        if all_off or no_stp or core_off and core:
-            if mode == "none" and "forward-reserved-addresses=yes" in bridge_config:
-                issues.append(f"{node} forwards reserved addresses with mode none")
-        else:
-            observed_root = normalized_id(bridge.get("root-bridge-id"))
-            if observed_root != root_id:
-                issues.append(f"{node} root is {observed_root}, expected {root_id}")
-            if medium:
-                if node == "witness":
-                    expected = "yes" if root_id == ACCESS_ROOT_ID else "no"
-                    if bridge.get("root-bridge") != expected:
-                        issues.append(f"Access switch root-bridge should be {expected}: {bridge}")
-                non_edge = ("access-uplink",) if core else ("uplink",)
-            else:
-                expected_id = root_id if node == preferred else backup_id
-                if node in ROOT_MACS and normalized_id(bridge.get("bridge-id")) != expected_id:
-                    issues.append(f"{node} external bridge ID is {bridge.get('bridge-id')}, expected {expected_id}")
-                root_port = ("none" if node == preferred else "ether2") if node in ROOT_MACS else (
-                    "uplink" if node == "witness" else "ether5" if node == ROOT_ATTACHMENTS[preferred] else "ether2"
-                )
-                if bridge.get("root-port") != root_port:
-                    issues.append(f"{node} selected {bridge.get('root-port')} as root port, expected {root_port}")
-                non_edge = ("ether5", "access-uplink") if core else ("uplink",) if node == "witness" else ("ether2",)
-            if core_off:
-                # Campus option 1: the uplink bond is an edge port and the host port has BPDU guard.
-                if ports.get("uplink", {}).get("edge-port") != "yes":
-                    issues.append(f"Access switch uplink did not operate as an edge port: {ports.get('uplink')}")
-                for port, setting in (("uplink", "edge=yes"), ("ether4", "edge=yes"), ("ether4", "bpdu-guard=yes")):
-                    if not re.search(rf"\binterface={port}\s+bridge=bridge\b(?:(?!\n\s*\d+ ).)*?\b{setting}(?=\s)",
-                                     bridge_config, re.S):
-                        issues.append(f"Access switch {port} is not configured with {setting}")
-            elif any(ports.get(port, {}).get("edge-port") != "no" for port in non_edge):
-                issues.append(f"{node} ports {non_edge} did not operate as non-edge")
-        paths = ("access-uplink", "client2", "ether5") if core else (
-            ("uplink", "ether4") if node == "witness" else ("ether2",)
-        )
-        if medium and core:
-            paths = ("access-uplink", "client2")
-        expected_ports = set(paths) | ({"ether2"} if core else set())
-        if set(ports) != expected_ports or "vlan-filtering=yes" not in bridge_config:
-            issues.append(f"{node} VLAN filtering or bridge membership differs from the baseline: {ports}")
-        for port in paths:
-            if not re.search(rf"\binterface={port}\s+bridge=bridge\b(?:(?!\n\s*\d+ ).)*?\bpvid=110\b",
-                             bridge_config, re.S):
-                issues.append(f"{node}:{port} does not have effective PVID 110")
-        carrier = summarize_router(raw)["carrier"]
-        expected_carriers = MEDIUM_CARRIERS if medium else CARRIER_COUNTS
-        if len(carrier) != expected_carriers[node] or set(carrier.values()) != {"link-ok"}:
-            issues.append(f"{node} guest carrier differs from the baseline: {carrier}")
-        if mode != "none":
-            for port in paths:
-                if ports.get(port, {}).get("forwarding") != "yes":
-                    issues.append(f"{node}:{port} is not forwarding: {ports.get(port)}")
-        expected_members = {"ether3", "ether4"} if core else {"ether2", "ether3"} if node == "witness" else set()
-        members = router_members(raw)
-        if set(members) != expected_members or any(
-            any(member[side][3:6] != "SCD" for side in ("actor", "partner")) for member in members.values()
-        ):
-            issues.append(f"{node} LACP members are not all eligible: {members}")
-    members = linux_members(state["linux"])
-    if set(members) != {"eth1", "eth2"} or any(not all(member.values()) for member in members.values()):
-        issues.append(f"Client B LACP is not eligible on both members: {members}")
-    return issues
-
-
-def direct_baseline_issues(name, state, config, target, mode, intent=None):
-    issues = []
-    bridges = {}
-    stable = intent.expected_state if intent else None
-    connected = stable.mlag_state if stable else "connected"
-    bridge_ports = stable.bridge_forwarding.ports if stable else ("client1", "client2")
-    forwarding = "no" if stable and not stable.bridge_forwarding.forwarding else "yes"
-    router_members_expected = set(stable.router_lacp.members) if stable else {"ether3", "ether4"}
-    scd = stable.router_lacp.actor_and_partner_flags if stable else "SCD"
-    for node, raw in state["routers"].items():
-        bridge, ports = router_state(raw)
-        bridges[node] = bridge
-        if f"protocol-mode={mode}" not in config[node] or bridge.get("mlag-state") != connected:
-            issues.append(f"{node} protocol-mode={mode} and {connected} MLAG were not verified: {bridge}")
-        for bond in bridge_ports:
-            port = ports.get(bond, {})
-            if mode != "none" and (port.get("edge-port") != "yes" or port.get("forwarding") != forwarding):
-                issues.append(f"{node}:{bond} is not a forwarding edge port: {port}")
-        members = router_members(raw)
-        if set(members) != router_members_expected or any(
-            any(member[side][3:6] != scd for side in ("actor", "partner")) for member in members.values()
-        ):
-            issues.append(f"{node} LACP members are not all eligible: {members}")
-    roles = {state.get("mlag-active-role") for state in bridges.values()}
-    roots = {state.get("root-bridge-id") for state in bridges.values()}
-    if roles != {"primary", "secondary"} or mode != "none" and (len(roots) != 1 or None in roots):
-        issues.append(f"Expected complementary MLAG roles and a shared RSTP root: {bridges}")
+    found = {node: value["role"] for node, value in roles.items()}
+    roots = {value["root_id"] for value in roles.values()}
+    if set(found.values()) != {"primary", "secondary"} or mode != "none" and (len(roots) != 1 or None in roots):
+        issues.append(f"Expected complementary MLAG roles and a shared RSTP root: {roles}")
+    intent = case_spec(name).reboot_intent
     target_role = intent.fault.reboot_role if intent else name.rsplit("-", 1)[1]
-    if target_role in ("primary", "secondary") and bridges.get(target, {}).get("mlag-active-role") != target_role:
+    if target_role in ("primary", "secondary") and found.get(target) != target_role:
         issues.append(f"{target} did not hold the intended MLAG role for {name}")
-    for client, key in (("c1", "linux_client1"), ("c2", "linux")):
-        members = linux_members(state[key])
-        expected_ports = set(stable.client_lacp.members[client]) if stable else {"eth1", "eth2"}
-        expected_member = ({"carrier": stable.client_lacp.carrier, "eligible": stable.client_lacp.eligible}
-                           if stable else {"carrier": True, "eligible": True})
-        if set(members) != expected_ports or any(member != expected_member for member in members.values()):
-            issues.append(f"{client} LACP is not eligible on both members: {members}")
     return issues
+
+
+def grade_state(path, name, folder, check, label, phase=None, *, direct, target, mode):
+    """Replay one saved gate, plus the role and root checks of the direct runner, into suite checks."""
+    report = grade_gate(path / folder, check, label, phase)
+    if direct and report is not None:
+        roles = gate_roles(report, {node: DEVICES[node] for node in DIRECT_NODES})
+        for issue in direct_role_issues(name, roles, target, mode):
+            check("fail", False, f"{label}: {issue}", phase)
+    return report
 
 
 def pair_bpdus(path, start, end):
@@ -261,20 +148,6 @@ def broadcast_counts(path, start, end):
     return counts
 
 
-def election_samples(path, start, end):
-    summaries = {}
-    for node in EXTERNAL_NODES:
-        roots = {}
-        for sample in load_jsonl(path / f"state-{node}.jsonl"):
-            if "raw" in sample and start <= sample["started_ns"] <= sample["done_ns"] <= end:
-                bridge, _ = router_state(sample["raw"])
-                identity = normalized_id(bridge.get("root-bridge-id"))
-                if identity:
-                    roots.setdefault(identity, [sample["started_ns"], sample["done_ns"]])[1] = sample["done_ns"]
-        summaries[node] = roots
-    return summaries
-
-
 def evaluate_external(path, name, checks, result, *, spec):
     intent = spec.reboot_intent
 
@@ -307,6 +180,7 @@ def evaluate_external(path, name, checks, result, *, spec):
         if "runner_error" in marks:
             check("error", False, marks["runner_error"]["detail"])
         if "baseline_observed" not in marks:
+            check("error", False, "The attempt stopped before the baseline was observed")
             return
         baseline_end = number(marks, "baseline_observed")
         direct = name in DIRECT_CASES
@@ -332,24 +206,15 @@ def evaluate_external(path, name, checks, result, *, spec):
             result["election"] = {"root": medium_root_id(name)}
             if name in MEDIUM_CORE_OFF_CASES:
                 result["bridge_modes"] = {"cores": "none", "witness": "rstp"}
-                guards = reset.get("access_guards") or access_guards(reset.get("access_guards_raw", ""))
-                result["access_guards"] = guards
-                check("error", guards == {"uplink_edge": "yes", "ether4_edge": "yes", "ether4_bpdu_guard": "yes",
-                                          "ether4_loop_protect": "on"},
-                      f"Access switch read back uplink edge, host port BPDU guard and loop protect: {guards}")
         elif name in NO_STP_CASES:
             result["bridge_modes"] = {"cores": "none", "witness_and_roots": "rstp"}
         else:
             result["election"] = {"preferred": preferred, "root": root_id, "backup": backup_id}
         before = marks["baseline_observed"]
-        config = json.loads((path / "effective-config.json").read_text())
-        issues = (direct_baseline_issues(name, before, config, target, direct_mode, intent) if direct
-                  else baseline_issues(name, before, config))
-        for issue in issues:
-            check("fail", False, issue)
+        baseline = grade_state(path, name, "gate-baseline", check, "Baseline device state", direct=direct,
+                               target=target, mode=direct_mode)
         if "baseline_rejected" in marks:
             result["fault_withheld"] = marks["baseline_rejected"]["issues"]
-        result["baseline_state"] = {node: summarize_router(raw) for node, raw in before["routers"].items()}
         if not direct:
             wire = bpdu_coverage(path, name, start, baseline_end)
             result["baseline_bpdus"] = wire
@@ -399,8 +264,15 @@ def evaluate_external(path, name, checks, result, *, spec):
             up = number(marks, "up_start")
         actions = (("withdrawal", down, up), ("restoration", up, recovery))
         result["phases_s"] = {phase: [seconds(a - start), seconds(b - start)] for phase, a, b in actions}
-        carriers = dict.fromkeys(DIRECT_NODES, 4) if direct else MEDIUM_CARRIERS if medium else CARRIER_COUNTS
-        result["sampling"] = read_root_state(path, start, end, target, check, timeline, nodes=carriers)
+        if direct:
+            stp_nodes = () if direct_mode == "none" else DIRECT_NODES
+        elif name in MEDIUM_CORE_OFF_CASES:
+            stp_nodes = ("witness",)
+        else:
+            stp_nodes = () if medium_mode(name) == "none" else MEDIUM_NODES
+        result["sampling"] = read_root_state(path, start, end, target, check, timeline,
+                                             nodes=SMALL_NODE_READS if direct else MEDIUM_NODE_READS,
+                                             stp_nodes=stp_nodes)
         if direct:
             nodes, label = recorded(DIRECT_NODES, manifest), manifest["topology"]
         elif medium:
@@ -421,7 +293,7 @@ def evaluate_external(path, name, checks, result, *, spec):
             hosts=SMALL_HOSTS if direct else MEDIUM_HOSTS, nodes=nodes, recovery=recovery if executed else None,
             stopped=stopped["epoch_ns"] if executed and "recovery_end" not in marks else None)
         grade(result["forwarding"], check, outside_limit_s=spec.grading_limits.outside_flood_s)
-        result["lacp_system_ids"] = lacp_system_ids(marks, None if direct else MEDIUM_PARTNER_BONDS)
+        result["lacp_system_ids"] = lacp_system_ids(baseline, None if direct else MEDIUM_PARTNER_BONDS)
         grade_system_ids(result["lacp_system_ids"], check)
         if not direct:
             result["access_bpdus"] = access_bpdus(bpdus, start, down, up, end)
@@ -448,10 +320,11 @@ def evaluate_external(path, name, checks, result, *, spec):
         if "fault_withheld" in result and all(c["ok"] for c in checks if c["level"] == "fail"):
             check("error", False, f"Live baseline gate withheld the fault despite the closed captures: "
                   f"{result['fault_withheld']}")
-        for issue in marks.get("baseline_restored", {}).get("issues", []):
-            check("fail", False, f"Restoration: {issue}", "restoration")
         if executed:
             check("error", "baseline_restored" in marks, "Restore state was captured", "restoration")
+            if "baseline_restored" in marks:
+                grade_state(path, name, "gate-restored", check, "Restoration", "restoration", direct=direct,
+                            target=target, mode=direct_mode)
             if "baseline_restored" in marks and not direct:
                 restored_wire = bpdu_coverage(path, name, recovery, end)
                 result["restored_bpdus"] = restored_wire
@@ -464,46 +337,21 @@ def evaluate_external(path, name, checks, result, *, spec):
                 check_reboot_flows(spec, flows, icmp, start, seconds(down - start), seconds(first_miss - start),
                                    seconds(last_miss - start), seconds(up - start), seconds(end - start), check,
                                    definitions=definitions)
-        if "attachment_down_observed" in marks:
-            hold_start = number(marks, "attachment_down_applied")
-            hold_end = number(marks, "attachment_up_start")
-            roots = election_samples(path, hold_start, hold_end)
-            result["attachment_hold_roots"] = roots
-            # The surviving core and witness must both receive the elected backup.
-            backup = "r1" if preferred == "r2" else "r2"
-            survivor = ROOT_ATTACHMENTS[backup]
-            expected = {backup: backup_id, survivor: backup_id, "witness": backup_id}
-            if not target:
-                expected[ROOT_ATTACHMENTS[preferred]] = backup_id
-                restored = marks.get("baseline_restored", {}).get("routers", {})
-                for core in ("p1", "p2"):
-                    before_uptime = uptime(before["routers"][core])
-                    after_uptime = uptime(restored[core]) if core in restored else None
-                    check("error", before_uptime is not None and after_uptime is not None
-                          and after_uptime - before_uptime >= hold_end - hold_start - 1_000_000_000,
-                          f"{core} was up throughout the attachment-only fault", "withdrawal")
-            for node, identity in expected.items():
-                check("fail", identity in roots[node], f"{node} elected {identity} during attachment withdrawal",
-                      "withdrawal")
-        elif target and executed and not (direct or medium or all_off or name in NO_STP_CASES):
-            roots = election_samples(path, first_miss, last_miss)
-            result["reboot_hold_roots"] = roots
-            for node in (ROOT_ATTACHMENTS[preferred], "witness", preferred):
-                check("fail", set(roots[node]) == {root_id},
-                      f"{node} kept the preferred root {root_id} during the guest absence; "
-                      f"observed {sorted(roots[node])}", "withdrawal")
-        elif direct and target and "peer" in result:
+        if direct and target and "peer" in result:
             survivor = result["peer"]["survivor"]
-            observations = [
-                router_state(sample["raw"])[1]
-                for sample in load_jsonl(path / f"state-{survivor}.jsonl")
-                if "raw" in sample and first_miss <= sample["started_ns"] <= sample["done_ns"] <= last_miss
-            ]
-            check("error", bool(observations), f"{survivor} supplied direct-edge port state during the guest absence",
-                  "withdrawal")
-            ports_to_check = intent.expected_state.bridge_forwarding.ports if intent else ("client1", "client2")
-            for bond in ports_to_check:
-                check("fail", all(ports.get(bond, {}).get("forwarding") == "yes" for ports in observations),
+            bonds = ("client1", "client2")
+            observations, undecided = [], 0
+            for sample in load_jsonl(path / f"state-{survivor}.jsonl"):
+                if first_miss <= sample["started_ns"] <= sample.get("done_ns", last_miss + 1) <= last_miss:
+                    try:
+                        observations.append({bond: bridge_port(sample, bond)["forwarding"] for bond in bonds})
+                    except ValueError:
+                        undecided += 1
+            check("error", bool(observations) and not undecided,
+                  f"{survivor} supplied direct-edge port state in every sample during the guest absence; "
+                  f"{undecided} undecided", "withdrawal")
+            for bond in bonds:
+                check("fail", all(ports[bond] for ports in observations),
                       f"{survivor}:{bond} stayed forwarding while {target} was absent", "withdrawal")
         if direct:
             result["floods"] = check_floods(path, spec, icmp, start, end, actions, DIRECT_FLOOD_RECEIVERS,

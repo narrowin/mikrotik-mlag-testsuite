@@ -1,0 +1,48 @@
+# Medium lab: state and configuration every setup requires. Each case adds host2.yaml and
+# medium-<setup>.yaml.
+- {name: "mlag1 MLAG connected as primary", device: "dc1-core-mlag1", check: "mlag", params: {bridge: "bridge"}, expected: {connected: true, role: "primary"}}
+- {name: "mlag1 bridge mlag-peer-port \"ether2\"", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "mlag-peer-port"}, expected: "ether2"}
+- {name: "mlag1 bridge mlag-priority 10", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "mlag-priority"}, expected: 10}
+- {name: "mlag1 bridge mlag-heartbeat \"5s\"", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "mlag-heartbeat"}, expected: "5s"}
+- {name: "mlag1 bridge mlag-init-delay \"00:01:00\"", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "mlag-init-delay"}, expected: "00:01:00"}
+- {name: "mlag1 bridge vlan-filtering true", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "vlan-filtering"}, expected: true}
+- {name: "mlag1 bridge VLAN 110", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bridge/vlan", where: {bridge: "bridge"}, name: "vlan-ids"}, expected: ["110"]}
+- {name: "mlag1 VLAN 110 tagged on ether2", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bridge/vlan", where: {bridge: "bridge"}, name: "tagged"}, expected: ["ether2"]}
+- {name: "mlag1 access-uplink PVID 110", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bridge/port", where: {interface: "access-uplink"}, name: "pvid"}, expected: 110}
+- {name: "mlag1 client2 PVID 110", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bridge/port", where: {interface: "client2"}, name: "pvid"}, expected: 110}
+- {name: "mlag1 bridge ports access-uplink, client2, ether2", device: "dc1-core-mlag1", check: "bridge_ports", params: {bridge: "bridge"}, expected: ["access-uplink", "client2", "ether2"]}
+- {name: "mlag1 ether2 carrier", device: "dc1-core-mlag1", check: "interface_up", params: {interface: "ether2"}, expected: true}
+- {name: "mlag1 ether3 carrier", device: "dc1-core-mlag1", check: "interface_up", params: {interface: "ether3"}, expected: true}
+- {name: "mlag1 ether4 carrier", device: "dc1-core-mlag1", check: "interface_up", params: {interface: "ether4"}, expected: true}
+- {name: "mlag1 access-uplink members ether3", device: "dc1-core-mlag1", check: "bond_members", params: {bond: "access-uplink"}, expected: ["ether3"]}
+- {name: "mlag1 access-uplink member ether3 in use", device: "dc1-core-mlag1", check: "lacp_member", params: {bond: "access-uplink", member: "ether3"}, expected: {synchronization: true, collecting: true, distributing: true}}
+- {name: "mlag1 client2 members ether4", device: "dc1-core-mlag1", check: "bond_members", params: {bond: "client2"}, expected: ["ether4"]}
+- {name: "mlag1 client2 member ether4 in use", device: "dc1-core-mlag1", check: "lacp_member", params: {bond: "client2", member: "ether4"}, expected: {synchronization: true, collecting: true, distributing: true}}
+- {name: "mlag2 MLAG connected as secondary", device: "dc1-core-mlag2", check: "mlag", params: {bridge: "bridge"}, expected: {connected: true, role: "secondary"}}
+- {name: "mlag2 bridge mlag-peer-port \"ether2\"", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "mlag-peer-port"}, expected: "ether2"}
+- {name: "mlag2 bridge mlag-priority 20", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "mlag-priority"}, expected: 20}
+- {name: "mlag2 bridge mlag-heartbeat \"5s\"", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "mlag-heartbeat"}, expected: "5s"}
+- {name: "mlag2 bridge mlag-init-delay \"00:01:00\"", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "mlag-init-delay"}, expected: "00:01:00"}
+- {name: "mlag2 bridge vlan-filtering true", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "vlan-filtering"}, expected: true}
+- {name: "mlag2 bridge VLAN 110", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bridge/vlan", where: {bridge: "bridge"}, name: "vlan-ids"}, expected: ["110"]}
+- {name: "mlag2 VLAN 110 tagged on ether2", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bridge/vlan", where: {bridge: "bridge"}, name: "tagged"}, expected: ["ether2"]}
+- {name: "mlag2 access-uplink PVID 110", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bridge/port", where: {interface: "access-uplink"}, name: "pvid"}, expected: 110}
+- {name: "mlag2 client2 PVID 110", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bridge/port", where: {interface: "client2"}, name: "pvid"}, expected: 110}
+- {name: "mlag2 bridge ports access-uplink, client2, ether2", device: "dc1-core-mlag2", check: "bridge_ports", params: {bridge: "bridge"}, expected: ["access-uplink", "client2", "ether2"]}
+- {name: "mlag2 ether2 carrier", device: "dc1-core-mlag2", check: "interface_up", params: {interface: "ether2"}, expected: true}
+- {name: "mlag2 ether3 carrier", device: "dc1-core-mlag2", check: "interface_up", params: {interface: "ether3"}, expected: true}
+- {name: "mlag2 ether4 carrier", device: "dc1-core-mlag2", check: "interface_up", params: {interface: "ether4"}, expected: true}
+- {name: "mlag2 access-uplink members ether3", device: "dc1-core-mlag2", check: "bond_members", params: {bond: "access-uplink"}, expected: ["ether3"]}
+- {name: "mlag2 access-uplink member ether3 in use", device: "dc1-core-mlag2", check: "lacp_member", params: {bond: "access-uplink", member: "ether3"}, expected: {synchronization: true, collecting: true, distributing: true}}
+- {name: "mlag2 client2 members ether4", device: "dc1-core-mlag2", check: "bond_members", params: {bond: "client2"}, expected: ["ether4"]}
+- {name: "mlag2 client2 member ether4 in use", device: "dc1-core-mlag2", check: "lacp_member", params: {bond: "client2", member: "ether4"}, expected: {synchronization: true, collecting: true, distributing: true}}
+- {name: "access switch bridge vlan-filtering true", device: "dc1-access-switch1", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "vlan-filtering"}, expected: true}
+- {name: "access switch uplink PVID 110", device: "dc1-access-switch1", check: "property", params: {menu: "/interface/bridge/port", where: {interface: "uplink"}, name: "pvid"}, expected: 110}
+- {name: "access switch ether4 PVID 110", device: "dc1-access-switch1", check: "property", params: {menu: "/interface/bridge/port", where: {interface: "ether4"}, name: "pvid"}, expected: 110}
+- {name: "access switch bridge ports ether4, uplink", device: "dc1-access-switch1", check: "bridge_ports", params: {bridge: "bridge"}, expected: ["ether4", "uplink"]}
+- {name: "access switch ether2 carrier", device: "dc1-access-switch1", check: "interface_up", params: {interface: "ether2"}, expected: true}
+- {name: "access switch ether3 carrier", device: "dc1-access-switch1", check: "interface_up", params: {interface: "ether3"}, expected: true}
+- {name: "access switch ether4 carrier", device: "dc1-access-switch1", check: "interface_up", params: {interface: "ether4"}, expected: true}
+- {name: "access switch uplink members ether2, ether3", device: "dc1-access-switch1", check: "bond_members", params: {bond: "uplink"}, expected: ["ether2", "ether3"]}
+- {name: "access switch uplink member ether2 in use", device: "dc1-access-switch1", check: "lacp_member", params: {bond: "uplink", member: "ether2"}, expected: {synchronization: true, collecting: true, distributing: true}}
+- {name: "access switch uplink member ether3 in use", device: "dc1-access-switch1", check: "lacp_member", params: {bond: "uplink", member: "ether3"}, expected: {synchronization: true, collecting: true, distributing: true}}

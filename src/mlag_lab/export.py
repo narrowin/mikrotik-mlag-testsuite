@@ -12,7 +12,7 @@ from pathlib import Path
 
 from .faults import write_tsv as write_faults
 from .measurements import COLUMNS, rows as measurement_rows
-from .readme import DEVICES, find_suites, startup_mode
+from .readme import DEVICES, find_suites, first_role, startup_mode
 
 SCHEMA = 1
 EVIDENCE_FILES = ("result.json", "timeline.tsv", "events.jsonl", "syslog.jsonl")
@@ -100,8 +100,8 @@ def roles(directory):
     found = {}
     for node in ("p1", "p2"):
         state = directory / f"state-{node}.jsonl"
-        if state.exists() and (match := re.search(r"mlag-active-role: (\w+)", state.read_text())):
-            found[node] = match[1]
+        if state.exists() and (role := first_role(state)):
+            found[node] = role
     return found
 
 

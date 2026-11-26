@@ -5,13 +5,17 @@ import json
 import re
 import subprocess
 
+from network_toolkit.intent import IntentError
+from network_toolkit.platforms.mikrotik_routeros import intent as ros
+
 from .cases import BY_NAME, case_spec, phase_results, recorded_case
+from .device_state import BRIDGE, DEVICES, grade_gate, lacp_system_ids, reading, replay_gate
 from .direct_topology import DIRECT_CASES, DIRECT_NODES
 from .evidence import load_jsonl, read_legacy_packets, read_legacy_state
 from .external_evaluate import evaluate_external
 from .external_topology import EXTERNAL_CASES
 from .flood_checks import check_floods
-from .forwarding_checks import SMALL_HOSTS, SMALL_OUTSIDE, forwarding, grade, grade_system_ids, lacp_system_ids
+from .forwarding_checks import SMALL_HOSTS, SMALL_OUTSIDE, forwarding, grade, grade_system_ids
 from .legacy import CASES, FLOWS, case_captures
 from .legacy import FLOOD_FLOWS, FLOOD_RECEIVERS, FLOOD_SENDER_MEMBERS
 from .legacy_checks import check_calibration, check_member, check_mobile_move, check_peer_link
@@ -25,6 +29,19 @@ from .root_topology import MEDIUM_TARGETS, ROOT_CASES
 from .secondary_reboot_intent import secondary_reboot_intent
 from .two_pair_evaluate import evaluate_two_pair
 from .two_pair_topology import TWO_PAIR_TARGETS
+
+# attempt.json schema of attempts whose device state Networka read and whose gates it saved.
+ATTEMPT_SCHEMA = 3
+
+
+def replayable(path):
+    """Raise ValueError for an attempt saved before the suite read device state through Networka."""
+    manifest = path / "attempt.json"
+    schema = json.loads(manifest.read_text()).get("schema") if manifest.exists() else None
+    if schema != ATTEMPT_SCHEMA:
+        raise ValueError(f"{path}: saved with RouterOS text state (attempt.json schema {schema}); the suite now "
+                         "reads device state through Networka intent and cannot grade this attempt again. Its "
+                         "saved result.json stands.")
 
 
 def case_id(path):
@@ -51,6 +68,15 @@ def evaluate_legacy(path, name, checks, result, *, spec):
     timeline = [(e["epoch_ns"], "action", json.dumps(e, sort_keys=True)) for e in events]
     if "runner_error" in marks:
         raise RuntimeError(marks["runner_error"]["detail"])
+
+    def check(level, ok, message, phase=None):
+        checks.append({"level": level, "ok": bool(ok), "detail": message} | ({"phase": phase} if phase else {}))
+
+    if "baseline_rejected" in marks:
+        # The baseline gate did not pass, so the runner withheld the fault.
+        result["fault_executed"] = False
+        grade_gate(path / "gate-baseline", check, "Baseline device state")
+        return
     start = number(marks, "baseline_start")
     end = number(marks, "recovery_end")
     down = number(marks, "down_start")
@@ -59,8 +85,6 @@ def evaluate_legacy(path, name, checks, result, *, spec):
         down = next(event["epoch_ns"] for event in events if event["name"] == "down_start")
     up = number(marks, "up_start")
     recovery = number(marks, "recovery_start")
-    def check(level, ok, message, phase=None):
-        checks.append({"level": level, "ok": bool(ok), "detail": message} | ({"phase": phase} if phase else {}))
     check("error", abs(marks["collectors_stopped"]["clock_delta_ns"]) < 50_000_000,
           "Host wall clock and monotonic clock agree within 50 ms")
     check("error", not marks["collectors_stopped"].get("early_exits"), "All capture and probe processes stayed up")
@@ -72,12 +96,14 @@ def evaluate_legacy(path, name, checks, result, *, spec):
 
     flows = score_flows(packets.icmp, start, end, actions, timeline)
     result["flows"] = flows
+    gate = grade_gate(path / "gate-baseline", check, "Baseline device state")
+    grade_gate(path / "gate-restored", check, "Restoration", "restoration")
     result["forwarding"] = forwarding(path, packets.icmp, FLOWS, start, down, up, end, outside=SMALL_OUTSIDE,
-                                      hosts=SMALL_HOSTS, nodes=nodes, recovery=recovery)
+                                      hosts=SMALL_HOSTS, nodes=nodes, recovery=recovery, mobile=True)
     # While the MAC-move host is silent past bridge ageing, both peers flood streams 101 and 102 on purpose.
     grade(result["forwarding"], check, {"withdrawal": (101, 102)} if name == "silent-mobile" else None,
           outside_limit_s=spec.grading_limits.outside_flood_s)
-    result["lacp_system_ids"] = lacp_system_ids(marks)
+    result["lacp_system_ids"] = lacp_system_ids(gate)
     grade_system_ids(result["lacp_system_ids"], check)
     for ident, flow in flows.items():
         check("error", flow["baseline_good"] >= 30, f"{ident} has usable baseline cadence")
@@ -114,49 +140,39 @@ def evaluate_legacy(path, name, checks, result, *, spec):
 
 
 def bridge_mode(path):
-    """Requested bridge mode, else the single protocol-mode both MLAG peers ran with."""
-    manifest = path / "attempt.json"
-    if manifest.exists() and (mode := json.loads(manifest.read_text()).get("bridge_mode")):
+    """Requested bridge mode, else the single protocol-mode both MLAG peers had in the baseline gate."""
+    if mode := json.loads((path / "attempt.json").read_text()).get("bridge_mode"):
         return mode
+    try:
+        evidence = replay_gate(path / "gate-baseline").evidence
+    except IntentError:
+        return None
+    modes = set()
+    for node in ("p1", "p2"):
+        try:
+            modes.add(ros.stp_mode(reading(evidence, DEVICES[node], "collect_stp_mode", BRIDGE), BRIDGE))
+        except ValueError:
+            return None
+    return modes.pop() if len(modes) == 1 else None
+
+
+def write_configs(path):
+    """Save each device's running configuration as readable text. The gates check the configuration."""
     config = path / "effective-config.json"
     if config.exists():
-        modes = {match[1] for node, text in json.loads(config.read_text()).items()
-                 if node in ("p1", "p2") and (match := re.search(r"\bprotocol-mode=(\w+)", text))}
-        if len(modes) == 1:
-            return modes.pop()
-    return None
-
-
-def write_configs(path, checks):
-    """Save each device's effective configuration as readable text and compare it with the requested mode."""
-    config = path / "effective-config.json"
-    if not config.exists():
-        return
-    effective = json.loads(config.read_text())
-    for node, text in effective.items():
-        (path / f"config-{node}.txt").write_text(text if text.endswith("\n") else text + "\n")
-    manifest = path / "attempt.json"
-    requested = json.loads(manifest.read_text()).get("bridge_mode") if manifest.exists() else None
-    if requested:
-        running = {node: match[1] for node, text in effective.items() if node in ("p1", "p2")
-                   and (match := re.search(r"\bprotocol-mode=(\w+)", text))}
-        checks.append({"level": "error", "ok": set(running.values()) == {requested},
-                       "detail": f"Both MLAG peers ran protocol-mode={requested}: {running}"})
+        for node, text in json.loads(config.read_text()).items():
+            (path / f"config-{node}.txt").write_text(text if text.endswith("\n") else text + "\n")
 
 
 def analyze(path):
     if (path / "result.json").exists() and not any((path / "captures").glob("*.pcap")):
         # Pruned after the run: only proof.tar.gz is left, so the saved verdict stands.
-        result = json.loads((path / "result.json").read_text())
-        spec = BY_NAME.get(result.get("name"))
-        if spec and spec.reboot_intent and "secondary_reboot_intent" not in result:
-            result["secondary_reboot_intent"] = secondary_reboot_intent(path, recorded_case(spec, path), result)
-            write_result(path, result)
-        return result
+        return json.loads((path / "result.json").read_text())
     name = spec = None
     checks = []
     result = {"run": path.name, "case": name, "checks": checks}
     try:
+        replayable(path)
         name = case_id(path)
         result["case"] = name
         spec = recorded_case(case_spec(name), path)
@@ -169,11 +185,14 @@ def analyze(path):
             evaluator = evaluate_root if name in ROOT_CASES else evaluate_legacy
         evaluator(path, name, checks, result, spec=spec)
         result["bridge_mode"] = bridge_mode(path)
-        write_configs(path, checks)
+        write_configs(path)
     except (OSError, ValueError, KeyError, RuntimeError, subprocess.SubprocessError) as error:
         checks.append({"level": "error", "ok": False, "detail": str(error)})
     result.setdefault("forwarding", {"status": "not available: evaluation stopped before the streams were scored"})
     failures = {check["level"] for check in checks if not check["ok"]}
+    if not checks:
+        checks.append({"level": "error", "ok": False, "detail": "No check was graded; an empty attempt never passes"})
+        failures = {"error"}
     if "error" in failures:
         result["status"] = "error"
     elif "fail" in failures:
@@ -228,10 +247,26 @@ def analyze_all(runs, jobs=None):
         return dict(zip(runs, pool.map(analyze, runs, chunksize=1)))
 
 
+def require_replayable(runs):
+    """Raise one ValueError before any result.json changes when an attempt that would be graded again is too old."""
+    old = []
+    for run in runs:
+        try:
+            if any((run / "captures").glob("*.pcap")) or not (run / "result.json").exists():
+                replayable(run)
+        except ValueError as error:
+            old.append(error)
+    if old:
+        more = f" ({len(old) - 1} more attempts like it)" if len(old) > 1 else ""
+        raise ValueError(f"{old[0]}{more}")
+
+
 def replay(path, jobs=None):
     if not path.is_dir():
         raise ValueError(f"Evidence directory does not exist: {path}")
+    runs = attempt_folders(path)
+    require_replayable(runs)
     if is_attempt(path):
         return {"pass": 0, "fail": 1, "error": 2}[analyze(path)["status"]]
-    analyze_all(attempt_folders(path), jobs)
+    analyze_all(runs, jobs)
     return write_summaries(path)

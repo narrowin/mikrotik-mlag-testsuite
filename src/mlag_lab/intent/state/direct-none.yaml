@@ -1,0 +1,7 @@
+# Small lab with protocol-mode=none: added to direct.yaml.
+- {name: "mlag1 protocol-mode none", device: "dc1-core-mlag1", check: "stp_mode", params: {bridge: "bridge"}, expected: "none"}
+- {name: "mlag1 bridge port client1 forwarding", device: "dc1-core-mlag1", check: "bridge_port", params: {bridge: "bridge", port: "client1"}, expected: {forwarding: true}}
+- {name: "mlag1 bridge port client2 forwarding", device: "dc1-core-mlag1", check: "bridge_port", params: {bridge: "bridge", port: "client2"}, expected: {forwarding: true}}
+- {name: "mlag2 protocol-mode none", device: "dc1-core-mlag2", check: "stp_mode", params: {bridge: "bridge"}, expected: "none"}
+- {name: "mlag2 bridge port client1 forwarding", device: "dc1-core-mlag2", check: "bridge_port", params: {bridge: "bridge", port: "client1"}, expected: {forwarding: true}}
+- {name: "mlag2 bridge port client2 forwarding", device: "dc1-core-mlag2", check: "bridge_port", params: {bridge: "bridge", port: "client2"}, expected: {forwarding: true}}

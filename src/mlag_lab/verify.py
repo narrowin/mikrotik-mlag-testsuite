@@ -2,7 +2,7 @@
 
 import json
 
-from .evaluate import analyze_all, attempt_folders, write_summaries
+from .evaluate import analyze_all, attempt_folders, require_replayable, write_summaries
 
 
 def campaigns(results):
@@ -22,6 +22,7 @@ def verify(results, jobs=None):
     folders = {campaign: attempt_folders(campaign) for campaign in campaigns(results)}
     # A pruned run has no captures left to replay.
     runs = [run for group in folders.values() for run in group if any((run / "captures").glob("*.pcap"))]
+    require_replayable(runs)
     before = {run: verdict(run) for run in runs}
     analyze_all(runs, jobs)
     for campaign in folders:

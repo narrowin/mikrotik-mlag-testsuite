@@ -10,18 +10,22 @@ import re
 import subprocess
 from threading import Event
 import time
+import traceback
+
+from network_toolkit.platforms.mikrotik_routeros import intent as ros
 
 from .cases import case_spec, save_case
+from .device_state import BRIDGE, MEDIUM_ACCESS_READS, MEDIUM_CORE_READS, Sampler, findings, load_gate, run_gate
+from .device_state import save_gate, uptime
 from .evaluate import analyze
 from .proof import keep_proof
 from .evidence import seal_captures
 from .legacy import NS, case_name
-from .networka import INSTANCE, lab_name, reads
-from .root_state import uptime, verify_root
+from .networka import INSTANCE, lab_name
 from .root_topology import (
     MANAGEMENT_PROBES, POWER_OFF_HOLD_S, ROOT_CAPTURES, ROOT_FLOWS, ROOT_LINKS, ROOT_NODES, ROOT_PORTS, target_for,
 )
-from .run import CONFIG, UPTIME, UV, Capture, Lab, filter_fault, run, sample_loop
+from .run import ATTEMPT_SCHEMA, CONFIG, UV, Capture, Lab, filter_fault, guest_carrier, run, sample_loop
 
 
 class RootLab(Lab):
@@ -38,22 +42,24 @@ class RootLab(Lab):
         for left, right in self.links:
             self.verify_veth(left, right)
 
-    def read_router(self, peer):
-        sequence = "mlag_medium_access_state" if peer == "witness" else "mlag_medium_core_state"
-        return self.ros(peer, ";".join((UPTIME, *reads(sequence))))
+    def reads(self, peer):
+        return MEDIUM_ACCESS_READS if peer == "witness" else MEDIUM_CORE_READS
 
-    def observe_router(self, peer):
+    def sampler(self, peer):
         # Networka drops a dead session, so the next read opens a new one.
-        return self.read_router(peer)
+        return Sampler(self, peer, self.reads(peer))
 
     def read_linux(self):
         return run(self.ns("c2", "cat", "/proc/net/bonding/bond0"))
 
-    def readiness(self):
-        routers = {peer: self.read_router(peer) for peer in self.peers}
-        linux = self.read_linux()
-        verify_root(routers, linux)
-        return {"routers": routers, "linux": linux, "neighbors": self.probe_neighbors()}
+    def gate(self, name=None):
+        return ("root", "host2", *(("root-no-fallback",) if name == "reboot-primary-no-fallback" else ()))
+
+    def readiness(self, name=None):
+        """The baseline gate: a Networka report. probe_neighbors raises when a probe neighbour is missing."""
+        report = run_gate(self, load_gate(*self.gate(name)))
+        self.probe_neighbors()
+        return report
 
     def probe_neighbors(self):
         neighbors = {
@@ -72,7 +78,10 @@ class RootLab(Lab):
         deadline = time.monotonic() + self.management_timeout_s
         while time.monotonic() < deadline:
             try:
-                return self.readiness()
+                report = self.readiness()
+                if report.verdict == "pass":
+                    return report
+                last_error = findings(report)[0][1]
             except (RuntimeError, subprocess.SubprocessError) as error:
                 last_error = str(error)
             time.sleep(1)
@@ -92,7 +101,7 @@ class RootLab(Lab):
             fdb[peer] = [entry for entry in entries if entry.get("mac") in (
                 "02:00:00:11:00:11", "02:00:00:11:00:12",
             )]
-        return {"links": by_node, "bond": self.read_linux(), "virtual_cable_fdb": fdb}
+        return {"raw": {"links": by_node, "bond": self.read_linux(), "virtual_cable_fdb": fdb}}
 
     def versions(self):
         versions = super().versions()
@@ -116,27 +125,27 @@ class RootLab(Lab):
         if name != "reboot-primary-no-fallback":
             yield
             return
-        original = {}
+        original = []
         try:
             for peer in ("p1", "p2"):
-                raw = self.ros(peer, "/interface bridge print detail without-paging where name=bridge")
-                flag = re.search(r"\bmlag-lacp-fallback=(yes|no)", raw)
-                if flag is None or flag[1] != "yes":
-                    raise RuntimeError(f"{peer} does not have a verified default fallback setting")
-                original[peer] = flag[1]
+                replies = ros.collect_print(self.client, self.device_name(peer), "/interface/bridge", {"name": BRIDGE},
+                                            "mlag-lacp-fallback", **self.options())
+                found = ros.check_property(replies, "/interface/bridge", {"name": BRIDGE}, "mlag-lacp-fallback", True)
+                if found.verdict != "pass":
+                    raise RuntimeError(f"{peer} does not have a verified default fallback setting: "
+                                       f"{found.observed if found.verdict == 'fail' else found.reason}")
+                original.append(peer)
                 self.ros(peer, "/interface bridge set bridge mlag-lacp-fallback=no")
             self.wait_ready()
             yield
         finally:
-            for peer, flag in original.items():
-                self.ros(peer, f"/interface bridge set bridge mlag-lacp-fallback={flag}")
+            for peer in original:
+                self.ros(peer, "/interface bridge set bridge mlag-lacp-fallback=yes")
 
 
-def reboot_guest(capture, target, before, samples):
+def reboot_guest(capture, target, samples):
     lab = capture.lab
-    prior = uptime(before["routers"][target])
-    if prior is None:
-        raise RuntimeError(f"{target} missing pre-reboot uptime")
+    prior = lab.uptimes((target,))[target]
     requested = capture.mark("down_start", target=target, prior_uptime_ns=prior)
     receipt = lab.ros(target, ":execute { :delay 1s; /system reboot }")
     capture.mark("reboot_request_acknowledged", target=target, raw=receipt)
@@ -151,11 +160,14 @@ def await_boot(capture, target, prior, since_ns, samples):
             sample = samples.get(timeout=0.5)
         except Empty:
             continue
-        if sample["started_ns"] < since_ns or "raw" not in sample:
+        if sample["started_ns"] < since_ns:
             continue
-        returned = uptime(sample["raw"])
+        try:
+            returned = uptime(sample)
+        except ValueError:
+            continue
         elapsed = sample["done_ns"] - since_ns
-        if returned is not None and returned < prior and returned <= elapsed + 2_000_000_000:
+        if returned < prior and returned <= elapsed + 2_000_000_000:
             capture.mark("guest_boot_observed", target=target, prior_uptime_ns=prior,
                          uptime_ns=returned, query_start_ns=sample["started_ns"],
                          query_end_ns=sample["done_ns"])
@@ -187,7 +199,10 @@ def switch_carrier(lab, target, ports, nics, state, guest_action=None):
 
 
 def confirm_carrier(capture, phase, start, target, ports, ends, routers, up):
-    """Poll carrier at the target veths, every neighbour veth and each neighbouring CHR port until all agree."""
+    """Poll carrier at the target veths, every neighbour veth and each neighbouring CHR port until all agree.
+
+    RouterOS carrier is Networka's read of the Ethernet monitor: True, False, or None when unreadable.
+    """
     lab = capture.lab
     points = [*((target, port) for port in ports), *ends]
     expected = len(points) + len(routers)
@@ -198,8 +213,7 @@ def confirm_carrier(capture, phase, start, target, ports, ends, routers, up):
         with ThreadPoolExecutor(max_workers=expected + 1) as jobs:
             query = jobs.submit(lab.qmp_action, target, "query-status") if qemu is None else None
             links = {f"{node}:{port}": jobs.submit(lab.link, node, port) for node, port in points}
-            guests = {f"{node}:{port}": jobs.submit(lab.ros, node, f"/interface ethernet monitor {port} once")
-                      for node, port in routers}
+            guests = {f"{node}:{port}": jobs.submit(guest_carrier, lab, node, port) for node, port in routers}
             for key, job in links.items():
                 flags[key] = job.result()["flags"]
                 # The target's own veth must be administratively down or up; a neighbour must lose or regain carrier.
@@ -207,21 +221,21 @@ def confirm_carrier(capture, phase, start, target, ports, ends, routers, up):
                 if ("LOWER_UP" in flags[key]) == up and (not own or ("UP" in flags[key]) == up):
                     hits.setdefault(key, time.monotonic_ns())
             for key, job in guests.items():
-                status[key] = job.result().strip()
-                if f"status: {'link-ok' if up else 'no-link'}" in status[key]:
+                _, status[key] = job.result()
+                if status[key] is up:
                     hits.setdefault(key, time.monotonic_ns())
             if query is not None:
                 qemu = query.result()["reply"]["return"]
         if len(hits) == expected or time.monotonic() >= deadline:
             break
         time.sleep(0.03)
-    return capture.mark(f"{phase}_observed", target=target, linux_flags=flags, routeros_status=status,
+    return capture.mark(f"{phase}_observed", target=target, linux_flags=flags, routeros_carrier=status,
                         qemu_status=qemu, confirmed=sorted(hits),
                         missing=sorted((set(flags) | set(status)) - set(hits)),
                         max_latency_s=(max(hits.values()) - start["mono_ns"]) / 1e9 if len(hits) == expected else None)
 
 
-def power_loss(capture, target, before, samples):
+def power_loss(capture, target, samples):
     """Emulate a power loss of one MLAG peer and its boot.
 
     Every data link of the target loses carrier and its guest stops in one step. After POWER_OFF_HOLD_S the
@@ -229,9 +243,7 @@ def power_loss(capture, target, before, samples):
     The management interface (eth0/tap0) stays untouched, so the management probes measure guest absence.
     """
     lab = capture.lab
-    prior = uptime(before["routers"][target])
-    if prior is None:
-        raise RuntimeError(f"{target} missing pre-power-loss uptime")
+    prior = lab.uptimes((target,))[target]
     ports, ends = [], []
     for left, right in lab.links:
         for (node, port), far in ((left, right), (right, left)):
@@ -327,7 +339,7 @@ def root_attempt(lab, path, name, build_hash):
     path.mkdir()
     save_case(case_spec(name), path)
     target = target_for(name)
-    manifest = {"schema": 2, "case": name, "name": case_name(name), "topology": lab.name,
+    manifest = {"schema": ATTEMPT_SCHEMA, "case": name, "name": case_name(name), "topology": lab.name,
                 "instance": INSTANCE, "builds_sha256": build_hash, "target": target}
     (path / "attempt.json").write_text(json.dumps(manifest, indent=2) + "\n")
     capture = Capture(lab, path)
@@ -339,13 +351,14 @@ def root_attempt(lab, path, name, build_hash):
         with feed_path.open() as feed:
             feed.seek(0, os.SEEK_END)
             try:
+                # Networka names each bridge-port monitor before any capture starts; a failure is the attempt's error.
+                samplers = {peer: lab.sampler(peer) for peer in lab.peers}
                 capture.observe(ROOT_CAPTURES, ROOT_PORTS, ROOT_FLOWS, named_ports=True)
                 for peer, ident in MANAGEMENT_PROBES.items():
                     capture.launch(["ping", "-n", "-D", "-O", "-i", "0.1", "-e", str(ident), ROOT_NODES[peer]],
                                    path / "probes" / f"{ident}.log")
                 with ThreadPoolExecutor(max_workers=4) as workers:
-                    jobs = [workers.submit(sample_loop, lambda peer=peer: lab.observe_router(peer),
-                                           path / f"state-{peer}.jsonl", stop,
+                    jobs = [workers.submit(sample_loop, samplers[peer], path / f"state-{peer}.jsonl", stop,
                                            target_samples if peer == target else None) for peer in lab.peers]
                     jobs.append(workers.submit(sample_loop, lab.host_state, path / "state-host.jsonl", stop))
                     try:
@@ -353,34 +366,44 @@ def root_attempt(lab, path, name, build_hash):
                             lab.ros(peer, f':log info "{lab.name}-{path.name}-begin"')
                         config = lab.ros_peers(CONFIG)
                         (path / "effective-config.json").write_text(json.dumps(config, indent=2) + "\n")
+                        capture.mark("peer_link_macs", replies={
+                            peer: ros.collect_print(lab.client, lab.device_name(peer), "/interface/ethernet",
+                                                    {"name": "ether2"}, "mac-address", **lab.options())
+                            for peer in ("p1", "p2")})
                         time.sleep(2)
                         baseline = capture.mark("baseline_start")
                         time.sleep(4)
-                        before = lab.readiness()
-                        capture.mark("baseline_confirmed", **before)
+                        before = save_gate(path / "gate-baseline", lab.readiness(name))
                         logs += feed.read()
-                        verify_live_collectors(capture, baseline, logs)
-                        if name == "root-calibrate":
-                            filter_fault(capture, silent=False)
-                            time.sleep(3)
+                        if before.verdict != "pass":
+                            # A baseline that differs from the intent withholds the fault; the evaluator grades the gate.
+                            capture.mark("baseline_rejected", verdict=before.verdict,
+                                         issues=[text for _, text in findings(before)])
                         else:
-                            if name == "primary-sustained-stop":
-                                stop_guest(capture, target)
+                            capture.mark("baseline_confirmed", verdict=before.verdict)
+                            verify_live_collectors(capture, baseline, logs)
+                            if name == "root-calibrate":
+                                filter_fault(capture, silent=False)
+                                time.sleep(3)
                             else:
-                                reboot_guest(capture, target, before, target_samples)
-                            # Leave time to observe return-side loss even after management comes back.
-                            time.sleep(16)
-                        capture.mark("recovery_start")
-                        time.sleep(3)
-                        capture.mark("recovery_end")
-                        try:
-                            capture.mark("baseline_restored", **lab.readiness())
-                        except RuntimeError as error:
-                            capture.mark("baseline_restoration_failed", detail=str(error))
+                                if name == "primary-sustained-stop":
+                                    stop_guest(capture, target)
+                                else:
+                                    reboot_guest(capture, target, target_samples)
+                                # Leave time to observe return-side loss even after management comes back.
+                                time.sleep(16)
+                            capture.mark("recovery_start")
+                            time.sleep(3)
+                            capture.mark("recovery_end")
+                            try:
+                                after = save_gate(path / "gate-restored", lab.readiness(name))
+                                capture.mark("baseline_restored", verdict=after.verdict)
+                            except (RuntimeError, subprocess.SubprocessError) as error:
+                                capture.mark("baseline_restoration_failed", detail=str(error))
                         for peer in lab.peers:
                             lab.ros(peer, f':log info "{lab.name}-{path.name}-end"')
                         time.sleep(2)
-                        if target:
+                        if target and before.verdict == "pass":
                             logs += feed.read()
                             rebind_syslog(capture, target, logs)
                     finally:
@@ -389,8 +412,9 @@ def root_attempt(lab, path, name, build_hash):
                             job.result()
             finally:
                 (path / "syslog.jsonl").write_text(logs + feed.read())
-    except (OSError, RuntimeError, ValueError, subprocess.SubprocessError) as error:
-        capture.mark("runner_error", detail=str(error), stderr=getattr(error, "stderr", None))
+    except (OSError, RuntimeError, ValueError, KeyError, TypeError, subprocess.SubprocessError) as error:
+        capture.mark("runner_error", detail=f"{type(error).__name__}: {error}", stderr=getattr(error, "stderr", None),
+                     traceback=traceback.format_exc())
     finally:
         capture.stop()
         if all((path / "captures" / f"{point}.pcap").is_file() for point in ROOT_CAPTURES):

@@ -10,7 +10,7 @@ The two-CHR suite applies the same lab faults on demand and evaluates the run fr
 | [Test runner](../src/mlag_lab/run.py) | Checks it is attached to the selected topology, waits for MLAG and LACP, locks the lab, starts observers, applies one fault per case and restores the changed links or filters. |
 | Linux traffic | Seven numbered ICMP streams at 100 ms. Both clients talk to and receive probes from the mobile endpoint, client 1 probes client 2 on VLAN 110, and the direct bypass runs in both directions. |
 | Fault controls | Linux `tc` handles directional loss and LACP suppression. Linux bonding changes the active endpoint for the MAC move. Linux netlink and QEMU QMP control the two sides of virtual carrier together. [QEMU QMP reference](https://www.qemu.org/docs/master/interop/qemu-qmp-ref.html) |
-| Observers | `tcpdump` records the endpoints, selected client-facing interfaces, mobile attachment ports and peer link. Two multiplexed management SSH sessions record RouterOS carrier, both client bonds, MLAG, STP and FDB entries. Linux link events and both peers’ UDP syslog use the same Linux host clock. [Central syslog](syslog/README.md) |
+| Observers | `tcpdump` records the endpoints, selected client-facing interfaces, mobile attachment ports and peer link. Networka reads RouterOS carrier, both client bonds, MLAG, STP, bridge ports and FDB entries as JSON over management SSH, one read per sample. Linux link events and both peers’ UDP syslog use the same Linux host clock. [Central syslog](syslog/README.md) · [Device state](#device-state-and-packet-grading) |
 | [Evaluator](../src/mlag_lab/evaluate.py) | Uses TShark to match each ICMP request and reply by stream ID and sequence at both endpoints. It reconstructs missed packets, verifies the fault was actually applied, and grades each case against explicit criteria. It also regenerates the timeline and JUnit report from saved evidence. [TShark reference](https://www.wireshark.org/docs/man-pages/tshark.html) |
 
 ```mermaid
@@ -59,7 +59,7 @@ Use `--lab-dir /path/to/deployed/checkout/labs` when the source checkout and dep
 | `silent-lacp` | Withhold client-to-CHR LACP frames on client 1’s first member for 8 s. | Verify carrier remains up, the filter counts suppressed frames and the CHR TAP shows client LACPDUs before and after the hold. The filter matches Slow Protocols frames addressed to the LACP multicast MAC. The runner checks for the expired state and records defaulting and any later probes seen on the selected TAP. Client 2 and the bypass stay clean. Grade affected traffic against 4.0 s on withdrawal, allowing the configured fast LACP timeout, and 1.0 s on restoration. |
 | `silent-mobile` (`mac-age-relearn`) | Set `ageing-time=10s` on both bridges, drop every frame the MAC-move host sends for 25 s, then let it send again. Restore `ageing-time=5m` afterwards. | Both MLAG peers age the host MAC out, and flooding of streams 101 and 102 to the other traffic host is recorded, not failed. From the host's first frame at a CHR TAP, that flooding stops and streams 101, 102, 201 and 202 deliver again within 1.0 s. Stream 302 and the bypass stay clean. [Catalogue M2](case-catalog.md#mac-learning-peer-forwarding-and-vlan-behavior) |
 | `carrier-flap` (`member-flap-repeat`) | Take client 1's bond member to CHR 1 down for 1 s and up for 3 s, five times. | Each loss of streams 101, 201 and 302 stays within the 3 s member limit, listed per flap. Streams 102 and 202 and the bypass stay clean. The bridge host table entries for client 2 and the MAC-move host stay on both MLAG peers. [Catalogue M4](case-catalog.md#mac-learning-peer-forwarding-and-vlan-behavior) |
-| `two-pair-<setup>-interpair-member-flap` | Take the inter-pair bond member between CHR 1 and CHR 3 down at both ends for 8 s, then up. | Streams 101 and 201 lose at most 3 s in each phase, the bypass stays clean and, with RSTP, all four CHRs keep the baseline root. The bridge host table size and topology-change counter of every CHR are recorded before, during and after. |
+| `two-pair-<setup>-interpair-member-flap` | Take the inter-pair bond member between CHR 1 and CHR 3 down at both ends for 8 s, then up. | Streams 101 and 201 lose at most 3 s in each phase, the bypass stays clean and, with RSTP, all four CHRs keep the baseline root. The topology-change counter of every CHR is recorded before, during and after. |
 | `direct-reboot-secondary`, `direct-reboot-primary` | Reboot each observed MLAG role in separate trials with both client bonds attached directly to the pair. | Measure both VLAN directions while the guest is absent and after boot. Score each phase against 5 s. The bypass stays clean. [Run the direct reboot cases](operator-guide.md#reboot-the-direct-client-pair) |
 | `root-calibrate` | Apply a two-second one-way bypass cut in the reboot topology. | Both peers show the same root and opposite roles, the access switch sees the root BPDU, and the measured interval encloses the injected cut. Both VLAN directions and the reverse bypass stay clear. |
 | `reboot-secondary` | Reboot the verified secondary guest. | Observe guest uptime reset, carrier, peer state, and both client directions through withdrawal and restoration. Record whether the primary retains its original root and can forward during the absence. |
@@ -98,6 +98,35 @@ After each fault, verify configuration and forwarding again and retain the indep
 
 The reset-to-verdict time begins after management access and image verification. A full CLI wall-time measurement also includes startup, capture drain and offline scoring. See the [DC1 readiness measurements](cases/medium-spanning-tree.md#archived-diagnostics).
 
+## Device state and packet grading
+
+**Problem.** The suite used to read RouterOS state as CLI text and parse it with its own regular expressions. The parsers broke on column layout: an inactive bridge port shifted the next port's values into its column, so a port that did not forward could read as forwarding. Every runner also kept its own copy of the expected switch state, and a saved attempt could not show which expectation decided a verdict.
+
+**Split.** Networka owns device state. The suite owns packet and traffic grading and the case catalogue.
+
+| Part | Owner | Where |
+| --- | --- | --- |
+| Reading RouterOS state | Networka JSON commands and collectors | `src/mlag_lab/device_state.py` calls them |
+| Reading Linux client bonds | The suite, `cat /proc/net/bonding/bond0` in the host's network namespace | Networka's Linux normalizers check the text |
+| Expected switch and host state | Networka intent files | [`src/mlag_lab/intent/state/`](../src/mlag_lab/intent/state) |
+| Device-state verdicts | Networka checks: pass, fail or error | `gate-baseline/`, `gate-restored/` in each attempt |
+| Loss, floods, reflected frames, BPDUs, calibration, timing | The suite, from packet captures | `evaluate.py` and the per-runner evaluators |
+| Cases, phases, limits and streams | The suite's case catalogue | [`src/mlag_lab/intent/*.yaml`](../src/mlag_lab/intent) |
+
+**State samples.** Each `state-<switch>.jsonl` line is one Networka read of every command the switch samples, about every 0.5 s: `{started_ns, done_ns, replies: {command: {command, output, error}}, port_monitors: {port: command}}`. `port_monitors` names the bridge-port monitor command, which carries the port's `.id`, as Networka's `collect_bridge_port` selected it once before any capture started; a port it cannot select stops the attempt with an error. With spanning tree on, a sample without the bridge and root bridge IDs is incomplete; the access switch has no MLAG peer, so its samples need no MLAG state. The evaluator turns the replies into values with Networka's normalizers. A value they cannot decide makes the sample incomplete and is never read as a pass.
+
+**Gates.** A gate is the intent files of the lab and setup, for example `medium.yaml`, `host2.yaml` and `medium-pair-root.yaml` for a Medium pair-root case. The runner collects it with Networka's `run_intent` before the fault and after recovery, adds the Linux bond readings, and saves `intent.yaml`, `evidence.json` and `results.json` in `gate-baseline/` and `gate-restored/`. `nw intent replay ATTEMPT/gate-baseline` prints the same verdicts. A baseline gate that does not pass withholds the fault in every runner. The evaluator replays both folders item by item: a failed Networka item fails the case, and an unverified item or a missing gate is an evidence error. An attempt that stopped before its baseline was observed, or produced no check, is an error, never a pass. Two checks compare switches with each other and stay in the suite, on the gate's saved replies: the Small lab's opposite MLAG roles and shared root, and the LACP system ID both MLAG peers present.
+
+| Decision | Alternative | Why |
+| --- | --- | --- |
+| Read RouterOS state as JSON through Networka | Keep the suite's text parsers | JSON keeps field names and types. The text parser misread inactive ports. |
+| One Networka read of all sample commands per sample | `run_intent` per sample | `run_intent` makes one read per collector and is too slow for a 0.5 s cadence. |
+| Fixed expectations as Networka intent files per lab and setup | Expectations in Python per runner | One readable file per setup, replayable with `nw intent replay`, and the same pass, fail and error rules on every platform. |
+| Relational checks in the suite | Force them into intent items | An intent item states one device's expected value. Roles and system IDs compare devices. |
+| Linux bonds read by the suite | Networka SSH to the hosts | The traffic hosts are not in the lab's Networka profiles; the suite already reads them in their network namespace, and Networka's Linux normalizers parse the text. |
+
+The running configuration is still saved as text in `config-*.txt` for readers and the results READMEs; no check reads it. The gates check the configuration through Networka's `property` check.
+
 ## Read or replay a run
 
 | Artifact | Purpose |
@@ -109,8 +138,9 @@ The reset-to-verdict time begins after management access and image verification.
 | `01-CASE/timeline.tsv` | Host-relative timeline of actions, Linux carrier events, LACP frames, RouterOS state changes, syslog and loss. Query entries include their start time to show sampling uncertainty. |
 | `01-CASE/proof.tar.gz` | Failed runs only: every capture cut to the seconds around each failed check, with the windows in `proof.json`. |
 | `01-CASE/pcap.sha256`, `state-*.jsonl`, `syslog.jsonl`, `events.jsonl` | Raw measurements and action receipts, including the QEMU acknowledgment and classifier counters. The runner deletes `captures/`, `probes/` and `links/` after scoring; `pcap.sha256` keeps the checksums of the deleted captures. |
+| `01-CASE/gate-baseline/`, `01-CASE/gate-restored/` | The Networka intent, evidence and results of the device-state gates. |
 
-The runner scores each attempt as it ends and then deletes its packet captures, so a later replay keeps the saved verdicts. `mlag-lab evaluate` rebuilds the suite reports and re-scores only runs that still have captures. Copy the evidence first if you want to preserve the original derived files.
+The runner scores each attempt as it ends and then deletes its packet captures, so a later replay keeps the saved verdicts. `mlag-lab evaluate` rebuilds the suite reports and re-scores only runs that still have captures. Copy the evidence first if you want to preserve the original derived files. Attempts saved before the suite read device state through Networka (`attempt.json` schema below 3) cannot be graded again: `mlag-lab evaluate` stops with one error that names the attempt and changes nothing. Their saved `result.json` stands, and `mlag-lab export` reads it as before.
 
 ```bash
 uv run --locked mlag-lab evaluate test-results/link-isolation

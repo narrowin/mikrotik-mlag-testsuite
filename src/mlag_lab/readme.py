@@ -10,6 +10,7 @@ import re
 from pathlib import Path
 
 from .cases import CASES, case_spec
+from .device_state import known, mlag
 
 
 DEVICES = {
@@ -205,6 +206,19 @@ def case_checks(run):
     return [c["detail"] for c in run.result.get("checks", []) if not c["ok"] and c["detail"] not in tagged]
 
 
+def first_role(state):
+    """The first MLAG role in a state log. Networka reads saved replies; the archived text logs in results/ show it
+    as a `mlag-active-role:` line."""
+    for line in state.read_text().splitlines():
+        sample = json.loads(line)
+        if "replies" in sample:
+            if role := (known(mlag, sample) or {}).get("role"):
+                return role
+        elif match := re.search(r"mlag-active-role: (\w+)", sample.get("raw") or ""):
+            return match[1]
+    return None
+
+
 def setup_rows(suites, runs, base):
     builds = [json.loads((s / "builds.json").read_text()) for s in suites if (s / "builds.json").exists()]
     rows = []
@@ -235,8 +249,8 @@ def setup_rows(suites, runs, base):
     for run in runs:
         for node in ("p1", "p2", "q1", "q2"):
             state = run.directory / f"state-{node}.jsonl"
-            if node not in roles and state.exists() and (m := re.search(r"mlag-active-role: (\w+)", state.read_text())):
-                roles[node] = m[1]
+            if node not in roles and state.exists() and (role := first_role(state)):
+                roles[node] = role
     settings = {}
     for run in runs:
         for config in sorted((*run.directory.glob("config-p*.txt"), *run.directory.glob("config-q*.txt"))):

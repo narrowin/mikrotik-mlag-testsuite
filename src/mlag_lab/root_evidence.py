@@ -5,10 +5,10 @@ from datetime import datetime
 import json
 import re
 
+from .device_state import HOST_MEMBERS, MEDIUM_NODE_READS, complete, host_bond, known, summary, uptime
 from .evidence import capture_hashes, load_jsonl, packets
 from .legacy import NS
 from .measure import seconds, within
-from .root_state import linux_members, router_members, router_state
 from .root_topology import MANAGEMENT_PROBES, ROOT_FLOWS, ROOT_ID, ROOT_NODES
 
 FRAME = ("icmp.ident", "icmp.type", "icmp.seq", "eth.src", "eth.dst", "eth.type", "vlan.id")
@@ -81,52 +81,39 @@ def read_root_packets(path, captures, start, down, check, timeline, *, reference
     return icmp, frames, sorted(root_legs), iccp
 
 
-def summarize_router(raw):
-    bridge, ports = router_state(raw)
-    carriers = dict(re.findall(r"^\s*name:\s*(ether\d+)\s*\n\s*status:\s*(\S+)", raw, re.M))
-    hosts = [
-        {"mac": mac.lower(), "vid": int(vid), "interface": interface, "on_interface": actual}
-        for mac, vid, interface, actual in re.findall(
-            r"mac-address=(02:00:00:11:00:(?:11|12)) vid=(\d+) interface=(\S+)"
-            r"\s+bridge=\S+\s+on-interface=(\S+)", raw, re.I
-        )
-    ]
-    return {"bridge": bridge, "ports": ports, "carrier": carriers,
-            "lacp": router_members(raw), "fdb": hosts}
+def read_root_state(path, start, end, target, check, timeline, *, nodes=MEDIUM_NODE_READS, stp_nodes=()):
+    """Sampling coverage per switch and of the host observer; nodes maps each switch to what it samples.
 
-
-def read_root_state(path, start, end, target, check, timeline, *, nodes=None):
-    nodes = nodes or dict.fromkeys(ROOT_NODES, 3)
-    summary = {}
+    stp_nodes run spanning tree, so their samples must report bridge and root bridge IDs to be complete.
+    """
+    sampling = {}
     for node in (*nodes, "host"):
         samples = load_jsonl(path / f"state-{node}.jsonl")
         usable, incomplete = [], []
         previous = None
         for sample in samples:
             raw = sample.get("raw")
-            if raw is not None:
-                if node == "host":
-                    state = {"carrier": raw["links"], "lacp": linux_members(raw["bond"])}
-                    if "virtual_cable_fdb" in raw:
-                        state["virtual_cable_fdb"] = raw["virtual_cable_fdb"]
-                    complete = all(node in raw["links"] for node in (*nodes, "c1", "c2"))
-                else:
-                    state = summarize_router(raw)
-                    complete = bool(state["bridge"] and state["ports"] and len(state["carrier"]) == nodes[node]
-                                    and re.search(r"^uptime-ns=\d+", raw, re.M))
+            if node == "host" and raw is not None:
+                state = {"carrier": raw["links"],
+                         "lacp": {member: known(host_bond, raw["bond"], member) for member in HOST_MEMBERS},
+                         "virtual_cable_fdb": raw["virtual_cable_fdb"]}
+                decided = all(node in raw["links"] for node in (*nodes, "c1", "c2"))
+            elif node != "host" and "replies" in sample:
+                state = summary(sample, nodes[node], stp_on=node in stp_nodes)
+                decided = complete(state) and known(uptime, sample) is not None
             else:
                 state = {"error": sample.get("stderr") or sample.get("error")}
-                complete = False
+                decided = False
             if state != previous:
                 observed = {"query_start_s": seconds(sample["started_ns"] - start), **state}
                 timeline.append((sample["done_ns"], node, json.dumps(observed, sort_keys=True)))
                 previous = state
-            if complete:
+            if decided:
                 usable.append(sample)
             else:
                 incomplete.append(sample)
         cadence = [b["started_ns"] - a["started_ns"] for a, b in zip(usable, usable[1:])]
-        summary[node] = {"complete": len(usable), "incomplete": len(incomplete),
+        sampling[node] = {"complete": len(usable), "incomplete": len(incomplete),
                          "max_start_interval_s": seconds(max(cadence, default=0)),
                          "max_poll_duration_s": seconds(max(
                              (s["done_ns"] - s["started_ns"] for s in samples), default=0))}
@@ -135,7 +122,7 @@ def read_root_state(path, start, end, target, check, timeline, *, nodes=None):
         if node != target:
             check("error", not incomplete and max(cadence, default=0) <= 1.5 * NS,
                   f"{node} independent observer had complete state at intervals within 1.5 s")
-    return summary
+    return sampling
 
 
 def read_root_syslog(path, target, check, timeline, *, nodes=ROOT_NODES, label="mlag-root"):

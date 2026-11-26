@@ -14,12 +14,15 @@ import sys
 import tempfile
 from threading import Event
 import time
+import traceback
 from datetime import datetime, timezone
 
 from network_toolkit import InteractiveCredentials, NetworkaClient, NetworkToolkitError
+from network_toolkit.platforms.mikrotik_routeros import intent as ros
 
 from .cases import FLAP_CYCLES, FLAP_DOWN_S, FLAP_UP_S, MAC_AGE_DEFAULT, MAC_AGE_RETURN_S, MAC_AGE_SILENCE_S, MAC_AGE_TIME
 from .cases import INTENT_INPUTS, case_spec, save_case
+from .device_state import BRIDGE, GATES, SMALL_READS, Sampler, findings, load_gate, run_gate, save_gate
 from .direct_topology import DIRECT_CASES, DIRECT_NODES as PEERS
 from .evaluate import analyze
 from .proof import keep_proof
@@ -29,9 +32,9 @@ from .external_topology import EXTERNAL_CASES
 from .legacy import CASES, CAPTURES, FLOWS, PEER_LINK_PORTS, case_captures, case_name
 from .legacy import FLOOD_FLOWS, FLOOD_NEIGHBOUR
 from .legacy import CLIENT_MAC, MOBILE_MAC
-from .networka import INSTANCE, PROFILES, lab_name, reads, shift
+from .legacy_checks import ageing_readback
+from .networka import INSTANCE, PROFILES, lab_name, shift
 from .report import write_suite
-from .root_state import uptime
 from .root_topology import MEDIUM_TARGETS, ROOT_CASES
 from .two_pair_topology import TWO_PAIR_TARGETS
 
@@ -42,19 +45,8 @@ PORTS = {"p1": "eth2", "c1": "eth1"}
 UV = os.environ.get("UV", "uv")
 HOST_TOOLS = (UV, "docker", "nsenter", "ip", "tc", "ping", "tcpdump", "tshark", "ssh", "containerlab")
 BRIDGE_MODES = ("rstp", "none", "mstp")
-STATE = ";".join(reads("mlag_small_state"))
-# The peer-link case also polls the peer port and each MLAG bond's LACP system ID.
-PEER_LINK_STATE = ";".join((
-    STATE,
-    "/interface/ethernet/monitor ether2 once",
-    "/interface/bonding/monitor client1 once",
-    "/interface/bonding/monitor client2 once",
-))
-# The repeated member flap also polls client 2's bridge host table entry on both MLAG peers.
-FLAP_STATE = ";".join((
-    STATE,
-    "/interface/bridge/host/print detail without-paging where mac-address=02:00:00:11:00:12",
-))
+# The attempt.json schema of attempts whose device state Networka read; older attempts are not replayable.
+ATTEMPT_SCHEMA = 3
 # Permanent neighbour entries for the MAC-move host's silence, so no host falls back to ARP while it lasts.
 PINNED_NEIGHBOURS = (("c1", "10.110.0.50", MOBILE_MAC), ("c2", "10.110.0.50", MOBILE_MAC),
                      ("mobile", "10.110.0.11", CLIENT_MAC), ("mobile", "10.110.0.12", "02:00:00:11:00:12"))
@@ -63,7 +55,7 @@ PEER_LINK_HOLD_S = 15
 # mlag-init-delay (default 1 min) bounds how long MLAG bond members stay out of the bond on rejoin.
 # Add 3 s for the LACP timeout at lacp-rate=1sec and 2 s margin.
 PEER_LINK_RECOVERY_S = 65
-UPTIME = ':put ("uptime-ns=" . [:tonsec [/system resource get uptime]])'
+# The running configuration, saved as text for readers: config-*.txt and the results READMEs. No check reads it.
 CONFIG = ";".join((
     "/interface bridge print detail without-paging",
     "/interface bridge port print detail without-paging",
@@ -71,7 +63,6 @@ CONFIG = ";".join((
     "/interface bridge msti print detail without-paging",
     "/interface bonding print detail without-paging",
     "/system logging action print detail without-paging where name=mlagLabSyslog",
-    ':put ("peer-link-mac=" . [/interface ethernet get ether2 mac-address])',
 ))
 SET_BRIDGE = "/interface bridge set bridge "
 
@@ -192,29 +183,43 @@ class Lab:
                     time.sleep(2)
 
     def wait_ready(self):
+        found = []
         deadline = time.monotonic() + 90
         while time.monotonic() < deadline:
+            found = findings(run_gate(self, load_gate("direct", "hosts")))
             try:
-                for peer in PEERS:
-                    result = self.ros(peer, STATE)
-                    if ("mlag-state: connected" not in result
-                            or result.count(' flags="ATGSCD--"') < 2
-                            or result.count('partner-flags="ATGSCD--"') < 2):
-                        raise RuntimeError(f"{peer} MLAG or LACP still settling")
-                if "LOWER_UP" in self.link("c1", "eth1")["flags"]:
+                if not found and "LOWER_UP" in self.link("c1", "eth1")["flags"]:
                     return
-            except (RuntimeError, subprocess.SubprocessError):
+            except subprocess.SubprocessError:
                 pass
             time.sleep(1)
-        raise RuntimeError("Both peers did not reach connected MLAG and active LACP within 90 s")
+        raise RuntimeError(f"Both peers did not reach connected MLAG and active LACP within 90 s: {found[:1]}")
 
     def close(self):
         self.client.close()
 
-    def snapshot(self, peer, command=STATE):
-        start = time.time_ns()
-        raw = self.ros(peer, command)
-        return {"peer": peer, "started_ns": start, "done_ns": time.time_ns(), "raw": raw}
+    def options(self):
+        return {"interactive_creds": self.credentials}
+
+    def uptimes(self, peers=None):
+        """Guest uptime of each CHR in nanoseconds, read by Networka; a failed read raises RuntimeError."""
+        found = {}
+        for peer in peers or self.peers:
+            try:
+                found[peer] = ros.uptime_ns(ros.collect_uptime(self.client, self.device_name(peer), **self.options()))
+            except ValueError as error:
+                raise RuntimeError(f"{peer}: guest uptime unreadable: {error}") from error
+        return found
+
+    def protocol_modes(self):
+        found = {}
+        for peer in self.peers:
+            replies = ros.collect_stp_mode(self.client, self.device_name(peer), BRIDGE, **self.options())
+            try:
+                found[peer] = ros.stp_mode(replies, BRIDGE)
+            except ValueError:
+                found[peer] = None
+        return found
 
     def qmp(self, up):
         return self.qmp_action("p1", "up" if up else "down")
@@ -236,8 +241,7 @@ class Lab:
                     raise RuntimeError(f"{node}: {commands[node]} returned {reply.strip()}")
             return replies
 
-        read_uptime = dict.fromkeys(self.peers, UPTIME)
-        before = {node: uptime(raw) for node, raw in execute(read_uptime).items()}
+        before = self.uptimes()
         try:
             execute(dict.fromkeys(self.peers, "/interface bridge disable bridge"))
             commands = {node: SET_BRIDGE + setting + (f";{extra[node]}" if extra and node in extra else "")
@@ -246,8 +250,8 @@ class Lab:
             time.sleep(2)
         finally:
             execute(dict.fromkeys(self.peers, "/interface bridge enable bridge"))
-        after = {node: uptime(raw) for node, raw in execute(read_uptime).items()}
-        if any(before[node] is None or after[node] is None or after[node] <= before[node] for node in self.peers):
+        after = self.uptimes()
+        if any(after[node] <= before[node] for node in self.peers):
             raise RuntimeError(f"Management reset did not prove continuous guest uptime: {before}, {after}")
         return {
             "settings": settings, "replies": replies, "uptime_before_ns": before, "uptime_after_ns": after,
@@ -257,11 +261,7 @@ class Lab:
     def apply_bridge_mode(self, mode):
         """Reset both small-lab bridges to one protocol-mode and read the running value back."""
         reset = self.reset_bridges(dict.fromkeys(self.peers, f"protocol-mode={mode}"))
-        readback = {}
-        for peer in self.peers:
-            raw = self.ros(peer, "/interface bridge print detail without-paging where name=bridge")
-            match = re.search(r"\bprotocol-mode=(\w+)", raw)
-            readback[peer] = match[1] if match else None
+        readback = self.protocol_modes()
         if any(value != mode for value in readback.values()):
             raise RuntimeError(f"Bridges did not read back protocol-mode={mode}: {readback}")
         return {"bridge_mode": mode, **reset, "readback": readback}
@@ -273,7 +273,10 @@ class Lab:
             "tshark": run(["tshark", "--version"]).splitlines()[0],
             "images": {node: {"reference": cfg["Config"]["Image"], "id": cfg["Image"]}
                        for node, cfg in self.containers.items()},
+            # Text for the results READMEs; verify_campaign_image reads the Networka reply.
             "routeros": self.ros_peers("/system/resource/print"),
+            "routeros_resource": {peer: ros.collect_version(self.client, self.device_name(peer), **self.options())
+                                  for peer in self.peers},
         }
 
 
@@ -336,25 +339,14 @@ class Capture:
                   clock_delta_ns=(time.time_ns() - epoch) - (time.monotonic_ns() - mono))
 
 
-def poll_peer(lab, peer, path, stop, command=STATE):
-    with path.open("w", buffering=1) as file:
-        while not stop.is_set():
-            start = time.monotonic()
-            try:
-                sample = lab.snapshot(peer, command)
-            except (RuntimeError, subprocess.SubprocessError) as error:
-                sample = {"peer": peer, "started_ns": time.time_ns(), "error": str(error)}
-            file.write(json.dumps(sample) + "\n")
-            stop.wait(max(0.0, 0.35 - (time.monotonic() - start)))
-
-
 def sample_loop(reader, path, stop, queue=None, period=0.35):
+    """Write one line per reader() call: its fields, or the error, between the start and end times."""
     with path.open("w", buffering=1) as file:
         while not stop.is_set():
             started = time.time_ns()
             tick = time.monotonic()
             try:
-                observation = {"raw": reader()}
+                observation = reader()
             except (RuntimeError, OSError, subprocess.SubprocessError) as error:
                 observation = {"error": str(error), "stderr": getattr(error, "stderr", None)}
             sample = {"started_ns": started, "done_ns": time.time_ns(), **observation}
@@ -362,6 +354,15 @@ def sample_loop(reader, path, stop, queue=None, period=0.35):
             if queue is not None:
                 queue.put(sample)
             stop.wait(max(0, period - (time.monotonic() - tick)))
+
+
+def guest_carrier(lab, peer, interface):
+    """Networka's read of one RouterOS Ethernet monitor: the replies and carrier, None when unreadable."""
+    replies = ros.collect_interface(lab.client, lab.device_name(peer), interface, **lab.options())
+    try:
+        return replies, ros.interface_up(replies, interface)
+    except ValueError:
+        return replies, None
 
 
 def carrier(capture, up):
@@ -379,16 +380,16 @@ def carrier(capture, up):
     while len(hits) < 2 and time.monotonic() < deadline:
         with ThreadPoolExecutor(max_workers=2) as jobs:
             checks = {"linux": jobs.submit(lab.link, "c1", "eth1"),
-                      "guest": jobs.submit(lab.ros, "p1", "/interface/ethernet/monitor ether3 once")}
+                      "guest": jobs.submit(guest_carrier, lab, "p1", "ether3")}
             flags = checks["linux"].result()["flags"]
             if "UP" in flags and ("LOWER_UP" in flags) == up:
                 hits.setdefault("linux", time.monotonic_ns())
-            status = checks["guest"].result()
-            if f"status: {'link-ok' if up else 'no-link'}" in status:
+            replies, status = checks["guest"].result()
+            if status is up:
                 hits.setdefault("guest", time.monotonic_ns())
         if len(hits) != 2:
             time.sleep(0.03)
-    capture.mark(f"{phase}_observed", linux_flags=flags, routeros_status=status.strip(),
+    capture.mark(f"{phase}_observed", linux_flags=flags, routeros_carrier=status, routeros_replies=replies,
                  confirmed=list(sorted(hits)),
                  max_latency_s=(max(hits.values()) - start["mono_ns"]) / 1e9 if len(hits) == 2 else None)
 
@@ -412,17 +413,17 @@ def peer_link(capture, up):
     while len(hits) < expected and time.monotonic() < deadline:
         with ThreadPoolExecutor(max_workers=expected) as jobs:
             links = {peer: jobs.submit(lab.link, peer, "eth1") for peer in PEERS}
-            guests = {peer: jobs.submit(lab.ros, peer, "/interface ethernet monitor ether2 once") for peer in PEERS}
+            guests = {peer: jobs.submit(guest_carrier, lab, peer, "ether2") for peer in PEERS}
             for peer in PEERS:
                 flags[peer] = links[peer].result()["flags"]
                 if ("UP" in flags[peer]) == up and ("LOWER_UP" in flags[peer]) == up:
                     hits.setdefault(f"{peer}-linux", time.monotonic_ns())
-                status[peer] = guests[peer].result().strip()
-                if f"status: {'link-ok' if up else 'no-link'}" in status[peer]:
+                _, status[peer] = guests[peer].result()
+                if status[peer] is up:
                     hits.setdefault(f"{peer}-guest", time.monotonic_ns())
         if len(hits) != expected:
             time.sleep(0.03)
-    capture.mark(f"{phase}_observed", linux_flags=flags, routeros_status=status, confirmed=sorted(hits),
+    capture.mark(f"{phase}_observed", linux_flags=flags, routeros_carrier=status, confirmed=sorted(hits),
                  max_latency_s=(max(hits.values()) - start["mono_ns"]) / 1e9 if len(hits) == expected else None)
 
 
@@ -453,7 +454,7 @@ def filter_fault(capture, silent):
         time.sleep(8 if silent else 2)
         if silent:
             capture.mark("silent_carrier", flags=capture.lab.link("c1", "eth1")["flags"],
-                         routeros_status=capture.lab.ros("p1", "/interface/ethernet/monitor ether3 once"))
+                         routeros_replies=guest_carrier(capture.lab, "p1", "ether3")[0])
         stats = run([*tc, "-s", "filter", "show", "dev", port, filters[0]])
         capture.mark("up_start", counters=stats)
     capture.mark("up_applied")
@@ -493,20 +494,24 @@ def flap_member(capture):
 
 
 def bridge_ageing(capture, value, label):
-    """Set ageing-time on both MLAG peers' bridges and read it back; a failure on one peer does not skip the other."""
+    """Set ageing-time on both MLAG peers' bridges and read it back; a failure on one peer does not skip the other.
+
+    Networka reads the bridge print as JSON, where 10s reads 00:00:10.
+    """
     lab = capture.lab
     replies, readback = {}, {}
     for peer in PEERS:
         try:
             replies[peer] = lab.ros(peer, f"{SET_BRIDGE}ageing-time={value}")
-            raw = lab.ros(peer, "/interface bridge print detail without-paging where name=bridge")
-            match = re.search(r"\bageing-time=(\S+)", raw)
-            readback[peer] = match[1] if match else None
         except (RuntimeError, OSError, subprocess.SubprocessError) as error:
-            replies[peer], readback[peer] = f"error: {error}", None
+            replies[peer] = f"error: {error}"
+        readback[peer] = ros.collect_print(lab.client, lab.device_name(peer), "/interface/bridge", {"name": BRIDGE},
+                                           "ageing-time", **lab.options())
     capture.mark(label, value=value, replies=replies, readback=readback)
-    if any(found != value for found in readback.values()):
-        raise RuntimeError(f"Bridges did not read back ageing-time={value}: {readback}")
+    found = ageing_readback(readback, value)
+    if any(result.verdict != "pass" for result in found.values()):
+        raise RuntimeError(f"Bridges did not read back ageing-time={value}: "
+                           f"{ {peer: result.observed for peer, result in found.items()} }")
 
 
 def pin_neighbours(capture):
@@ -580,10 +585,15 @@ def remove_flood_neighbour(capture):
         capture.mark("flood_neighbour_removed", address=address, error=str(error))
 
 
+class BaselineRejected(Exception):
+    """The baseline gate did not pass, so the fault is withheld; the gate folder holds why."""
+
+
 def run_case(lab, path, name, changes, hold=8):
     path.mkdir()
     save_case(case_spec(name), path)
-    manifest = {"case": name, "name": case_name(name), "bridge_mode": changes["bridge_mode"], "instance": INSTANCE}
+    manifest = {"schema": ATTEMPT_SCHEMA, "case": name, "name": case_name(name), "bridge_mode": changes["bridge_mode"],
+                "instance": INSTANCE}
     (path / "attempt.json").write_text(json.dumps(manifest, indent=2) + "\n")
     capture = Capture(lab, path)
     capture.mark("configuration_applied", replies=changes)
@@ -595,18 +605,20 @@ def run_case(lab, path, name, changes, hold=8):
         feed.seek(0, os.SEEK_END)
         stop = Event()
         try:
+            # Networka names each bridge-port monitor before any capture starts; a failure is the attempt's error.
+            samplers = {peer: Sampler(lab, peer, SMALL_READS) for peer in PEERS}
+            gate_items = load_gate("direct", "hosts", f"direct-{changes['bridge_mode']}")
             if peer_case:
                 capture.observe(captures, PEER_LINK_PORTS, named_ports=True)
             else:
                 capture.observe()
             start_floods(capture)
             with ThreadPoolExecutor(max_workers=3) as workers:
-                for peer in PEERS:
-                    workers.submit(poll_peer, lab, peer, path / f"state-{peer}.jsonl", stop,
-                                   PEER_LINK_STATE if peer_case else FLAP_STATE if name == "carrier-flap" else STATE)
+                for peer, sampler in samplers.items():
+                    workers.submit(sample_loop, sampler, path / f"state-{peer}.jsonl", stop)
                 if peer_case:
                     def bonds():
-                        return {node: run(lab.ns(node, "cat", "/proc/net/bonding/bond0")) for node in ("c1", "c2")}
+                        return {"raw": {node: run(lab.ns(node, "cat", "/proc/net/bonding/bond0")) for node in ("c1", "c2")}}
                     workers.submit(sample_loop, bonds, path / "state-host.jsonl", stop)
                 try:
                     for peer in PEERS:
@@ -624,10 +636,14 @@ def run_case(lab, path, name, changes, hold=8):
                         probe = path / "probes" / f"{ident}.log"
                         if probe.read_text().count("bytes from") < 30:
                             raise RuntimeError(f"Probe {ident} did not establish baseline delivery")
-                    # Each host bond's view of the LACP system ID both MLAG peers present, for the baseline check.
-                    capture.mark("baseline_bonds", bonds={
-                        f"client {node[1]} bond": run(lab.ns(node, "cat", "/proc/net/bonding/bond0"))
-                        for node in ("c1", "c2")})
+                    # Switch and host bond state before the fault, and the LACP system ID the host bonds see.
+                    # A baseline gate that does not pass withholds the fault.
+                    gate = save_gate(path / "gate-baseline", run_gate(lab, gate_items))
+                    if gate.verdict != "pass":
+                        capture.mark("baseline_rejected", verdict=gate.verdict,
+                                     issues=[text for _, text in findings(gate)])
+                        raise BaselineRejected
+                    capture.mark("baseline_confirmed")
                     if name == "carrier" or peer_case:
                         cut = peer_link if peer_case else carrier
                         try:
@@ -652,6 +668,8 @@ def run_case(lab, path, name, changes, hold=8):
                     capture.mark("recovery_start")
                     time.sleep(3)
                     capture.mark("recovery_end")
+                    save_gate(path / "gate-restored", run_gate(lab, gate_items))
+                    capture.mark("baseline_restored")
                     for peer in PEERS:
                         lab.ros(peer, f':log info "mlag-suite-{path.name}-end"')
                     # Allow outstanding replies and libpcap buffers to drain past the scoring window.
@@ -660,8 +678,11 @@ def run_case(lab, path, name, changes, hold=8):
                     stop.set()
                     if mac_age:
                         restore_mac_age(capture)
-        except (RuntimeError, subprocess.SubprocessError, OSError, KeyError, ValueError) as error:
-            capture.mark("runner_error", detail=str(error), stderr=getattr(error, "stderr", None))
+        except BaselineRejected:
+            pass
+        except (RuntimeError, subprocess.SubprocessError, OSError, KeyError, TypeError, ValueError) as error:
+            capture.mark("runner_error", detail=f"{type(error).__name__}: {error}", stderr=getattr(error, "stderr", None),
+                         traceback=traceback.format_exc())
         finally:
             capture.stop()
             remove_flood_neighbour(capture)
@@ -678,9 +699,9 @@ def verify_campaign_image(expected, builds, peers):
     version, digest = pin.groups()
     for peer in peers:
         reference = builds["images"][peer]["reference"]
-        match = re.search(r"^\s*version:\s*(\S+)", builds["routeros"][peer], re.MULTILINE)
-        reported = match.group(1) if match else None
-        if reference.partition("@")[2] != digest or reported != version:
+        found = ros.check_version(builds["routeros_resource"][peer], version)
+        reported = found.observed if found.verdict != "error" else found.reason
+        if reference.partition("@")[2] != digest or found.verdict != "pass":
             raise ValueError(f"{peer} reports {reported} on {reference}. Deploy the campaign image {expected}")
 
 
@@ -785,7 +806,7 @@ def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp", sett
                               shared / "client.Dockerfile", shared / "client-network.sh",
                               shared / "qemu-data-link.sh", shared / "forward-control.sh", shared / "rsyslog.conf",
                               PROJECT / "uv.lock", PROJECT / "pyproject.toml", *sorted(HERE.glob("*.py")),
-                              PROFILES / f"{topology_name}.yml", PROFILES / "sequences" / "mikrotik_routeros" / "common.yml")
+                              PROFILES / f"{topology_name}.yml", *sorted(GATES.glob("*.yaml")))
                     if is_root or is_medium:
                         inputs += (shared / "root-client.sh",)
                     inputs += INTENT_INPUTS
@@ -793,9 +814,11 @@ def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp", sett
                     saved_inputs.mkdir()
                     builds["input_sha256"] = {}
                     for source in inputs:
-                        copied = saved_inputs / source.name
+                        # Gate files share names with case catalogue files, so they keep their folder name.
+                        name = f"state-{source.name}" if source.parent == GATES else source.name
+                        copied = saved_inputs / name
                         copied.write_bytes(source.read_bytes())
-                        builds["input_sha256"][source.name] = hashlib.sha256(copied.read_bytes()).hexdigest()
+                        builds["input_sha256"][name] = hashlib.sha256(copied.read_bytes()).hexdigest()
                     build_file = output / "builds.json"
                     build_file.write_text(json.dumps(builds, indent=2) + "\n")
                     verify_campaign_image(builds["campaign_image"], builds, lab.peers)
@@ -842,7 +865,7 @@ def run_suite(lab_dir, output, cases, repeat, username, bridge_mode="rstp", sett
                     finally:
                         lab.close()
     except (RuntimeError, OSError, subprocess.SubprocessError, ValueError, KeyError) as error:
-        (output / "runner-error.txt").write_text(f"{error}\n")
+        (output / "runner-error.txt").write_text(f"{type(error).__name__}: {error}\n\n{traceback.format_exc()}")
         print(error, file=sys.stderr)
     return write_suite(output)
 

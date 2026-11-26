@@ -136,14 +136,27 @@ The Small secondary reboot fails in withdrawal because flood frames 501 and 502 
 This is the known network fault in this `results/index/faults.tsv` row at a8ca74f: `Small lab | STP off | MLAG secondary reboot | Flood frame back at its sender or twice at a host | | 2 | 2`.
 It is not an evidence error.
 
+## Device state through Networka intent
+
+The commit after a5fa732 moves every device-state read and check to Networka's intent layer and deletes the suite's text parsers. [Device state and packet grading](../test-framework.md#device-state-and-packet-grading)
+
+Offline, on the live JSON captures in `test-results/suite-yaml-verify/networka-json/` (scripts and outputs in `test-results/suite-yaml-verify/networka-adopt/`):
+
+- Steady and restored Small states: the Small gate passes, as the old parser did, and 31 values per switch (MLAG, STP, bridge ports, LACP flags and partner, host entries, carrier, uptime) equal the old parser's.
+- ether3 down: the gate fails on mlag1's client1 member ether3 and on bridge port client1 not forwarding. The old parser reported only the LACP member: it shifted the next port's values into the inactive port's column and read client1 as forwarding.
+- ether3 returning without an LACP partner: Networka reports the member as unverified (an evidence error), the old parser as not eligible.
+- 277 distinct Linux bonding texts from `results/`: member state and partner system ID equal the old parser's for all 554 members.
+- `mlag-lab export` on the committed `results/` gives the same files as a5fa732; it reads the saved `result.json` and does not grade again.
+- An attempt saved with text state stops `mlag-lab evaluate` with one error and leaves its files unchanged.
+
 ## Remaining gaps
 
-- `write-intent` writes the current catalogue rules, not the rules in force when a 1964cc4-era attempt ran.
+- The device-state layer has not run live: every runner's samplers, gates and gate replay need one live pass.
+- `forward-reserved-addresses` is checked with spanning tree off; RouterOS prints it only then, and its JSON form has not been read live.
+- The Medium, root-pair and two-pair gates were checked against the profiles and Networka's validation only; no Medium JSON capture exists.
+- A bond member without an LACP partner is unverified in Networka, not failed, so that item grades as an evidence error.
+- The two-pair inter-pair flap no longer records the bridge host table size; Networka has no collector for it.
+- Attempts saved before this commit cannot be graded again; their saved verdicts stand.
 - The flood evidence label names `proof.tar.gz` for every failed run, even if packing `proof.tar.gz` then fails.
-- One pruned attempt without `case-intent.yaml` stops a campaign replay until `write-intent` runs.
 - The runner has no option to keep captures; the replays relied on a hard-link watcher (`live/tools/shadow.py`).
 - The runner re-executes itself as root, which leaves root-owned `__pycache__` in the venv, so a later `uv sync` needs `sudo chown -R` on the venv first.
-- Root-pair ran only `root-calibrate`, under RSTP.
-- Two-pair and the legacy Small runner ran live on 3e2489b only; on the new code they were replayed offline.
-- Each live case ran once.
-- The eight-attempt old-versus-new replay and the limit flips ran on a8ca74f and were not repeated on the commit that adds this record, which only adds validation.

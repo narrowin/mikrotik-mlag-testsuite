@@ -2,7 +2,10 @@
 
 import re
 
-from .cases import FLAP_CYCLES, MAC_AGE_DEFAULT, MAC_AGE_TIME
+from network_toolkit.platforms.mikrotik_routeros import intent as ros
+
+from .cases import AGEING_JSON, FLAP_CYCLES, MAC_AGE_DEFAULT, MAC_AGE_TIME
+from .device_state import BRIDGE, host as host_port, known, mlag
 from .evidence import load_jsonl
 from .legacy import CLIENT_MAC
 from .legacy import FLOWS, MOBILE_MAC
@@ -18,6 +21,12 @@ HOST_TAPS = ("p1-tap4", "p2-tap4")
 # A frame already on the wire when the filter went in may reach a TAP just after the mark.
 FILTER_SETTLE_NS = 50_000_000
 FLAP_HOSTS = {"client 2": CLIENT2_MAC, "MAC-move host": MOBILE_MAC}
+
+
+def ageing_readback(readback, value):
+    """Networka's ageing-time check per MLAG peer on the saved bridge prints; RouterOS JSON reads 10s as 00:00:10."""
+    return {peer: ros.check_property(replies, "/interface/bridge", {"name": BRIDGE}, "ageing-time", AGEING_JSON[value])
+            for peer, replies in readback.items()}
 
 
 def check_calibration(spec, marks, flows, result, check):
@@ -80,7 +89,7 @@ def check_member(spec, name, marks, packets, link_events, start, down, up, end, 
         check("error", before and not during and after and counter and int(counter[2]) > 0,
               "LACP observed before and after; suppressed during the hold with filter drops recorded")
         check("error", "LOWER_UP" in marks["silent_carrier"]["flags"]
-              and "status: link-ok" in marks["silent_carrier"]["routeros_status"]
+              and known(ros.interface_up, marks["silent_carrier"]["routeros_replies"], "ether3") is True
               and all("LOWER_UP" in flags for stamp, flags in link_events["c1"] if within(stamp, down, up)),
               "Client carrier stayed up during silent LACP", "withdrawal")
         observed_states = [(stamp, state) for stamp, actor, state in lpdus["p1-tap2"]
@@ -120,8 +129,8 @@ def check_peer_link(spec, path, marks, start, down, up, end, flows, result, chec
     windows = {"withdrawal": (number(marks, "down_observed"), up), "restoration": (number(marks, "up_observed"), end)}
     states = {}
     for peer in ("p1", "p2"):
-        samples = [(s["started_ns"], m[1]) for s in load_jsonl(path / f"state-{peer}.jsonl")
-                   if (m := re.search(r"mlag-state:\s*(.+?)\s*$", s.get("raw", ""), re.M))]
+        samples = [(s["started_ns"], state["state"]) for s in load_jsonl(path / f"state-{peer}.jsonl")
+                   if (state := known(mlag, s))]
         states[peer] = {phase: sorted({state for stamp, state in samples if within(stamp, *windows[phase])})
                         for phase in windows}
         states[peer]["final"] = samples[-1][1] if samples else None
@@ -159,10 +168,15 @@ def gap_bounds(window, gap):
 
 
 def host_entries(path, peer, mac, start, end):
-    """Sample start times and whether the peer's bridge host table held an entry for mac."""
-    return [(sample["started_ns"], f"mac-address={mac}" in sample["raw"])
-            for sample in load_jsonl(path / f"state-{peer}.jsonl")
-            if "raw" in sample and within(sample["started_ns"], start, end)]
+    """Sample start times and whether the peer's bridge host table held an entry for mac, None when undecided."""
+    found = []
+    for sample in load_jsonl(path / f"state-{peer}.jsonl"):
+        if within(sample["started_ns"], start, end):
+            try:
+                found.append((sample["started_ns"], host_port(sample, mac) is not None))
+            except ValueError:
+                found.append((sample["started_ns"], None))
+    return found
 
 
 def check_mac_age(spec, path, marks, packets, start, down, up, end, flows, result, check):
@@ -170,9 +184,11 @@ def check_mac_age(spec, path, marks, packets, start, down, up, end, flows, resul
     icmp = packets.icmp
     measured = result["mac_age"] = {}
     for label, value in (("bridge_ageing_set", MAC_AGE_TIME), ("bridge_ageing_restored", MAC_AGE_DEFAULT)):
-        readback = marks.get(label, {}).get("readback")
-        measured[label] = readback
-        check("error", readback == {"p1": value, "p2": value}, f"Both MLAG peers read back ageing-time={value}: {readback}")
+        found = ageing_readback(marks.get(label, {}).get("readback") or {}, value)
+        measured[label] = {peer: result.observed if result.verdict != "error" else result.reason
+                           for peer, result in found.items()}
+        check("error", set(found) == {"p1", "p2"} and all(result.verdict == "pass" for result in found.values()),
+              f"Both MLAG peers read back ageing-time={value}: {measured[label]}")
     check("error", "neighbours_pinned" in marks and "neighbours_unpinned" in marks,
           "Neighbour entries were pinned for the silence and removed afterwards")
     counters = marks["up_start"].get("counters", {})
@@ -193,7 +209,7 @@ def check_mac_age(spec, path, marks, packets, start, down, up, end, flows, resul
     tables = measured["host_table"] = {}
     for peer in ("p1", "p2"):
         samples = host_entries(path, peer, MOBILE_MAC, start, end)
-        aged = next((stamp for stamp, present in samples if not present and within(stamp, down, up)), None)
+        aged = next((stamp for stamp, present in samples if present is False and within(stamp, down, up)), None)
         back = next((stamp for stamp, present in samples if present and first is not None and stamp >= first), None)
         tables[peer] = {"aged_out_s": seconds(aged - start) if aged is not None else None,
                         "back_s": seconds(back - start) if back is not None else None}
@@ -312,12 +328,16 @@ def check_member_flaps(spec, path, events, packets, start, up, recovery, end, fl
     for peer in ("p1", "p2"):
         for host, mac in FLAP_HOSTS.items():
             samples = host_entries(path, peer, mac, downs[0]["epoch_ns"], end)
-            missing = [stamp for stamp, present in samples if not present]
+            missing = [stamp for stamp, present in samples if present is False]
+            undecided = [stamp for stamp, present in samples if present is None]
             tables.setdefault(peer, {})[host] = {
                 "mac": mac, "samples": len(samples), "missing_samples": len(missing),
                 "first_missing_s": seconds(missing[0] - start) if missing else None}
             check("error", bool(samples), f"{peer} bridge host table for {host} was sampled during the flaps")
             for phase, (low, high) in windows.items():
+                unknown = sum(within(stamp, low, high) for stamp in undecided)
+                check("error", not unknown, f"{peer} bridge host table for {host} decided in every sample during "
+                      f"{phase}; {unknown} undecided", phase)
                 gone = [stamp for stamp in missing if within(stamp, low, high)]
                 check("fail", not gone, f"{peer} kept the bridge host table entry for {host} ({mac}) during {phase}"
                       + (f", missing in {len(gone)} samples from {seconds(gone[0] - start)} s" if gone else ""), phase)

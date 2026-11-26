@@ -5,14 +5,12 @@ grade turns those measurements into fail checks tagged with their phase.
 """
 
 from datetime import datetime
-import re
 
+from .device_state import CLIENT1, CLIENT2, MOBILE, host, in_use, member
 from .evidence import load_jsonl
 from .legacy import NS
 from .measure import seconds, within
-from .root_state import router_members
 
-CLIENT1, CLIENT2, MOBILE = "02:00:00:11:00:11", "02:00:00:11:00:12", "02:00:00:11:00:50"
 PEER_PORT = "ether2"
 
 # Capture points that face a host which is neither the source nor the destination of the stream.
@@ -32,19 +30,18 @@ TWO_PAIR_HOSTS = {
     **dict.fromkeys(("p1", "p2"), {CLIENT1: ("interpair", "ether3"), CLIENT2: ("client2", "ether4")}),
     **dict.fromkeys(("q1", "q2"), {CLIENT1: ("client1", "ether4"), CLIENT2: ("interpair", "ether3")}),
 }
-HOST_ENTRY = re.compile(r"mac-address=([0-9A-Fa-f:]+)\s+vid=\d+\s+interface=\S+\s+bridge=\S+\s+on-interface=(\S+)")
 SYNC_WARNINGS = ("failed to sync", "attempting to resync", "heartbeat timeout")
-# MLAG bonds whose LACP partner is a RouterOS bridge: the partner's member ports that face one MLAG pair.
-MEDIUM_PARTNER_BONDS = {"access-uplink, seen by the access switch": (("witness", "ether2"), ("witness", "ether3"))}
-TWO_PAIR_PARTNER_BONDS = {"pair A inter-pair bond, seen by pair B": (("q1", "ether3"), ("q2", "ether3")),
-                          "pair B inter-pair bond, seen by pair A": (("p1", "ether3"), ("p2", "ether3"))}
-LINUX_PARTNER = re.compile(r"Slave Interface: (\S+)[\s\S]*?details partner lacp pdu:\s*\n\s*system priority: (\d+)"
-                           r"\s*\n\s*system mac address: (\S+)")
+# MLAG bonds whose LACP partner is a RouterOS bridge: the partner's bond and member ports that face one MLAG pair.
+MEDIUM_PARTNER_BONDS = {"access-uplink, seen by the access switch": (("witness", "uplink", "ether2"),
+                                                                     ("witness", "uplink", "ether3"))}
+TWO_PAIR_PARTNER_BONDS = {"pair A inter-pair bond, seen by pair B": (("q1", "interpair", "ether3"),
+                                                                     ("q2", "interpair", "ether3")),
+                          "pair B inter-pair bond, seen by pair A": (("p1", "interpair", "ether3"),
+                                                                     ("p2", "interpair", "ether3"))}
 # Check E: the access switch's bridge MAC and the captures on the Medium traffic host's MLAG bond (client2 on
 # ether4 of each MLAG peer, captured at both CHR TAPs and at the host's members and bond).
 ACCESS_BRIDGE_MAC = "02:00:00:21:00:13"
 HOST_BOND_CAPTURES = ("c2-eth1", "c2-eth2", "c2-bond0", "p1-tap3", "p2-tap3")
-ROUTEROS_PARTNER = re.compile(r"port=(ether\d+) [^\n]*?partner-sys-id=(\S+)\s+partner-sys-priority=(\d+)")
 
 
 def phase_of(stamp, phases):
@@ -107,43 +104,43 @@ def reflected_copies(icmp, definitions, phases, start):
     return {"member_points": {ident: points for ident, points in counted.items() if points}, "findings": findings}
 
 
-def host_table(samples, expected, window, start):
-    """Check C: on-interface of each traffic host MAC in the last complete sample of each MLAG peer."""
+def host_table(samples, expected, window, start, *, mobile=False):
+    """Check C: on-interface of each traffic host MAC in the last decided sample of each MLAG peer.
+
+    Networka's normalizers read the host entries and each bond member's actor flags from the saved replies.
+    A sample they cannot decide is skipped. mobile adds the MAC-move host, which only the link-fault runs carry.
+    """
     if isinstance(window, str):
         return {"status": window}
     low, high = window
-    tables, chosen = {}, {}
-    sampled = set()
+    chosen = {}
     for peer, rows in samples.items():
+        macs = (*expected[peer], *((MOBILE,) if mobile else ()))
         for sample in rows:
-            raw = sample.get("raw")
-            if not isinstance(raw, str) or "mlag-state:" not in raw:
+            if not (low <= sample["started_ns"] and sample.get("done_ns", high + 1) <= high):
                 continue
-            entries = {mac.lower(): port.replace("witness-bond", "access-uplink")
-                       for mac, port in HOST_ENTRY.findall(raw)}
-            sampled.update(entries)
-            if low <= sample["started_ns"] and sample["done_ns"] <= high:
-                tables[peer], chosen[peer] = entries, sample
+            try:
+                entries = {mac: host(sample, mac) for mac in macs}
+                members = {port: in_use(member(sample, bond, port)) for bond, port in expected[peer].values()}
+            except ValueError:
+                continue
+            chosen[peer] = sample, entries, members
     peers, wrong = {}, []
     for peer, hosts in expected.items():
         if peer not in chosen:
-            peers[peer] = {"status": "not available: no complete state sample in the recovery window"}
+            peers[peer] = {"status": "not available: no decided state sample in the recovery window"}
             continue
-        raw, entries = chosen[peer]["raw"], tables[peer]
-        lacp = router_members(raw)
+        sample, entries, members = chosen[peer]
         observed = {}
-        for mac, (bond, member) in hosts.items():
-            if mac not in sampled:
-                continue  # Older runs did not sample this MAC.
-            port = entries.get(mac)
-            up = lacp.get(member, {}).get("actor", "")[3:6] == "SCD"
-            observed[mac] = {"on_interface": port, "expected": bond, "bond_member": member, "member_up": up}
+        for mac, (bond, port_member) in hosts.items():
+            port, up = entries[mac], members[port_member]
+            observed[mac] = {"on_interface": port, "expected": bond, "bond_member": port_member, "member_up": up}
             if port != bond and not (port == PEER_PORT and not up):
                 wrong.append(f"{peer} {mac} on {port or 'no entry'}, expected {bond}"
-                             + (f" while bond member {member} is up" if port == PEER_PORT else ""))
-        if MOBILE in sampled:
-            observed[MOBILE] = {"on_interface": entries.get(MOBILE)}
-        peers[peer] = {"sample_s": seconds(chosen[peer]["started_ns"] - start), "hosts": observed}
+                             + (f" while bond member {port_member} is up" if port == PEER_PORT else ""))
+        if mobile:
+            observed[MOBILE] = {"on_interface": entries[MOBILE]}
+        peers[peer] = {"sample_s": seconds(sample["started_ns"] - start), "hosts": observed}
     mobile = {peer: info["hosts"][MOBILE]["on_interface"] for peer, info in peers.items()
               if MOBILE in info.get("hosts", {})}
     if mobile:
@@ -182,7 +179,8 @@ def available(measure, *args):
         return {"status": f"not available: {type(error).__name__}: {error}"}
 
 
-def forwarding(path, icmp, definitions, start, down, up, end, *, outside, hosts, nodes, recovery=None, stopped=None):
+def forwarding(path, icmp, definitions, start, down, up, end, *, outside, hosts, nodes, recovery=None, stopped=None,
+               mobile=False):
     """All four measurements for one run. recovery is the start of the recovery window, None without a fault.
 
     stopped is the collectors_stopped time of a run that executed its fault but stopped before the recovery window.
@@ -198,7 +196,8 @@ def forwarding(path, icmp, definitions, start, down, up, end, *, outside, hosts,
     phases = (("baseline", start, down), ("withdrawal", down, up), ("restoration", up, end))
 
     def state():
-        return host_table({peer: load_jsonl(path / f"state-{peer}.jsonl") for peer in hosts}, hosts, window, start)
+        return host_table({peer: load_jsonl(path / f"state-{peer}.jsonl") for peer in hosts}, hosts, window, start,
+                          mobile=mobile)
 
     return {
         "phases_s": {label: [seconds(low - start), seconds(high - start)] for label, low, high in phases if high > low},
@@ -261,38 +260,6 @@ def grade(measured, check, expected_flooding=None, *, outside_limit_s):
                   if phases_of.get("baseline")}
         check("fail", not counts, f"Baseline: {sum(counts.values())} MLAG sync or heartbeat warnings in syslog, "
               f"limit 0" + "".join(f"; {node}: {count}" for node, count in sorted(counts.items())), "baseline")
-
-
-def lacp_system_ids(marks, partner_bonds=None):
-    """The LACP system ID each MLAG bond presents on each of its members, read on the partner side at the baseline.
-
-    Linux hosts report the partner's system priority and MAC per bond member in /proc/net/bonding. RouterOS
-    partners report partner-sys-id and partner-sys-priority per member port. The readout is the gate state in
-    baseline_confirmed, or the host bonds in baseline_bonds. Runs without either have no measurement.
-    """
-    event = marks.get("baseline_confirmed") or marks.get("baseline_bonds")
-    if not event:
-        return "not available: the run saved no baseline bond state"
-    linux = dict(event.get("bonds") or {})
-    for key, host in (("linux", "client 2 bond"), ("linux_client1", "client 1 bond")):
-        if isinstance(event.get(key), str):
-            linux[host] = event[key]
-    bonds = {}
-    for host, text in linux.items():
-        members = {member: f"{priority}/{mac.lower()}" for member, priority, mac in LINUX_PARTNER.findall(text or "")}
-        if members:
-            bonds[host] = members
-    routers = event.get("routers") or {}
-    for label, ports in (partner_bonds or {}).items():
-        members = {}
-        for node, port in ports:
-            seen = {name: f"{priority}/{mac.lower()}" for name, mac, priority in ROUTEROS_PARTNER.findall(routers.get(node) or "")}
-            if port in seen:
-                members[f"{node}:{port}"] = seen[port]
-        if members:
-            bonds[label] = members
-    return {label: {"members": members, "same": len(members) >= 2 and len(set(members.values())) == 1}
-            for label, members in bonds.items()} or "not available: the baseline state holds no partner system ID"
 
 
 def grade_system_ids(measured, check):

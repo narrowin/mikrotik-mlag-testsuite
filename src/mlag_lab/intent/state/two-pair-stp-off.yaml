@@ -1,0 +1,13 @@
+# Two-pair deployment, setup stp-off: spanning tree off. Added to two-pair.yaml.
+- {name: "mlag1 protocol-mode none", device: "dc1-core-mlag1", check: "stp_mode", params: {bridge: "bridge"}, expected: "none"}
+- {name: "mlag1 bridge forward-reserved-addresses false", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "forward-reserved-addresses"}, expected: false}
+- {name: "mlag1 interpair lacp-strict false", device: "dc1-core-mlag1", check: "property", params: {menu: "/interface/bonding", where: {name: "interpair"}, name: "lacp-strict"}, expected: false}
+- {name: "mlag2 protocol-mode none", device: "dc1-core-mlag2", check: "stp_mode", params: {bridge: "bridge"}, expected: "none"}
+- {name: "mlag2 bridge forward-reserved-addresses false", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "forward-reserved-addresses"}, expected: false}
+- {name: "mlag2 interpair lacp-strict false", device: "dc1-core-mlag2", check: "property", params: {menu: "/interface/bonding", where: {name: "interpair"}, name: "lacp-strict"}, expected: false}
+- {name: "access mlag1 protocol-mode none", device: "dc1-access-mlag1", check: "stp_mode", params: {bridge: "bridge"}, expected: "none"}
+- {name: "access mlag1 bridge forward-reserved-addresses false", device: "dc1-access-mlag1", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "forward-reserved-addresses"}, expected: false}
+- {name: "access mlag1 interpair lacp-strict false", device: "dc1-access-mlag1", check: "property", params: {menu: "/interface/bonding", where: {name: "interpair"}, name: "lacp-strict"}, expected: false}
+- {name: "access mlag2 protocol-mode none", device: "dc1-access-mlag2", check: "stp_mode", params: {bridge: "bridge"}, expected: "none"}
+- {name: "access mlag2 bridge forward-reserved-addresses false", device: "dc1-access-mlag2", check: "property", params: {menu: "/interface/bridge", where: {name: "bridge"}, name: "forward-reserved-addresses"}, expected: false}
+- {name: "access mlag2 interpair lacp-strict false", device: "dc1-access-mlag2", check: "property", params: {menu: "/interface/bonding", where: {name: "interpair"}, name: "lacp-strict"}, expected: false}

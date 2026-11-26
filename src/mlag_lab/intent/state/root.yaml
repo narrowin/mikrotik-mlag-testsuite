@@ -1,0 +1,31 @@
+# Root-pair runner: both MLAG peers are the RSTP root with opposite roles, the access switch
+# reaches the root over its non-edge uplink, every bond member is in use. Each case adds host2.yaml.
+- {name: "mlag1 protocol-mode rstp", device: "dc1-core-mlag1", check: "stp_mode", params: {bridge: "bridge"}, expected: "rstp"}
+- {name: "mlag1 root 0x1000.02:00:00:21:00:11, bridge ID 0x1000.02:00:00:21:00:11, is root", device: "dc1-core-mlag1", check: "stp_bridge", params: {bridge: "bridge"}, expected: {bridge_id: "0x1000.02:00:00:21:00:11", root_bridge_id: "0x1000.02:00:00:21:00:11", root_bridge: true}}
+- {name: "mlag1 MLAG connected as primary", device: "dc1-core-mlag1", check: "mlag", params: {bridge: "bridge"}, expected: {connected: true, role: "primary"}}
+- {name: "mlag1 bridge port access-uplink forwarding", device: "dc1-core-mlag1", check: "bridge_port", params: {bridge: "bridge", port: "access-uplink"}, expected: {forwarding: true}}
+- {name: "mlag1 bridge port access-uplink non-edge", device: "dc1-core-mlag1", check: "bridge_port", params: {bridge: "bridge", port: "access-uplink"}, expected: {edge: false}}
+- {name: "mlag1 bridge port client2 forwarding", device: "dc1-core-mlag1", check: "bridge_port", params: {bridge: "bridge", port: "client2"}, expected: {forwarding: true}}
+- {name: "mlag1 access-uplink members ether3", device: "dc1-core-mlag1", check: "bond_members", params: {bond: "access-uplink"}, expected: ["ether3"]}
+- {name: "mlag1 access-uplink member ether3 in use", device: "dc1-core-mlag1", check: "lacp_member", params: {bond: "access-uplink", member: "ether3"}, expected: {synchronization: true, collecting: true, distributing: true}}
+- {name: "mlag1 client2 members ether4", device: "dc1-core-mlag1", check: "bond_members", params: {bond: "client2"}, expected: ["ether4"]}
+- {name: "mlag1 client2 member ether4 in use", device: "dc1-core-mlag1", check: "lacp_member", params: {bond: "client2", member: "ether4"}, expected: {synchronization: true, collecting: true, distributing: true}}
+- {name: "mlag2 protocol-mode rstp", device: "dc1-core-mlag2", check: "stp_mode", params: {bridge: "bridge"}, expected: "rstp"}
+- {name: "mlag2 root 0x1000.02:00:00:21:00:11, bridge ID 0x1000.02:00:00:21:00:11, is root", device: "dc1-core-mlag2", check: "stp_bridge", params: {bridge: "bridge"}, expected: {bridge_id: "0x1000.02:00:00:21:00:11", root_bridge_id: "0x1000.02:00:00:21:00:11", root_bridge: true}}
+- {name: "mlag2 MLAG connected as secondary", device: "dc1-core-mlag2", check: "mlag", params: {bridge: "bridge"}, expected: {connected: true, role: "secondary"}}
+- {name: "mlag2 bridge port access-uplink forwarding", device: "dc1-core-mlag2", check: "bridge_port", params: {bridge: "bridge", port: "access-uplink"}, expected: {forwarding: true}}
+- {name: "mlag2 bridge port access-uplink non-edge", device: "dc1-core-mlag2", check: "bridge_port", params: {bridge: "bridge", port: "access-uplink"}, expected: {edge: false}}
+- {name: "mlag2 bridge port client2 forwarding", device: "dc1-core-mlag2", check: "bridge_port", params: {bridge: "bridge", port: "client2"}, expected: {forwarding: true}}
+- {name: "mlag2 access-uplink members ether3", device: "dc1-core-mlag2", check: "bond_members", params: {bond: "access-uplink"}, expected: ["ether3"]}
+- {name: "mlag2 access-uplink member ether3 in use", device: "dc1-core-mlag2", check: "lacp_member", params: {bond: "access-uplink", member: "ether3"}, expected: {synchronization: true, collecting: true, distributing: true}}
+- {name: "mlag2 client2 members ether4", device: "dc1-core-mlag2", check: "bond_members", params: {bond: "client2"}, expected: ["ether4"]}
+- {name: "mlag2 client2 member ether4 in use", device: "dc1-core-mlag2", check: "lacp_member", params: {bond: "client2", member: "ether4"}, expected: {synchronization: true, collecting: true, distributing: true}}
+- {name: "access switch protocol-mode rstp", device: "dc1-access-switch1", check: "stp_mode", params: {bridge: "bridge"}, expected: "rstp"}
+- {name: "access switch root 0x1000.02:00:00:21:00:11, not root, root port uplink", device: "dc1-access-switch1", check: "stp_bridge", params: {bridge: "bridge"}, expected: {root_bridge_id: "0x1000.02:00:00:21:00:11", root_bridge: false, root_port: "uplink"}}
+- {name: "access switch bridge port uplink forwarding", device: "dc1-access-switch1", check: "bridge_port", params: {bridge: "bridge", port: "uplink"}, expected: {forwarding: true}}
+- {name: "access switch bridge port uplink non-edge", device: "dc1-access-switch1", check: "bridge_port", params: {bridge: "bridge", port: "uplink"}, expected: {edge: false}}
+- {name: "access switch bridge port uplink root port", device: "dc1-access-switch1", check: "bridge_port", params: {bridge: "bridge", port: "uplink"}, expected: {role: "root"}}
+- {name: "access switch bridge port ether4 forwarding", device: "dc1-access-switch1", check: "bridge_port", params: {bridge: "bridge", port: "ether4"}, expected: {forwarding: true}}
+- {name: "access switch uplink members ether2, ether3", device: "dc1-access-switch1", check: "bond_members", params: {bond: "uplink"}, expected: ["ether2", "ether3"]}
+- {name: "access switch uplink member ether2 in use", device: "dc1-access-switch1", check: "lacp_member", params: {bond: "uplink", member: "ether2"}, expected: {synchronization: true, collecting: true, distributing: true}}
+- {name: "access switch uplink member ether3 in use", device: "dc1-access-switch1", check: "lacp_member", params: {bond: "uplink", member: "ether3"}, expected: {synchronization: true, collecting: true, distributing: true}}

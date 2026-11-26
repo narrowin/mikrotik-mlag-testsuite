@@ -2,10 +2,9 @@
 
 import json
 
+from .device_state import carrier, known, mlag, stp
 from .evidence import load_jsonl
 from .measure import seconds
-from .root_evidence import summarize_router
-from .root_state import router_state
 from .root_topology import MANAGEMENT_PROBES, POWER_OFF_HOLD_S, ROOT_FLOWS
 
 POWER_MARKS = ("power_off_start", "power_off_applied", "power_off_observed", "power_on_start",
@@ -43,10 +42,10 @@ def peer_observations(path, target, start, first_miss, last_miss, end, check, ti
     transitions = []
     absent_roles = set()
     for sample in load_jsonl(path / f"state-{survivor}.jsonl"):
-        if "raw" not in sample or sample["done_ns"] < start:
+        state = known(mlag, sample)
+        if state is None or sample["done_ns"] < start:
             continue
-        bridge, _ = router_state(sample["raw"])
-        value = bridge.get("mlag-state"), bridge.get("mlag-active-role"), bridge.get("root-bridge-id")
+        value = state["state"], state.get("role"), (known(stp, sample) or {}).get("root_bridge_id")
         if previous is None or value != previous[0]:
             transition = {"mlag_state": value[0], "active_role": value[1], "root_id": value[2],
                           "before_s": seconds((previous[1] if previous else sample["started_ns"]) - start),
@@ -79,9 +78,9 @@ def peer_observations(path, target, start, first_miss, last_miss, end, check, ti
         router_ports.append(("witness", "ether2" if target == "p1" else "ether3"))
     for node, port in router_ports:
         observations_during_absence = {
-            summarize_router(sample["raw"])["carrier"].get(port)
+            known(carrier, sample, port)
             for sample in load_jsonl(path / f"state-{node}.jsonl")
-            if "raw" in sample and first_miss <= sample["started_ns"] and sample["done_ns"] <= last_miss
+            if first_miss <= sample["started_ns"] and sample.get("done_ns", last_miss + 1) <= last_miss
         }
         guest_carrier[f"{node}:{port}"] = sorted(observations_during_absence - {None})
     check("error", all(guest_carrier.values()), "Recorded RouterOS carrier at surviving linked guest ports")
@@ -246,5 +245,5 @@ def check_power_loss(marks, start, target, check):
         "on_confirmed_latency_s": on["max_latency_s"],
         "boot_observed_s": at(boot["query_end_ns"]),
         "post_boot_uptime_s": seconds(boot["uptime_ns"]),
-        "neighbour_carrier_off": {"linux": off["linux_flags"], "routeros": off["routeros_status"]},
+        "neighbour_carrier_off": {"linux": off["linux_flags"], "routeros": off["routeros_carrier"]},
     }
