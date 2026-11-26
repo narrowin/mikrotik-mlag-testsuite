@@ -2,6 +2,8 @@
 
 The two-CHR suite applies the same lab faults on demand and evaluates the run from saved evidence. Run it in the Linux VM that hosts the Containerlab topology. The command and exit codes are the same for a local run and a CI job. The [case catalogue](case-catalog.md) tracks broader scenarios and their sources.
 
+The [Small lab walkthrough](walkthrough-small-lab.md) follows two Small cases from the wiring to the verdict, with a link to the code of every step.
+
 ## Building blocks
 
 | Component | Job |
@@ -113,14 +115,14 @@ The reset-to-verdict time begins after management access and image verification.
 | Loss, floods, reflected frames, BPDUs, calibration, timing | The suite, from packet captures | `evaluate.py` and the per-runner evaluators |
 | Cases, phases, limits and streams | The suite's case catalogue | [`src/mlag_lab/intent/*.yaml`](../src/mlag_lab/intent) |
 
-**State samples.** Each `state-<switch>.jsonl` line is one Networka read of every command the switch samples, about every 0.5 s: `{started_ns, done_ns, replies: {command: {command, output, error}}, port_monitors: {port: command}}`. `port_monitors` names the bridge-port monitor command, which carries the port's `.id`, as Networka's `collect_bridge_port` selected it once before any capture started; a port it cannot select stops the attempt with an error. With spanning tree on, a sample without the bridge and root bridge IDs is incomplete; the access switch has no MLAG peer, so its samples need no MLAG state. The evaluator turns the replies into values with Networka's normalizers. A value they cannot decide makes the sample incomplete and is never read as a pass.
+**State samples.** Each `state-<switch>.jsonl` line is one Networka read of every command the switch samples. `sample_loop` starts a read every 0.35 s, or right after the previous read when it took longer: `{started_ns, done_ns, replies: {command: {command, output, error}}, port_monitors: {port: command}}`. `port_monitors` names the bridge-port monitor command, which carries the port's `.id`, as Networka's `collect_bridge_port` selected it once before any capture started; a port it cannot select stops the attempt with an error. With spanning tree on, a sample without the bridge and root bridge IDs is incomplete; the access switch has no MLAG peer, so its samples need no MLAG state. The evaluator turns the replies into values with Networka's normalizers. A value they cannot decide makes the sample incomplete and is never read as a pass.
 
 **Gates.** A gate is the intent files of the lab and setup, for example `medium.yaml`, `host2.yaml` and `medium-pair-root.yaml` for a Medium pair-root case. The runner collects it with Networka's `run_intent` before the fault and after recovery, adds the Linux bond readings, and saves `intent.yaml`, `evidence.json` and `results.json` in `gate-baseline/` and `gate-restored/`. `nw intent replay ATTEMPT/gate-baseline` prints the same verdicts. A baseline gate that does not pass withholds the fault in every runner. The evaluator replays both folders item by item: a failed Networka item fails the case, and an unverified item or a missing gate is an evidence error. An attempt that stopped before its baseline was observed, or produced no check, is an error, never a pass. Two checks compare switches with each other and stay in the suite, on the gate's saved replies: the Small lab's opposite MLAG roles and shared root, and the LACP system ID both MLAG peers present.
 
 | Decision | Alternative | Why |
 | --- | --- | --- |
 | Read RouterOS state as JSON through Networka | Keep the suite's text parsers | JSON keeps field names and types. The text parser misread inactive ports. |
-| One Networka read of all sample commands per sample | `run_intent` per sample | `run_intent` makes one read per collector and is too slow for a 0.5 s cadence. |
+| One Networka read of all sample commands per sample | `run_intent` per sample | `run_intent` makes one read per collector and is too slow for a 0.35 s cadence. |
 | Fixed expectations as Networka intent files per lab and setup | Expectations in Python per runner | One readable file per setup, replayable with `nw intent replay`, and the same pass, fail and error rules on every platform. |
 | Relational checks in the suite | Force them into intent items | An intent item states one device's expected value. Roles and system IDs compare devices. |
 | Linux bonds read by the suite | Networka SSH to the hosts | The traffic hosts are not in the lab's Networka profiles; the suite already reads them in their network namespace, and Networka's Linux normalizers parse the text. |

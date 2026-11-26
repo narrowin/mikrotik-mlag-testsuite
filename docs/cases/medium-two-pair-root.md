@@ -39,12 +39,18 @@ flowchart TB
 | --- | --- | --- | --- |
 | `equal` | `0x8000` | `0x8000` | `0x8000.02:00:00:21:00:11`, by lowest MAC |
 | `field` | `0x2000` | `0x4000` | `0x2000.02:00:00:21:00:11`, by priority |
+| `stp-off` | `0x8000` | `0x8000` | None: `protocol-mode=none` on all four CHRs |
+| `stp-off-strict` | `0x8000` | `0x8000` | None: `protocol-mode=none`, and `lacp-strict=yes` on the inter-pair bond |
 
-The runner sets the priorities over management SSH before each case and reads them back from the running config.
+The two `stp-off` setups run the same steps without spanning tree: the baseline requires zero BPDUs instead of a root.
+`stp-off-strict` adds `lacp-strict=yes` on the inter-pair bond of all four CHRs, so a member whose LACP partner times
+out stops carrying traffic even while its link keeps carrier.
+
+The runner sets the priorities over management SSH before each case; the baseline gate ([two-pair.yaml](../../src/mlag_lab/intent/state/two-pair.yaml) and `two-pair-<setup>.yaml`) reads them back through Networka.
 
 ## Cases and pass criteria
 
-| Selector (replace `<setup>` with `equal` or `field`) | Fault |
+| Selector (replace `<setup>` with `equal`, `field`, `stp-off` or `stp-off-strict`) | Fault |
 | --- | --- |
 | `two-pair-<setup>-baseline` | None. All four CHRs report the expected root, both pairs are connected, every bond member collects and distributes, and no probe is lost. |
 | `two-pair-<setup>-calibrate` | 2 s one-way drop on the bypass. Proves the loss measurement. |
@@ -52,10 +58,11 @@ The runner sets the priorities over management SSH before each case and reads th
 | `two-pair-<setup>-reboot-a-secondary` | Reboot CHR 2. Control: pair A keeps its ID. |
 | `two-pair-<setup>-reboot-b-primary` | Reboot CHR 3. Pair B's ID may change, but it stays higher than pair A's. |
 | `two-pair-<setup>-reboot-b-secondary` | Reboot CHR 4. Control. |
+| `two-pair-<setup>-interpair-member-flap` | Take the inter-pair bond member between CHR 1 and CHR 3 down at both ends for 8 s, then up. Each VLAN 110 direction loses at most **3 s** per phase, the bypass stays clean and, with RSTP, all four CHRs keep the baseline root. |
 
 A reboot case passes only if both of the following hold:
 
-- **Root stays on pair A.** The three switches that stay up report the expected root ID in every state sample while the rebooted switch is away and while it returns. The rebooting switch is not scored, because it reports its own view while it boots.
+- **Root stays on pair A** (`equal` and `field` only). The three switches that stay up report the expected root ID in every state sample while the rebooted switch is away and while it returns; a sample without a root ID makes the phase an evidence error. The rebooting switch is not scored, because it reports its own view while it boots.
 - **Loss stays within limits.** Each VLAN 110 direction loses at most **5 s** per phase, and the bypass loses nothing.
 
 The generated report lists every switch's root ID, bridge ID and MLAG role over time (`root_history` in `result.json`). It also lists the BPDUs on each end of the inter-pair bond.
