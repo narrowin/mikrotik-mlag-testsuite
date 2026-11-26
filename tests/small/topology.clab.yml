@@ -1,0 +1,82 @@
+name: small-mlag
+mgmt:
+  network: small-mlag-mgmt
+  # Free of the other networks in the VM and of the older labs' 172.30.192.0/18.
+  ipv4-subnet: 172.30.100.0/24
+topology:
+  kinds:
+    mikrotik_chr:
+      image: mikrotik/chr:7.26beta7@sha256:b68f34a50544f6464d592cdd07ecc1d08017d6ec6837ac42b7dbe701d3c1ca6a
+      startup-config: switch.rsc
+      # The CHR image starts the QEMU of the host's CPU, so both names get the wrapper.
+      binds:
+        - chr-qemu.sh:/usr/local/bin/qemu-system-aarch64:ro
+        - chr-qemu.sh:/usr/local/bin/qemu-system-x86_64:ro
+        - chr-bridges.sh:/lab/chr-bridges.sh:ro
+      exec:
+        - sh /lab/chr-bridges.sh
+  groups:
+    clients:
+      kind: linux
+      image: small-mlag-client:local
+      binds:
+        - client-setup.sh:/lab/client-setup.sh:ro
+      exec:
+        - sh /lab/client-setup.sh
+      # The deploy returns only when both switches answer.
+      stages:
+        create:
+          wait-for:
+            - node: switch1
+              stage: healthy
+            - node: switch2
+              stage: healthy
+  nodes:
+    syslog:
+      kind: linux
+      image: rsyslog/rsyslog@sha256:cac80b5513d78de76c301151e4d248547bcf2b5161d9c891a4b10c302f76dd56
+      # The image's own user cannot write into the lab folder that containerlab creates as root.
+      user: "0"
+      mgmt-ipv4: 172.30.100.10
+      binds:
+        - rsyslog.conf:/etc/rsyslog.conf:ro
+        - __clabNodeDir__:/logs
+    switch1:
+      kind: mikrotik_chr
+      mgmt-ipv4: 172.30.100.11
+    switch2:
+      kind: mikrotik_chr
+      mgmt-ipv4: 172.30.100.12
+    client1:
+      group: clients
+      mgmt-ipv4: 172.30.100.21
+    client2:
+      group: clients
+      mgmt-ipv4: 172.30.100.22
+    client3:
+      group: clients
+      mgmt-ipv4: 172.30.100.23
+  links:
+    # Peer link: ether2 on both switches.
+    - endpoints:
+        - switch1:eth1
+        - switch2:eth1
+    # Client N: eth1 to etherN+2 of switch1, eth2 to etherN+2 of switch2.
+    - endpoints:
+        - client1:eth1
+        - switch1:eth2
+    - endpoints:
+        - client1:eth2
+        - switch2:eth2
+    - endpoints:
+        - client2:eth1
+        - switch1:eth3
+    - endpoints:
+        - client2:eth2
+        - switch2:eth3
+    - endpoints:
+        - client3:eth1
+        - switch1:eth4
+    - endpoints:
+        - client3:eth2
+        - switch2:eth4
