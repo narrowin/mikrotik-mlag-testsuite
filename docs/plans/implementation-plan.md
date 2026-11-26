@@ -22,8 +22,8 @@ This plan hands the work to the next implementer. It is the only plan. The older
 | Part | Where | State |
 | --- | --- | --- |
 | Device checks, `nw intent run`, ping | Networka `origin/main`, `e0c71bf` | Done and pushed |
-| Test engine | worktree `/Users/md/git/narrowin/networka.worktrees/lab-tests`, branch `lab-tests`, `95c23b7`, local only | Ran live on the clean lab. Not reviewed |
-| Engine merged with Networka `main` | worktree `/Users/md/git/narrowin/networka.worktrees/merge-main`, branch `merge-main`, `f782c39`, local only | Conflicts resolved. Ruff, mypy and 1,121 unit tests pass. Not pushed |
+| Test engine | worktree `/Users/md/git/narrowin/networka.worktrees/lab-tests`, branch `lab-tests`, `95c23b7`, pushed | Ran live on the clean lab. Not reviewed |
+| Engine merged with Networka `main` | worktree `/Users/md/git/narrowin/networka.worktrees/merge-main`, branch `merge-main`, `f782c39`, pushed | Conflicts resolved. Ruff, mypy and 1,121 unit tests pass. Not on `main` |
 | Clean Small lab and its test | worktree `/Users/md/git/narrowin/mlag-suite-yaml`, branch `codex/suite-yaml-intent`, folder `tests/small/` | Ran live. Findings open |
 | This repo's `main` | `origin/main`, `3e96460` | Does not have the clean lab yet |
 | Specification of the clean lab | [clean-setup-spec.md](clean-setup-spec.md) | Applied |
