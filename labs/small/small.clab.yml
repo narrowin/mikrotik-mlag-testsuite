@@ -47,22 +47,24 @@ topology:
     dc1-traffic-host1:
       kind: linux
       group: probes
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=215}.16
       exec:
         - /bin/sh /lab/client-network.sh 11
     dc1-traffic-host2:
       kind: linux
       group: probes
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=215}.17
       exec:
         - /bin/sh /lab/client-network.sh 12
     dc1-mac-move-host:
       kind: linux
       group: probes
+      mgmt-ipv4: 172.30.${MLAG_MGMT_NET:=215}.18
       exec:
         - /bin/sh /lab/client-network.sh 50
   groups:
     probes:
       image: mlag-lab-endpoint:local
-      cmd: "sleep infinity"
       binds:
         - ../shared/client-network.sh:/lab/client-network.sh:ro
   links:

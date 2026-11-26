@@ -116,9 +116,11 @@ else
         tar -C "$repo/labs" --exclude='clab-*' --exclude='*logs' -cf - . | tar -C "$labs" -xf -
     fi
     if [ "$instance" -ne 0 ]; then
-        # The startup configs name the collector and each CHR's syslog source address; move them to this instance.
+        # The startup configs name the collector and each CHR's syslog source address. The Networka profiles name
+        # every node's management address. Move both to this instance.
         for config in small/small.rsc:215 medium/medium-pair-root.rsc:216 medium/medium.rsc:218 \
-            medium/medium-two-pair.rsc:219 large/large.rsc:220; do
+            medium/medium-two-pair.rsc:219 large/large.rsc:220 networka/small.yml:215 networka/medium.yml:218 \
+            networka/medium-pair-root.yml:216 networka/medium-two-pair.yml:219 networka/large.yml:220; do
             base=${config#*:}
             sed -i "s/172\.30\.$base\./172.30.$((base + 10 * instance))./g" "$labs/${config%:*}"
         done
@@ -143,9 +145,8 @@ if [ -n "$deployed" ]; then
     fi
 else
     lock 9 /var/tmp/mlag-campaign-setup.lock
-    if ! as_root docker image inspect mlag-lab-endpoint:local >/dev/null 2>&1; then
-        as_root docker build -f "$labs/shared/client.Dockerfile" -t mlag-lab-endpoint:local "$labs/shared"
-    fi
+    # Build every time: the cache makes it quick, and an image from an older Dockerfile would lack sshd.
+    as_root docker build -f "$labs/shared/client.Dockerfile" -t mlag-lab-endpoint:local "$labs/shared"
     if ! as_root docker image inspect rsyslog/rsyslog:latest >/dev/null 2>&1; then
         as_root docker pull rsyslog/rsyslog:latest
     fi

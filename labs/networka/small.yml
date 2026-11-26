@@ -12,7 +12,20 @@ devices:
   dc1-core-mlag2:
     host: 172.30.215.12
     device_type: mikrotik_routeros
+  dc1-traffic-host1:
+    host: 172.30.215.16
+    device_type: linux
+  dc1-traffic-host2:
+    host: 172.30.215.17
+    device_type: linux
+  dc1-mac-move-host:
+    host: 172.30.215.18
+    device_type: linux
 groups:
   mlag-peers:
     description: The two isolated MLAG lab switches
     members: [dc1-core-mlag1, dc1-core-mlag2]
+  linux-hosts:
+    description: The Linux lab nodes, reached over SSH as root with the fixed lab password
+    members: [dc1-traffic-host1, dc1-traffic-host2, dc1-mac-move-host]
+    credentials: {user: root, password: admin}

@@ -268,7 +268,9 @@ uv run --locked nw --version
 
 ### Profiles and intent files for each lab
 
-Each lab has a profile that names its management addresses and device groups. The device state the runner requires is Networka intent in [src/mlag_lab/intent/state/](../src/mlag_lab/intent/state): one file per lab and one per setup. The runner copies the lab's profile and every intent file into each run's `inputs/` folder. The files of the traffic hosts (`hosts.yaml`, `host2.yaml`) name Linux containers that are not in the profiles; the runner reads their bonds itself, so `nw intent run` takes only the switch files.
+Each lab has a profile that names its management addresses and device groups. The device state the runner requires is Networka intent in [src/mlag_lab/intent/state/](../src/mlag_lab/intent/state): one file per lab and one per setup. The runner copies the lab's profile and every intent file into each run's `inputs/` folder. The runner reads the bonds of the traffic hosts (`hosts.yaml`, `host2.yaml`) itself through `nsenter`.
+
+Every Linux lab node runs an SSH server on its management address, because Networka reaches every node over SSH. The login is `root` with the lab password `admin`, because only root sees the LACP details in `/proc/net/bonding`. The profiles list these nodes as `device_type: linux` in the `linux-hosts` group, which holds that login. The SSH server does not listen on the traffic interfaces or bonds.
 
 | Lab | Profile | Intent files |
 | --- | --- | --- |
@@ -282,7 +284,7 @@ The Medium profiles also have a `dc1-routeros` group with every CHR in the lab. 
 
 ### Run a checkpoint
 
-Run Networka on the host that runs the lab. The profiles hold the addresses of instance 0, so `nw` reaches only instance 0 of each lab. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. The command prompts for the lab credentials, prints each item's verdict, and saves the intent, evidence and results. Use a distinct folder for each case, repeat and phase. The exit status is 0 for pass, 1 for fail and 2 when an item could not be verified. [Networka intent guide](https://github.com/narrowin/networka/blob/main/docs/intent.md)
+Run Networka on the host that runs the lab. The profiles in the checkout hold the addresses of instance 0. A campaign's labs copy holds them at the addresses of its instance, under `networka/` in `MLAG_LABS_COPY`. `--interactive-auth` gives one login to every device, so use it only for intent files without Linux nodes. For the CHRs together with Linux nodes, set `NW_USER_DEFAULT=admin` and `NW_PASSWORD_DEFAULT` to the CHR password instead. Local campaign runs use the `mlag-external` OrbStack VM. Verify each CHR's SSH host key and add it to the collector's known-hosts file before connecting. The command prompts for the lab credentials, prints each item's verdict, and saves the intent, evidence and results. Use a distinct folder for each case, repeat and phase. The exit status is 0 for pass, 1 for fail and 2 when an item could not be verified. [Networka intent guide](https://github.com/narrowin/networka/blob/main/docs/intent.md)
 
 ```sh
 uv run --locked nw intent run --config labs/networka/small.yml --interactive-auth \

@@ -16,6 +16,12 @@ devices:
   dc1-access-switch1:
     host: 172.30.216.13
     device_type: mikrotik_routeros
+  dc1-traffic-host1:
+    host: 172.30.216.16
+    device_type: linux
+  dc1-traffic-host2:
+    host: 172.30.216.17
+    device_type: linux
 groups:
   dc1-routeros:
     description: The three RouterOS CHR guests in the pair-root lab
@@ -26,3 +32,7 @@ groups:
   access-switch:
     description: The pair-root lab access switch
     members: [dc1-access-switch1]
+  linux-hosts:
+    description: The Linux lab nodes, reached over SSH as root with the fixed lab password
+    members: [dc1-traffic-host1, dc1-traffic-host2]
+    credentials: {user: root, password: admin}

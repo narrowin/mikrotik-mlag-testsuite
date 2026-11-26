@@ -14,7 +14,7 @@ Each topology has its own deployment name and subnet, so different labs can run 
 
 ## Deploy and remove a lab
 
-Build the traffic-host image once, then deploy with the pinned CHR image:
+Build the traffic-host image after each change to its Dockerfile, then deploy with the pinned CHR image:
 
 ```sh
 sudo docker build -f labs/shared/client.Dockerfile -t mlag-lab-endpoint:local labs/shared
@@ -51,7 +51,7 @@ sudo env MLAG_LAB_NAME=mlag-small-i2 MLAG_MGMT_NET=235 containerlab destroy -t /
 | File | Used by | Job |
 | --- | --- | --- |
 | [campaign-image.txt](campaign-image.txt) | Every CHR, the runner | The RouterOS CHR image pinned by digest for the whole campaign |
-| [shared/client.Dockerfile](shared/client.Dockerfile) | Traffic hosts | Alpine image with iproute2 and iputils, tagged `mlag-lab-endpoint:local` |
+| [shared/client.Dockerfile](shared/client.Dockerfile) | Traffic hosts | Alpine image with iproute2, iputils and an SSH server for root on the management address, tagged `mlag-lab-endpoint:local` |
 | [shared/client-network.sh](shared/client-network.sh) | Traffic hosts | Builds the LACP or active-backup bond, VLAN 110 address and bypass link |
 | [shared/root-client.sh](shared/root-client.sh) | Medium traffic hosts | Host 1 gets a single VLAN 110 port behind the access switch; Host 2 uses `client-network.sh`. Both pin the other host's MAC. |
 | [shared/forward-control.sh](shared/forward-control.sh) | Every CHR | Makes each veth-to-TAP bridge pass STP, LACP and LLDP; `--wire` also turns off MAC learning so it acts as a plain cable |

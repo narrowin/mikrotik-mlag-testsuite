@@ -37,6 +37,18 @@ devices:
   dc2-firewall1:
     host: 172.30.220.25
     device_type: mikrotik_routeros
+  dc1-traffic-host1:
+    host: 172.30.220.16
+    device_type: linux
+  dc1-service-host1:
+    host: 172.30.220.17
+    device_type: linux
+  dc2-traffic-host1:
+    host: 172.30.220.26
+    device_type: linux
+  dc2-service-host1:
+    host: 172.30.220.27
+    device_type: linux
 groups:
   dc1-routeros:
     description: The five RouterOS CHR guests at Site A
@@ -65,3 +77,7 @@ groups:
   firewalls:
     description: The two VRRP CHR firewalls
     members: [dc1-firewall1, dc2-firewall1]
+  linux-hosts:
+    description: The Linux lab nodes, reached over SSH as root with the fixed lab password
+    members: [dc1-traffic-host1, dc1-service-host1, dc2-traffic-host1, dc2-service-host1]
+    credentials: {user: root, password: admin}

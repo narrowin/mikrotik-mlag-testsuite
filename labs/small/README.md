@@ -8,9 +8,9 @@ Two RouterOS switches form one MLAG pair. Linux containers provide test traffic,
 | --- | --- | --- |
 | `dc1-core-mlag1` | MLAG switch 1 | `172.30.215.11` |
 | `dc1-core-mlag2` | MLAG switch 2 | `172.30.215.12` |
-| `dc1-traffic-host1` | Linux LACP client | Assigned by Containerlab |
-| `dc1-traffic-host2` | Linux LACP client | Assigned by Containerlab |
-| `dc1-mac-move-host` | Linux MAC-move endpoint | Assigned by Containerlab |
+| `dc1-traffic-host1` | Linux LACP client | `172.30.215.16` |
+| `dc1-traffic-host2` | Linux LACP client | `172.30.215.17` |
+| `dc1-mac-move-host` | Linux MAC-move endpoint | `172.30.215.18` |
 | `dc1-syslog-collector` | Log collector | `172.30.215.20` |
 
 Each client has one LACP member to each switch. The mobile endpoint uses an active-backup bond. A separate cable connects the two clients for bypass probes.
