@@ -4,7 +4,7 @@ Both switches run with spanning tree off. Switch1 is configured as MLAG primary 
 
 ## Run a case
 
-Run from the repository root with host `tc` from iproute2. Set `NETWORKA_SRC` to the absolute path of the Networka checkout containing the new actions. The published 0.5.0 pin runs the Phase 1 cases. [Small host tools and qualified Containerlab build](../README.md)
+Run from the repository root with host `tc` from iproute2. The pinned Networka 0.5.1 runs every case. [Small host tools and qualified Containerlab build](../README.md)
 
 ```sh
 CASE=baseline
@@ -16,16 +16,16 @@ if [ "$CASE" = mac-age-relearn ]; then
 fi
 sudo env "CLAB=$CLAB" tests/small/mobile/start.sh ${PROFILE:+$PROFILE}
 
-lab_nw_source() {
+lab_nw() {
   sudo env "PATH=/usr/sbin:/sbin:$PATH" "UV_PROJECT_ENVIRONMENT=/var/tmp/mlag-lab-venvs$PWD" \
-    uv run --locked --with-editable "$NETWORKA_SRC" nw "$@"
+    uv run --locked nw "$@"
 }
 
 mkdir -p test-results/small
 RUN=$(mktemp -d test-results/small/mobile.XXXXXX)
-lab_nw_source test run "tests/small/mobile/$CASE.yaml" \
+lab_nw test run "tests/small/mobile/$CASE.yaml" \
   --lab tests/small/mobile/clab-small-mlag-mobile --config tests/small/devices.yml --save "$RUN"
-lab_nw_source test replay "$RUN/$CASE"
+lab_nw test replay "$RUN/$CASE"
 sudo env "SMALL_MOBILE_AGE=$AGE" "$CLAB" destroy -t tests/small/mobile/topology.clab.yml --cleanup
 ```
 

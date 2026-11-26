@@ -7,7 +7,7 @@ A collector node, `syslog`, receives the log of both switches.
 ## Commands
 
 Run from the repository root on a Linux host with Docker, sudo, tcpdump, tshark, ping and nsenter. Put uv 0.13.10 on `PATH` (`export PATH=/var/tmp/pt1-tools:$PATH` on the lab VM).
-This repository's lockfile pins Networka 0.5.0 from PyPI.
+This repository's lockfile pins Networka 0.5.1 from PyPI.
 
 Use Containerlab with native CHR support from commit `06ac3ca4d442ce4f937b50bd7c04d5f32fb3173b`. Set `CLAB` to the absolute path of that binary. On the lab VM, use the qualified ARM64 build. Its SHA-256 is `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`.
 
