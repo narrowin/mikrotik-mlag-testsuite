@@ -44,6 +44,10 @@
 /system logging add action=collector topics=warning
 /system logging add action=collector topics=error
 /system logging add action=collector topics=critical
+{{- if eq .ShortName "dc1-firewall" "dc2-firewall"}}
+# vrrp records each firewall's master and backup changes.
+/system logging add action=collector topics=vrrp
+{{- end}}
 
 # RouterOS 7.26beta7 can leave remote logging silent after reboot. Reselect the VRF after its route is active.
 # Poll for 10 s to cover the management startup time seen on this CHR.
