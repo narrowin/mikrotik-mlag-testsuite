@@ -54,7 +54,7 @@ The limits, hold times and expectations come from the `medium-stp-off-*` cases o
 
 ## Live verdicts
 
-On 26 November 2026, with Networka 0.5.1 and RouterOS 7.26beta7, each test ran on a fresh deployment, primary power loss twice. Each generated report starts with the verdict below. Each replay exited with the same verdict and gave byte-identical `result.json` and `report.md`.
+On 26 November 2026, with Networka 0.5.1 and RouterOS 7.26beta7, each test ran on a fresh deployment, primary power loss eight times. Each generated report starts with the verdict below. Each replay exited with the same verdict and gave byte-identical `result.json` and `report.md`.
 
 | Test | Report verdict |
 | --- | --- |
@@ -63,7 +63,7 @@ On 26 November 2026, with Networka 0.5.1 and RouterOS 7.26beta7, each test ran o
 | Secondary reboot | PASS |
 | Primary reboot | PASS |
 | Secondary power loss | PASS |
-| Primary power loss | PASS, both runs |
+| Primary power loss | PASS, all eight runs |
 
 ## Comparison with the earlier Medium suite
 
@@ -76,13 +76,27 @@ The old values are quoted from `results/index/streams.tsv` at commit `5929968`, 
 | Secondary reboot | PASS. Secondary down, host1 to host2: 2.914058–3.120603, 3.014945–3.221008, 2.390703–2.593125, 2.519232–2.728218 s. Secondary back: no loss in `ext` runs 01 and 02, 0.105286–0.319104 s in `stp-off`, 0–0.210774 s in `stp-off-repeat` | PASS. host1 to host2 2.50509–2.71263 s (26 lost), host2 to host1 2.39518–2.59804 s (25 lost), one stop each, none on return | Within the old stops. The new reboot step covers both old phases, and here no second stop occurred. |
 | Primary reboot | PASS. Primary down, host1 to host2: 2.187891–2.394104, 2.185535–2.391265, 1.980901–2.191478, 2.507501–2.7121 s. Primary back: no loss | PASS. host1 to host2 2.29315–2.50014 s (26 lost), host2 to host1 2.2906–2.49546 s (25 lost) | Within the old stops. |
 | Secondary power loss | PASS. Secondary off: index 0–0.136906 / 0–0.147169 s and 0–0.126443 / 0–0.115665 s, none in `power-loss`. `result.json` of `ext` run 01 gives one failed probe per stream, 0–0.201683 s. Secondary back: none, 0–0.212253 s, 0–0.205269 s | PASS. Power lost: host1 to host2 1 lost, 0–0.207847 s. Power restored: no loss | Same single lost ping as the old `result.json`. The old index upper bounds below 0.2 s disagree with the old `result.json` of the same run; that is an old export issue. |
-| Primary power loss | PASS. Primary off: no loss in `ext` run 01 and `power-loss`; 0–0.414994 s in `ext` run 02. Primary back: no loss, except 0–0.414994 s for `ext` run 02 | PASS. Power lost: host1 to host2 0.314335–0.518716 s (5 lost), host2 to host1 0.208425–0.416858 s (3 lost). Power restored: 0.519087–0.733542 s (6 lost) and 0.611747–0.81489 s (7 lost) | Same verdict, longer stops. See below. |
+| Primary power loss | PASS. Primary off: no loss in `ext` run 01 and `power-loss`; 0–0.414994 s in `ext` run 02. Primary back: no loss, except 0–0.414994 s for `ext` run 02 | PASS. Run 1, power lost: host1 to host2 0.314335–0.518716 s (5 lost), host2 to host1 0.208425–0.416858 s (3 lost). Power restored: 0.519087–0.733542 s (6 lost) and 0.611747–0.81489 s (7 lost) | Same verdict. The stop on return matches; the stop at power off is new. See below. |
 
 Primary power loss in detail:
 
-- The phase limits differ. The old withdrawal phase ran from power off until the runner saw the new boot; the new power-lost step ends at power on. The `ext` run 02 `result.json` places its only stop, 3 failed probes at 0.207495–0.414987 s, in the withdrawal phase at 49.01 s, 19.7 s after power on and before the boot was observed at 50.76 s. In the new run the stop on return came 16.2 s after power on, also before the boot was observed. Both are the stop when switch1 rejoins as MLAG primary. The old index repeats the run 02 stop in its Primary back row, which its `result.json` does not.
-- At power off, `ext` runs 01 and 02 and `power-loss` lost no ping. The new run lost 4 pings from host1 to host2 and 3 back right after switch2 logged `"bridge" peer link down`. In both suites switch2 logged it within 0.9 s of the start of the withdrawal.
-- Setup differences that could explain the longer stops, not traced: the old lab forwarded through its own QEMU data-link wrapper with bridge learning off (see the native CHR qualification in [the implementation plan](../../docs/plans/implementation-plan.md)), the new lab uses native Containerlab CHR links with learning on; the old hosts had permanent neighbour entries for each other, the new hosts resolve with ARP.
-- A second primary power-loss run on a fresh deployment also gave PASS with byte-identical replay. Power lost: host2 to host1 lost 1 ping, 0–0.206274 s, and host1 to host2 none. Power restored: 0.311132–0.517113 s and 0.311195–0.513456 s (4 lost each), 19.9 s after power on. The stop at power off seen in the first run did not repeat, so it varies between runs. The stop on return stays above the old stops; its cause is not traced.
+- The phase limits differ. The old withdrawal phase ran from power off until the runner saw the new boot; the new power-lost step ends at power on. The `ext` run 02 `result.json` places its only stop, 3 failed probes at 0.207495–0.414987 s, in the withdrawal phase at 49.01 s, 19.7 s after power on and before the boot was observed at 50.76 s. In new run 1 the stop on return came 16.2 s after power on, also before the boot was observed. Both are the stop when switch1 rejoins as MLAG primary. The old index repeats the run 02 stop in its Primary back row, which its `result.json` does not.
+- Seven more runs after the first all gave PASS with byte-identical replay. Runs 6 to 8 had permanent neighbour entries pinned by hand on both hosts, as the old hosts set them.
+
+  | Run | Power lost, host1 to host2 / back | Power restored, host1 to host2 / back |
+  | --- | --- | --- |
+  | 2 | 0 s / 0–0.206274 s | 0.311132–0.517113 s / 0.311195–0.513456 s |
+  | 3 | 0 s / 0 s | 0.108028–0.314934 s / 0.106158–0.310578 s |
+  | 4 | 0–0.207196 s / 0 s | 0.206185–0.412382 s / 0.213941–0.419793 s |
+  | 5 | 0.206608–0.411136 s / 0.313976–0.520281 s | 0.206928–0.413758 s / 0.213459–0.419364 s |
+  | 6 | 0–0.206964 s / 0–0.204813 s | 0 s / 0 s |
+  | 7 | 0.309575–0.512759 s / 0.316843–0.521208 s | 0–0.206469 s / 0 s |
+  | 8 | 0.20693–0.41032 s / 0.210411–0.415251 s | 0.211309–0.414797 s / 0.208066–0.411351 s |
+
+- The stop on return spans the old `ext` run 02 stop of 0.207495–0.414987 s, so it matches the old suite within run-to-run spread.
+- The stop at power off is real and intermittent. Whenever it occurs, it starts 0.1 to 0.3 s after switch2 logs `"bridge" peer link down`, the moment the old case text describes: switch2 "reverts its MLAG bonds to its own LACP system ID", and the partners "renegotiate LACP, with brief loss". It is not tied to how late switch2 sees the peer link go down: it occurred with 0.48 s and 0.88 s detection and was absent with 0.53 to 0.69 s.
+- Permanent neighbour entries do not remove it: runs 7 and 8 stopped at power off with both entries pinned.
+- The old QEMU wrapper cannot account for it. It put each veth and TAP on a private two-port bridge with learning off and LACP, LLDP and STP forwarding on, and it set 10 Gbit/s full duplex. A two-port bridge sends every frame to its only other port whether or not it learns, and native CHR links also forward LACP and LLDP at 10 Gbit/s full duplex.
+- Not traced: why the old `ext` runs 01 and 02 and the `power-loss` run never showed the stop at power off. One remaining difference is the order: Networka pauses the guest and then withdraws carrier, while the old runner withdrew carrier and then paused, both within 0.17 s.
 
 The [Networka lab test guide](https://github.com/narrowin/networka/blob/main/docs/lab-tests.md) explains the evidence and replay.
