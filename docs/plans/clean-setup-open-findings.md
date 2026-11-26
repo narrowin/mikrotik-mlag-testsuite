@@ -20,7 +20,7 @@ The evidence for this review is in `test-results/suite-yaml-verify/clean/phase1-
 | --- | --- | --- |
 | D1 | Fixed | Removed the client address and cable table. The topology and the client setup give those values. |
 | D2 | Fixed | The README points to the test for its purpose, limits and log rules. |
-| D3 | Fixed | The README links to the engine guide for the report format and shows a measured stop from the final Small run. |
+| D3 | Fixed | The README links to the engine guide for the report format and shows a measured stop from the committed native Small run. |
 | D4 | Fixed | Removed the file list and the repeated collector path. |
 | D5 | Fixed | Plain YAML aliases share bridge parameters, bond members and expected values. Every physical member remains a distinct precondition in the saved lab file. |
 | D6 | Fixed | Removed ten optional check names. Each check still records its device, check, parameters and expected result. |
@@ -44,7 +44,7 @@ The evidence for this review is in `test-results/suite-yaml-verify/clean/phase1-
 | ID | Status | Decision and reason |
 | --- | --- | --- |
 | L1 | Fixed | The topology explains subnet isolation without referring to another suite. |
-| L2 | Fixed | Replaced the unmeasured example with the first cable run on the committed Small lab (`07-main-matrix.log`). |
+| L2 | Fixed | Replaced the unmeasured example with the first cable run on the committed native Small lab (`08-native-main-matrix.log`). |
 | L3 | Fixed | Removed the fabricated example and defined the outage bounds from observed timestamps. |
 | L4 | Fixed | The lab API's example uses the Small lab endpoint naming convention. |
 | L5 | Rejected | `restore_errors` identifies a failed cleanup in saved runs. Renaming it would break readers of those events, and the report explains the failure in words. |
@@ -83,7 +83,7 @@ The evidence for this review is in `test-results/suite-yaml-verify/clean/phase1-
 | U9 | Fixed | Removed five static management addresses. The engine found all five devices from the current deployment in both passing runs (`03-run-a.log`, `03-run-b-with-tag.log`). |
 | U10 | Fixed | Removed the duplicate README file list. |
 | U11 | Fixed | Removed the table and the repeated limits. The topology explains the port names used in log rules. |
-| U12 | Fixed | The README uses the saved cable-return measurement, with its ping interval and measured bounds (`07-main-matrix.log`). |
+| U12 | Fixed | The README uses the saved native cable-return measurement, with its ping interval and bounds (`08-native-main-matrix.log`). |
 | U13 | Fixed | The unaffected stream's limit and its reason occur once in the test. |
 | U14 | Fixed | Removed both statement-level copies of the manual URL. |
 | U15 | Fixed | Current result files keep each window and interval once. Legacy evidence uses the recorded representation for equality checks. |

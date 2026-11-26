@@ -50,4 +50,4 @@ The [Networka lab test guide](https://github.com/narrowin/networka/blob/main/doc
 
 ## Measured cable return
 
-In the 26 November 2026 baseline before the native launcher change, when client1's cable to switch2 came back, client1 to client2 lost 25 pings at one ping every 100 ms. The measured stop was 2.504 to 2.709 s, within its 4 s limit. [Walkthrough](../../docs/walkthrough-networka-tests.md)
+On 26 November 2026, in the first committed native CHR cable run, client1 to client2 lost 24 pings at one ping every 100 ms when the cable to switch2 came back. The measured stop was 2.399 to 2.610 s, within its 4 s limit. [Walkthrough](../../docs/walkthrough-networka-tests.md)
