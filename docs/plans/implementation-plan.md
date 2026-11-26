@@ -121,7 +121,7 @@ The evidence is in `test-results/suite-yaml-verify/clean/live-round1/`, which is
 - Use `uv` for all Python. Networka needs uv 0.13.10. In the VM it is in `/var/tmp/pt1-tools`.
 - Live tests run only in the OrbStack VM `mlag-external` (`orb -m mlag-external ...`, the repo paths are the same there) and only with spanning tree off. [AGENTS.md](../../AGENTS.md) holds the rules for labs, with the limit of three labs at once.
 - Touch no lab you did not start. `mlag-medium` belongs to another session.
-- Do not touch the checkout `/Users/md/git/narrowin/mikrotik-mlag-testsuite`. It holds uncommitted work of another task. Do not touch the untracked files in `/Users/md/git/narrowin/networka`.
+- Do not touch the untracked files in `/Users/md/git/narrowin/networka`.
 - Do not change the old suite before package 5. Reading it is fine.
 - Commit only your own files, by explicit path. A commit body says why, what changed, how it was verified and what is not covered. No AI attribution.
 - Never commit captures or archives. Evidence stays under `test-results/`.
