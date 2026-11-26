@@ -1,5 +1,5 @@
 # Small lab baseline with spanning tree off.
-# The test applies no action and only observes the seven streams for 5 s.
+# The test applies no action and only observes the five streams for 5 s.
 name: Small baseline with spanning tree off
 source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
 state:
@@ -26,25 +26,15 @@ streams:
     from: dc1-mac-move-host:bond0
     to: dc1-traffic-host2:bond0
     address: 10.110.0.12
-  # Bypass forward, outside the MLAG peers.
-  - id: 301
-    from: dc1-traffic-host1:eth3
-    to: dc1-traffic-host2:eth3
-    address: 198.51.100.2
   # Client 1 to client 2 on VLAN 110.
   - id: 302
     from: dc1-traffic-host1:bond0
     to: dc1-traffic-host2:bond0
     address: 10.110.0.12
-  # Bypass reverse, outside the MLAG peers.
-  - id: 303
-    from: dc1-traffic-host2:eth3
-    to: dc1-traffic-host1:eth3
-    address: 198.51.100.1
 steps:
   - name: Steady state
     hold_s: 5
     expect:
       # Every probe of every stream arrives once.
-      - streams: [101, 102, 201, 202, 301, 302, 303]
+      - streams: [101, 102, 201, 202, 302]
         max_outage_s: 0

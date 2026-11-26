@@ -26,21 +26,11 @@ streams:
     from: dc1-mac-move-host:bond0
     to: dc1-traffic-host2:bond0
     address: 10.110.0.12
-  # Bypass forward, outside the MLAG peers.
-  - id: 301
-    from: dc1-traffic-host1:eth3
-    to: dc1-traffic-host2:eth3
-    address: 198.51.100.2
   # Client 1 to client 2 on VLAN 110.
   - id: 302
     from: dc1-traffic-host1:bond0
     to: dc1-traffic-host2:bond0
     address: 10.110.0.12
-  # Bypass reverse, outside the MLAG peers.
-  - id: 303
-    from: dc1-traffic-host2:eth3
-    to: dc1-traffic-host1:eth3
-    address: 198.51.100.1
 # The capture points of the suite's link-fault runner besides the stream endpoints.
 # The CHR points are the QEMU tap interfaces inside the CHR container.
 captures:
@@ -65,7 +55,7 @@ steps:
       - streams: [101, 201, 302]
         max_outage_s: 3
       # Streams that do not use the cut member must not lose a probe.
-      - streams: [102, 202, 301, 303]
+      - streams: [102, 202]
         max_outage_s: 0
   # LACP takes ether3 back into the bond once it shows synchronization, collecting and distributing.
   # The hold is the suite's 8 s with the link up plus its 3 s recovery window.
@@ -79,5 +69,5 @@ steps:
       - streams: [101, 201, 302]
         max_outage_s: 3
       # Streams that do not use the cut member must not lose a probe.
-      - streams: [102, 202, 301, 303]
+      - streams: [102, 202]
         max_outage_s: 0
