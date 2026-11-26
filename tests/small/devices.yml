@@ -2,19 +2,16 @@ general:
   # A redeployed lab has new host keys, so none are stored.
   ssh_known_hosts_file: /dev/null
 devices:
-  switch1:
+  switch1: &switch
     device_type: mikrotik_routeros
-  switch2:
-    device_type: mikrotik_routeros
-  client1:
+  switch2: *switch
+  client1: &client
     device_type: linux
-  client2:
-    device_type: linux
-  client3:
-    device_type: linux
+  client2: *client
+  client3: *client
 groups:
   switches:
-    description: The two MLAG switches, with the CHR's default login
+    description: MLAG peers using the CHR default login
     members:
       - switch1
       - switch2
@@ -22,7 +19,7 @@ groups:
       user: admin
       password: admin
   clients:
-    description: The Linux clients, with the root password of client.Dockerfile
+    description: Linux clients
     members:
       - client1
       - client2

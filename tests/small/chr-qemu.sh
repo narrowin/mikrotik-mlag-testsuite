@@ -1,5 +1,5 @@
 #!/bin/sh
-# Give each virtual data port 10G full duplex, because without it the client bonds never use both cables.
+# LACP needs equal, known speeds and full duplex on its ports. 10G supplies one common speed.
 for arg do
     shift
     case "$arg" in

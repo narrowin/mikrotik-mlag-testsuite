@@ -13,22 +13,59 @@ This plan hands the work to the next implementer. It is the only plan. The older
 
 ## Order of work
 
-1. Phase 1: finish and validate the prototype, the clean Small lab with one test.
+1. Phase 1: finish the clean Small lab and its cable test, plus the single switch reboot brought forward by the operator.
 2. Stop. Report to the operator and wait. The operator walks through the run.
 3. Phase 2, on the operator's go: bring the rest of the repo to the same form.
 
-## State at hand-over, 26 November 2026, 13:00
+## Current state and execution record
 
-| Part | Where | State |
+On 26 November 2026 the operator moved both working checkouts to local `main` and brought one switch reboot into the Small prototype. The remaining actions and test packages still require the walkthrough and the operator's go.
+
+| Part | Checkout or evidence | State |
 | --- | --- | --- |
-| Device checks, `nw intent run`, ping | Networka `origin/main`, `e0c71bf` | Done and pushed |
-| Test engine | worktree `/Users/md/git/narrowin/networka.worktrees/lab-tests`, branch `lab-tests`, `95c23b7`, pushed | Ran live on the clean lab. Not reviewed |
-| Engine merged with Networka `main` | worktree `/Users/md/git/narrowin/networka.worktrees/merge-main`, branch `merge-main`, `f782c39`, pushed | Conflicts resolved. Ruff, mypy and 1,121 unit tests pass. Not on `main` |
-| Clean Small lab and its test | worktree `/Users/md/git/narrowin/mlag-suite-yaml`, branch `codex/suite-yaml-intent`, folder `tests/small/` | Ran live. Findings open |
-| This repo's `main` | `origin/main`, `3e96460` | Does not have the clean lab yet |
-| Specification of the clean lab | [clean-setup-spec.md](clean-setup-spec.md) | Applied |
-| Review findings | [clean-setup-open-findings.md](clean-setup-open-findings.md) | 70 open. None is checked or fixed |
-| What was carried over from the old suite | [inherited-parts-audit.md](inherited-parts-audit.md) | Done |
+| Networka engine | `/Users/md/git/narrowin/networka`, local `main` at `f782c39` | Includes the previous engine and merge. Phase 1 edits are in progress. Remote publication awaits review and live proof. |
+| Small lab | `/Users/md/git/narrowin/mlag-suite-yaml`, local `main` at `a324af6` | Work in `tests/small/` only. Branch switch preserved the three startup/README edits byte-for-byte. |
+| Previous worktrees and branches | [Handover plan at a324af6](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/a324af6/docs/plans/implementation-plan.md) | The three retired Networka worktrees have been audited. The progress note is copied and hash-verified outside them. |
+| Review findings | [70 decisions and verification status](clean-setup-open-findings.md) | Wrong-result findings were examined first. Live comparisons and independent verification are in progress. |
+| Evidence | `test-results/suite-yaml-verify/clean/phase1-close/` | Keep command output, raw device observations, verdicts and replay comparisons here or under the README-generated run directory. |
+| Lab ownership | OrbStack VM `mlag-external` | Only the Small instance started for this prototype is in scope. |
+
+The times below are Europe/Zurich. Evidence paths are relative to the phase 1 evidence directory unless specified. A named verifier is the person or agent who actually checked that entry.
+
+| Time | Work and outcome | Implemented / verified by | Command and output |
+| --- | --- | --- | --- |
+| 13:07 | Starting Small from an absent generated directory succeeded in 52.126 s. The six nodes ran and both switches were healthy. | Lab author / VM operator | `01-startup-checks.log`, `01-start-live.log` |
+| 13:08 | The README run and replay each exited 0. SHA-256 matched across all 28 evidence files. | Lab author / VM operator | `02-readme-live.log`, `02-files-before.sha256`, `02-files-after.sha256` |
+| 13:10 | Both local main branches fast-forwarded. The preserved progress note and original have identical SHA-256. | Engine and lab authors / coordinator checked the transcripts | `engine-local-main.console`, `03-lab-local-main.log`, `03-networka-retired-worktrees.log` |
+| 13:14 | The production loader confirmed the same ten device preconditions, two streams and four cable steps. Saved RouterOS logs support the heartbeat warning. | Lab author / Networka loader and VM operator | `03-lab-findings-checks.log`, `03-warning-sources.log` |
+| 13:16 | A collector file absent at the start was created during the run. The test and replay passed. | Engine author / VM operator | `03-fresh-collector.log` |
+| 13:17 | An interrupt during a cable hold saved the restored port's up log before the end markers. The interrupted run exited 130 and replay judged the evidence as error. | Engine author / VM operator and lab reviewer | `03-interrupt-repeat.log` |
+| 13:19 | The pinned collector rejected an imudp input without an explicit port. Restoring port 514 allowed the cable test and replay to pass on deployment A. | VM operator / lab reviewer | `03-imudp-diagnostic.log`, `03-run-a.log` |
+| 13:20 | Named switch1 reboot settings were fixed before the trial. The adapter uses a single pooled command and the production loader recognises both the new reboot and the previous cable actions. | Lab and engine authors / lab reviewer | `03-scope-and-review-checks.log`, `03-reboot-lab-checks.log`, `03-reboot-platform-checks.log` |
+| 13:22 | In deployment B the other nodes received different addresses while the collector retained .10. Removing the collector's syslog tag lost the marker proof. The reviewer raised a stale-topology target-address check before live reboot. | VM operator and lab reviewer / engine author assigned the target check | `03-deploy-b.log`, `03-run-b.log` |
+| 13:23 | Restoring the collector's tag let deployment B pass with byte-identical replay. Independently recomputing the three handover runs preserved both passes and the cable precondition failure. | VM operator and engine author / lab reviewer | `03-run-b-with-tag.log`, `03-independent-legacy-replay.log` |
+| 13:24 | With all cable steps passing, the closing window caught 6 lost pings from client2 to client3 at one ping every 100 ms, a stop of 0.537 to 0.744 s. Run and replay exited 1 with identical evidence hashes. | VM operator / Sol lab reviewer | `03-closing-loss.log`, `03-closing-loss-before.sha256`, `03-closing-loss-after.sha256` |
+| 13:27 | The README candidate cable run and replay passed. The lab reviewer independently recomputed the result and rebuilt an identical report. | VM operator / Sol lab reviewer | `04-candidate-cable.log`, `04-sol-candidate-cable.log`, `test-results/small/run.Jt6mOx/bond-member-loss/` |
+| 13:28 | Native uptime proved a new switch1 boot and full lab health returned after 24.002 s. Live and replay gave error with an identical report. The collector had no switch1 end marker, and five different requests reused ping sequence 192 on client2. | VM operator / Sol lab reviewer | `04-candidate-reboot.log`, `test-results/small/run.ugqwRq/switch-reboot/` |
+| 13:30 | The switch1 memory log contains the end marker. The collector captured none of its post-boot lines. The switch still has its management address, route and configured remote logging action. | VM operator / Sol lab reviewer | `04-reboot-diagnosis.log` |
+| 13:31 | Switch1 reached the collector over its management VRF. Neither the switch management capture nor the collector saw syslog UDP from it. Switch2 delivered its diagnostic markers. | VM operator / Sol lab reviewer | `04-reboot-udp-probe.log` |
+| 13:32 | The offline judge named switch2 as unverified when the real cable log was checked with only switch1 expected. It also recorded the missing marker support when the deployed Linux client2 was declared a target. | Sol lab reviewer | `04-sol-w4-offline.log` |
+| 13:33 | With the original config unchanged after the test, switching the remote logging action to the main VRF and back to the management VRF restored UDP delivery from switch1. | VM operator / Sol lab reviewer | `04-reboot-action-toggle-retry.log` |
+| 13:33 | Rejudging the first reboot distinguished repeated sequences by their ICMP payloads. The original sequence-only loss counts were invalid. For client1 to client2, 7 lost pings at one ping every 100 ms meant a stop of 0.623 to 0.832 s. For client2 to client3, 6 lost pings at that cadence meant a stop of 0.514 to 0.718 s. Source intervals peaked at 112.194 ms and 111.310 ms. The missing end marker still invalidated the run. | Sol engine author / VM packet capture and Sol lab reviewer | `04-engine-replay.log`, `04-reboot-sender-diagnosis.log` |
+| 13:35 | A disposable startup scheduler restored switch1's logs after a typed reboot. Both end markers arrived. Live and replay passed with identical result and report bytes. After removing that lab, the lab author put the working scheduler in the startup configuration. | VM operator / Sol lab reviewer | `04-boot-scheduler-live.log`, `test-results/small/run.2Rn1KE/switch-reboot/` |
+| 13:36 | Independent engine review accepted the candidate timestamp and payload handling, report and reboot proof for the Small lab. Three historical results and the disposable reboot recomputed to the saved bytes. The 16 existing lab, traffic and intent tests and the strict guide build passed. | Sol lab reviewer | `04-sol-engine-local-checks.log`, `04-sol-engine-evidence-checks.log` |
+
+Sol took over the Phase 1 handoff on local main, with separate lab, engine and VM roles. Sol High continued the lab review after the candidate runs.
+
+The next checkpoint is a fresh candidate reboot with working log coverage and valid ping measurements in both directions. Then verify the final cable passes and replays, the fail with an untouched cable, and the stopped-collector error on the coordinated local main commits. Complete the walkthrough and bring publication and cleanup to the operator.
+
+### Named switch reboot brought forward
+
+Reboot only `switch1` of the owned Small lab, independent of its elected role. Both streams traverse dual-attached clients and may use that switch. Before running the test the operator's coordinator set a provisional 4 s outage limit per stream, allowing one fast LACP timeout plus one message interval. Keep its measured verdict at that limit. Allow 60 s for boot and health recovery, covering the previous 21 s recovery, a possible 30 s SSH login cooldown and a 5 s retry. After recovery observe another 5 s, longer than one fast LACP timeout.
+
+The RouterOS adapter issues one typed background reboot through the pooled client. Prove a new boot from native uptime before and after, including elapsed time since dispatch. Retain the samples and the successful recovery-state evidence for replay. See the retained research in `test-results/suite-yaml-verify/actions/research.md`, section 2, and its two raw timelines.
+
+## Previous live evidence
 
 What the live run showed, with Networka `95c23b7` and this repo at `31f19a5`. Every stream sent one ping every 100 ms.
 
@@ -43,7 +80,7 @@ What the live run showed, with Networka `95c23b7` and this repo at `31f19a5`. Ev
 - Not run: the check that a stopped collector gives the verdict error.
 - The run command in the README is not the one that ran. The run added `--locked` and `UV_PROJECT_ENVIRONMENT`.
 
-The evidence is in `test-results/suite-yaml-verify/clean/live-round1/`, which is not in git. `commands.txt` there holds the commands as they ran. No lab of this work is running.
+The evidence is in `test-results/suite-yaml-verify/clean/live-round1/`, which is not in git. `commands.txt` there holds the commands as they ran. That handover run was torn down.
 
 ## Guardrails
 
@@ -94,7 +131,7 @@ Do the steps in this order.
 5. Bring `docs/development/lab-tests-design.md` in Networka up to date, or delete it. It still describes numbered streams and a baseline test.
 6. Prove everything on a fresh lab. The lab starts with one command. The test passes twice and both replays give the same files. A cable taken down by hand gives fail with no cable changed. A stopped collector gives error.
 7. Write `docs/walkthrough-networka-tests.md` again from that run, on one page.
-8. Merge. In Networka, merge `lab-tests` into `merge-main` again, run the checks and push it to `origin/main` as a fast-forward. In this repo, push the branch to `origin/main` as a fast-forward and switch this worktree to `main`.
+8. Publish the validated local main commits in both repositories as fast-forwards after the operator approves. The earlier handover branches have already been integrated locally. Check that the published engine and lab revisions are the ones proven live.
 9. Clean up. Delete the branches `lab-tests`, `merge-main` and `codex/lab-access` in Networka with their worktrees, and `codex/suite-yaml-intent` here. The worktree `networka.worktrees/lab-access` holds the untracked file `docs/development/lab-tests-plan.md`, the progress log of the earlier work. Move it out before you delete the worktree, and do not add it to git. Destroy the lab.
 10. Update the state table of this plan.
 
@@ -108,9 +145,9 @@ After phase 1, stop and report: the verdicts, the measured stops with their ping
 
 Each package is done when its "done when" line holds on `main` of both repos.
 
-### 2. Three more actions in the engine
+### 2. Remaining engine actions after the walkthrough
 
-- Packet loss and delay on a cable, a switch reboot, and a switch power loss.
+- Packet loss and delay on a cable and switch power loss remain here. One RouterOS reboot of switch1 on the Small lab was brought forward to phase 1.
 - The commands and measured times are in `test-results/suite-yaml-verify/actions/research.md`. That file is not in git. Read it first.
 - Measured on RouterOS 7.26beta7: packet loss and delay work with `tc qdisc ... netem` inside the node's network namespace and only affect traffic that leaves the interface. `containerlab tools netem` exits with an error on this kernel.
 - Measured: `:execute {/system reboot}` reboots a switch without a prompt. SSH answers again after 17 to 18 s, and the lab is healthy after about 20 s.

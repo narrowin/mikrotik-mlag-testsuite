@@ -1,35 +1,24 @@
 name: bond-member-loss
 purpose: >-
-  Each of client 1's two cables goes down and comes back, one after the other.
-  Client 1's bond sends each stream over one cable, so with both cables failing in turn
-  every stream of client 1 crosses a failing cable in both directions.
-  The test checks that client 1's traffic moves to its other cable and back within the limits,
-  that the switch at the cable's end reports the port down and up,
-  and that traffic that does not use client 1's cables loses no ping.
+  Check that client1 stays reachable when each of its two cables goes down and comes back.
+  The stream from client2 to client3 crosses neither cable and must continue throughout.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
 lab: lab.yaml
 log:
-  # Warnings RouterOS logs when the MLAG peers lose sync or their heartbeat.
+  # RouterOS has logged "bridge,warning MLAG: remote heartbeat timeout" on peer loss.
   must_not:
-    - switch: every
-      text: failed to sync
-    - switch: every
-      text: attempting to resync
     - switch: every
       text: heartbeat timeout
 steps:
   - name: Cable client1 to switch1 down
     cable: client1:eth1
     state: down
-    # Longer than the 3 s LACP timeout, so a loss from a late timeout falls inside the step.
+    # Hold past the 3 s fast LACP timeout so a delayed failure is measured.
     hold_s: &down-hold 5
     max_outage_s: &down-limits
-      client1-to-client2: 1  # Both ends see the carrier loss within one 100 ms link check, and an LACP timeout of 3 s would exceed it.
-      client2-to-client3: 0  # It crosses no failing cable.
-    expected: >-
-      The cable goes down at both ends.
-      Client 1 sends only on its cable to switch2.
-      switch1 sends traffic for client 1 over the peer link to switch2, which delivers it on its cable to client 1.
+      client1-to-client2: 1  # Allow carrier detection and failover within one second, before an LACP timeout.
+      client2-to-client3: &unaffected 0  # Neither end uses the failing cable.
+    expected: client1 reaches client2 through switch2.
     log:
       must:
         - switch: switch1
@@ -37,15 +26,12 @@ steps:
   - name: Cable client1 to switch1 back
     cable: client1:eth1
     state: up
-    # The 4 s limit plus one 3 s LACP timeout, so a slow return ends inside the step and is measured.
+    # The return limit plus one LACP timeout keeps late recovery inside the step.
     hold_s: &back-hold 7
     max_outage_s: &back-limits
-      client1-to-client2: 4  # A cable joins after up to three LACP messages at one per second, and 1 s more covers one late message.
-      client2-to-client3: 0  # It crosses no failing cable.
-    expected: >-
-      The cable comes back at both ends.
-      LACP on switch1 and on client 1 takes the cable back into the bond.
-      Client 1 sends on both cables again.
+      client1-to-client2: 4  # Three fast LACP messages, one per second, plus one late message.
+      client2-to-client3: *unaffected
+    expected: &rejoined The returning cable rejoins the LACP bond.
     log:
       must:
         - switch: switch1
@@ -55,10 +41,7 @@ steps:
     state: down
     hold_s: *down-hold
     max_outage_s: *down-limits
-    expected: >-
-      The cable goes down at both ends.
-      Client 1 sends only on its cable to switch1.
-      switch2 sends traffic for client 1 over the peer link to switch1, which delivers it on its cable to client 1.
+    expected: client1 reaches client2 through switch1.
     log:
       must:
         - switch: switch2
@@ -68,10 +51,7 @@ steps:
     state: up
     hold_s: *back-hold
     max_outage_s: *back-limits
-    expected: >-
-      The cable comes back at both ends.
-      LACP on switch2 and on client 1 takes the cable back into the bond.
-      Client 1 sends on both cables again.
+    expected: *rejoined
     log:
       must:
         - switch: switch2

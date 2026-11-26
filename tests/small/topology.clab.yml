@@ -1,7 +1,7 @@
 name: small-mlag
 mgmt:
   network: small-mlag-mgmt
-  # Free of the other networks in the VM and of the older labs' 172.30.192.0/18.
+  # A separate subnet keeps lab management traffic off the host's other Docker networks.
   ipv4-subnet: 172.30.100.0/24
 topology:
   kinds:
@@ -37,31 +37,26 @@ topology:
       image: rsyslog/rsyslog@sha256:cac80b5513d78de76c301151e4d248547bcf2b5161d9c891a4b10c302f76dd56
       # The image's own user cannot write into the lab folder that containerlab creates as root.
       user: "0"
+      # Both switches send their log to this fixed collector address.
       mgmt-ipv4: 172.30.100.10
       binds:
         - rsyslog.conf:/etc/rsyslog.conf:ro
         - __clabNodeDir__:/logs
     switch1:
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.100.11
     switch2:
       kind: mikrotik_chr
-      mgmt-ipv4: 172.30.100.12
     client1:
       group: clients
-      mgmt-ipv4: 172.30.100.21
     client2:
       group: clients
-      mgmt-ipv4: 172.30.100.22
     client3:
       group: clients
-      mgmt-ipv4: 172.30.100.23
   links:
-    # Peer link: ether2 on both switches.
+    # A CHR's ethN maps to RouterOS ether(N+1) because ether1 is management.
     - endpoints:
         - switch1:eth1
         - switch2:eth1
-    # Client N: eth1 to etherN+2 of switch1, eth2 to etherN+2 of switch2.
     - endpoints:
         - client1:eth1
         - switch1:eth2
