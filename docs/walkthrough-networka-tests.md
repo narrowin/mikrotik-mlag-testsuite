@@ -149,9 +149,6 @@ export MLAG_INSTANCE=1 MLAG_LABS_COPY=/var/tmp/pt1-labs UV_PROJECT_ENVIRONMENT=/
 export NW_USER_DEFAULT=admin NW_PASSWORD_DEFAULT=admin NWK=/Users/md/git/narrowin/networka.worktrees/lab-tests LABS=/var/tmp/pt1-labs-i1
 export PATH=/var/tmp/pt1-tools:$PATH COLUMNS=200
 UV_PROJECT_ENVIRONMENT=/var/tmp/pt1-venv labs/campaign.sh small /var/tmp/pt1/small "baseline:--bridge-mode none --case baseline"
-ssh-keyscan -T 5 172.30.225.11 172.30.225.12 172.30.225.16 172.30.225.17 > /var/tmp/pt1-keys
-sudo tee -a /root/.ssh/known_hosts < /var/tmp/pt1-keys > /dev/null
-cat /var/tmp/pt1-keys >> ~/.ssh/known_hosts
 uv run --locked --project "$NWK" nw run dc1-core-mlag1,dc1-core-mlag2 \
   "/interface bridge set bridge protocol-mode=none" --config "$LABS/networka/small.yml"
 sudo -E env "PATH=$PATH" uv run --locked --project "$NWK" nw test run \
@@ -162,7 +159,7 @@ uv run --locked --project "$NWK" nw test replay /var/tmp/pt1-out/bond-member-los
 
 `labs/campaign.sh` deploys the lab as `mlag-small-i1` from the labs copy `/var/tmp/pt1-labs-i1` and runs the suite's own baseline case. Without `--destroy` the lab stays up. The management network is `172.30.<net>.0/27`, where `<net>` is 215 plus 10 times the instance, so 225 here.
 
-The `ssh-keyscan` line and the two lines after it add the host keys of the two CHRs and the two clients to root's and your own known hosts, because the profile checks host keys. Remove old keys for these addresses first with `ssh-keygen -R`. `nw test run` runs as root, and `nw run` runs as your user. `nw run` sets spanning tree off on both CHRs. The campaign's baseline case leaves RSTP on, and without this step the state check fails.
+The lab profile does not check SSH host keys, because labs are created and destroyed all the time. `nw test run` runs as root, and `nw run` runs as your user. `nw run` sets spanning tree off on both CHRs. The campaign's baseline case leaves RSTP on, and without this step the state check fails.
 
 `nw test run` runs both tests in order as root and saves one folder per test under the `--save` folder. A test folder that already holds evidence stops the run. The exit status is 0 for pass, 1 for fail and 2 for error. The run printed these lines after the tables. It saved to its own `--save` folder in this repo.
 
@@ -182,14 +179,13 @@ Each test folder holds the files named in the last column of the step table. `nw
 orb -m mlag-external bash -c 'cd /var/tmp/pt1-labs-i1 && sudo env MLAG_LAB_NAME=mlag-small-i1 MLAG_MGMT_NET=225 MLAG_CHR_IMAGE=$(cat campaign-image.txt) MLAG_SYSLOG_IMAGE=$(sudo docker image inspect --format "{{index .RepoDigests 0}}" rsyslog/rsyslog:latest) containerlab destroy -t /var/tmp/pt1-labs-i1/small/small.clab.yml --cleanup'
 ```
 
-This command destroys the lab with the variables it was deployed with. Afterwards, remove the four host keys from both known hosts files with `ssh-keygen -R`.
+This command destroys the lab with the variables it was deployed with.
 
 ## Not built yet
 
 - The Networka code at `dddf9c7` has not been reviewed.
 - Spanning tree is set off by hand with `nw run` before the test.
 - The lab is deployed by `labs/campaign.sh`, not by Networka.
-- Host keys are added to the known hosts files by hand.
 - Nothing checks that the cable that goes down carries the streams that may stop.
 - The ping interval is fixed at 100 ms (`labtest.py:41`). The test file cannot change it.
 - The only action is a cable that goes down or comes back. A step cannot wait for a state, such as a node that reboots.
