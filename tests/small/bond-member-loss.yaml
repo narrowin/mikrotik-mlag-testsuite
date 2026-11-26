@@ -1,73 +1,56 @@
 # Catalogue case bond-member-loss of src/mlag_lab/intent/small.yaml.
-# Client 1's cable to CHR 1 goes down at both ends for 8 s and then comes back.
 name: MLAG bond member loss and return
+purpose: >-
+  Client 1's cable to CHR 1 goes down for 8 s and then comes back.
+  The test checks that client 1's traffic moves to its other cable and back with at most 3 s of loss,
+  and that traffic that does not use this cable loses no ping.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
-state:
-  - state.yaml
-# The stream table of the suite's link-fault runner, src/mlag_lab/legacy.py FLOWS.
-streams:
-  # Client 1 to the MAC-move host.
-  - id: 101
-    from: dc1-traffic-host1:bond0
-    to: dc1-mac-move-host:bond0
-    address: 10.110.0.50
-  # Client 2 to the MAC-move host.
-  - id: 102
-    from: dc1-traffic-host2:bond0
-    to: dc1-mac-move-host:bond0
-    address: 10.110.0.50
-  # The MAC-move host to client 1.
-  - id: 201
-    from: dc1-mac-move-host:bond0
-    to: dc1-traffic-host1:bond0
-    address: 10.110.0.11
-  # The MAC-move host to client 2.
-  - id: 202
-    from: dc1-mac-move-host:bond0
-    to: dc1-traffic-host2:bond0
-    address: 10.110.0.12
-  # Client 1 to client 2 on VLAN 110.
-  - id: 302
-    from: dc1-traffic-host1:bond0
-    to: dc1-traffic-host2:bond0
-    address: 10.110.0.12
-# The capture points of the suite's link-fault runner besides the stream endpoints.
-# The CHR points are the QEMU tap interfaces inside the CHR container.
-captures:
-  - dc1-traffic-host1:eth1
-  - dc1-traffic-host1:eth2
-  - dc1-core-mlag1:eth2
-  - dc1-core-mlag1:tap1
-  - dc1-core-mlag2:tap1
-  - dc1-core-mlag1:tap2
-  - dc1-core-mlag2:tap2
-  - dc1-core-mlag1:tap4
-  - dc1-core-mlag2:tap4
+lab: lab.yaml
 steps:
-  # CHR 1 stops using ether3 and forwards client 1's traffic over the peer link to CHR 2.
   - name: Member down
     action:
       link: dc1-traffic-host1:eth1
       state: down
     hold_s: 8
+    expected: >-
+      The cable goes down at both ends.
+      CHR 1 stops using ether3 for client 1's bond, and client 1 sends only on its cable to CHR 2.
+      CHR 1 sends traffic for client 1 over the peer link to CHR 2, which delivers it on its cable of the same bond.
+      Client 1's traffic may stop for a short time.
+    source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
     expect:
       # Streams that use client 1's bond may stop for up to 3 s.
-      - streams: [101, 201, 302]
+      - streams:
+          - 101
+          - 201
+          - 302
         max_outage_s: 3
-      # Streams that do not use the cut member must not lose a probe.
-      - streams: [102, 202]
+      # Streams that do not use the cable must not lose a probe.
+      - streams:
+          - 102
+          - 202
         max_outage_s: 0
-  # LACP takes ether3 back into the bond once it shows synchronization, collecting and distributing.
-  # The hold is the suite's 8 s with the link up plus its 3 s recovery window.
+  # The hold is the suite's 8 s with the cable up plus its 3 s recovery window.
   - name: Member back
     action:
       link: dc1-traffic-host1:eth1
       state: up
     hold_s: 11
+    expected: >-
+      The cable comes back at both ends.
+      LACP on CHR 1 and on client 1 takes ether3 back into the bond, with one LACP message per second.
+      Each end sends traffic on the cable only once LACP shows it as synchronized, collecting and distributing.
+      Client 1's traffic may stop for a short time.
+    source: https://manual.mikrotik.com/docs/cli-reference/interface/bonding/monitor-slaves/
     expect:
       # Streams that use client 1's bond may stop for up to 3 s.
-      - streams: [101, 201, 302]
+      - streams:
+          - 101
+          - 201
+          - 302
         max_outage_s: 3
-      # Streams that do not use the cut member must not lose a probe.
-      - streams: [102, 202]
+      # Streams that do not use the cable must not lose a probe.
+      - streams:
+          - 102
+          - 202
         max_outage_s: 0
