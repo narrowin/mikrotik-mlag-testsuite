@@ -20,7 +20,7 @@ In the same shell, use a VM-local uv environment for this checkout.
 
 ```sh
 lab_nw() {
-  sudo env "PATH=$PATH" "UV_PROJECT_ENVIRONMENT=/var/tmp/mlag-lab-venvs$PWD" \
+  sudo env "PATH=/usr/sbin:/sbin:$PATH" "UV_PROJECT_ENVIRONMENT=/var/tmp/mlag-lab-venvs$PWD" \
     uv run --locked nw "$@"
 }
 ```
@@ -48,6 +48,14 @@ sudo "$CLAB" destroy -t tests/small/topology.clab.yml --cleanup
 ```
 
 The [Networka lab test guide](https://github.com/narrowin/networka/blob/main/docs/lab-tests.md) explains the evidence and replay.
+
+## Additional Small cases
+
+Cable delay and sustained one-way loss use the same topology and require `tc` from iproute2 on the host.
+For these cases, use the source-checkout command in the mobile guide with the canonical YAML and lab path above.
+The mobile setup adds an active-backup host and an independent bypass for the thirteen historical cases.
+
+[Cable delay](cable-delay.yaml) · [Sustained cable loss](cable-packet-loss.yaml) · [Mobile Small guide](mobile/README.md)
 
 ## Measured cable return
 

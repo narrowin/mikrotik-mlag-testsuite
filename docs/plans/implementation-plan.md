@@ -77,7 +77,7 @@ The strict documentation build used the available locked environment. A cold off
 
 Sol took over the Phase 1 handoff on local main, with separate lab, engine and VM roles. Sol High continued the lab review after the candidate runs.
 
-Phase 1 implementation, acceptance, publication and cleanup are complete. The operator approved publication and cleanup with “Publish and clean up.” The [walkthrough](../walkthrough-networka-tests.md) uses the saved evidence from the published runtime revisions. Phase 2 awaits the operator's separate go.
+Phase 1 implementation, acceptance, publication and cleanup are complete. The operator approved publication and cleanup with “Publish and clean up.” The [walkthrough](../walkthrough-networka-tests.md) uses the saved evidence from the published runtime revisions. The operator later approved the Small follow-up recorded below.
 
 ### Named switch reboot brought forward
 
@@ -186,16 +186,58 @@ Each package is done when its "done when" line holds on `main` of both repos.
 - Measured on RouterOS 7.26beta7: packet loss and delay work with `tc qdisc ... netem` inside the node's network namespace and only affect traffic that leaves the interface. `containerlab tools netem` exits with an error on this kernel.
 - Measured: `:execute {/system reboot}` reboots a switch without a prompt. SSH answers again after 17 to 18 s, and the lab is healthy after about 20 s.
 - Measured: RouterOS refuses password logins for about 30 s after a quick series of SSH logins. The engine must keep its SSH connections open and must not log in again for every command.
-- Not measured: power loss. The prepared script is `power-qmp.sh` in the same folder.
+- The initial action research left power loss open. The live primary and secondary power-loss cases below prove carrier withdrawal, a new boot, and a healthy return.
 - Found on the way: at 100 % packet loss on one cable the switch kept sending to the client on that cable, and every ping was lost for the 25 s of the trial, at one ping every 100 ms. This needs its own test.
 - Each action gets one test on the Small lab.
 - Done when: each test has run live, the engine proves that the action took effect, and the test waits for the healthy state before it ends.
 
 ### 3. The remaining tests of the Small lab
 
-- The old cases are in `src/mlag_lab/cases.py` and [case-catalog.md](../case-catalog.md). Only the cases with spanning tree off count.
-- First write the list of fault kinds, one line each, and ask the operator which ones are wanted.
-- Done when: every wanted kind is one test file that has run live.
+On 26 November 2026 the operator approved every historically runnable Small case with spanning tree off.
+The [mobile Small guide](../../tests/small/mobile/README.md) lists their YAML files and the
+observations graded in each. The same native CHR build runs the original two Phase 1
+cases and the separate mobile topology.
+
+The Small catalogue also describes a primary pause, a primary reboot without LACP fallback,
+both peers down, and ICCP-only loss. Those four have no runnable Small selector.
+
+#### Small live qualification
+
+Evidence is under `test-results/suite-yaml-verify/small-migration/`. Each listed attempt has byte-identical `result.json` and `report.md` on replay. Each attempt folder records the source snapshot and the live command. The terminal matrix also includes the two saved Phase 1 passes. See `terminal-matrix.tsv` for all 17 verdicts.
+
+| Live case | Verdict | Saved attempt |
+| --- | --- | --- |
+| Mobile baseline | pass | `54-mobile-baseline-routeros/` |
+| Mobile calibration | pass | `17-mobile-calibration/` |
+| Reboot calibration | pass | `33-mobile-reboot-calibration/` |
+| Single member loss | pass | `34-mobile-bond-member-loss/` |
+| Repeated member flap | pass | `56-mobile-member-flap-fdb/` |
+| Peer-link loss | pass | `11-mobile-peer-link-loss/` |
+| Silent LACP | fail | `57-mobile-lacp-timeout-actor/` |
+| MAC move | pass | `18-mobile-mac-move/` |
+| MAC age and relearn | pass | `47-mobile-mac-age-relearn/` |
+| Primary reboot | pass | `30-mobile-primary-reboot/` |
+| Secondary reboot with flood probes | fail | `55-mobile-secondary-reboot-bum/` |
+| Primary power loss | pass | `12-mobile-primary-power-loss/` |
+| Secondary power loss | pass | `13-mobile-secondary-power-loss/` |
+| Canonical 50 ms cable delay | pass | `23-canonical-cable-delay-eth2/` |
+| Canonical 100 percent cable loss | error | `24-canonical-cable-packet-loss-eth2/` |
+
+The secondary reboot passed the reboot and regular-stream checks. The flood proof saw four broadcast and four unknown-unicast requests repeated across the sender's members with one probe every 100 ms. The watched flap kept both unrelated MAC entries on both switches, with sample intervals up to 0.355103 s.
+
+Silent LACP verified carrier, the defaulted local actor and the restored partner. The affected streams each lost 51 pings at the 100 ms cadence, with measured stop bounds spanning 5.201 to 5.432 s across them against the 4 s withdrawal and 3 s restoration limits.
+
+The retargeted delay raised the median measured round trip from 0.604 ms to 51.931 ms and returned it to 0.576 ms. The sustained loss reached the affected stream and the queue cleared, but the lab missed its 15 s healthy recovery deadline.
+
+The MAC age profile used confirmed permanent neighbours. The host was silent for 25.076 s, both peers aged out and relearned its MAC, and delivery resumed within 48 ms of the first returning frame. Neither witness observed outside flooding in that run.
+
+The owned canonical, mobile default, mobile age and final mobile deployments were removed with the qualified Containerlab binary. The teardown logs and `60-final-inventory.log` record the absence of their containers, management networks and generated directories.
+
+Networka `16790be` rejudged all 17 saved attempts with unchanged verdicts. The MAC results reproduced as JSON and produced expanded Markdown reports. The sustained-loss replay recovered partial packet measurements while retaining the error for recovery and sender cadence. The rejudge log and regenerated reports are in the evidence directory.
+
+Guest carrier timing deadlines, withdrawn-member TAP observations, full per-port LACP histories, and the mobile host's baseline flood copies remain outside the migrated verdicts.
+
+Done when every approved case runs live and its saved verdict replays identically.
 
 ### 4. The Medium and Large labs
 
@@ -221,7 +263,6 @@ Each package is done when its "done when" line holds on `main` of both repos.
 
 ## What the operator still decides
 
-- Which old cases are still wanted (package 3).
 - What happens to `results/`, the archived runs of the old suite.
 - Whether `labtest.py` gets unit tests.
 - The limit for a cable that comes back. The specification sets 4 s, and the runs measured 2.40 to 2.60 s.

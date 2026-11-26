@@ -1,0 +1,40 @@
+name: primary-reboot
+purpose: >-
+  Reboot switch1 in its checked primary role and measure both directions on the client bonds.
+  Both bypass streams must continue while it restarts.
+source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+lab: direct-lab.yaml
+steps:
+  - name: Baseline
+    action:
+      observe: true
+    hold_s: 4  # Four seconds of uninterrupted traffic before the reboot.
+    max_outage_s: &loss-free
+      client1-to-client2: 0
+      client2-to-client1: 0
+      bypass-client1-to-client2: 0
+      bypass-client2-to-client1: 0
+    expected: Every ping arrives once before the reboot.
+  - name: Reboot switch1
+    action:
+      reboot: switch1
+    # Allow boot and LACP recovery, plus the CHR SSH cooldown if it refuses an early login.
+    wait_healthy_s: 60
+    # Continue through the post-boot observation, beyond five fast LACP timeouts.
+    hold_s: 16
+    max_outage_s:
+      client1-to-client2: &reboot-limit 5  # Three fast LACP intervals plus two for forwarding.
+      client2-to-client1: *reboot-limit
+      bypass-client1-to-client2: 0
+      bypass-client2-to-client1: 0
+    expected: The primary has a new boot and both client bonds return to service.
+  - name: Reboot recovery
+    action:
+      observe: true
+    hold_s: 3  # A fast LACP timeout yields 30 pings at the 100 ms cadence.
+    max_outage_s:
+      client1-to-client2: 0
+      client2-to-client1: 0
+      bypass-client1-to-client2: 0
+      bypass-client2-to-client1: 0
+    expected: Every stream keeps delivering after the reboot.
