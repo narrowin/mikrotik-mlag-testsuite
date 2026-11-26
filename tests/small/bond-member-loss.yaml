@@ -1,4 +1,3 @@
-# Catalogue case bond-member-loss of src/mlag_lab/intent/small.yaml.
 name: MLAG bond member loss and return
 purpose: >-
   Client 1's cable to CHR 1 goes down for 8 s and then comes back.
@@ -30,7 +29,7 @@ steps:
           - 102
           - 202
         max_outage_s: 0
-  # The hold is the suite's 8 s with the cable up plus its 3 s recovery window.
+  # 11 s gives the bond time to form again and the streams time to recover.
   - name: Member back
     action:
       link: dc1-traffic-host1:eth1

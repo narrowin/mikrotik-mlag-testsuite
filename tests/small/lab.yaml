@@ -1,6 +1,5 @@
 # What all lab tests of the Small lab share, with spanning tree off.
 # Every test checks the state before its first step and after its last step.
-# The checks come from src/mlag_lab/intent/state/direct.yaml, direct-none.yaml and hosts.yaml.
 # Networka reads the CHRs and the Linux clients over SSH.
 state:
   - statement: Both MLAG peers show mlag-state connected.
@@ -92,7 +91,6 @@ state:
           collecting: true
           distributing: true
   - statement: Both MLAG peers run with spanning tree off and forward both client bonds on the bridge.
-    source: src/mlag_lab/intent/state/direct-none.yaml
     checks:
       - name: mlag1 protocol-mode none
         device: dc1-core-mlag1
@@ -139,7 +137,6 @@ state:
         expected:
           forwarding: true
   - statement: Each client bonds both members, and both members have carrier and are in the active aggregator.
-    source: src/mlag_lab/intent/state/hosts.yaml
     checks:
       - name: host1 bond0 members eth1, eth2
         device: dc1-traffic-host1
@@ -193,8 +190,7 @@ state:
         expected:
           carrier: true
           eligible: true
-# The stream table of the suite's link-fault runner, src/mlag_lab/legacy.py FLOWS.
-# Every stream sends one ping every 100 ms.
+# The ping streams of every test. Every stream sends one ping every 100 ms.
 streams:
   # Client 1 to the MAC-move host.
   - id: 101
@@ -221,7 +217,7 @@ streams:
     from: dc1-traffic-host1:bond0
     to: dc1-traffic-host2:bond0
     address: 10.110.0.12
-# The capture points of the suite's link-fault runner besides the stream endpoints.
+# Extra capture points besides the two ends of each stream.
 # The CHR points are the QEMU tap interfaces inside the CHR container.
 captures:
   - dc1-traffic-host1:eth1
