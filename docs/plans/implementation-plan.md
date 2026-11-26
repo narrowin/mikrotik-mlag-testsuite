@@ -55,6 +55,7 @@ Each package is done when its "done when" line holds on `main` of both repos.
 ### 1. Close the clean Small lab
 
 - Fix what the reviewers of the clean setup left open. The list is in the hand-over state above.
+- Replace `timeline.tsv` by one generated `report.md` per run. It starts with the verdict. Then it shows, per step and stream, the limit against the measured stop, with the lost pings and the ping interval. Then the log rules, each with the line that satisfied it. Then what happened when, in words: state checks, step starts, cable confirmed down or up, stream stops and switch log lines. `nw test replay` builds it again. The data for programs stays in `result.json`, `events.jsonl` and `syslog.log`.
 - Done when: a fresh lab starts with one command, the bond member loss test passes twice, both replays match, and a reviewer finds no duplicate, no unneeded line and no leftover.
 
 ### 2. Three more actions in the engine
