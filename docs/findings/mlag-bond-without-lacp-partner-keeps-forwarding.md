@@ -26,7 +26,7 @@ That table also shows that some MSTP reboots first listed here as "MLAG pair as 
 - MLAG bonds: 802.3ad, one bond member per MLAG peer, `lacp-rate=1sec`, `lacp-strict=no` unless stated.
 - Linux hosts: 802.3ad bond with `lacp_rate fast`.
 - Ports on each MLAG peer: `ether2` is the peer port, `ether3` and `ether4` are bond members of MLAG bonds.
-- This page uses the role names of the current labs. The old suite named the switches `p1` and `p2` (Small and Medium) and `q1` and `q2` (the second pair); its result folders and config files keep those names.
+- This page uses the role names of the current labs. The old suite named the switches `p1` and `p2` (Small and Medium) and `q1` and `q2` (the second pair), and the Small hosts `client1` to `client3`; its result folders and config files keep those names, and so does its bridge port `client1`.
 
 ## Finding 1: frames sent back out a dual-connected MLAG bond
 
@@ -37,7 +37,7 @@ It goes back to the host that sent it, or reaches another host twice.
 
 **What was done and tested.**
 
-- Broadcast and unknown-unicast streams from `client1` were captured on every host interface and every CHR port during a repeated bond member flap, reboots and power losses. This was the Small lab, mostly with spanning tree off.
+- Broadcast and unknown-unicast streams from `host1` were captured on every host interface and every CHR port during a repeated bond member flap, reboots and power losses. This was the Small lab, mostly with spanning tree off.
 - Looped copies were traced frame by frame through the captures in every Small lab run with the finding and in five Medium lab runs.
 - RouterOS LACP bond member flags, bridge port state, the host table and syslog were read for the same moments.
 
@@ -45,13 +45,13 @@ It goes back to the host that sent it, or reaches another host twice.
 
 - Every copy takes the same path. It leaves the sending host on one bond member, one MLAG peer sends it out the peer port, and the other MLAG peer sends it out its own bond member of a dual-connected MLAG bond.
 - Example, bond member flap, broadcast seq 73, 19:53:24.245 UTC:
-  1. `client1` sends the frame on `eth2`, and switch2 receives it on `ether3`.
+  1. `host1` sends the frame on `eth2`, and switch2 receives it on `ether3`.
   2. switch2 sends it out the peer port, tagged VLAN 110.
-  3. switch1 sends it out `ether3`, back to `eth1` of `client1`, 2.3 ms after the original.
+  3. switch1 sends it out `ether3`, back to `eth1` of `host1`, 2.3 ms after the original.
 - At that moment `ether3` of switch1 had just come back up. Its first LACPDU came 88 ms later, with the bond member not in sync and not distributing.
 - `/interface bonding monitor` showed `flags="ATG---FE"`, while the bridge port `client1` showed `forwarding: yes`.
 - In a reboot, the looping starts right after the rebooted MLAG peer logs `peer connected`, as in [one MLAG secondary reboot run](../../results/2026-11-24-forwarding-checks/validation-none-reboot-power/01-secondary-reboot).
-- The bond of `client1` dropped its returned copies. `client2` received duplicates.
+- The bond of `host1` dropped its returned copies. `host2` received duplicates.
 - With spanning tree off on the Small lab, it shows in the repeated bond member flap, the MLAG primary and secondary reboot and the MLAG secondary power loss.
 - It did not show in the MLAG primary power loss, a single bond member loss, peer link loss or the MAC move.
 - How often, per test: [Faults across runs](../../results/README.md#faults-across-runs), rows "Flood frame back at its sender or twice at a host".
@@ -69,9 +69,9 @@ It goes back to the host that sent it, or reaches another host twice.
 **Reproduce.**
 
 1. Build two MLAG peers on 7.26beta7 with the configuration above. Connect two Linux hosts with 802.3ad bonds to both MLAG peers.
-2. On `client1`, run `ping -b -i 0.1 10.110.0.255`, and capture with `tcpdump -nei eth1 icmp` and `tcpdump -nei eth2 icmp`.
-3. Take the MLAG primary's cable to `client1` down for 1 s, five times, 3 s apart. Or reboot the MLAG secondary.
-4. Finding: within about 1 s of the return, a request `client1` sent on one bond member arrives back on its other bond member, with the same ICMP sequence number.
+2. On `host1`, run `ping -b -i 0.1 10.110.0.255`, and capture with `tcpdump -nei eth1 icmp` and `tcpdump -nei eth2 icmp`.
+3. Take the MLAG primary's cable to `host1` down for 1 s, five times, 3 s apart. Or reboot the MLAG secondary.
+4. Finding: within about 1 s of the return, a request `host1` sent on one bond member arrives back on its other bond member, with the same ICMP sequence number.
 
 ## Finding 2: two MLAG pairs keep sending into a rebooting switch
 

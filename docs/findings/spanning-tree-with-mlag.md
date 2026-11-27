@@ -77,7 +77,7 @@ The Small lab is one MLAG pair with three dual-connected hosts.
 - RSTP with the MLAG pair as root went over the limit in 1 of 4 runs of the bond member loss and return, with an outage of 10.632 to 10.840 s.
 - That run is `2026-11-24-small-search/rstp-default-l2-run2`, test `01-bond-member-loss`.
 - It was one outage from the bond member going down until after it came back, against 3 s per step.
-- In it switch1 dropped the replies for `client1` instead of sending them over the peer link.
+- In it switch1 dropped the replies for `host1` instead of sending them over the peer link.
 - It did not show with spanning tree off or MSTP.
 - RSTP runs with other settings did not show it, but each of them ran once.
 
