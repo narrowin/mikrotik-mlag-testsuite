@@ -1,0 +1,2556 @@
+{
+  "name": "dci-member-loss",
+  "purpose": "Take the DCI member between dc1-core1 and dc2-core1 down and back. The DCI streams must move to the other member; the site streams cross neither core and must continue.",
+  "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
+  "verdict": "pass",
+  "reasons": [],
+  "state": {
+    "before": {
+      "verdict": "pass",
+      "statements": [
+        {
+          "statement": "All four MLAG pairs are connected with peer 1 as MLAG primary.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Every switch runs with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both members of the DCI and of each distribution-to-core trunk are in use.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both cables of each firewall are in use in its LACP bond to the local cores.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether2"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether2"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "The dc1 firewall owns the VRRP address and the dc2 firewall is backup.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "property",
+              "params": {
+                "menu": "/interface/vrrp",
+                "where": {
+                  "name": "vrrp390"
+                },
+                "name": "master"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "property",
+              "params": {
+                "menu": "/interface/vrrp",
+                "where": {
+                  "name": "vrrp390"
+                },
+                "name": "backup"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both cables of every host are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "verdict": "pass",
+      "statements": [
+        {
+          "statement": "All four MLAG pairs are connected with peer 1 as MLAG primary.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Every switch runs with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both members of the DCI and of each distribution-to-core trunk are in use.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both cables of each firewall are in use in its LACP bond to the local cores.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether2"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether2"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "The dc1 firewall owns the VRRP address and the dc2 firewall is backup.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "property",
+              "params": {
+                "menu": "/interface/vrrp",
+                "where": {
+                  "name": "vrrp390"
+                },
+                "name": "master"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "property",
+              "params": {
+                "menu": "/interface/vrrp",
+                "where": {
+                  "name": "vrrp390"
+                },
+                "name": "backup"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both cables of every host are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quiet": {
+    "window": "quiet window",
+    "start_s": 0.0,
+    "end_s": 3.992104,
+    "verdict": "pass",
+    "streams": {
+      "dc1-traffic-to-dc1-service": {
+        "delivered": 38,
+        "min_delivered": 35,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-traffic-to-dc2-service": {
+        "delivered": 38,
+        "min_delivered": 35,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc1-to-dc2-over-dci": {
+        "delivered": 39,
+        "min_delivered": 35,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-to-dc1-over-dci": {
+        "delivered": 39,
+        "min_delivered": 35,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc1-traffic-to-vrrp": {
+        "delivered": 39,
+        "min_delivered": 35,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-traffic-to-vrrp": {
+        "delivered": 39,
+        "min_delivered": 35,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "name": "DCI member down",
+      "expected": "Both DCI directions continue over the member between dc1-core2 and dc2-core2.",
+      "cable": "dc1-core1:eth3",
+      "state": "down",
+      "hold_s": 5.0,
+      "start_s": 3.992104,
+      "end_s": 9.008514,
+      "verdict": "pass",
+      "streams": {
+        "dc1-traffic-to-dc1-service": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 48,
+          "delivered": 48,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc2-traffic-to-dc2-service": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 48,
+          "delivered": 48,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc1-to-dc2-over-dci": {
+          "limit_s": 1.0,
+          "lower_s": 0.0,
+          "upper_s": 0.20537,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.20537 s",
+          "duplicates": 0,
+          "sent": 49,
+          "delivered": 48,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.20537 s, within 1 s"
+        },
+        "dc2-to-dc1-over-dci": {
+          "limit_s": 1.0,
+          "lower_s": 0.0,
+          "upper_s": 0.203583,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.203583 s",
+          "duplicates": 0,
+          "sent": 49,
+          "delivered": 48,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.203583 s, within 1 s"
+        },
+        "dc1-traffic-to-vrrp": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 49,
+          "delivered": 49,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc2-traffic-to-vrrp": {
+          "limit_s": 1.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 49,
+          "delivered": 49,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "dc1-core1",
+          "text": "ether4 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 4.088893,
+              "switch": "dc1-core1",
+              "text": "interface,info ether4 link down"
+            }
+          ]
+        },
+        {
+          "kind": "must",
+          "switch": "dc2-core1",
+          "text": "ether4 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 4.661122,
+              "switch": "dc2-core1",
+              "text": "interface,info ether4 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DCI member back",
+      "expected": "The returning member rejoins the DCI trunk at both core pairs.",
+      "cable": "dc1-core1:eth3",
+      "state": "up",
+      "state_check": {
+        "verdict": "pass",
+        "statements": [
+          {
+            "statement": "Both ends of the returned member are synchronized, collecting and distributing.",
+            "source": null,
+            "verdict": "pass",
+            "checks": [
+              {
+                "name": null,
+                "device": "dc1-core1",
+                "check": "lacp_member",
+                "params": {
+                  "bond": "dci",
+                  "member": "ether4"
+                },
+                "expected": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "observed": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "dc2-core1",
+                "check": "lacp_member",
+                "params": {
+                  "bond": "dci",
+                  "member": "ether4"
+                },
+                "expected": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "observed": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "verdict": "pass",
+                "reason": null
+              }
+            ]
+          }
+        ]
+      },
+      "hold_s": 7.0,
+      "start_s": 9.008514,
+      "end_s": 16.112848,
+      "verdict": "pass",
+      "streams": {
+        "dc1-traffic-to-dc1-service": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 68,
+          "delivered": 68,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc2-traffic-to-dc2-service": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 68,
+          "delivered": 68,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc1-to-dc2-over-dci": {
+          "limit_s": 4.0,
+          "lower_s": 0.0,
+          "upper_s": 0.209251,
+          "lost": 2,
+          "summary": "2 pings lost in total at one ping every 100 ms, longest measured stop 0 to 0.209251 s",
+          "duplicates": 0,
+          "sent": 70,
+          "delivered": 68,
+          "verdict": "pass",
+          "reason": "2 pings lost in total at one ping every 100 ms, longest measured stop 0 to 0.209251 s, within 4 s"
+        },
+        "dc2-to-dc1-over-dci": {
+          "limit_s": 4.0,
+          "lower_s": 0.0,
+          "upper_s": 0.205826,
+          "lost": 2,
+          "summary": "2 pings lost in total at one ping every 100 ms, longest measured stop 0 to 0.205826 s",
+          "duplicates": 0,
+          "sent": 70,
+          "delivered": 68,
+          "verdict": "pass",
+          "reason": "2 pings lost in total at one ping every 100 ms, longest measured stop 0 to 0.205826 s, within 4 s"
+        },
+        "dc1-traffic-to-vrrp": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 70,
+          "delivered": 70,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc2-traffic-to-vrrp": {
+          "limit_s": 4.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 70,
+          "delivered": 70,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "dc1-core1",
+          "text": "ether4 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 9.092869,
+              "switch": "dc1-core1",
+              "text": "interface,info ether4 link up (speed 10G, full duplex)"
+            }
+          ]
+        },
+        {
+          "kind": "must",
+          "switch": "dc2-core1",
+          "text": "ether4 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 9.701136,
+              "switch": "dc2-core1",
+              "text": "interface,info ether4 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "log": [
+    {
+      "kind": "must_not",
+      "switch": "every",
+      "text": "heartbeat timeout",
+      "verdict": "pass",
+      "reason": "not logged",
+      "lines": []
+    }
+  ],
+  "switch_log": {
+    "file": "syslog/switches.log",
+    "saved": true,
+    "lines": {
+      "dc1-core1": 6,
+      "dc1-core2": 2,
+      "dc1-dist1": 2,
+      "dc1-dist2": 2,
+      "dc1-firewall": 2,
+      "dc2-core1": 6,
+      "dc2-core2": 2,
+      "dc2-dist1": 2,
+      "dc2-dist2": 2,
+      "dc2-firewall": 2
+    },
+    "markers": {
+      "dc1-core1": {
+        "start": -2.916415,
+        "end": 19.824376
+      },
+      "dc1-core2": {
+        "start": -2.86712,
+        "end": 19.851703
+      },
+      "dc1-dist1": {
+        "start": -2.824938,
+        "end": 19.88072
+      },
+      "dc1-dist2": {
+        "start": -2.783092,
+        "end": 19.922726
+      },
+      "dc1-firewall": {
+        "start": -2.745363,
+        "end": 19.978208
+      },
+      "dc2-core1": {
+        "start": -2.70652,
+        "end": 20.010547
+      },
+      "dc2-core2": {
+        "start": -2.659717,
+        "end": 20.042968
+      },
+      "dc2-dist1": {
+        "start": -2.615628,
+        "end": 20.088728
+      },
+      "dc2-dist2": {
+        "start": -2.573219,
+        "end": 20.124652
+      },
+      "dc2-firewall": {
+        "start": -2.537556,
+        "end": 20.156165
+      }
+    }
+  },
+  "validity": [
+    {
+      "check": "capture at dc1-service:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at dc1-traffic:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at dc1-traffic:vlan390 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at dc2-service:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at dc2-traffic:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at dc2-traffic:vlan390 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "every stream and its captures stayed up",
+      "ok": true
+    },
+    {
+      "check": "every cable set down was set up again",
+      "ok": true
+    },
+    {
+      "check": "the wall clock and the monotonic clock of the lab host agree within 50 ms",
+      "ok": true
+    },
+    {
+      "check": "dc1-traffic-to-dc1-service sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "dc1-traffic-to-dc1-service shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "dc2-traffic-to-dc2-service sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "dc2-traffic-to-dc2-service shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "dc1-to-dc2-over-dci sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "dc1-to-dc2-over-dci shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "dc2-to-dc1-over-dci sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "dc2-to-dc1-over-dci shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "dc1-traffic-to-vrrp sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "dc2-traffic-to-vrrp sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "dc1-traffic-to-dc1-service delivered 35 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "dc2-traffic-to-dc2-service delivered 35 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "dc1-to-dc2-over-dci delivered 35 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "dc2-to-dc1-over-dci delivered 35 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "dc1-traffic-to-vrrp delivered 35 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "dc2-traffic-to-vrrp delivered 35 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    }
+  ],
+  "traffic": {
+    "start_ns": 1795763494295445000,
+    "end_ns": 1795763513587957154,
+    "interval_s": 0.1,
+    "streams": {
+      "dc1-traffic-to-dc1-service": {
+        "ident": 1,
+        "source": "dc1-traffic:bond0",
+        "destination": "dc1-service:bond0",
+        "sent": 184,
+        "delivered": 184,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.126194,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": []
+      },
+      "dc2-traffic-to-dc2-service": {
+        "ident": 2,
+        "source": "dc2-traffic:bond0",
+        "destination": "dc2-service:bond0",
+        "sent": 184,
+        "delivered": 184,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.144859,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": []
+      },
+      "dc1-to-dc2-over-dci": {
+        "ident": 3,
+        "source": "dc1-traffic:vlan390",
+        "destination": "dc2-traffic:vlan390",
+        "sent": 189,
+        "delivered": 186,
+        "lost_seqs": [
+          41,
+          91,
+          114
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.107818,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": [
+          {
+            "first_seq": 41,
+            "last_seq": 41,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.20537,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.205 s",
+            "begins_s": 4.048144,
+            "ends_s": 4.048144,
+            "windows": [
+              "DCI member down"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 91,
+            "last_seq": 91,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.209251,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.209 s",
+            "begins_s": 9.140892,
+            "ends_s": 9.140892,
+            "windows": [
+              "DCI member back"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 114,
+            "last_seq": 114,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.206151,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.206 s",
+            "begins_s": 11.488835,
+            "ends_s": 11.488835,
+            "windows": [
+              "DCI member back"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          }
+        ]
+      },
+      "dc2-to-dc1-over-dci": {
+        "ident": 4,
+        "source": "dc2-traffic:vlan390",
+        "destination": "dc1-traffic:vlan390",
+        "sent": 188,
+        "delivered": 185,
+        "lost_seqs": [
+          41,
+          90,
+          114
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.122431,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": [
+          {
+            "first_seq": 41,
+            "last_seq": 41,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.203583,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.204 s",
+            "begins_s": 4.065497,
+            "ends_s": 4.065497,
+            "windows": [
+              "DCI member down"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 90,
+            "last_seq": 90,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.205558,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.206 s",
+            "begins_s": 9.061776,
+            "ends_s": 9.061776,
+            "windows": [
+              "DCI member back"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 114,
+            "last_seq": 114,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.205826,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.206 s",
+            "begins_s": 11.511031,
+            "ends_s": 11.511031,
+            "windows": [
+              "DCI member back"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          }
+        ]
+      },
+      "dc1-traffic-to-vrrp": {
+        "ident": 5,
+        "source": "dc1-traffic:vlan390",
+        "destination": "198.18.40.1",
+        "sent": 188,
+        "delivered": 188,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.151306,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": []
+      },
+      "dc2-traffic-to-vrrp": {
+        "ident": 6,
+        "source": "dc2-traffic:vlan390",
+        "destination": "198.18.40.1",
+        "sent": 189,
+        "delivered": 189,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.110323,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": []
+      }
+    }
+  },
+  "closing": {
+    "window": "after the steps",
+    "start_s": 16.112848,
+    "end_s": 19.292512,
+    "verdict": "pass",
+    "streams": {
+      "dc1-traffic-to-dc1-service": {
+        "delivered": 30,
+        "min_delivered": 27,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-traffic-to-dc2-service": {
+        "delivered": 30,
+        "min_delivered": 27,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc1-to-dc2-over-dci": {
+        "delivered": 31,
+        "min_delivered": 27,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-to-dc1-over-dci": {
+        "delivered": 30,
+        "min_delivered": 27,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc1-traffic-to-vrrp": {
+        "delivered": 30,
+        "min_delivered": 27,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-traffic-to-vrrp": {
+        "delivered": 31,
+        "min_delivered": 27,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  }
+}

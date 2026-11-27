@@ -13,6 +13,13 @@ streams:
   - name: dc2-to-dc1-over-dci
     from: dc2-traffic:vlan390
     to: dc1-traffic:vlan390
+  # The VRRP address answers from whichever firewall is master, so these pings are judged at the sender.
+  - name: dc1-traffic-to-vrrp
+    from: dc1-traffic:vlan390
+    to: 198.18.40.1
+  - name: dc2-traffic-to-vrrp
+    from: dc2-traffic:vlan390
+    to: 198.18.40.1
 state:
   - statement: All four MLAG pairs are connected with peer 1 as MLAG primary.
     checks:

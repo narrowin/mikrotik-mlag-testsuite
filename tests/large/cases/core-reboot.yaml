@@ -14,6 +14,8 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: 0
       dc2-to-dc1-over-dci: 0
+      dc1-traffic-to-vrrp: 0
+      dc2-traffic-to-vrrp: 0
     expected: Every ping arrives once before the reboot.
   - name: Reboot dc1-core1
     action:
@@ -22,12 +24,15 @@ steps:
     wait_healthy_s: 60
     # Continue through the post-boot observation, beyond five fast LACP timeouts.
     hold_s: 16
-    max_outage_s: &reboot-limits
+    max_outage_s:
       # The site VLAN never reaches the cores.
       dc1-traffic-to-dc1-service: 0
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: &reboot-limit 5  # Three fast LACP intervals plus two for forwarding.
       dc2-to-dc1-over-dci: *reboot-limit
+      # Both firewalls hang off the dc1 cores while dc1 owns the VRRP address, so both VRRP streams cross dc1-core1.
+      dc1-traffic-to-vrrp: *reboot-limit
+      dc2-traffic-to-vrrp: *reboot-limit
     expected: dc1-core1 has a new boot, returns as MLAG primary and the DCI carries both directions again.
   - name: dc1 reboot recovery
     action:
@@ -40,7 +45,14 @@ steps:
       reboot: dc2-core1
     wait_healthy_s: 60
     hold_s: 16
-    max_outage_s: *reboot-limits
+    max_outage_s:
+      dc1-traffic-to-dc1-service: 0
+      dc2-traffic-to-dc2-service: 0
+      dc1-to-dc2-over-dci: *reboot-limit
+      dc2-to-dc1-over-dci: *reboot-limit
+      # dc1 reaches the dc1 firewall without the dc2 cores; dc2 reaches it through them and the DCI.
+      dc1-traffic-to-vrrp: 0
+      dc2-traffic-to-vrrp: *reboot-limit
     expected: dc2-core1 has a new boot, returns as MLAG primary and the DCI carries both directions again.
   - name: dc2 reboot recovery
     action:

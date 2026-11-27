@@ -20,6 +20,9 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: &down-limit 1  # Allow carrier detection and failover within one second, before an LACP timeout.
       dc2-to-dc1-over-dci: *down-limit
+      # The dc1 firewall owns the VRRP address, so only dc2 reaches it over the DCI.
+      dc1-traffic-to-vrrp: 0
+      dc2-traffic-to-vrrp: *down-limit
     expected: Both DCI directions continue over the member between dc1-core2 and dc2-core2.
     log:
       must:
@@ -37,6 +40,8 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: &back-limit 4  # Three fast LACP messages, one per second, plus one late message.
       dc2-to-dc1-over-dci: *back-limit
+      dc1-traffic-to-vrrp: 0
+      dc2-traffic-to-vrrp: *back-limit
     expected: The returning member rejoins the DCI trunk at both core pairs.
     check_state:
       - statement: Both ends of the returned member are synchronized, collecting and distributing.

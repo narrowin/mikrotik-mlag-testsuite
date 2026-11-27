@@ -1,0 +1,67 @@
+name: dci-member-loss
+purpose: >-
+  Take the DCI member between dc1-core1 and dc2-core1 down and back.
+  The DCI streams must move to the other member; the site streams cross neither core and must continue.
+source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+lab: ../lab/lab.yaml
+log:
+  # RouterOS has logged "bridge,warning MLAG: remote heartbeat timeout" on peer loss. No peer link changes here.
+  must_not:
+    - switch: every
+      text: heartbeat timeout
+steps:
+  - name: DCI member down
+    cable: &member dc1-core1:eth3
+    state: down
+    # Hold past the 3 s fast LACP timeout so a delayed failure is measured.
+    hold_s: 5
+    max_outage_s:
+      dc1-traffic-to-dc1-service: 0
+      dc2-traffic-to-dc2-service: 0
+      dc1-to-dc2-over-dci: &down-limit 1  # Allow carrier detection and failover within one second, before an LACP timeout.
+      dc2-to-dc1-over-dci: *down-limit
+      # The dc1 firewall owns the VRRP address, so only dc2 reaches it over the DCI.
+      dc1-traffic-to-vrrp: 0
+      dc2-traffic-to-vrrp: *down-limit
+    expected: Both DCI directions continue over the member between dc1-core2 and dc2-core2.
+    log:
+      must:
+        - switch: dc1-core1
+          text: ether4 link down
+        - switch: dc2-core1
+          text: ether4 link down
+  - name: DCI member back
+    cable: *member
+    state: up
+    # The return limit plus one LACP timeout keeps late recovery inside the step.
+    hold_s: 7
+    max_outage_s:
+      dc1-traffic-to-dc1-service: 0
+      dc2-traffic-to-dc2-service: 0
+      dc1-to-dc2-over-dci: &back-limit 4  # Three fast LACP messages, one per second, plus one late message.
+      dc2-to-dc1-over-dci: *back-limit
+      dc1-traffic-to-vrrp: 0
+      dc2-traffic-to-vrrp: *back-limit
+    expected: The returning member rejoins the DCI trunk at both core pairs.
+    check_state:
+      - statement: Both ends of the returned member are synchronized, collecting and distributing.
+        checks:
+          - device: dc1-core1
+            check: lacp_member
+            params: &dci
+              bond: dci
+              member: ether4
+            expected: &in-use
+              synchronization: true
+              collecting: true
+              distributing: true
+          - device: dc2-core1
+            check: lacp_member
+            params: *dci
+            expected: *in-use
+    log:
+      must:
+        - switch: dc1-core1
+          text: ether4 link up
+        - switch: dc2-core1
+          text: ether4 link up

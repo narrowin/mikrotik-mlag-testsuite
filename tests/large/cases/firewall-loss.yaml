@@ -2,7 +2,7 @@ name: firewall-loss
 purpose: >-
   Withdraw all data links of the dc1 firewall and pause its guest before a cold reset.
   The dc2 firewall must take over the VRRP address, and dc1 must take it back after power returns.
-  No stream crosses a firewall, so every stream must continue.
+  The streams between hosts cross no firewall and must continue; the pings to the VRRP address may stop only while the address moves.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/user-guides/vrrp-configuration-examples/
 lab: ../lab/lab.yaml
 steps:
@@ -15,13 +15,24 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: 0
       dc2-to-dc1-over-dci: 0
+      dc1-traffic-to-vrrp: 0
+      dc2-traffic-to-vrrp: 0
     expected: Every ping arrives once before power loss.
   - name: dc1-firewall power lost
     action:
       power_off: dc1-firewall
     # Keep the firewall off well past three missed one-second VRRP advertisements and the fast LACP timeout.
     hold_s: 20
-    max_outage_s: *loss-free
+    max_outage_s: &vrrp-limits
+      # No stream between hosts crosses a firewall.
+      dc1-traffic-to-dc1-service: 0
+      dc2-traffic-to-dc2-service: 0
+      dc1-to-dc2-over-dci: 0
+      dc2-to-dc1-over-dci: 0
+      # RFC 5798 Master_Down_Interval for the dc2 firewall: 3 x 1 s advertisements + (256 - 100) / 256 s skew = 3.61 s, rounded up to cover one ping interval and the host-table move.
+      # The same bound applies when dc1 preempts the address on return.
+      dc1-traffic-to-vrrp: &vrrp-move 4
+      dc2-traffic-to-vrrp: *vrrp-move
     expected: Both dc1 cores see carrier go down and the dc2 firewall becomes VRRP master.
     check_state:
       - statement: The dc2 firewall owns the VRRP address.
@@ -40,7 +51,7 @@ steps:
     # The Small power-loss recovery deadline: CHR cold boot, SSH cooldown and the default 60 s MLAG initialisation interval.
     wait_healthy_s: 180
     hold_s: 16  # Continue through the observation after boot, beyond five fast LACP timeouts.
-    max_outage_s: *loss-free
+    max_outage_s: *vrrp-limits
     expected: The dc1 firewall has a new boot, rejoins its bond and preempts the VRRP address from dc2.
   - name: Power recovery
     action:

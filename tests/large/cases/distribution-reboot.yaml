@@ -14,6 +14,8 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: 0
       dc2-to-dc1-over-dci: 0
+      dc1-traffic-to-vrrp: 0
+      dc2-traffic-to-vrrp: 0
     expected: Every ping arrives once before the reboot.
   - name: Reboot dc1-dist1
     action:
@@ -27,6 +29,9 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: *reboot-limit
       dc2-to-dc1-over-dci: *reboot-limit
+      # dc1 reaches the VRRP address through the dc1 distribution pair; dc2 reaches it over the DCI without it.
+      dc1-traffic-to-vrrp: *reboot-limit
+      dc2-traffic-to-vrrp: 0
     expected: dc1-dist1 has a new boot, returns as MLAG primary and both dc1 host bonds return to service.
   - name: dc1-dist1 reboot recovery
     action:
