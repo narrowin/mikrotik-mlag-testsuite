@@ -1,5 +1,20 @@
 # Agent instructions
 
+## Words and decisions
+
+- [GLOSSARY.md](GLOSSARY.md) gives the one word for each thing in this repo. Read it before writing a test, a report or any text, use its terms, and never use a word on an _Avoid_ line. If a term is missing or disputed, ask the operator instead of inventing one.
+- [docs/adr/](docs/adr/) records why the repo is shaped as it is. Read the matching ADR before changing what it covers, and do not reopen a decision without new evidence. A decision that is hard to reverse, surprising without context and the result of a real trade-off gets a new ADR.
+
+## Dictated words
+
+The operator dictates. Read these speech-to-text forms as the real names, and write only the real names. Do not treat them as competing terms.
+
+- networker, NetWorker, network (the tool) → Networka; scrapy → Scrapli; PyPy, Pipe → PyPI
+- MLEG, M-LAG → MLAG; RootOS → RouterOS; Microtics, microtech, MyCritic, microtik → MikroTik
+- RSDP → RSTP; Spanky → spanning tree; 7:26, 726 → 7.26
+- tuple lab, medium 2 pair → two-pair lab; simple app, small app → Small lab; lamps → labs
+- Container Lab → containerlab; dryo, draw IO → draw.io; NView → NVUE
+
 ## Python tooling
 
 Use `uv` for all Python work in this repository. Run project commands, tests, checks and Python subprocesses with `uv run`. Use `uv sync` for project dependencies and `uv run --no-project` for standalone scripts. Apply the same rule to operator examples and CI jobs.
