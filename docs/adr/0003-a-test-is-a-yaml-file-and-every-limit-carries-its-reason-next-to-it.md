@@ -7,7 +7,7 @@ Running a test needs no AI and no judgement by a person.
 Every limit and every hold has a comment next to the number that says where it comes from.
 Limits come from protocol timers, not from a target.
 For example, a reboot allows 5 s per host stream: three fast LACP intervals of 1 s plus 2 s for forwarding.
-A stream that the fault does not touch, such as `client2-to-client3` in the Small cable test, gets 0 s.
+A stream that the fault does not touch, such as `host2-to-host3` in the Small cable test, gets 0 s.
 
 ## Why
 
