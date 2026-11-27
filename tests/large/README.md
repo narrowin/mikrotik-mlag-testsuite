@@ -25,29 +25,13 @@ The bypass is a cable between the two traffic hosts that crosses no switch.
 
 ## Commands
 
-Run from the repository root with the host tools, Containerlab build and `lab_nw` function of the [Small lab](../small/README.md#commands).
+Start, run, replay and remove the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these values.
+
+```sh
+LAB=tests/large NAME=large-mlag CONFIG=tests/large/devices.yml
+```
+
 The lab runs ten CHRs. On the lab VM each used about 360 MiB of memory, so plan for 4 GiB free. Start takes about a minute.
-
-```sh
-sudo env "CLAB=$CLAB" tests/large/start.sh
-```
-
-Run this block for each attempt.
-
-```sh
-CASE=baseline
-mkdir -p test-results/large
-RUN=$(mktemp -d test-results/large/run.XXXXXX)
-lab_nw test run "tests/large/$CASE.yaml" \
-  --lab tests/large/clab-large-mlag --config tests/large/devices.yml --save "$RUN"
-lab_nw test replay "$RUN/$CASE"
-```
-
-Remove the lab when finished.
-
-```sh
-sudo "$CLAB" destroy -t tests/large/topology.clab.yml --cleanup
-```
 
 ## Streams
 

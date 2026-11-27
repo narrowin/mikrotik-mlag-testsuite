@@ -11,28 +11,10 @@ The [strict variant](../two-pair-strict/README.md) is the same lab with `lacp-st
 
 ## Commands
 
-Use the host tools, the qualified Containerlab build and the `lab_nw` function from the [Small lab guide](../../small/README.md).
-Start the lab from the repository root.
+Start, run, replay and remove the lab as in [Run a lab](../../../docs/tests/README.md#run-a-lab), with these values.
 
 ```sh
-sudo env "CLAB=$CLAB" tests/medium/two-pair/start.sh
-```
-
-Run a test and replay it.
-
-```sh
-CASE=baseline
-mkdir -p test-results/medium
-RUN=$(mktemp -d test-results/medium/two-pair.XXXXXX)
-lab_nw test run "tests/medium/two-pair/$CASE.yaml" \
-  --lab tests/medium/two-pair/clab-medium-two-pair --config tests/medium/two-pair/devices.yml --save "$RUN"
-lab_nw test replay "$RUN/$CASE"
-```
-
-Remove the lab when finished.
-
-```sh
-sudo "$CLAB" destroy -t tests/medium/two-pair/topology.clab.yml --cleanup
+LAB=tests/medium/two-pair NAME=medium-two-pair CONFIG=tests/medium/two-pair/devices.yml
 ```
 
 ## Streams and state

@@ -4,32 +4,18 @@ Both switches run with spanning tree off. Switch1 is configured as MLAG primary 
 
 ## Run a case
 
-Run from the repository root with host `tc` from iproute2. The pinned Networka 0.5.1 runs every case. [Small host tools and qualified Containerlab build](../README.md)
+Run the lab as in [Run a lab](../../../docs/tests/README.md#run-a-lab), with these values. The mobile lab uses the Small inventory.
 
 ```sh
-CASE=baseline
-PROFILE=
-AGE=5m
-if [ "$CASE" = mac-age-relearn ]; then
-  PROFILE=age
-  AGE=10s
-fi
-sudo env "CLAB=$CLAB" tests/small/mobile/start.sh ${PROFILE:+$PROFILE}
-
-lab_nw() {
-  sudo env "PATH=/usr/sbin:/sbin:$PATH" "UV_PROJECT_ENVIRONMENT=/var/tmp/mlag-lab-venvs$PWD" \
-    uv run --locked nw "$@"
-}
-
-mkdir -p test-results/small
-RUN=$(mktemp -d test-results/small/mobile.XXXXXX)
-lab_nw test run "tests/small/mobile/$CASE.yaml" \
-  --lab tests/small/mobile/clab-small-mlag-mobile --config tests/small/devices.yml --save "$RUN"
-lab_nw test replay "$RUN/$CASE"
-sudo env "SMALL_MOBILE_AGE=$AGE" "$CLAB" destroy -t tests/small/mobile/topology.clab.yml --cleanup
+LAB=tests/small/mobile NAME=small-mlag-mobile CONFIG=tests/small/devices.yml
 ```
 
-Use the default profile for every case except MAC ageing. Its dedicated profile starts both switches at ten seconds of ageing and pins the necessary client neighbours. Teardown discards the profile. The case itself clears both egress filters.
+Use the default profile for every case except MAC ageing. For `CASE=mac-age-relearn`, start the lab with the `age` argument, which starts both switches at ten seconds of ageing and pins the necessary client neighbours. Remove the lab with the same ageing value it was started with. Teardown discards the profile. The case itself clears both egress filters.
+
+```sh
+sudo env "CLAB=$CLAB" tests/small/mobile/start.sh age
+sudo env SMALL_MOBILE_AGE=10s "$CLAB" destroy -t tests/small/mobile/topology.clab.yml --cleanup
+```
 
 ## Cases
 

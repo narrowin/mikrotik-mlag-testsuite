@@ -10,27 +10,16 @@ The startup config, host setup and inventory are the two-pair lab's files.
 
 ## Commands
 
-Prepare the shell as in the two-pair lab and start the lab from the repository root.
+Run the lab as in [Run a lab](../../../docs/tests/README.md#run-a-lab), with these values.
+
+```sh
+LAB=tests/medium/two-pair-strict NAME=medium-two-pair-strict CONFIG=tests/medium/two-pair/devices.yml
+```
+
+The strict lab has no `start.sh` of its own. Start it with the two-pair script and its `strict` argument.
 
 ```sh
 sudo env "CLAB=$CLAB" tests/medium/two-pair/start.sh strict
-```
-
-Run a test and replay it.
-
-```sh
-CASE=baseline
-mkdir -p test-results/medium
-RUN=$(mktemp -d test-results/medium/two-pair-strict.XXXXXX)
-lab_nw test run "tests/medium/two-pair-strict/$CASE.yaml" \
-  --lab tests/medium/two-pair-strict/clab-medium-two-pair-strict --config tests/medium/two-pair/devices.yml --save "$RUN"
-lab_nw test replay "$RUN/$CASE"
-```
-
-Remove the lab when finished.
-
-```sh
-sudo "$CLAB" destroy -t tests/medium/two-pair-strict/topology.clab.yml --cleanup
 ```
 
 The limits are the two-pair ones. The `two-pair-stp-off-strict-*` cases of the old catalogue give the same limits and holds.

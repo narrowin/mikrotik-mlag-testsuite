@@ -10,28 +10,10 @@ A collector node, `syslog`, receives the log of all three switches.
 
 ## Commands
 
-Use the host tools, the qualified Containerlab build and the uv environment from the [Small lab guide](../small/README.md).
-Start the lab from the repository root.
+Start, run, replay and remove the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these values.
 
 ```sh
-sudo env "CLAB=$CLAB" tests/medium/start.sh
-```
-
-Run a test and replay it. `lab_nw` is the function from the Small lab guide.
-
-```sh
-CASE=baseline
-mkdir -p test-results/medium
-RUN=$(mktemp -d test-results/medium/run.XXXXXX)
-lab_nw test run "tests/medium/$CASE.yaml" \
-  --lab tests/medium/clab-medium-mlag --config tests/medium/devices.yml --save "$RUN"
-lab_nw test replay "$RUN/$CASE"
-```
-
-Remove the lab when finished.
-
-```sh
-sudo "$CLAB" destroy -t tests/medium/topology.clab.yml --cleanup
+LAB=tests/medium NAME=medium-mlag CONFIG=tests/medium/devices.yml
 ```
 
 ## Streams and state

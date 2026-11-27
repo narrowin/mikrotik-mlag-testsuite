@@ -8,6 +8,8 @@ The labs run RouterOS itself. MikroTik publishes the Cloud Hosted Router (CHR) a
 
 [Run the lab](#quick-start), [see the results](#results) or read the [documentation](docs/README.md).
 
+The labs under `tests/` run with Networka and replace the `mlag-lab` runner described below. [Run a lab, add a test or add a lab](docs/tests/README.md)
+
 ## Results
 
 <!-- results:start -->
