@@ -4,6 +4,13 @@ The lab is two MikroTik CHR switches, `switch1` and `switch2`, joined by a peer 
 Three Linux hosts, `host1` to `host3`, each have one cable to each switch, bonded with LACP.
 A collector node, `syslog`, receives the log of both switches.
 
+The host bonds use independent LACP control (`coupled_control off`). The RouterOS
+host bonds use `lacp-strict=yes min-links=1`, so an unusable local member withdraws
+the bond and MLAG forwards through the peer link. These settings address one-way
+packet-loss failover; they do not change the tests' limits. Historical runs below
+used the earlier startup config. See [the current qualification](../../notes/final-qualification.md)
+for the passing four-test run and recovery verification details.
+
 ## Live runs
 
 Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2, after the glossary renames. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports; full evidence stays in `test-results/live-20261127-glossary/small/`.

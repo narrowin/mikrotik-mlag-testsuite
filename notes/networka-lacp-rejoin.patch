@@ -1,0 +1,327 @@
+diff --git a/src/network_toolkit/api/execution.py b/src/network_toolkit/api/execution.py
+--- a/src/network_toolkit/api/execution.py
++++ b/src/network_toolkit/api/execution.py
+@@ -4,6 +4,7 @@
+ 
+ from collections.abc import Callable
+ from concurrent.futures import ThreadPoolExecutor, as_completed
++from contextvars import copy_context
+ 
+ 
+ def execute_parallel[T, R](
+@@ -36,7 +37,8 @@
+ 
+     with ThreadPoolExecutor(max_workers=workers) as executor:
+         future_to_index = {
+-            executor.submit(func, item): index for index, item in enumerate(items)
++            executor.submit(copy_context().run, func, item): index
++            for index, item in enumerate(items)
+         }
+ 
+         for future in as_completed(future_to_index):
+diff --git a/src/network_toolkit/device.py b/src/network_toolkit/device.py
+--- a/src/network_toolkit/device.py
++++ b/src/network_toolkit/device.py
+@@ -29,6 +29,7 @@
+     MIKROTIK_ROUTERBOARD_UPGRADE,
+     MIKROTIK_SYSTEM_RESET,
+ )
++from network_toolkit.transport.cancellation import current_cancel
+ from network_toolkit.transport.factory import get_transport_factory
+ 
+ if TYPE_CHECKING:
+@@ -148,6 +149,10 @@
+             attempts = max(1, self.config.general.connection_retries)
+             transport_factory = get_transport_factory(transport_type)
+             for attempt in range(1, attempts + 1):
++                cancel = current_cancel()
++                if cancel is not None and cancel.cancelled:
++                    msg = "Operation cancelled before connecting"
++                    raise DeviceConnectionError(msg)
+                 transport = transport_factory.create_transport(
+                     self.device_name, self.config, self._connection_params
+                 )
+@@ -163,7 +168,10 @@
+                         self.device_name,
+                         self._error_reason(exc),
+                     )
+-                    time.sleep(self.config.general.retry_delay)
++                    if cancel is None:
++                        time.sleep(self.config.general.retry_delay)
++                    elif cancel.wait(self.config.general.retry_delay):
++                        raise
+                 else:
+                     self._transport = transport
+                     self._connected = True
+diff --git a/src/network_toolkit/intent.py b/src/network_toolkit/intent.py
+--- a/src/network_toolkit/intent.py
++++ b/src/network_toolkit/intent.py
+@@ -18,6 +18,8 @@
+ import json
+ import re
+ from collections.abc import Callable, Mapping
++from concurrent.futures import ThreadPoolExecutor, as_completed
++from contextvars import copy_context
+ from dataclasses import dataclass, field
+ from datetime import UTC, datetime
+ from pathlib import Path
+@@ -28,6 +30,10 @@
+ from network_toolkit.__about__ import __version__
+ from network_toolkit.exceptions import NetworkToolkitError
+ from network_toolkit.inventory.resolve import select_named_target
++from network_toolkit.transport.cancellation import (
++    cancellable_operation,
++    current_cancel,
++)
+ 
+ if TYPE_CHECKING:
+     from collections.abc import Collection
+@@ -1085,13 +1091,17 @@
+     client: NetworkaClient,
+     intent: list[IntentItem],
+     save_dir: str | Path | None = None,
++    *,
++    parallel: bool = False,
+     **run_options: Any,
+ ) -> IntentReport:
+     """Collect every reading once, then evaluate it exactly as `replay_intent` does.
+ 
+     Every item is resolved against the inventory before any device is read.
+     Items that need the same reader with the same arguments on one device
+-    share one reading. With `save_dir`, `intent.yaml` is written from the
++    share one reading. With `parallel`, different devices are read concurrently;
++    readers on each device remain serial, and interruption cancels native reads.
++    With `save_dir`, `intent.yaml` is written from the
+     validated items before collecting, and `evidence.json` and `results.json`
+     after. `run_options` are passed to `NetworkaClient.run`.
+     """
+@@ -1110,11 +1120,15 @@
+         folder.mkdir(parents=True, exist_ok=True)
+         text = yaml.safe_dump([item.to_yaml() for item in intent], sort_keys=False)
+         (folder / INTENT_FILE).write_text(text)
+-    for device_name, device in plan.items():
++
++    def collect(device_name: str, device: dict[str, Any]) -> None:
+         module = platform(device["device_type"])
+         device["started"] = _now()
+         unreachable = None
+         for reading in device["readings"]:
++            cancel = current_cancel()
++            if cancel is not None and cancel.cancelled:
++                break
+             if unreachable is not None:
+                 # The device did not accept a connection: do not wait for it again.
+                 reading["replies"], reading["error"] = {}, unreachable
+@@ -1130,6 +1144,29 @@
+                 continue
+             unreachable = _connection_failure(device_name, reading["replies"])
+         device["finished"] = _now()
++
++    if parallel:
++        # A device's readers remain serial on its session. Different devices
++        # can be read together so the full state does not add their SSH delays.
++        with cancellable_operation() as cancel:
++            executor = ThreadPoolExecutor(max_workers=min(32, len(plan)))
++            try:
++                futures = [
++                    executor.submit(copy_context().run, collect, name, device)
++                    for name, device in plan.items()
++                ]
++                for future in as_completed(futures):
++                    future.result()
++            except BaseException:
++                # In particular, the lab's SIGALRM deadline must interrupt
++                # native SSH reads before waiting for the workers to finish.
++                cancel.cancel()
++                raise
++            finally:
++                executor.shutdown(wait=True, cancel_futures=True)
++    else:
++        for device_name, device in plan.items():
++            collect(device_name, device)
+     evidence = {"networka_version": __version__, "devices": plan}
+     report = replay_intent(intent, evidence)
+     if folder is not None:
+diff --git a/src/network_toolkit/lab_faults.py b/src/network_toolkit/lab_faults.py
+--- a/src/network_toolkit/lab_faults.py
++++ b/src/network_toolkit/lab_faults.py
+@@ -24,6 +24,9 @@
+ NETEM_HANDLE = "982:"
+ # The qualified fast-rate LACP partners transmit once per second.
+ LACP_POLL_S = 0.2
++# Read the Linux member without querying the guests; avoid spending the
++# remaining recovery budget asleep before the full SSH state check.
++LOCAL_MEMBER_POLL_S = 0.05
+ LACP_RECOVERY_S = 30.0
+ 
+ 
+@@ -470,6 +473,33 @@
+             )
+             _require(remaining > 0, f"{name(fault)} exhausted its recovery deadline")
+             with lab_reboot._deadline(remaining, "Fault recovery"):
++                if isinstance(fault, Impair):
++                    end = lab.point(fault.point)
++                    if self.topology.node(end.node).kind == "linux":
++                        # Read the affected Linux member before asking the
++                        # guests for full state. Repeated SSH queries must not
++                        # disturb the protocol recovery being measured.
++                        for item in items:
++                            if (
++                                item.device == end.node
++                                and item.check == "bond_member"
++                                and item.params["member"] == end.interface
++                                and item.expected.get("eligible") is True
++                            ):
++                                while True:
++                                    checked = intent.run_intent(
++                                        client, [item], parallel=True, **options
++                                    )
++                                    self.session.mark(
++                                        "fault_member_checked",
++                                        number=number,
++                                        target=fault.point,
++                                        evidence=checked.evidence,
++                                        verdict=checked.verdict,
++                                    )
++                                    if checked.verdict == "pass":
++                                        break
++                                    time.sleep(LOCAL_MEMBER_POLL_S)
+                 lab_reboot.wait_recovered(
+                     client,
+                     self.session,
+diff --git a/src/network_toolkit/lab_reboot.py b/src/network_toolkit/lab_reboot.py
+--- a/src/network_toolkit/lab_reboot.py
++++ b/src/network_toolkit/lab_reboot.py
+@@ -181,7 +181,9 @@
+     while True:
+         try_number += 1
+         directory = session.directory / "recovery" / str(number) / str(try_number)
+-        checked = intent.run_intent(client, items, directory, **options)
++        checked = intent.run_intent(
++            client, items, directory, parallel=operation == "fault", **options
++        )
+         session.mark(
+             f"{operation}_state_checked",
+             switch=target,
+@@ -228,13 +230,17 @@
+     items: list[intent.IntentItem],
+     operation: str,
+ ) -> Mapping[str, Any]:
+-    checked = [
++    checks = [
+         e
+         for e in events
+         if e["name"] == f"{operation}_state_checked"
+         and e.get("number") == number
+         and e.get("switch") == target
+-    ][-1]
++    ]
++    if not checks:
++        msg = "No full recovery state check completed before the run stopped."
++        raise ValueError(msg)
++    checked = checks[-1]
+     try_number = int(checked["try_number"])
+     path = folder / "recovery" / str(number) / str(try_number) / intent.EVIDENCE_FILE
+     recovered = intent.replay_intent(items, intent.load_json(path.read_text()))
+diff --git a/src/network_toolkit/transport/scrapli_sync.py b/src/network_toolkit/transport/scrapli_sync.py
+--- a/src/network_toolkit/transport/scrapli_sync.py
++++ b/src/network_toolkit/transport/scrapli_sync.py
+@@ -30,6 +30,7 @@
+ from scrapli.transport import Options
+ 
+ from network_toolkit.exceptions import DeviceExecutionError, OperationUnconfirmedError
++from network_toolkit.transport.cancellation import current_cancel
+ from network_toolkit.transport.interfaces import CommandResult
+ 
+ logger = logging.getLogger(__name__)
+@@ -164,7 +165,11 @@
+     def open(self) -> None:
+         with self._lock:
+             try:
+-                self._driver.open()
++                cancel = current_cancel()
++                cancel_options: dict[str, Any] = (
++                    {"cancel": cancel.native} if cancel is not None else {}
++                )
++                self._driver.open(**cancel_options)
+                 self._force_close = False
+             except Exception:
+                 if self._driver.ptr is not None:
+@@ -185,8 +190,14 @@
+     def send_command(self, command: str) -> CommandResult:
+         with self._lock:
+             try:
++                cancel = current_cancel()
++                cancel_options: dict[str, Any] = (
++                    {"cancel": cancel.native} if cancel is not None else {}
++                )
+                 result = self._driver.send_input(
+-                    command, operation_timeout_ns=self._command_timeout_ns
++                    command,
++                    operation_timeout_ns=self._command_timeout_ns,
++                    **cancel_options,
+                 )
+             except (ScrapliException, OSError) as exc:
+                 # The session state is unknown, so do not wait for a clean logout.
+diff --git a/src/network_toolkit/transport/cancellation.py b/src/network_toolkit/transport/cancellation.py
+new file mode 100644
+--- /dev/null
++++ b/src/network_toolkit/transport/cancellation.py
+@@ -0,0 +1,48 @@
++"""Cooperative cancellation shared by the reads of one parallel operation."""
++
++from collections.abc import Iterator
++from contextlib import contextmanager
++from contextvars import ContextVar
++from threading import Event
++
++from scrapli.ffi_types import Cancel
++
++
++class OperationCancellation:
++    """Cancel native reads and wake connection retry delays together."""
++
++    def __init__(self) -> None:
++        self.native = Cancel()
++        self._event = Event()
++
++    @property
++    def cancelled(self) -> bool:
++        return self.native.cancelled
++
++    def cancel(self) -> None:
++        self.native.cancel()
++        self._event.set()
++
++    def wait(self, seconds: float) -> bool:
++        return self._event.wait(seconds)
++
++
++_cancel: ContextVar[OperationCancellation | None] = ContextVar(
++    "networka_operation_cancel", default=None
++)
++
++
++def current_cancel() -> OperationCancellation | None:
++    """The native cancellation token, if this operation has a cancellation scope."""
++    return _cancel.get()
++
++
++@contextmanager
++def cancellable_operation() -> Iterator[OperationCancellation]:
++    """Let copied worker contexts share a token without affecting other operations."""
++    cancel = OperationCancellation()
++    token = _cancel.set(cancel)
++    try:
++        yield cancel
++    finally:
++        _cancel.reset(token)
+diff --git a/src/network_toolkit/__about__.py b/src/network_toolkit/__about__.py
+--- a/src/network_toolkit/__about__.py
++++ b/src/network_toolkit/__about__.py
+@@ -1,4 +1,4 @@
+ # SPDX-FileCopyrightText: 2025-present Network Team <network@company.com>
+ #
+ # SPDX-License-Identifier: MIT
+-__version__ = "0.5.2+chr.2"
++__version__ = "0.5.2+chr.5"

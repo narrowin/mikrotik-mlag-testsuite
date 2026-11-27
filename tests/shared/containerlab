@@ -1,0 +1,29 @@
+#!/bin/sh
+# Run the published, qualified CHR client without changing the installed client.
+set -eu
+case "$(uname -m)" in
+    aarch64|arm64)
+        arch=arm64
+        checksum=10a584e7cf6a846d077f231dcd5ddc7436ff02121327524e47fc1cca91a1bc98 ;;
+    x86_64|amd64)
+        arch=amd64
+        checksum=465eaca185b00e958656acd9ca246ced206f0f550d2447ac63f46b7f6a2ce340 ;;
+    *) echo "Unsupported containerlab architecture: $(uname -m)" >&2; exit 1 ;;
+esac
+cache="${XDG_CACHE_HOME:-$HOME/.cache}/mikrotik-mlag-testsuite"
+mkdir -p "$cache"
+binary="$cache/containerlab-$arch-$checksum"
+if [ ! -x "$binary" ]; then
+    download="$(mktemp -d "$cache/download.XXXXXX")"
+    trap 'rm -rf "$download"' EXIT HUP INT TERM
+    base=https://github.com/narrowin/mikrotik-mlag-testsuite/releases/download/chr-startup-hooks-7.26beta7-20261127
+    curl --fail --location --silent --show-error "$base/containerlab-linux-$arch.gz" -o "$download/client.gz"
+    gzip -dc "$download/client.gz" > "$download/containerlab"
+    printf '%s  %s\n' "$checksum" "$download/containerlab" | sha256sum -c - >/dev/null
+    chmod 755 "$download/containerlab"
+    mv "$download/containerlab" "$binary"
+    rm -rf "$download"
+    trap - EXIT HUP INT TERM
+fi
+printf '%s  %s\n' "$checksum" "$binary" | sha256sum -c - >/dev/null
+exec "$binary" "$@"

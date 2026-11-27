@@ -1,0 +1,541 @@
+diff --git a/src/network_toolkit/api/execution.py b/src/network_toolkit/api/execution.py
+index ffbcb9f..f4eb282 100644
+--- a/src/network_toolkit/api/execution.py
++++ b/src/network_toolkit/api/execution.py
+@@ -4,6 +4,7 @@ from __future__ import annotations
+ 
+ from collections.abc import Callable
+ from concurrent.futures import ThreadPoolExecutor, as_completed
++from contextvars import copy_context
+ 
+ 
+ def execute_parallel[T, R](
+@@ -36,7 +37,8 @@ def execute_parallel[T, R](
+ 
+     with ThreadPoolExecutor(max_workers=workers) as executor:
+         future_to_index = {
+-            executor.submit(func, item): index for index, item in enumerate(items)
++            executor.submit(copy_context().run, func, item): index
++            for index, item in enumerate(items)
+         }
+ 
+         for future in as_completed(future_to_index):
+diff --git a/src/network_toolkit/device.py b/src/network_toolkit/device.py
+index 0171c9d..23f09b4 100644
+--- a/src/network_toolkit/device.py
++++ b/src/network_toolkit/device.py
+@@ -29,6 +29,7 @@ from network_toolkit.platforms.mikrotik_routeros.confirmation_patterns import (
+     MIKROTIK_ROUTERBOARD_UPGRADE,
+     MIKROTIK_SYSTEM_RESET,
+ )
++from network_toolkit.transport.cancellation import current_cancel
+ from network_toolkit.transport.factory import get_transport_factory
+ 
+ if TYPE_CHECKING:
+@@ -148,6 +149,10 @@ class DeviceSession:
+             attempts = max(1, self.config.general.connection_retries)
+             transport_factory = get_transport_factory(transport_type)
+             for attempt in range(1, attempts + 1):
++                cancel = current_cancel()
++                if cancel is not None and cancel.cancelled:
++                    msg = "Operation cancelled before connecting"
++                    raise DeviceConnectionError(msg)
+                 transport = transport_factory.create_transport(
+                     self.device_name, self.config, self._connection_params
+                 )
+@@ -163,7 +168,10 @@ class DeviceSession:
+                         self.device_name,
+                         self._error_reason(exc),
+                     )
+-                    time.sleep(self.config.general.retry_delay)
++                    if cancel is None:
++                        time.sleep(self.config.general.retry_delay)
++                    elif cancel.wait(self.config.general.retry_delay):
++                        raise
+                 else:
+                     self._transport = transport
+                     self._connected = True
+diff --git a/src/network_toolkit/intent.py b/src/network_toolkit/intent.py
+index e38f1bd..68dfafb 100644
+--- a/src/network_toolkit/intent.py
++++ b/src/network_toolkit/intent.py
+@@ -18,6 +18,8 @@ import ipaddress
+ import json
+ import re
+ from collections.abc import Callable, Mapping
++from concurrent.futures import ThreadPoolExecutor, as_completed
++from contextvars import copy_context
+ from dataclasses import dataclass, field
+ from datetime import UTC, datetime
+ from pathlib import Path
+@@ -28,6 +30,10 @@ import yaml
+ from network_toolkit.__about__ import __version__
+ from network_toolkit.exceptions import NetworkToolkitError
+ from network_toolkit.inventory.resolve import select_named_target
++from network_toolkit.transport.cancellation import (
++    cancellable_operation,
++    current_cancel,
++)
+ 
+ if TYPE_CHECKING:
+     from collections.abc import Collection
+@@ -1085,13 +1091,17 @@ def run_intent(
+     client: NetworkaClient,
+     intent: list[IntentItem],
+     save_dir: str | Path | None = None,
++    *,
++    parallel: bool = False,
+     **run_options: Any,
+ ) -> IntentReport:
+     """Collect every reading once, then evaluate it exactly as `replay_intent` does.
+ 
+     Every item is resolved against the inventory before any device is read.
+     Items that need the same reader with the same arguments on one device
+-    share one reading. With `save_dir`, `intent.yaml` is written from the
++    share one reading. With `parallel`, different devices are read concurrently;
++    readers on each device remain serial, and interruption cancels native reads.
++    With `save_dir`, `intent.yaml` is written from the
+     validated items before collecting, and `evidence.json` and `results.json`
+     after. `run_options` are passed to `NetworkaClient.run`.
+     """
+@@ -1110,11 +1120,15 @@ def run_intent(
+         folder.mkdir(parents=True, exist_ok=True)
+         text = yaml.safe_dump([item.to_yaml() for item in intent], sort_keys=False)
+         (folder / INTENT_FILE).write_text(text)
+-    for device_name, device in plan.items():
++
++    def collect(device_name: str, device: dict[str, Any]) -> None:
+         module = platform(device["device_type"])
+         device["started"] = _now()
+         unreachable = None
+         for reading in device["readings"]:
++            cancel = current_cancel()
++            if cancel is not None and cancel.cancelled:
++                break
+             if unreachable is not None:
+                 # The device did not accept a connection: do not wait for it again.
+                 reading["replies"], reading["error"] = {}, unreachable
+@@ -1130,6 +1144,29 @@ def run_intent(
+                 continue
+             unreachable = _connection_failure(device_name, reading["replies"])
+         device["finished"] = _now()
++
++    if parallel:
++        # A device's readers remain serial on its session. Different devices
++        # can be read together so the full state does not add their SSH delays.
++        with cancellable_operation() as cancel:
++            executor = ThreadPoolExecutor(max_workers=min(32, len(plan)))
++            try:
++                futures = [
++                    executor.submit(copy_context().run, collect, name, device)
++                    for name, device in plan.items()
++                ]
++                for future in as_completed(futures):
++                    future.result()
++            except BaseException:
++                # In particular, the lab's SIGALRM deadline must interrupt
++                # native SSH reads before waiting for the workers to finish.
++                cancel.cancel()
++                raise
++            finally:
++                executor.shutdown(wait=True, cancel_futures=True)
++    else:
++        for device_name, device in plan.items():
++            collect(device_name, device)
+     evidence = {"networka_version": __version__, "devices": plan}
+     report = replay_intent(intent, evidence)
+     if folder is not None:
+diff --git a/src/network_toolkit/lab.py b/src/network_toolkit/lab.py
+index 7bc0a48..3461317 100644
+--- a/src/network_toolkit/lab.py
++++ b/src/network_toolkit/lab.py
+@@ -154,8 +154,8 @@ class Lab:
+     def qemu(self, end: Point) -> Qemu | None:
+         """The QEMU NIC behind `end`, or None when the node runs no QEMU.
+ 
+-        The container interface and the QEMU TAP must share one bridge in the
+-        node's namespace, and the TAP must be the netdev of exactly one QEMU NIC.
++        The interface and TAP must share a bridge or have reciprocal tc
++        redirects. The TAP must be the netdev of exactly one QEMU NIC.
+         Anything else raises LabError, so a QEMU monitor action never hits the
+         wrong cable.
+         """
+@@ -171,18 +171,78 @@ class Lab:
+                 self.run(end.node, "ip", "-j", "link", "show", "master", master)
+             )
+             members = [m["ifname"] for m in listed if m["ifname"] in netdevs.values()]
++        else:
++            targets = tc_redirects(
++                json.loads(
++                    self.run(
++                        end.node,
++                        "tc",
++                        "-j",
++                        "filter",
++                        "show",
++                        "dev",
++                        end.interface,
++                        "ingress",
++                    )
++                )
++            )
++            if len(targets) == 1:
++                tap = next(iter(targets))
++                if tap in netdevs.values():
++                    reverse = tc_redirects(
++                        json.loads(
++                            self.run(
++                                end.node,
++                                "tc",
++                                "-j",
++                                "filter",
++                                "show",
++                                "dev",
++                                tap,
++                                "ingress",
++                            )
++                        )
++                    )
++                    if reverse == {end.interface}:
++                        members = [tap]
+         nics = [
+             devices[i] for i, tap in netdevs.items() if tap in members and i in devices
+         ]
+         if len(members) != 1 or len(nics) != 1 or qmp is None:
+             msg = (
+                 f"cannot tell which QEMU NIC is behind {end}: bridge {master!r} "
+-                f"holds TAPs {members}, NICs {nics}, QEMU monitor {qmp}"
++                f"or reciprocal tc redirects identify TAPs {members}, "
++                f"NICs {nics}, QEMU monitor {qmp}"
+             )
+             raise LabError(msg)
+         return Qemu(pid, nics[0], members[0], *qmp)
+ 
+ 
++def tc_redirects(filters: list[dict[str, Any]]) -> set[str]:
++    """Unconditional ingress redirects; mirrors and conditional filters do not qualify."""
++    targets = set()
++    for entry in filters:
++        options = entry.get("options", {})
++        if (
++            entry.get("kind") not in {"flower", "matchall"}
++            or entry.get("protocol") != "all"
++            or options.get("keys")
++        ):
++            continue
++        actions = options.get("actions", [])
++        if len(actions) != 1:
++            continue
++        action = actions[0]
++        if (
++            action.get("kind") == "mirred"
++            and action.get("mirred_action") == "redirect"
++            and action.get("direction") == "egress"
++            and isinstance(action.get("to_dev"), str)
++        ):
++            targets.add(action["to_dev"])
++    return targets
++
++
+ def parse_topology(data: Mapping[str, Any]) -> Lab:
+     """The nodes and links of a containerlab `topology-data.json`."""
+     try:
+diff --git a/src/network_toolkit/lab_faults.py b/src/network_toolkit/lab_faults.py
+index ba44e42..884d980 100644
+--- a/src/network_toolkit/lab_faults.py
++++ b/src/network_toolkit/lab_faults.py
+@@ -3,6 +3,7 @@
+ 
+ from __future__ import annotations
+ 
++import json
+ import re
+ import shlex
+ import statistics
+@@ -23,6 +24,9 @@ DROP_COUNT = re.compile(r"\(dropped (\d+),")
+ NETEM_HANDLE = "982:"
+ # The qualified fast-rate LACP partners transmit once per second.
+ LACP_POLL_S = 0.2
++# Read the Linux member without querying the guests; avoid spending the
++# remaining recovery budget asleep before the full SSH state check.
++LOCAL_MEMBER_POLL_S = 0.05
+ LACP_RECOVERY_S = 30.0
+ 
+ 
+@@ -342,6 +346,45 @@ class TrafficActions:
+             raw=applied,
+         )
+ 
++    def drain_delay(self, point: lab.Point, fault: Impair) -> None:
++        """Stop delaying new frames and let the existing queue empty before deletion."""
++        self.tc(
++            point,
++            "qdisc",
++            "change",
++            "dev",
++            point.interface,
++            "root",
++            "handle",
++            NETEM_HANDLE,
++            "netem",
++            "delay",
++            "0ms",
++            "loss",
++            "0%",
++        )
++        deadline = time.monotonic() + (fault.delay_ms + fault.jitter_ms) / 1000 + 1
++        while True:
++            raw = json.loads(
++                self.tc(point, "-j", "-s", "qdisc", "show", "dev", point.interface)
++            )
++            queues = [
++                q
++                for q in raw
++                if q.get("root")
++                and q.get("kind") == "netem"
++                and q.get("handle") == NETEM_HANDLE
++            ]
++            _require(
++                len(queues) == 1 and type(queues[0].get("qlen")) is int,
++                f"{point} did not report its owned queue length",
++            )
++            if queues[0]["qlen"] == 0:
++                self.session.mark("fault_drained", target=str(point), raw=raw)
++                return
++            _require(time.monotonic() < deadline, f"{point} delay queue did not drain")
++            time.sleep(0.01)
++
+     def remove(self, active: Installed) -> dict[str, str]:
+         errors = []
+         for p in sorted(active.owned):
+@@ -350,16 +393,20 @@ class TrafficActions:
+                 if isinstance(active.fault, Impair):
+                     root = _root(raw)
+                     if root[1:3] == ["netem", NETEM_HANDLE]:
+-                        self.tc(
+-                            p,
+-                            "qdisc",
+-                            "del",
+-                            "dev",
+-                            p.interface,
+-                            "root",
+-                            "handle",
+-                            NETEM_HANDLE,
+-                        )
++                        try:
++                            if active.fault.delay_ms:
++                                self.drain_delay(p, active.fault)
++                        finally:
++                            self.tc(
++                                p,
++                                "qdisc",
++                                "del",
++                                "dev",
++                                p.interface,
++                                "root",
++                                "handle",
++                                NETEM_HANDLE,
++                            )
+                 else:
+                     _classifier_remove(self.topology, p, raw)
+                 active.owned.discard(p)
+@@ -426,8 +473,44 @@ class TrafficActions:
+             )
+             _require(remaining > 0, f"{name(fault)} exhausted its recovery deadline")
+             with lab_reboot._deadline(remaining, "Fault recovery"):
++                if isinstance(fault, Impair):
++                    end = lab.point(fault.point)
++                    if self.topology.node(end.node).kind == "linux":
++                        # Read the affected Linux member before asking the
++                        # guests for full state. Repeated SSH queries must not
++                        # disturb the protocol recovery being measured.
++                        for item in items:
++                            if (
++                                item.device == end.node
++                                and item.check == "bond_member"
++                                and item.params["member"] == end.interface
++                                and item.expected.get("eligible") is True
++                            ):
++                                while True:
++                                    checked = intent.run_intent(
++                                        client, [item], parallel=True, **options
++                                    )
++                                    self.session.mark(
++                                        "fault_member_checked",
++                                        number=number,
++                                        target=fault.point,
++                                        evidence=checked.evidence,
++                                        verdict=checked.verdict,
++                                    )
++                                    if checked.verdict == "pass":
++                                        break
++                                    time.sleep(LOCAL_MEMBER_POLL_S)
+                 lab_reboot.wait_recovered(
+-                    client, self.session, name(fault), number, items, options, "fault"
++                    client,
++                    self.session,
++                    name(fault),
++                    number,
++                    items,
++                    options,
++                    "fault",
++                    # The switches are already reachable. Do not inherit the
++                    # reboot retry delay and sleep through a short recovery.
++                    poll_s=LACP_POLL_S,
+                 )
+ 
+ 
+diff --git a/src/network_toolkit/lab_reboot.py b/src/network_toolkit/lab_reboot.py
+index 1ac0fe0..06e46bb 100644
+--- a/src/network_toolkit/lab_reboot.py
++++ b/src/network_toolkit/lab_reboot.py
+@@ -174,12 +174,16 @@ def wait_recovered(
+     items: list[intent.IntentItem],
+     options: Mapping[str, Any],
+     operation: str,
++    *,
++    poll_s: float = POLL_S,
+ ) -> None:
+     try_number = 0
+     while True:
+         try_number += 1
+         directory = session.directory / "recovery" / str(number) / str(try_number)
+-        checked = intent.run_intent(client, items, directory, **options)
++        checked = intent.run_intent(
++            client, items, directory, parallel=operation == "fault", **options
++        )
+         session.mark(
+             f"{operation}_state_checked",
+             switch=target,
+@@ -189,7 +193,7 @@ def wait_recovered(
+         )
+         if checked.verdict == "pass":
+             return
+-        time.sleep(POLL_S)
++        time.sleep(poll_s)
+ 
+ 
+ def uptime_proof(
+@@ -226,13 +230,17 @@ def recovery_proof(
+     items: list[intent.IntentItem],
+     operation: str,
+ ) -> Mapping[str, Any]:
+-    checked = [
++    checks = [
+         e
+         for e in events
+         if e["name"] == f"{operation}_state_checked"
+         and e.get("number") == number
+         and e.get("switch") == target
+-    ][-1]
++    ]
++    if not checks:
++        msg = "No full recovery state check completed before the run stopped."
++        raise ValueError(msg)
++    checked = checks[-1]
+     try_number = int(checked["try_number"])
+     path = folder / "recovery" / str(number) / str(try_number) / intent.EVIDENCE_FILE
+     recovered = intent.replay_intent(items, intent.load_json(path.read_text()))
+diff --git a/src/network_toolkit/transport/scrapli_sync.py b/src/network_toolkit/transport/scrapli_sync.py
+index 6e725ce..f326226 100644
+--- a/src/network_toolkit/transport/scrapli_sync.py
++++ b/src/network_toolkit/transport/scrapli_sync.py
+@@ -30,6 +30,7 @@ from scrapli.ffi_types import Cancel
+ from scrapli.transport import Options
+ 
+ from network_toolkit.exceptions import DeviceExecutionError, OperationUnconfirmedError
++from network_toolkit.transport.cancellation import current_cancel
+ from network_toolkit.transport.interfaces import CommandResult
+ 
+ logger = logging.getLogger(__name__)
+@@ -164,7 +165,11 @@ class ScrapliSyncTransport:
+     def open(self) -> None:
+         with self._lock:
+             try:
+-                self._driver.open()
++                cancel = current_cancel()
++                cancel_options: dict[str, Any] = (
++                    {"cancel": cancel.native} if cancel is not None else {}
++                )
++                self._driver.open(**cancel_options)
+                 self._force_close = False
+             except Exception:
+                 if self._driver.ptr is not None:
+@@ -185,8 +190,14 @@ class ScrapliSyncTransport:
+     def send_command(self, command: str) -> CommandResult:
+         with self._lock:
+             try:
++                cancel = current_cancel()
++                cancel_options: dict[str, Any] = (
++                    {"cancel": cancel.native} if cancel is not None else {}
++                )
+                 result = self._driver.send_input(
+-                    command, operation_timeout_ns=self._command_timeout_ns
++                    command,
++                    operation_timeout_ns=self._command_timeout_ns,
++                    **cancel_options,
+                 )
+             except (ScrapliException, OSError) as exc:
+                 # The session state is unknown, so do not wait for a clean logout.
+diff --git a/src/network_toolkit/transport/cancellation.py b/src/network_toolkit/transport/cancellation.py
+new file mode 100644
+index 0000000..e0d8070
+--- /dev/null
++++ b/src/network_toolkit/transport/cancellation.py
+@@ -0,0 +1,48 @@
++"""Cooperative cancellation shared by the reads of one parallel operation."""
++
++from collections.abc import Iterator
++from contextlib import contextmanager
++from contextvars import ContextVar
++from threading import Event
++
++from scrapli.ffi_types import Cancel
++
++
++class OperationCancellation:
++    """Cancel native reads and wake connection retry delays together."""
++
++    def __init__(self) -> None:
++        self.native = Cancel()
++        self._event = Event()
++
++    @property
++    def cancelled(self) -> bool:
++        return self.native.cancelled
++
++    def cancel(self) -> None:
++        self.native.cancel()
++        self._event.set()
++
++    def wait(self, seconds: float) -> bool:
++        return self._event.wait(seconds)
++
++
++_cancel: ContextVar[OperationCancellation | None] = ContextVar(
++    "networka_operation_cancel", default=None
++)
++
++
++def current_cancel() -> OperationCancellation | None:
++    """The native cancellation token, if this operation has a cancellation scope."""
++    return _cancel.get()
++
++
++@contextmanager
++def cancellable_operation() -> Iterator[OperationCancellation]:
++    """Let copied worker contexts share a token without affecting other operations."""
++    cancel = OperationCancellation()
++    token = _cancel.set(cancel)
++    try:
++        yield cancel
++    finally:
++        _cancel.reset(token)
+--- a/src/network_toolkit/__about__.py
++++ b/src/network_toolkit/__about__.py
+@@ -1,4 +1,4 @@
+ # SPDX-FileCopyrightText: 2025-present Network Team <network@company.com>
+ #
+ # SPDX-License-Identifier: MIT
+-__version__ = "0.5.2"
++__version__ = "0.5.2+chr.5"

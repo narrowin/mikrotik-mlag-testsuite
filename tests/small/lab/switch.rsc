@@ -1,7 +1,8 @@
-# Both switches give a host's bond its number as mlag-id, and lacp-rate=1sec lets a cable rejoin in seconds, not 30 to 90 s.
-/interface bonding add name=host1 mode=802.3ad mlag-id=1 slaves=ether3 lacp-rate=1sec
-/interface bonding add name=host2 mode=802.3ad mlag-id=2 slaves=ether4 lacp-rate=1sec
-/interface bonding add name=host3 mode=802.3ad mlag-id=3 slaves=ether5 lacp-rate=1sec
+# Strict LACP and min-links=1 withdraw a local bond with no negotiated member.
+# MLAG then forwards through the peer link instead of the unusable local cable.
+/interface bonding add name=host1 mode=802.3ad mlag-id=1 slaves=ether3 lacp-rate=1sec lacp-strict=yes min-links=1
+/interface bonding add name=host2 mode=802.3ad mlag-id=2 slaves=ether4 lacp-rate=1sec lacp-strict=yes min-links=1
+/interface bonding add name=host3 mode=802.3ad mlag-id=3 slaves=ether5 lacp-rate=1sec lacp-strict=yes min-links=1
 # MLAG carries the host VLAN tagged on the peer link. VLAN 10 matches the host subnet 10.0.10.0/24.{{/* STP_MODE none keeps spanning tree off. Any other mode makes the MLAG pair the root, with the same priority and port settings on both peers. */}}
 /interface bridge add name=bridge vlan-filtering=yes protocol-mode={{.Env.STP_MODE}}{{if ne .Env.STP_MODE "none"}} priority=0x1000{{end}} mlag-peer-port=ether2
 /interface bridge port add bridge=bridge interface=ether2

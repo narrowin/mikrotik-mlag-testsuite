@@ -29,3 +29,18 @@ When a Containerlab build already creates the bridges with learning off, `start.
 The root `README.md` keeps the old wrapper as a manual fallback for a released containerlab, only until a released containerlab version includes native CHR support; then the fallback is removed from the README.
 The published `nw test` results were run on the native build; the frozen old-suite results in `results/` were run with the wrapper on containerlab 0.83.0.
 Only the ARM64 build is qualified; on the lab VM its SHA-256 is `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`.
+
+## Update: public tc image and qualified clients, 27 November 2026
+
+The operator requested that the entire suite use the public CHR image and the
+qualified containerlab clients. Both architectures passed public-kit deployment
+and restart. All topologies now pin the public image by digest; its RouterOS
+disk is unchanged from the pinned 7.26beta7 build.
+
+`tests/shared/containerlab` downloads the published client for the host
+architecture, verifies its pinned SHA-256 and caches it. The normal installed
+client is untouched. `tests/shared/start.sh` uses this helper automatically.
+The data-bridge learning workaround and the released-client wrapper instructions
+are retired. Data ports use tc; management provisioning and Linux IPv6 suppression
+remain inside the containerlab kind. Earlier statements above describe the
+previous qualification and do not prescribe the current workflow.

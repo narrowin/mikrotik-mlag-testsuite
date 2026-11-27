@@ -27,8 +27,8 @@ Every lab uses the files in [tests/shared](../../tests/shared): the [Dockerfile]
 
 Live tests run in the OrbStack VM `mlag-external` (`orb -m mlag-external`), where the repository has the same path.
 The host needs Docker, sudo, tcpdump, tshark, ping, nsenter and `tc` from iproute2.
-Use Containerlab with native CHR support from commit `06ac3ca4d442ce4f937b50bd7c04d5f32fb3173b`. On the VM this is the qualified ARM64 build with SHA-256 `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`.
-The lockfile pins Networka at commit [`30e706a`](https://github.com/narrowin/networka/commit/30e706adb5b92e0e607f7e8d1d2d5f45d7ec806e) of its main branch, which prioritizes outage-limit breaches in summaries and separates surviving traffic from intentional host interruption and restart/rejoin in reports. The VM-local uv environment keeps each checkout separate. The saved runs were recorded with Networka 0.5.2; they load and summarize with the pinned commit but do not replay byte-identical with it.
+`tests/shared/containerlab` selects our published ARM64/AMD64 client, verifies its SHA-256 and caches it. Every topology uses the public CHR tc image pinned by digest. The installed containerlab is unchanged.
+The lockfile pins the bundled Networka `0.5.2+chr.5` source artifact, which supports tc NIC discovery, delayed-queue cleanup and prompt impairment recovery checks. [Provenance and patch](../../vendor/README.md). Historical saved runs retain their original engine versions.
 
 Check first what is running and deployed, and touch no lab you did not start.
 
@@ -41,13 +41,13 @@ Run from the repository root. Each lab README gives `LAB`, `NAME` and `CONFIG`, 
 
 ```sh
 export PATH=/var/tmp/pt1-tools:$PATH  # uv 0.13.10
-CLAB=/mnt/mac/tmp/containerlab-chr-06ac3ca4d.YXKSaT/containerlab
+CLAB="$PWD/tests/shared/containerlab"
 lab_nw() {
   sudo env "PATH=/usr/sbin:/sbin:$PATH" "UV_PROJECT_ENVIRONMENT=/var/tmp/mlag-lab-venvs$PWD" \
     uv run --locked nw "$@"
 }
 LAB=tests/small NAME=small-mlag CONFIG=tests/small/lab/devices.yml TEST=bond-member-loss
-sudo env "CLAB=$CLAB" tests/shared/start.sh "$LAB"
+sudo tests/shared/start.sh "$LAB"
 mkdir -p test-results
 RUN=$(mktemp -d test-results/run.XXXXXX)
 lab_nw test run "$LAB/tests/$TEST.yaml" --lab "$LAB/lab/clab-$NAME" --config "$CONFIG" --save "$RUN"

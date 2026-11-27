@@ -24,3 +24,11 @@ The suite cannot show that a check would fail on another build.
 Every result and comparison is tied to this one build, so changing it means rerunning every lab.
 The digest is written in each `tests/*/lab/topology.clab.yml`.
 The old suite's single pin, [`labs/campaign-image.txt`](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/labs/campaign-image.txt), was deleted with it, so a change of build must update every topology file.
+
+## Image packaging update, 27 November 2026
+
+All current topologies use the public CHR startup-hooks image pinned to
+`sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10`.
+It adds tc and optional startup hooks; the RouterOS 7.26beta7 disk is unchanged.
+This changes container packaging and the data path, not the campaign version.
+Historical run records retain their original image and client identities.

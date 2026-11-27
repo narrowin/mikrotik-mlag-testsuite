@@ -2,7 +2,7 @@
 
 This suite measures how long traffic stops when a switch or link fails in a MikroTik MLAG pair. With multi-chassis link aggregation (MLAG), a server or switch connects to two MikroTik switches over one bonded link and stays connected when one of them fails. The suite builds virtual MLAG networks and breaks them in one way at a time. A test reboots a switch, cuts its power, cuts a link or delays or drops traffic on a link. Packet captures then show how long traffic stopped. The main finding on RouterOS 7.26beta7 is that [an MLAG bond whose bond member has no LACP partner keeps forwarding](docs/findings/mlag-bond-without-lacp-partner-keeps-forwarding.md): frames loop back to their sender, and traffic between two MLAG pairs stops while one MLAG primary reboots. All measured RouterOS behaviour is in the [findings](docs/findings/README.md).
 
-The labs run RouterOS itself. MikroTik publishes the Cloud Hosted Router (CHR) as an official container image, [`mikrotik/chr`](https://hub.docker.com/r/mikrotik/chr) on Docker Hub, for amd64 and arm64. Each container runs the full CHR in a QEMU virtual machine, so the tests exercise RouterOS's own bridge, LACP and MLAG code. Switch-chip offload on CRS hardware is not covered.
+The labs run RouterOS itself. MikroTik publishes the Cloud Hosted Router (CHR) as an official container image, [`mikrotik/chr`](https://hub.docker.com/r/mikrotik/chr) on Docker Hub, for amd64 and arm64. Each container runs the full CHR in a QEMU virtual machine, so the tests exercise RouterOS's own bridge, LACP and MLAG code. Switch-chip offload on CRS hardware is not covered. Current labs use our checksum-pinned public tc/startup-hook image; its RouterOS disk is unchanged from the official 7.26beta7 image.
 
 [Containerlab](https://containerlab.dev) runs that image with its [`mikrotik_chr` kind](https://containerlab.dev/manual/kinds/mikrotik_chr/). Each lab is one folder under [`tests/`](docs/tests/README.md) with a Containerlab topology, one RouterOS startup config and one YAML file per test. [Networka](https://narrowin.github.io/networka/) runs the tests with `nw test run`. It sends numbered pings every 100 ms between the test hosts and compares each stop with the limit in the test file.
 
@@ -39,17 +39,16 @@ Start with the [Small lab](tests/small/README.md): two CHRs as the MLAG pair, jo
 
 - A Linux host with Docker, sudo, tcpdump, tshark, ping, nsenter and `tc` from iproute2. On a Mac with Apple Silicon, use a Linux VM such as one in [OrbStack](https://orbstack.dev/download).
 - [uv](https://docs.astral.sh/uv/) and [Git](https://git-scm.com/install/).
-- Containerlab with native CHR full duplex and LACP. A released Containerlab does not have it yet. Build it first as in [Containerlab version](#containerlab-version).
+- curl, gzip and sha256sum. The shared launcher downloads our qualified containerlab client automatically.
 
 ### Run a test
 
-Run from the repository root. `CLAB` is the absolute path of the Containerlab build.
+Run from the repository root. The launcher selects our checksum-pinned public client automatically.
 
 ```sh
 git clone https://github.com/narrowin/mikrotik-mlag-testsuite.git
 cd mikrotik-mlag-testsuite
-CLAB=/usr/local/bin/containerlab
-sudo env "CLAB=$CLAB" tests/shared/start.sh tests/small
+sudo tests/shared/start.sh tests/small
 ```
 
 `start.sh` returns once the bond of every Linux host is up. It fails after 60 s and names the host whose bond is down.
@@ -73,31 +72,18 @@ lab_nw test replay "$RUN/bond-member-loss"
 Remove the lab when you are done.
 
 ```sh
-sudo "$CLAB" destroy -t tests/small/lab/topology.clab.yml --cleanup
+sudo tests/shared/containerlab destroy -t tests/small/lab/topology.clab.yml --cleanup
 ```
 
 ### Containerlab version
 
-The labs need Containerlab with native CHR full duplex and LACP, from [srl-labs/containerlab#3636](https://github.com/srl-labs/containerlab/pull/3636). It is not in a release yet. RouterOS gives a bond member an LACP key only when the port reports full duplex. Containerlab 0.83.0 reports CHR data ports as half duplex, so RouterOS gives the bond members no LACP key and no bond comes up. There are two ways to run the labs.
+The suite uses our [public CHR image and qualified containerlab clients](https://github.com/narrowin/mikrotik-mlag-testsuite/releases/tag/chr-startup-hooks-7.26beta7-20261127). Every topology pins the image by digest. `tests/shared/containerlab` downloads the ARM64 or AMD64 client, verifies its pinned SHA-256 and caches it. It leaves the installed containerlab unchanged.
 
-1. Build Containerlab from the pull request branch. You need Git, Make and [Go](https://go.dev/dl/) 1.26 or newer; Debian and Ubuntu packages are older. `make build` asks for your sudo password because it makes the binary setuid root.
-
-   ```sh
-   git clone -b feat/mikrotik-chr-data-speed https://github.com/mischadiehm/containerlab.git
-   cd containerlab && make build
-   sudo install -m 4755 bin/containerlab /usr/local/bin/containerlab
-   cd ..
-   ```
-
-   `/usr/local/bin` comes before `/usr/bin` in `PATH` and in sudo's `secure_path`, so this build runs instead of the packaged one. Remove `/usr/local/bin/containerlab` to go back. The build reports version 0.0.0.
-
-2. Use the workaround on a released Containerlab. It is cumbersome. Bind-mount a QEMU wrapper that adds `speed=10000,duplex=full` to the data NICs over `/usr/local/bin/qemu-system-aarch64` and `/usr/local/bin/qemu-system-x86_64` in the CHR kind. Then set `brport/group_fwd_mask` on the veth and tap bridge ports so that they forward LACP. The old suite did this with [`qemu-data-link.sh`](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/labs/shared/qemu-data-link.sh) and [`forward-control.sh`](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/labs/shared/forward-control.sh).
-
-The published `nw test` results in the lab READMEs were run on the build from way 1. The frozen old-suite results in `results/` were run with the workaround on Containerlab 0.83.0.
+The suite pins a [qualified Networka source artifact](vendor/README.md) with tc NIC discovery. The kind supplies tc data connections, management provisioning and Linux IPv6 suppression. The labs require no QEMU wrapper, bridge-learning workaround or custom CHR mounts. Historical results retain the image and client used for those runs; they are not reclassified as results of this stack.
 
 ### GitHub Codespaces and the dev container
 
-The [dev container](.devcontainer/devcontainer.json) has uv, tshark and Containerlab 0.83.0. A GitHub Codespace uses the same container. A lab gets LACP bonds there only with one of the two ways above, so `start.sh` fails on the Codespace as it is. You need a GitHub account and available Codespaces usage.
+The [dev container](.devcontainer/devcontainer.json) has uv, tshark and Containerlab 0.83.0. A GitHub Codespace uses the same container. The shared launcher uses our published client there as well; Docker privileged-container support is required. You need a GitHub account and available Codespaces usage.
 
 [![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/narrowin/mikrotik-mlag-testsuite?quickstart=1)
 

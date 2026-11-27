@@ -1,0 +1,166 @@
+#!/bin/sh
+set -e
+
+MEM="${MEM:=512m}"
+DISK="${DISK:=128M}"
+CPUS="${CPUS:=1}"
+bridge_index=0
+
+get_mac_address() {
+    cat "/sys/class/net/$1/address" 2>/dev/null
+}
+
+increment_mac() {
+    mac=$1
+    # Remove colons and convert to uppercase
+    mac_no_colons=$(echo "$mac" | tr -d ':' | tr '[:lower:]' '[:upper:]')
+    if [ ${#mac_no_colons} -ne 12 ]; then
+        return 0
+    fi
+
+    # Convert to decimal, increment, and convert back to hex
+    mac_dec=$((16#${mac_no_colons}))
+    mac_dec=$((mac_dec + 1))
+    mac_hex=$(printf "%012X" "$mac_dec")
+
+    # Format back to colon-separated MAC
+    echo "$mac_hex" | sed 's/.\{2\}/&:/g;s/:$//'
+}
+
+# Interfaces of the host are handed to us as one end of a veth pair, every such
+# interface gets its own bridge with a tap device that is given to qemu.
+# Everything else in this network namespace has to be left alone, in particular
+# the per-namespace tunnel devices (tunl0, sit0, gre0, ip6tnl0, ...) which
+# appear as soon as the matching module is loaded on the host and which cannot
+# be bridged at all [ROS-28570].
+is_passed_veth() {
+    netdir="/sys/class/net/$1"
+
+    # ARPHRD_ETHER only, drops lo (772) and all of the tunnel devices
+    if [ "$(cat "$netdir/type" 2>/dev/null)" != "1" ]; then
+        return 1
+    fi
+    # a bridge itself, ours from a previous run in a reused netns
+    if [ -d "$netdir/bridge" ]; then
+        return 1
+    fi
+    # real hardware, so we are looking at the host network namespace
+    if [ -e "$netdir/device" ]; then
+        return 1
+    fi
+    # veth points at its peer, standalone devices (dummy, tap, bridge) at
+    # themselves
+    if [ "$(cat "$netdir/iflink" 2>/dev/null)" = "$(cat "$netdir/ifindex" 2>/dev/null)" ]; then
+        return 1
+    fi
+    # enslaved to something we cannot put a tap device into
+    master=$(get_master "$1")
+    if [ -n "$master" ] && [ ! -d "/sys/class/net/$master/bridge" ]; then
+        return 1
+    fi
+
+    return 0
+}
+
+get_master() {
+    master=$(readlink "/sys/class/net/$1/master" 2>/dev/null || true)
+    echo "${master##*/}"
+}
+
+has_members() {
+    for member in "/sys/class/net/$1/brif/"*; do
+        if [ -e "$member" ] || [ -L "$member" ]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# sets $bridge to the first bridge name that is not in use, bridges of a
+# previous run in this network namespace are reused
+pick_bridge() {
+    while has_members "br$bridge_index"; do
+        bridge_index=$((bridge_index + 1))
+    done
+    bridge="br$bridge_index"
+    bridge_index=$((bridge_index + 1))
+}
+
+# --net=host would have us bridge away the interfaces of the machine we run on
+in_host_netns() {
+    for netdir in /sys/class/net/*; do
+        if [ -e "$netdir/device" ]; then
+            echo "host interface: ${netdir##*/}"
+            return 0
+        fi
+    done
+    return 1
+}
+
+if [ ! -d /sys/class/net ]; then
+    echo "no /sys/class/net, cannot look up interfaces" >&2
+    exit 1
+fi
+
+if in_host_netns; then
+    echo "refusing to reconfigure the network of the host," \
+	 "run the container in its own network namespace" >&2
+    exit 1
+fi
+
+# Optional startup hooks; an empty directory preserves the default startup.
+for startup_script in /etc/chr/start.d/*.sh; do
+    [ -f "$startup_script" ] || continue
+    # shellcheck source=/dev/null
+    . "$startup_script" || exit $?
+done
+
+echo "" > /etc/qemu/bridge.conf
+
+qemu="qemu-system-x86_64"
+if [[ `uname -m` == "aarch64" ]]; then
+   qemu="qemu-system-aarch64 -pflash /usr/share/qemu/edk2-aarch64-code.fd -M virt"
+fi
+
+if [ -e /dev/kvm ]; then
+    qemu="$qemu -cpu host -accel kvm"
+else
+    if [[ `uname -m` == "aarch64" ]]; then
+	qemu="$qemu -cpu cortex-a57"
+    fi
+    qemu="$qemu -accel tcg,split-wx=on"
+fi
+
+img=`ls diskimage/*.img`
+qemu="$qemu -nographic -m $MEM -smp cpus=$CPUS -drive file=$img,format=raw"
+truncate -s $DISK $img
+
+for dir in /sys/class/net/*; do
+    iface="${dir##*/}"
+    if ! is_passed_veth "$iface"; then
+        continue
+    fi
+    echo "iface: $iface"
+    bridge=$(get_master "$iface")
+    if [ -z "$bridge" ]; then
+        pick_bridge
+        ip link add name "$bridge" type bridge 2>/dev/null || true
+        if ! ip link set "$iface" master "$bridge"; then
+            echo "failed to bridge $iface, skipping it"
+            continue
+        fi
+    fi
+    ip link set dev "$bridge" up
+    echo "allow $bridge" >> /etc/qemu/bridge.conf
+
+    tap_mac=$(increment_mac "$(get_mac_address "$iface")")
+    device="virtio-net,netdev=$bridge"
+    if [ -n "$tap_mac" ]; then
+        device="$device,mac=$tap_mac"
+    fi
+
+    qemu="$qemu -netdev bridge,id=$bridge,br=$bridge -device $device "
+done
+
+echo "qemu: $qemu"
+exec $qemu

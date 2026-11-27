@@ -29,7 +29,7 @@ LAB=tests/small-mac-move NAME=small-mlag-mac-move CONFIG=tests/small-mac-move/la
 Use the default profile for every test except MAC ageing. For `TEST=mac-age-relearn`, start the lab with the `age` argument, which starts both switches at ten seconds of ageing and pins the necessary host neighbours. Remove the lab with the same ageing value it was started with. Teardown discards the profile. The test itself clears both egress filters.
 
 ```sh
-sudo env "CLAB=$CLAB" tests/shared/start.sh "$LAB" age
+sudo tests/shared/start.sh "$LAB" age
 sudo env SMALL_MAC_MOVE_AGE=10s "$CLAB" destroy -t "$LAB/lab/topology.clab.yml" --cleanup
 ```
 

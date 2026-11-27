@@ -1,0 +1,16 @@
+--- start.sh.orig
++++ start.sh
+@@ -108,6 +108,13 @@
+     exit 1
+ fi
+ 
++# Optional startup hooks; an empty directory preserves the default startup.
++for startup_script in /etc/chr/start.d/*.sh; do
++    [ -f "$startup_script" ] || continue
++    # shellcheck source=/dev/null
++    . "$startup_script" || exit $?
++done
++
+ echo "" > /etc/qemu/bridge.conf
+ 
+ qemu="qemu-system-x86_64"
