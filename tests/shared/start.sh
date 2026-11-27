@@ -15,17 +15,17 @@ if [ ! -f "$CLAB" ] || [ ! -x "$CLAB" ]; then
     exit 1
 fi
 
-# Small-mobile reads the MAC ageing timer. Use the default five minutes except when
+# Small-mac-move reads the MAC ageing timer. Use the default five minutes except when
 # the host must age out during the 25 s silence of mac-age-relearn.
 case "${2:-}" in
-    "") SMALL_MOBILE_AGE=5m ;;
-    age) SMALL_MOBILE_AGE=10s ;;
+    "") SMALL_MAC_MOVE_AGE=5m ;;
+    age) SMALL_MAC_MOVE_AGE=10s ;;
     *) usage ;;
 esac
-export SMALL_MOBILE_AGE
+export SMALL_MAC_MOVE_AGE
 
 # The host image needs no build context, so the Dockerfile comes on standard input.
-docker build -t small-mlag-client:local - < "$(dirname "$0")/client.Dockerfile"
+docker build -t mlag-host:local - < "$(dirname "$0")/host.Dockerfile"
 cd "$1/lab"
 name=$(sed -n 's/^name: *//p' topology.clab.yml)
 # Containerlab checks the collector bind path before it creates the node directory.

@@ -1,7 +1,7 @@
 # Networka reaches every lab node over SSH at the address containerlab assigned
 
 Networka reads device state and runs commands on every testable node over SSH, switches and Linux hosts alike.
-The Linux host image in `tests/shared/client.Dockerfile` runs `sshd` for that reason.
+The Linux host image in `tests/shared/host.Dockerfile` runs `sshd` for that reason.
 A lab's `devices.yml` holds only the device types and the lab logins.
 Networka takes each node's management address from the `topology-data.json` that containerlab writes when it deploys the lab.
 Host keys are neither checked nor stored: every `devices.yml` sets `ssh_known_hosts_file: /dev/null`.

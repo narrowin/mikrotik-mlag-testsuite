@@ -1,9 +1,9 @@
 # Every device on an MLAG pair is dual-connected
 
 Every host, access switch, firewall and distribution pair that connects to an MLAG pair has one cable to each MLAG peer.
-Most use an LACP bond; the MAC-move host `client3` of small-mobile uses an active-backup bond with the same MAC on either link.
+Most use an LACP bond; the MAC-move host `client3` of small-mac-move uses an active-backup bond with the same MAC on either link.
 No device is attached to only one peer.
-A single-homed device is a future test, `FUT-01` in the [old case index](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/cases/README.md), not a current one.
+A single-homed device is a future test, `FUT-01` in the [old case index](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/tests/README.md), not a current one.
 
 ## Why
 

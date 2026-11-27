@@ -1,6 +1,6 @@
 # A test is a YAML file, and every limit carries its reason next to it
 
-A test is one file in `tests/<lab>/cases/`, a list of steps with an action, a hold and a limit for each stream.
+A test is one file in `tests/<lab>/tests/`, a list of steps with an action, a hold and a limit for each stream.
 The expected state, the limits and the timing live in that file and in the lab file, not in code.
 Running a test needs no AI and no judgement by a person.
 

@@ -5,7 +5,7 @@ Both MLAG peers carry the same bridge priority and the same port STP settings, a
 The lab has its own name, `medium-mlag-rstp`, and management subnet, `172.30.113.0/24`, so it can run next to the base lab.
 
 The folder holds only what differs: [topology.clab.yml](lab/topology.clab.yml), which sets `STP_MODE: rstp` and the collector address for the shared startup config, and [lab.yaml](lab/lab.yaml), which checks before and after every test RSTP on all three bridges, both peers as root bridge with root ID `0x1000.02:00:00:21:01:01` (switch1), the access switch on the same root through `uplink`, and every bridge port forwarding with the host ports as edge ports.
-Each test in `cases/` is a symbolic link to the base test of the same name, and Networka resolves its `lab: ../lab/lab.yaml` from the link's folder, so it runs with this lab's `lab.yaml`.
+Each test in `tests/` is a symbolic link to the base test of the same name, and Networka resolves its `lab: ../lab/lab.yaml` from the link's folder, so it runs with this lab's `lab.yaml`.
 The startup config, host setup and inventory are the base lab's files in [tests/medium/lab](../medium/lab).
 
 ## Networka 0.5.2 live runs

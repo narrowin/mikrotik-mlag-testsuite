@@ -13,9 +13,9 @@ topology:
         COLLECTOR: 172.30.102.10
         STP_MODE: rstp
   groups:
-    clients:
+    hosts:
       kind: linux
-      image: small-mlag-client:local
+      image: mlag-host:local
       binds:
         - ../../small/lab/host-setup.sh:/lab/host-setup.sh:ro
       exec:
@@ -43,32 +43,32 @@ topology:
       kind: mikrotik_chr
     switch2:
       kind: mikrotik_chr
-    client1:
-      group: clients
-    client2:
-      group: clients
-    client3:
-      group: clients
+    host1:
+      group: hosts
+    host2:
+      group: hosts
+    host3:
+      group: hosts
   links:
     # A CHR's ethN maps to RouterOS ether(N+1) because ether1 is management.
     - endpoints:
         - switch1:eth1
         - switch2:eth1
     - endpoints:
-        - client1:eth1
+        - host1:eth1
         - switch1:eth2
     - endpoints:
-        - client1:eth2
+        - host1:eth2
         - switch2:eth2
     - endpoints:
-        - client2:eth1
+        - host2:eth1
         - switch1:eth3
     - endpoints:
-        - client2:eth2
+        - host2:eth2
         - switch2:eth3
     - endpoints:
-        - client3:eth1
+        - host3:eth1
         - switch1:eth4
     - endpoints:
-        - client3:eth2
+        - host3:eth2
         - switch2:eth4

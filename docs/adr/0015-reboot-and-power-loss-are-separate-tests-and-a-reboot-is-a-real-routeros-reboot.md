@@ -2,7 +2,7 @@
 
 A reboot test runs `/system reboot` on the switch and proves a new boot from its uptime.
 A power loss test pauses the CHR guest and withdraws carrier on all its data cables, keeps it off for 20 s, then resets and resumes it and proves a fresh boot.
-Medium and small-mobile have both for the MLAG primary and the MLAG secondary, and Small has the reboot.
+Medium and small-mac-move have both for the MLAG primary and the MLAG secondary, and Small has the reboot.
 
 ## Why
 

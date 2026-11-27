@@ -1,10 +1,10 @@
 streams:
-  - name: client1-to-client2
-    from: client1:bond0
-    to: client2:bond0
-  - name: client2-to-client3
-    from: client2:bond0
-    to: client3:bond0
+  - name: host1-to-host2
+    from: host1:bond0
+    to: host2:bond0
+  - name: host2-to-host3
+    from: host2:bond0
+    to: host3:bond0
 state:
   - statement: Both switches show MLAG connected.
     checks:
@@ -28,34 +28,34 @@ state:
         check: stp_mode
         params: *bridge
         expected: none
-  - statement: Both cables of every client are eligible in its LACP bond.
+  - statement: Both cables of every host are eligible in its LACP bond.
     checks:
-      - device: client1
+      - device: host1
         check: bond_member
         params: &first-member
           bond: bond0
           member: eth1
         expected: &eligible
           eligible: true
-      - device: client1
+      - device: host1
         check: bond_member
         params: &second-member
           bond: bond0
           member: eth2
         expected: *eligible
-      - device: client2
+      - device: host2
         check: bond_member
         params: *first-member
         expected: *eligible
-      - device: client2
+      - device: host2
         check: bond_member
         params: *second-member
         expected: *eligible
-      - device: client3
+      - device: host3
         check: bond_member
         params: *first-member
         expected: *eligible
-      - device: client3
+      - device: host3
         check: bond_member
         params: *second-member
         expected: *eligible

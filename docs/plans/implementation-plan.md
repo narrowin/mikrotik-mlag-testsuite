@@ -194,7 +194,7 @@ Each package is done when its "done when" line holds on `main` of both repos.
 ### 3. The remaining tests of the Small lab
 
 On 26 November 2026 the operator approved every historically runnable Small case with spanning tree off.
-The [mobile Small guide](../../tests/small-mobile/README.md) lists their YAML files and the
+The [mobile Small guide](../../tests/small-mac-move/README.md) lists their YAML files and the
 observations graded in each. The same native CHR build runs the original two Phase 1
 cases and the separate mobile topology.
 
@@ -249,8 +249,8 @@ Each folder below is one lab variant: one topology, one startup config and its l
 | Step | Folder | Tests | New Networka work | Size |
 | --- | --- | --- | --- | --- |
 | 4a | `tests/medium/` | baseline, calibration, secondary reboot, primary reboot, secondary power loss, primary power loss | none expected | small |
-| 4b | `tests/medium-two-pair/` | baseline, calibration, reboot of each peer of pair A and pair B, inter-pair member flap | none expected | medium |
-| 4c | `tests/medium-two-pair-strict/` | the 4b tests with `lacp-strict=yes` on the inter-pair bond | none expected | small |
+| 4b | `tests/two-pair/` | baseline, calibration, reboot of each peer of pair A and pair B, inter-pair member flap | none expected | medium |
+| 4c | `tests/two-pair-strict/` | the 4b tests with `lacp-strict=yes` on the inter-pair bond | none expected | small |
 | 4d | `tests/large/` | see below | likely a VRRP state check | large |
 
 - 4a: one MLAG pair, the access switch bonded to both peers, host 1 behind the access switch, host 2 bonded to both peers, and the bypass between the hosts. The lab file checks MLAG on both peers and the members of both bonds.

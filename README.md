@@ -20,10 +20,10 @@ RSTP off means no spanning tree on any bridge (`protocol-mode=none`). RSTP on ha
 | Lab | Topology | RSTP off | RSTP on | Worst stop, RSTP off | Worst stop, RSTP on |
 | --- | --- | --- | --- | --- | --- |
 | [Small](tests/small/README.md) | One MLAG pair | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 1&nbsp;of&nbsp;4, 1&nbsp;error | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [1&nbsp;of&nbsp;4, 1&nbsp;error](tests/small-rstp/README.md) | 4.39–4.60&nbsp;s of&nbsp;1&nbsp;s, Cable client1 to switch2 down, client1&nbsp;→&nbsp;client2 | 7.49–7.70&nbsp;s of&nbsp;1&nbsp;s, Cable client1 to switch2 down, client1&nbsp;→&nbsp;client2 |
-| [Small with MAC-move host](tests/small-mobile/README.md) | One MLAG pair + MAC-move host | ![PASS](docs/diagrams/result-pass.svg "PASS") 11&nbsp;of&nbsp;11 | not run | 24.99–25.20&nbsp;s of&nbsp;26&nbsp;s, Mobile silent, client3&nbsp;→&nbsp;client1 | — |
+| [Small with MAC-move host](tests/small-mac-move/README.md) | One MLAG pair + MAC-move host | ![PASS](docs/diagrams/result-pass.svg "PASS") 11&nbsp;of&nbsp;11 | not run | 24.99–25.20&nbsp;s of&nbsp;26&nbsp;s, Mobile silent, client3&nbsp;→&nbsp;client1 | — |
 | [Medium](tests/medium/README.md) | One MLAG pair + access switch | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;5 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [2&nbsp;of&nbsp;5](tests/medium-rstp/README.md) | 2.60–2.81&nbsp;s of&nbsp;5&nbsp;s, Reboot switch1, host2&nbsp;→&nbsp;host1 | 16.65–16.85&nbsp;s of&nbsp;5&nbsp;s, Reboot switch2, host1&nbsp;→&nbsp;host2 |
-| [Two-pair](tests/medium-two-pair/README.md) | Two MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;6 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [4&nbsp;of&nbsp;6](tests/medium-two-pair-rstp/README.md) | 18.95–19.16&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host1&nbsp;→&nbsp;host2 | 25.72–25.93&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host1&nbsp;→&nbsp;host2 |
-| [Two-pair strict](tests/medium-two-pair-strict/README.md) | Two MLAG pairs + `lacp-strict` | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 3&nbsp;of&nbsp;6 | not run | 19.46–19.66&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host2&nbsp;→&nbsp;host1 | — |
+| [Two-pair](tests/two-pair/README.md) | Two MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;6 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [4&nbsp;of&nbsp;6](tests/two-pair-rstp/README.md) | 18.95–19.16&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host1&nbsp;→&nbsp;host2 | 25.72–25.93&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host1&nbsp;→&nbsp;host2 |
+| [Two-pair strict](tests/two-pair-strict/README.md) | Two MLAG pairs + `lacp-strict` | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 3&nbsp;of&nbsp;6 | not run | 19.46–19.66&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host2&nbsp;→&nbsp;host1 | — |
 | [Large](tests/large/README.md) | Two sites, four MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 3&nbsp;of&nbsp;6 | not run | 41.03–41.24&nbsp;s of&nbsp;216&nbsp;s, dc1 power lost, dc2-traffic&nbsp;→&nbsp;dc1-traffic | — |
 
 The values are generated with `nw test summary tests/results.yaml` from the runs that [tests/results.yaml](tests/results.yaml) lists.
@@ -33,7 +33,7 @@ The values are generated with `nw test summary tests/results.yaml` from the runs
 
 ## Quick start
 
-Start with the [Small lab](tests/small/README.md): two CHRs as the MLAG pair, joined by the peer link, and three Linux clients bonded to both with LACP.
+Start with the [Small lab](tests/small/README.md): two CHRs as the MLAG pair, joined by the peer link, and three Linux hosts bonded to both with LACP.
 
 ### What you need
 
@@ -63,7 +63,7 @@ lab_nw() {
 }
 mkdir -p test-results
 RUN=$(mktemp -d test-results/run.XXXXXX)
-lab_nw test run tests/small/cases/bond-member-loss.yaml --lab tests/small/lab/clab-small-mlag \
+lab_nw test run tests/small/tests/bond-member-loss.yaml --lab tests/small/lab/clab-small-mlag \
   --config tests/small/lab/devices.yml --save "$RUN"
 lab_nw test replay "$RUN/bond-member-loss"
 ```
@@ -107,11 +107,11 @@ If you use Codespaces, choose **Stop codespace** when you are done to stop compu
 
 | Lab | What it is |
 | --- | --- |
-| [Small](tests/small/README.md) | One MLAG pair and three Linux clients bonded to both peers. |
-| [Small with a mobile host](tests/small-mobile/README.md) | The Small pair with an active-backup host. |
+| [Small](tests/small/README.md) | One MLAG pair and three Linux hosts bonded to both peers. |
+| [Small with a MAC-move host](tests/small-mac-move/README.md) | The Small pair with a MAC-move host on an active-backup bond. |
 | [Medium](tests/medium/README.md) | One MLAG pair, an access switch with one LACP bond to both peers, and two hosts. |
-| [Medium with two pairs](tests/medium-two-pair/README.md) | Two MLAG pairs joined by one LACP bond. |
-| [Two pairs with lacp-strict](tests/medium-two-pair-strict/README.md) | The two-pair lab with `lacp-strict=yes` on the bond between the pairs. |
+| [Two-pair](tests/two-pair/README.md) | Two MLAG pairs joined by one LACP bond. |
+| [Two-pair strict](tests/two-pair-strict/README.md) | The two-pair lab with `lacp-strict=yes` on the bond between the pairs. |
 | [Large](tests/large/README.md) | Two sites, each with a core and a distribution MLAG pair, and a VRRP firewall at each site. |
 
 ## Documentation and help

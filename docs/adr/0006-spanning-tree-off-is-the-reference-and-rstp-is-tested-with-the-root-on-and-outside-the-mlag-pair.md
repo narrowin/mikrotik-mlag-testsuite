@@ -27,7 +27,7 @@ On 2026-11-27 the operator approved RSTP labs for Small, Medium and the two-pair
 
 ## Consequences
 
-`tests/small-rstp/`, `tests/medium-rstp/` and `tests/medium-two-pair-rstp/` reuse the startup config and tests of their STP-off lab and set `STP_MODE: rstp` in their topology, which makes the MLAG pair the root.
+`tests/small-rstp/`, `tests/medium-rstp/` and `tests/two-pair-rstp/` reuse the startup config and tests of their STP-off lab and set `STP_MODE: rstp` in their topology, which makes the MLAG pair the root.
 A Medium lab with the access switch as root is not built yet.
 Each RSTP lab counts towards the three labs that may run with tests at once.
 The old STP-on results stay in `results/` as the frozen record.

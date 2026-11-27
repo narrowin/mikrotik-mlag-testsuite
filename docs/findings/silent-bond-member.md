@@ -7,7 +7,7 @@ Both match [Finding 1 and Finding 2](mlag-bond-without-lacp-partner-keeps-forwar
 
 ## 100 % packet loss on one cable
 
-- The Small lab test [cable-packet-loss](../../tests/small/cases/cable-packet-loss.yaml) drops every frame leaving `client1` on its cable to switch2, LACPDUs included, for 25 s. The cable keeps carrier.
+- The Small lab test [cable-packet-loss](../../tests/small/tests/cable-packet-loss.yaml) drops every frame leaving `client1` on its cable to switch2, LACPDUs included, for 25 s. The cable keeps carrier.
 - Run `tests/small/runs/networka-0.5.2-20261127/cable-packet-loss`, spanning tree off: ERROR.
 - In that run the stream `client1` to `client2` lost 379 pings at one ping every 100 ms, an outage of at least 39.4227 s against 4 s.
 - The stream `client2` to `client3` lost no ping.

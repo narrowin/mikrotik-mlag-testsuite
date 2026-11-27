@@ -1,0 +1,77 @@
+streams:
+  - name: host1-to-mac-move-host
+    from: host1:bond0
+    to: mac-move-host:bond0
+  - name: host2-to-mac-move-host
+    from: host2:bond0
+    to: mac-move-host:bond0
+  - name: mac-move-host-to-host1
+    from: mac-move-host:bond0
+    to: host1:bond0
+  - name: mac-move-host-to-host2
+    from: mac-move-host:bond0
+    to: host2:bond0
+  - name: host1-to-host2
+    from: host1:bond0
+    to: host2:bond0
+state:
+  - statement: The primary and secondary peers are connected and run with spanning tree off.
+    checks:
+      - device: switch1
+        check: mlag
+        params: &bridge
+          bridge: bridge
+        expected:
+          connected: true
+          role: primary
+      - device: switch2
+        check: mlag
+        params: *bridge
+        expected:
+          connected: true
+          role: secondary
+      - device: switch1
+        check: stp_mode
+        params: *bridge
+        expected: none
+      - device: switch2
+        check: stp_mode
+        params: *bridge
+        expected: none
+      - device: switch1
+        check: property
+        params: &fallback
+          menu: /interface/bridge
+          where:
+            name: bridge
+          name: mlag-lacp-fallback
+        expected: true
+      - device: switch2
+        check: property
+        params: *fallback
+        expected: true
+  - statement: Both cables of host1 and host2 are eligible in their LACP bonds.
+    checks:
+      - device: host1
+        check: bond_member
+        params: &first-member
+          bond: bond0
+          member: eth1
+        expected: &eligible
+          carrier: true
+          eligible: true
+      - device: host1
+        check: bond_member
+        params: &second-member
+          bond: bond0
+          member: eth2
+        expected: *eligible
+      - device: host2
+        check: bond_member
+        params: *first-member
+        expected: *eligible
+      - device: host2
+        check: bond_member
+        params: *second-member
+        expected: *eligible
+switch_log: syslog/switches.log

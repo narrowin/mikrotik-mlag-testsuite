@@ -25,5 +25,5 @@ A check that reads the state proves the starting point without changing it.
 ## Consequences
 
 A lab with different settings is its own folder, with its own name and management subnet.
-`tests/medium-two-pair-strict/` exists only because `lacp-strict=yes` must be set at boot; it reuses the two-pair startup config through a topology variable and links to the two-pair tests.
+`tests/two-pair-strict/` exists only because `lacp-strict=yes` must be set at boot; it reuses the two-pair startup config through a topology variable and links to the two-pair tests.
 A test that leaves the lab broken shows up as an ERROR in the next test's starting state checks.

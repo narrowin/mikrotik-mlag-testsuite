@@ -103,10 +103,10 @@ Traffic between the pairs stops until the rebooted switch forwards again.
 - MLAG secondary reboots lost no ping, but no test traffic used the MLAG secondary's links, so they do not test this path.
 - One MLAG pair recovers normally: on the Medium lab with spanning tree off an MLAG primary reboot stays within 5 s. There the access switch has a plain LACP bond with a bond member to each MLAG peer.
 - Networka reproduces it on the current two-pair labs, runs `networka-0.5.2-20261127`, one ping every 100 ms against 5 s:
-  - [Two-pair lab](../../tests/medium-two-pair/README.md), reboot-a-primary: FAIL, an outage of 18.9537 to 19.1575 s on host1 to host2.
+  - [Two-pair lab](../../tests/two-pair/README.md), reboot-a-primary: FAIL, an outage of 18.9537 to 19.1575 s on host1 to host2.
   - Two-pair lab, reboot-b-primary: FAIL, an outage of 18.0634 to 18.2708 s on host1 to host2.
-  - [Two-pair strict lab](../../tests/medium-two-pair-strict/README.md), reboot-a-primary: FAIL, an outage of 19.4467 to 19.6514 s on host1 to host2.
-  - [Two-pair RSTP lab](../../tests/medium-two-pair-rstp/README.md), reboot-a-primary: FAIL, an outage of 25.7228 to 25.9308 s on host1 to host2.
+  - [Two-pair strict lab](../../tests/two-pair-strict/README.md), reboot-a-primary: FAIL, an outage of 19.4467 to 19.6514 s on host1 to host2.
+  - [Two-pair RSTP lab](../../tests/two-pair-rstp/README.md), reboot-a-primary: FAIL, an outage of 25.7228 to 25.9308 s on host1 to host2.
 
 **Not verified.**
 

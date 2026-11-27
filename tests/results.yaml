@@ -22,11 +22,11 @@ rows:
       link: small-rstp/README.md
 - lab: Small with MAC-move host
   topology: One MLAG pair + MAC-move host
-  link: small-mobile/README.md
+  link: small-mac-move/README.md
   cells:
     RSTP off:
       runs:
-      - small-mobile/runs/networka-0.5.2-20261127
+      - small-mac-move/runs/networka-0.5.2-20261127
 - lab: Medium
   topology: One MLAG pair + access switch
   link: medium/README.md
@@ -40,23 +40,23 @@ rows:
       link: medium-rstp/README.md
 - lab: Two-pair
   topology: Two MLAG pairs
-  link: medium-two-pair/README.md
+  link: two-pair/README.md
   cells:
     RSTP off:
       runs:
-      - medium-two-pair/runs/networka-0.5.2-20261127
+      - two-pair/runs/networka-0.5.2-20261127
     RSTP on:
       runs:
-      - medium-two-pair-rstp/runs/networka-0.5.2-20261127
-      link: medium-two-pair-rstp/README.md
+      - two-pair-rstp/runs/networka-0.5.2-20261127
+      link: two-pair-rstp/README.md
 - lab: Two-pair strict
   topology: Two MLAG pairs + `lacp-strict`
   label: Two MLAG pairs, lacp-strict
-  link: medium-two-pair-strict/README.md
+  link: two-pair-strict/README.md
   cells:
     RSTP off:
       runs:
-      - medium-two-pair-strict/runs/networka-0.5.2-20261127
+      - two-pair-strict/runs/networka-0.5.2-20261127
 - lab: Large
   topology: Two sites, four MLAG pairs
   link: large/README.md

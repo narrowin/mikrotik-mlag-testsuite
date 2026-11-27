@@ -1,6 +1,6 @@
 # One startup config for all ten CHRs. Containerlab selects the role by node name.
 {{- if eq .ShortName "dc1-firewall" "dc2-firewall"}}
-# The firewall is an ordinary LACP client of both local cores. lacp-rate=1sec matches the cores.
+# The firewall is an ordinary LACP partner of both local cores. lacp-rate=1sec matches the cores.
 /interface bonding add name=cores mode=802.3ad slaves=ether2,ether3 lacp-rate=1sec
 /interface vlan add name=vlan390 interface=cores vlan-id=390
 /ip address add address=198.18.40.{{if eq .ShortName "dc1-firewall"}}2{{else}}3{{end}}/24 interface=vlan390

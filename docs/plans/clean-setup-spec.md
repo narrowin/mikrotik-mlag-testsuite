@@ -13,6 +13,6 @@ The [Small lab](../../tests/small/README.md) boots two RouterOS MLAG peers with 
 ## Test contract
 
 - The [lab file](../../tests/small/lab/lab.yaml) defines each stream's direction and the state required before and after the test.
-- The [test file](../../tests/small/cases/bond-member-loss.yaml) defines the cable changes, hold times, per-stream limits and switch log rules. A passing test independently demonstrates traffic recovery and the expected port log for each step.
+- The [test file](../../tests/small/tests/bond-member-loss.yaml) defines the cable changes, hold times, per-stream limits and switch log rules. A passing test independently demonstrates traffic recovery and the expected port log for each step.
 - The run must retain enough evidence for offline replay to regenerate the same verdict and human-readable report. Both must show each lost-ping count with the interval and the measured stop.
 - The start, run, replay and removal commands belong in the [lab README](../../tests/small/README.md). The [implementation plan](implementation-plan.md) defines the live acceptance checks.

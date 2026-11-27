@@ -15,4 +15,4 @@ On 2026-11-27 the operator extended the removal to every lab.
 
 Small and its RSTP lab already have no bypass and no calibration test.
 The bypass cable, its streams and the calibration tests were removed from every lab under `tests/` on 2026-11-27.
-Until then Medium, the two-pair lab, the two-pair strict lab, Large, small-mobile and the RSTP labs of Medium and the two-pair lab still have a bypass cable and `bypass-*` streams with 0 s limits, and all but Large have calibration tests that cut it.
+Until then Medium, the two-pair lab, the two-pair strict lab, Large, small-mac-move and the RSTP labs of Medium and the two-pair lab still have a bypass cable and `bypass-*` streams with 0 s limits, and all but Large have calibration tests that cut it.

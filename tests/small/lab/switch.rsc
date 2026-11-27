@@ -1,13 +1,13 @@
-# Both switches give a client's bond its number as mlag-id, and lacp-rate=1sec lets a cable rejoin in seconds, not 30 to 90 s.
-/interface bonding add name=client1 mode=802.3ad mlag-id=1 slaves=ether3 lacp-rate=1sec
-/interface bonding add name=client2 mode=802.3ad mlag-id=2 slaves=ether4 lacp-rate=1sec
-/interface bonding add name=client3 mode=802.3ad mlag-id=3 slaves=ether5 lacp-rate=1sec
-# MLAG carries the client VLAN tagged on the peer link. VLAN 10 matches the client subnet 10.0.10.0/24.{{/* STP_MODE none keeps spanning tree off. Any other mode makes the MLAG pair the root, with the same priority and port settings on both peers. */}}
+# Both switches give a host's bond its number as mlag-id, and lacp-rate=1sec lets a cable rejoin in seconds, not 30 to 90 s.
+/interface bonding add name=host1 mode=802.3ad mlag-id=1 slaves=ether3 lacp-rate=1sec
+/interface bonding add name=host2 mode=802.3ad mlag-id=2 slaves=ether4 lacp-rate=1sec
+/interface bonding add name=host3 mode=802.3ad mlag-id=3 slaves=ether5 lacp-rate=1sec
+# MLAG carries the host VLAN tagged on the peer link. VLAN 10 matches the host subnet 10.0.10.0/24.{{/* STP_MODE none keeps spanning tree off. Any other mode makes the MLAG pair the root, with the same priority and port settings on both peers. */}}
 /interface bridge add name=bridge vlan-filtering=yes protocol-mode={{.Env.STP_MODE}}{{if ne .Env.STP_MODE "none"}} priority=0x1000{{end}} mlag-peer-port=ether2
 /interface bridge port add bridge=bridge interface=ether2
-/interface bridge port add bridge=bridge interface=client1 pvid=10{{if ne .Env.STP_MODE "none"}} edge=yes{{end}}
-/interface bridge port add bridge=bridge interface=client2 pvid=10{{if ne .Env.STP_MODE "none"}} edge=yes{{end}}
-/interface bridge port add bridge=bridge interface=client3 pvid=10{{if ne .Env.STP_MODE "none"}} edge=yes{{end}}
+/interface bridge port add bridge=bridge interface=host1 pvid=10{{if ne .Env.STP_MODE "none"}} edge=yes{{end}}
+/interface bridge port add bridge=bridge interface=host2 pvid=10{{if ne .Env.STP_MODE "none"}} edge=yes{{end}}
+/interface bridge port add bridge=bridge interface=host3 pvid=10{{if ne .Env.STP_MODE "none"}} edge=yes{{end}}
 /interface bridge vlan add bridge=bridge tagged=ether2 vlan-ids=10
 # Send the log to the collector from the management VRF via its management interface.
 /system logging action add name=collector target=remote remote={{.Env.COLLECTOR}} vrf=mgmt

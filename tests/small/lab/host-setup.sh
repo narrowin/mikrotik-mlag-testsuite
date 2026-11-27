@@ -1,9 +1,9 @@
 #!/bin/sh
 set -eu
 
-# Client N is the node clientN.
+# Host N is the node hostN.
 n=$(hostname)
-n=${n#client}
+n=${n#host}
 
 # miimon 100 stops sending on a cut cable, lacp_rate fast matches the switches, and the fixed MAC keeps the bond's cable choice in every run.
 ip link add bond0 address "02:00:00:00:00:0$n" type bond mode 802.3ad miimon 100 lacp_rate fast

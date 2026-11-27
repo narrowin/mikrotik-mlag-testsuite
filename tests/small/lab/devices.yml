@@ -5,10 +5,10 @@ devices:
   switch1: &switch
     device_type: mikrotik_routeros
   switch2: *switch
-  client1: &client
+  host1: &host
     device_type: linux
-  client2: *client
-  client3: *client
+  host2: *host
+  host3: *host
 groups:
   switches:
     description: MLAG peers using the CHR default login
@@ -18,12 +18,12 @@ groups:
     credentials:
       user: admin
       password: admin
-  clients:
-    description: Linux clients
+  hosts:
+    description: Linux hosts
     members:
-      - client1
-      - client2
-      - client3
+      - host1
+      - host2
+      - host3
     credentials:
       user: root
       password: admin

@@ -32,15 +32,15 @@ Before and after every test it checks that switch1 is the connected MLAG primary
 
 ## Tests and their limits
 
-The limits, hold times and expectations come from the `medium-stp-off-*` cases of the earlier Medium suite and from the Small tests of the same kind in [mobile](../small-mobile/README.md).
+The limits, hold times and expectations come from the `medium-stp-off-*` cases of the earlier Medium suite and from the Small tests of the same kind in [Small with a MAC-move host](../small-mac-move/README.md).
 
 | Test | Limits and where they come from |
 | --- | --- |
-| [Baseline](cases/baseline.yaml) | 4 s with no lost ping on any stream, from `medium-stp-off-baseline`. Each flooded probe from host2 reaches host1 once and never returns to host2, from the same case's single copy of each broadcast. The flood probe is the one of the Small secondary reboot. |
-| [Secondary reboot](cases/secondary-reboot.yaml) | Reboot switch2. Each stream may stop for 5 s, over a 16 s hold and a 3 s recovery, from `medium-stp-off-reboot-secondary`. 60 s for the new boot and healthy state, and the flood probe, as in the Small secondary reboot. |
-| [Primary reboot](cases/primary-reboot.yaml) | Reboot switch1, with the same limits from `medium-stp-off-reboot-primary`. 60 s for recovery, as in the Small primary reboot. |
-| [Secondary power loss](cases/secondary-power-loss.yaml) | Switch2 off for 20 s, then on. Each stream may stop for 5 s, with a 16 s hold and a 3 s recovery, from `medium-stp-off-power-loss-secondary`. 180 s for the cold boot and healthy state, as in the Small power-loss tests. |
-| [Primary power loss](cases/primary-power-loss.yaml) | Switch1 off for 20 s, with the same limits from `medium-stp-off-power-loss-primary`. |
+| [Baseline](tests/baseline.yaml) | 4 s with no lost ping on any stream, from `medium-stp-off-baseline`. Each flooded probe from host2 reaches host1 once and never returns to host2, from the same case's single copy of each broadcast. The flood probe is the one of the Small secondary reboot. |
+| [Secondary reboot](tests/secondary-reboot.yaml) | Reboot switch2. Each stream may stop for 5 s, over a 16 s hold and a 3 s recovery, from `medium-stp-off-reboot-secondary`. 60 s for the new boot and healthy state, and the flood probe, as in the Small secondary reboot. |
+| [Primary reboot](tests/primary-reboot.yaml) | Reboot switch1, with the same limits from `medium-stp-off-reboot-primary`. 60 s for recovery, as in the Small primary reboot. |
+| [Secondary power loss](tests/secondary-power-loss.yaml) | Switch2 off for 20 s, then on. Each stream may stop for 5 s, with a 16 s hold and a 3 s recovery, from `medium-stp-off-power-loss-secondary`. 180 s for the cold boot and healthy state, as in the Small power-loss tests. |
+| [Primary power loss](tests/primary-power-loss.yaml) | Switch1 off for 20 s, with the same limits from `medium-stp-off-power-loss-primary`. |
 
 ## Live verdicts
 
