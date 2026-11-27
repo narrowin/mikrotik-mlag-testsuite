@@ -72,6 +72,16 @@ On Linux, give your user access to Docker so VS Code can start the container. [D
 
 Already have a dedicated Linux lab host? Follow the [manual setup](docs/test-framework.md#execute-locally).
 
+### Containerlab version
+
+RouterOS gives a bond member an LACP key only when the port reports full duplex. Containerlab 0.83.0 reports CHR data ports as half duplex. Each lab therefore bind-mounts [`labs/shared/qemu-data-link.sh`](labs/shared/qemu-data-link.sh) over the QEMU binary to report 10G full duplex, so the labs run on the released Containerlab. [srl-labs/containerlab#3636](https://github.com/srl-labs/containerlab/pull/3636) adds this to Containerlab itself. To use it before it is released, build Containerlab from the pull request branch with Go and Make:
+
+```sh
+git clone -b feat/mikrotik-chr-data-speed https://github.com/mischadiehm/containerlab.git
+cd containerlab && make build
+sudo install bin/containerlab "$(command -v containerlab)"
+```
+
 ### Run the baseline
 
 In VS Code, choose **Terminal → New Terminal**. Run this from the repository folder in the Codespace or local dev container.

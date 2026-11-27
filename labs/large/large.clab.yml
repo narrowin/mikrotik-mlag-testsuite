@@ -9,6 +9,7 @@ topology:
       startup-config: large.rsc
       binds:
         - ../shared/qemu-data-link.sh:/usr/local/bin/qemu-system-aarch64:ro
+        - ../shared/qemu-data-link.sh:/usr/local/bin/qemu-system-x86_64:ro
         - ../shared/forward-control.sh:/lab/forward-control.sh:ro
       stages:
         create:
