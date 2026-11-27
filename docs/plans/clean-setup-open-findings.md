@@ -61,7 +61,7 @@ The evidence for this review is in `test-results/suite-yaml-verify/clean/phase1-
 | L16 | Fixed | The startup configuration explains why the client VLAN must be tagged on the peer link and how its number was chosen. |
 | L17 | Fixed | The switch configuration identifies the topics for port changes and markers and the severity rules that capture MLAG problems across topics. |
 | L18 | Fixed | The native launcher discovers the data ports. The bridges had spanning tree off, which Linux uses to forward bridge-group BPDUs (`native-chr/04-before-restart.log`). |
-| L19 | Fixed | The older audit reported dropped replies with learning enabled and cited no raw run for this Small lab. The native trial passed both cable runs and the reboot with normal bridge learning. The operator approved retiring the extra no-learning setting (`native-chr/10-sol-matrix-review.log`). |
+| L19 | Fixed | The older audit was right: a learning container bridge drops replies in a cable failover. On 2026-11-27 the Small cable test lost 7.5 s on fresh labs because switch2's peer-link container bridge had learned host1's MAC on the tap side. `tests/shared/start.sh` now turns learning off on every CHR data bridge; the test then passed on 4 of 4 fresh deploys. |
 | L20 | Fixed | The native launcher defaults the data ports to 10 Gbit/s full duplex, as measured on RouterOS. Its source includes both QEMU architectures. The ARM64 ports were checked live (`native-chr/03-source-and-runner.log`, `native-chr/04-before-restart.log`). |
 | L21 | Fixed | The lab and test prose use the actual node names. |
 | L22 | Fixed | Kept the observed RouterOS heartbeat warning. Neither the cited manual nor the saved raw logs supported the two sync-warning strings. |

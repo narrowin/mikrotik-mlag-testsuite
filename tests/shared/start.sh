@@ -32,6 +32,21 @@ name=$(sed -n 's/^name: *//p' topology.clab.yml)
 mkdir -p "clab-$name/syslog"
 "$CLAB" deploy -t topology.clab.yml
 
+# Containerlab joins each CHR data port to its QEMU tap through a two-port Linux bridge.
+# The bridge stands in for a cable, so it must not learn MAC addresses: a learning bridge
+# drops a frame whose destination it learned on the port the frame came in on. In the Small
+# cable test that cut host1's replies off on switch2's peer link for 7.5 s. Turn learning off
+# on every data bridge, but not the management bridge br0, and flush what was learned.
+for switch in $(docker ps --filter "label=containerlab=$name" --filter "label=clab-node-kind=mikrotik_chr" --format '{{.Names}}'); do
+    docker exec "$switch" sh -c '
+        for port in /sys/class/net/*/brport; do
+            bridge=$(basename "$(readlink "${port%/brport}/master")")
+            [ "$bridge" = br0 ] && continue
+            echo 0 > "$port/learning"
+            echo 1 > "/sys/class/net/$bridge/bridge/flush"
+        done'
+done
+
 # Return only when every host is ready: its host setup finished and its bond is up.
 # A bond is up when each LACP member is in the active aggregator and in sync, collecting
 # and distributing, or when an active-backup bond has an active member.
