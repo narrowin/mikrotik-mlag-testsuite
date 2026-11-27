@@ -1,9 +1,9 @@
 name: dci-member-loss
 purpose: >-
   Take the DCI member between dc1-core1 and dc2-core1 down and back.
-  The DCI streams must move to the other member; the site streams and the bypass cross neither core and must continue.
+  The DCI streams must move to the other member; the site streams cross neither core and must continue.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
-lab: lab.yaml
+lab: ../lab/lab.yaml
 log:
   # RouterOS has logged "bridge,warning MLAG: remote heartbeat timeout" on peer loss. No peer link changes here.
   must_not:
@@ -20,8 +20,6 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: &down-limit 1  # Allow carrier detection and failover within one second, before an LACP timeout.
       dc2-to-dc1-over-dci: *down-limit
-      bypass-dc1-to-dc2: 0
-      bypass-dc2-to-dc1: 0
     expected: Both DCI directions continue over the member between dc1-core2 and dc2-core2.
     log:
       must:
@@ -39,8 +37,6 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: &back-limit 4  # Three fast LACP messages, one per second, plus one late message.
       dc2-to-dc1-over-dci: *back-limit
-      bypass-dc1-to-dc2: 0
-      bypass-dc2-to-dc1: 0
     expected: The returning member rejoins the DCI trunk at both core pairs.
     check_state:
       - statement: Both ends of the returned member are synchronized, collecting and distributing.

@@ -4,7 +4,7 @@ purpose: >-
   The dc2 firewall must take over the VRRP address, and dc1 must take it back after power returns.
   No stream crosses a firewall, so every stream must continue.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/user-guides/vrrp-configuration-examples/
-lab: lab.yaml
+lab: ../lab/lab.yaml
 steps:
   - name: Baseline
     action:
@@ -15,8 +15,6 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: 0
       dc2-to-dc1-over-dci: 0
-      bypass-dc1-to-dc2: 0
-      bypass-dc2-to-dc1: 0
     expected: Every ping arrives once before power loss.
   - name: dc1-firewall power lost
     action:

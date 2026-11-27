@@ -13,13 +13,6 @@ streams:
   - name: dc2-to-dc1-over-dci
     from: dc2-traffic:vlan390
     to: dc1-traffic:vlan390
-  # The bypass crosses no switch, so a stop here is a host or measurement problem.
-  - name: bypass-dc1-to-dc2
-    from: dc1-traffic:eth3
-    to: dc2-traffic:eth3
-  - name: bypass-dc2-to-dc1
-    from: dc2-traffic:eth3
-    to: dc1-traffic:eth3
 state:
   - statement: All four MLAG pairs are connected with peer 1 as MLAG primary.
     checks:

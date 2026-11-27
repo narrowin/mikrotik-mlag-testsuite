@@ -1,12 +1,9 @@
 {
-  "name": "distribution-reboot",
-  "purpose": "Reboot dc1-dist1 in its MLAG primary role, then dc1-dist2 in its secondary role. The dc1 site stream and both DCI directions must recover through the surviving peer; dc2 and the bypass must continue.",
+  "name": "dci-member-loss",
+  "purpose": "Take the DCI member between dc1-core1 and dc2-core1 down and back. The DCI streams must move to the other member; the site streams cross neither core and must continue.",
   "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
-  "verdict": "fail",
-  "reasons": [
-    "Not valid: dc1-to-dc2-over-dci sent a ping at least every 450 ms.",
-    "Step Reboot dc1-dist1 is fail."
-  ],
+  "verdict": "pass",
+  "reasons": [],
   "state": {
     "before": {
       "verdict": "pass",
@@ -1762,52 +1759,36 @@
   "quiet": {
     "window": "quiet window",
     "start_s": 0.0,
-    "end_s": 4.313194,
+    "end_s": 4.019663,
     "verdict": "pass",
     "streams": {
       "dc1-traffic-to-dc1-service": {
-        "delivered": 41,
-        "min_delivered": 38,
+        "delivered": 38,
+        "min_delivered": 35,
         "lost": 0,
         "duplicates": 0,
         "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
         "ok": true
       },
       "dc2-traffic-to-dc2-service": {
-        "delivered": 41,
-        "min_delivered": 38,
+        "delivered": 38,
+        "min_delivered": 35,
         "lost": 0,
         "duplicates": 0,
         "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
         "ok": true
       },
       "dc1-to-dc2-over-dci": {
-        "delivered": 42,
-        "min_delivered": 38,
+        "delivered": 39,
+        "min_delivered": 35,
         "lost": 0,
         "duplicates": 0,
         "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
         "ok": true
       },
       "dc2-to-dc1-over-dci": {
-        "delivered": 42,
-        "min_delivered": 38,
-        "lost": 0,
-        "duplicates": 0,
-        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-        "ok": true
-      },
-      "bypass-dc1-to-dc2": {
-        "delivered": 41,
-        "min_delivered": 38,
-        "lost": 0,
-        "duplicates": 0,
-        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-        "ok": true
-      },
-      "bypass-dc2-to-dc1": {
-        "delivered": 41,
-        "min_delivered": 38,
+        "delivered": 39,
+        "min_delivered": 35,
         "lost": 0,
         "duplicates": 0,
         "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
@@ -1817,11 +1798,13 @@
   },
   "steps": [
     {
-      "name": "Baseline",
-      "expected": "Every ping arrives once before the reboot.",
-      "hold_s": 4.0,
-      "start_s": 4.313194,
-      "end_s": 8.313998,
+      "name": "DCI member down",
+      "expected": "Both DCI directions continue over the member between dc1-core2 and dc2-core2.",
+      "cable": "dc1-core1:eth3",
+      "state": "down",
+      "hold_s": 5.0,
+      "start_s": 4.019663,
+      "end_s": 9.046827,
       "verdict": "pass",
       "streams": {
         "dc1-traffic-to-dc1-service": {
@@ -1831,8 +1814,8 @@
           "lost": 0,
           "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
           "duplicates": 0,
-          "sent": 38,
-          "delivered": 38,
+          "sent": 48,
+          "delivered": 48,
           "verdict": "pass",
           "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
         },
@@ -1843,153 +1826,157 @@
           "lost": 0,
           "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
           "duplicates": 0,
-          "sent": 38,
-          "delivered": 38,
+          "sent": 48,
+          "delivered": 48,
           "verdict": "pass",
           "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
         },
         "dc1-to-dc2-over-dci": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "limit_s": 1.0,
+          "lower_s": 0.105371,
+          "upper_s": 0.312481,
+          "lost": 2,
+          "summary": "2 pings lost in total at one ping every 100 ms, longest measured stop 0.105371 to 0.312481 s",
           "duplicates": 0,
-          "sent": 39,
-          "delivered": 39,
+          "sent": 49,
+          "delivered": 47,
           "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+          "reason": "2 pings lost in total at one ping every 100 ms, longest measured stop 0.105371 to 0.312481 s, within 1 s"
         },
         "dc2-to-dc1-over-dci": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "limit_s": 1.0,
+          "lower_s": 0.10693,
+          "upper_s": 0.308616,
+          "lost": 2,
+          "summary": "2 pings lost in total at one ping every 100 ms, longest measured stop 0.10693 to 0.308616 s",
           "duplicates": 0,
-          "sent": 39,
-          "delivered": 39,
+          "sent": 49,
+          "delivered": 47,
           "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "bypass-dc1-to-dc2": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 38,
-          "delivered": 38,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "bypass-dc2-to-dc1": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 38,
-          "delivered": 38,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+          "reason": "2 pings lost in total at one ping every 100 ms, longest measured stop 0.10693 to 0.308616 s, within 1 s"
         }
       },
-      "log": []
-    },
-    {
-      "name": "Reboot dc1-dist1",
-      "expected": "dc1-dist1 has a new boot, returns as MLAG primary and both dc1 host bonds return to service.",
-      "reboot": "dc1-dist1",
-      "hold_s": 16.0,
-      "start_s": 8.313998,
-      "end_s": 58.189077,
-      "verdict": "fail",
-      "streams": {
-        "dc1-traffic-to-dc1-service": {
-          "limit_s": 5.0,
-          "lower_s": 0.918121,
-          "upper_s": 1.12338,
-          "lost": 10,
-          "summary": "10 pings lost in total at one ping every 100 ms, longest measured stop 0.918121 to 1.12338 s",
-          "duplicates": 0,
-          "sent": 480,
-          "delivered": 470,
+      "log": [
+        {
+          "kind": "must",
+          "switch": "dc1-core1",
+          "text": "ether4 link down",
           "verdict": "pass",
-          "reason": "10 pings lost in total at one ping every 100 ms, longest measured stop 0.918121 to 1.12338 s, within 5 s"
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 4.496407,
+              "switch": "dc1-core1",
+              "text": "interface,info ether4 link down"
+            }
+          ]
         },
-        "dc2-traffic-to-dc2-service": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 479,
-          "delivered": 479,
+        {
+          "kind": "must",
+          "switch": "dc2-core1",
+          "text": "ether4 link down",
           "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "dc1-to-dc2-over-dci": {
-          "limit_s": 5.0,
-          "lower_s": 19.878092,
-          "upper_s": 20.084518,
-          "lost": 196,
-          "summary": "Diagnostic only: 196 pings recorded lost, 471 sent in this step (configured interval 100 ms)",
-          "duplicates": 0,
-          "sent": 471,
-          "delivered": 275,
-          "verdict": "error",
-          "reason": "Sender cadence was invalid in this step.",
-          "diagnostic_only": true
-        },
-        "dc2-to-dc1-over-dci": {
-          "limit_s": 5.0,
-          "lower_s": 19.88427,
-          "upper_s": 20.091804,
-          "lost": 212,
-          "summary": "212 pings lost in total at one ping every 100 ms, longest measured stop 19.8843 to 20.0918 s",
-          "duplicates": 0,
-          "sent": 486,
-          "delivered": 274,
-          "verdict": "fail",
-          "reason": "212 pings lost in total at one ping every 100 ms, longest measured stop 19.8843 to 20.0918 s, above 5 s"
-        },
-        "bypass-dc1-to-dc2": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 479,
-          "delivered": 479,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "bypass-dc2-to-dc1": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 479,
-          "delivered": 479,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 4.368443,
+              "switch": "dc2-core1",
+              "text": "interface,info ether4 link down"
+            }
+          ]
         }
-      },
-      "log": []
+      ]
     },
     {
-      "name": "dc1-dist1 reboot recovery",
-      "expected": "Every stream keeps delivering after the reboot.",
-      "hold_s": 3.0,
-      "start_s": 58.189077,
-      "end_s": 61.189822,
+      "name": "DCI member back",
+      "expected": "The returning member rejoins the DCI trunk at both core pairs.",
+      "cable": "dc1-core1:eth3",
+      "state": "up",
+      "state_check": {
+        "verdict": "pass",
+        "statements": [
+          {
+            "statement": "Both ends of the returned member are synchronized, collecting and distributing.",
+            "source": null,
+            "verdict": "pass",
+            "checks": [
+              {
+                "name": null,
+                "device": "dc1-core1",
+                "check": "lacp_member",
+                "params": {
+                  "bond": "dci",
+                  "member": "ether4"
+                },
+                "expected": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "observed": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "dc2-core1",
+                "check": "lacp_member",
+                "params": {
+                  "bond": "dci",
+                  "member": "ether4"
+                },
+                "expected": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "observed": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "verdict": "pass",
+                "reason": null
+              }
+            ]
+          }
+        ]
+      },
+      "hold_s": 7.0,
+      "start_s": 9.046827,
+      "end_s": 16.185211,
       "verdict": "pass",
       "streams": {
         "dc1-traffic-to-dc1-service": {
@@ -1999,8 +1986,8 @@
           "lost": 0,
           "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
           "duplicates": 0,
-          "sent": 28,
-          "delivered": 28,
+          "sent": 69,
+          "delivered": 69,
           "verdict": "pass",
           "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
         },
@@ -2011,241 +1998,88 @@
           "lost": 0,
           "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
           "duplicates": 0,
-          "sent": 29,
-          "delivered": 29,
+          "sent": 68,
+          "delivered": 68,
           "verdict": "pass",
           "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
         },
         "dc1-to-dc2-over-dci": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "limit_s": 4.0,
+          "lower_s": 0.21055,
+          "upper_s": 0.413167,
+          "lost": 4,
+          "summary": "4 pings lost in total at one ping every 100 ms, longest measured stop 0.21055 to 0.413167 s",
           "duplicates": 0,
-          "sent": 29,
-          "delivered": 29,
+          "sent": 70,
+          "delivered": 66,
           "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+          "reason": "4 pings lost in total at one ping every 100 ms, longest measured stop 0.21055 to 0.413167 s, within 4 s"
         },
         "dc2-to-dc1-over-dci": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "limit_s": 4.0,
+          "lower_s": 0.209239,
+          "upper_s": 0.41713,
+          "lost": 5,
+          "summary": "5 pings lost in total at one ping every 100 ms, longest measured stop 0.209239 to 0.41713 s",
           "duplicates": 0,
-          "sent": 29,
-          "delivered": 29,
+          "sent": 71,
+          "delivered": 66,
           "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "bypass-dc1-to-dc2": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 29,
-          "delivered": 29,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "bypass-dc2-to-dc1": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 29,
-          "delivered": 29,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+          "reason": "5 pings lost in total at one ping every 100 ms, longest measured stop 0.209239 to 0.41713 s, within 4 s"
         }
       },
-      "log": []
-    },
-    {
-      "name": "Reboot dc1-dist2",
-      "expected": "dc1-dist2 has a new boot, returns as MLAG secondary and both dc1 host bonds return to service.",
-      "reboot": "dc1-dist2",
-      "hold_s": 16.0,
-      "start_s": 61.189822,
-      "end_s": 111.124672,
-      "verdict": "pass",
-      "streams": {
-        "dc1-traffic-to-dc1-service": {
-          "limit_s": 5.0,
-          "lower_s": 2.920399,
-          "upper_s": 3.128704,
-          "lost": 31,
-          "summary": "31 pings lost in total at one ping every 100 ms, longest measured stop 2.9204 to 3.1287 s",
-          "duplicates": 0,
-          "sent": 480,
-          "delivered": 449,
+      "log": [
+        {
+          "kind": "must",
+          "switch": "dc1-core1",
+          "text": "ether4 link up",
           "verdict": "pass",
-          "reason": "31 pings lost in total at one ping every 100 ms, longest measured stop 2.9204 to 3.1287 s, within 5 s"
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 9.518423,
+              "switch": "dc1-core1",
+              "text": "interface,info ether4 link up (speed 10G, full duplex)"
+            }
+          ]
         },
-        "dc2-traffic-to-dc2-service": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 480,
-          "delivered": 480,
+        {
+          "kind": "must",
+          "switch": "dc2-core1",
+          "text": "ether4 link up",
           "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "dc1-to-dc2-over-dci": {
-          "limit_s": 5.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 491,
-          "delivered": 491,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "dc2-to-dc1-over-dci": {
-          "limit_s": 5.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 490,
-          "delivered": 490,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "bypass-dc1-to-dc2": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 479,
-          "delivered": 479,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "bypass-dc2-to-dc1": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 479,
-          "delivered": 479,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 9.38332,
+              "switch": "dc2-core1",
+              "text": "interface,info ether4 link up (speed 10G, full duplex)"
+            }
+          ]
         }
-      },
-      "log": []
-    },
-    {
-      "name": "dc1-dist2 reboot recovery",
-      "expected": "Every stream keeps delivering after the reboot.",
-      "hold_s": 3.0,
-      "start_s": 111.124672,
-      "end_s": 114.126697,
-      "verdict": "pass",
-      "streams": {
-        "dc1-traffic-to-dc1-service": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 29,
-          "delivered": 29,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "dc2-traffic-to-dc2-service": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 29,
-          "delivered": 29,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "dc1-to-dc2-over-dci": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 29,
-          "delivered": 29,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "dc2-to-dc1-over-dci": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 30,
-          "delivered": 30,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "bypass-dc1-to-dc2": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 29,
-          "delivered": 29,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        },
-        "bypass-dc2-to-dc1": {
-          "limit_s": 0.0,
-          "lower_s": 0.0,
-          "upper_s": 0.0,
-          "lost": 0,
-          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-          "duplicates": 0,
-          "sent": 29,
-          "delivered": 29,
-          "verdict": "pass",
-          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
-        }
-      },
-      "log": []
+      ]
     }
   ],
-  "log": [],
+  "log": [
+    {
+      "kind": "must_not",
+      "switch": "every",
+      "text": "heartbeat timeout",
+      "verdict": "pass",
+      "reason": "not logged",
+      "lines": []
+    }
+  ],
   "switch_log": {
     "file": "syslog/switches.log",
     "saved": true,
     "lines": {
-      "dc1-core1": 2,
+      "dc1-core1": 6,
       "dc1-core2": 2,
-      "dc1-dist1": 6,
-      "dc1-dist2": 5,
+      "dc1-dist1": 2,
+      "dc1-dist2": 2,
       "dc1-firewall": 2,
-      "dc2-core1": 2,
+      "dc2-core1": 6,
       "dc2-core2": 2,
       "dc2-dist1": 2,
       "dc2-dist2": 2,
@@ -2253,44 +2087,44 @@
     },
     "markers": {
       "dc1-core1": {
-        "start": -6.992478,
-        "end": 118.175621
+        "start": -6.262584,
+        "end": 20.125407
       },
       "dc1-core2": {
-        "start": -6.651116,
-        "end": 118.210532
+        "start": -5.960718,
+        "end": 20.155524
       },
       "dc1-dist1": {
-        "start": -6.30616,
-        "end": 118.247145
+        "start": -5.655128,
+        "end": 20.192928
       },
       "dc1-dist2": {
-        "start": -5.971039,
-        "end": 118.283562
+        "start": -5.361561,
+        "end": 20.232645
       },
       "dc1-firewall": {
-        "start": -5.639754,
-        "end": 118.315562
+        "start": -5.054025,
+        "end": 20.287285
       },
       "dc2-core1": {
-        "start": -5.236117,
-        "end": 118.350688
+        "start": -4.7586,
+        "end": 20.319334
       },
       "dc2-core2": {
-        "start": -4.910422,
-        "end": 118.407546
+        "start": -4.466177,
+        "end": 20.372746
       },
       "dc2-dist1": {
-        "start": -4.583802,
-        "end": 118.453679
+        "start": -4.172793,
+        "end": 20.402462
       },
       "dc2-dist2": {
-        "start": -4.256951,
-        "end": 118.485598
+        "start": -3.875494,
+        "end": 20.432362
       },
       "dc2-firewall": {
-        "start": -3.907766,
-        "end": 118.526141
+        "start": -3.581,
+        "end": 20.477573
       }
     }
   },
@@ -2304,10 +2138,6 @@
       "ok": true
     },
     {
-      "check": "capture at dc1-traffic:eth3 is complete and dropped no packet",
-      "ok": true
-    },
-    {
       "check": "capture at dc1-traffic:vlan390 is complete and dropped no packet",
       "ok": true
     },
@@ -2317,10 +2147,6 @@
     },
     {
       "check": "capture at dc2-traffic:bond0 is complete and dropped no packet",
-      "ok": true
-    },
-    {
-      "check": "capture at dc2-traffic:eth3 is complete and dropped no packet",
       "ok": true
     },
     {
@@ -2357,7 +2183,7 @@
     },
     {
       "check": "dc1-to-dc2-over-dci sent a ping at least every 450 ms",
-      "ok": false
+      "ok": true
     },
     {
       "check": "dc1-to-dc2-over-dci shows the same replies at both capture points",
@@ -2372,168 +2198,52 @@
       "ok": true
     },
     {
-      "check": "bypass-dc1-to-dc2 sent a ping at least every 450 ms",
+      "check": "dc1-traffic-to-dc1-service delivered 35 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
       "ok": true
     },
     {
-      "check": "bypass-dc1-to-dc2 shows the same replies at both capture points",
+      "check": "dc2-traffic-to-dc2-service delivered 35 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
       "ok": true
     },
     {
-      "check": "bypass-dc2-to-dc1 sent a ping at least every 450 ms",
+      "check": "dc1-to-dc2-over-dci delivered 35 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
       "ok": true
     },
     {
-      "check": "bypass-dc2-to-dc1 shows the same replies at both capture points",
-      "ok": true
-    },
-    {
-      "check": "dc1-traffic-to-dc1-service delivered 38 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
-      "ok": true
-    },
-    {
-      "check": "dc2-traffic-to-dc2-service delivered 38 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
-      "ok": true
-    },
-    {
-      "check": "dc1-to-dc2-over-dci delivered 38 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
-      "ok": true
-    },
-    {
-      "check": "dc2-to-dc1-over-dci delivered 38 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
-      "ok": true
-    },
-    {
-      "check": "bypass-dc1-to-dc2 delivered 38 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
-      "ok": true
-    },
-    {
-      "check": "bypass-dc2-to-dc1 delivered 38 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "check": "dc2-to-dc1-over-dci delivered 35 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
       "ok": true
     }
   ],
   "traffic": {
-    "start_ns": 1795719195128674000,
-    "end_ns": 1795719312762994766,
+    "start_ns": 1795762561247667000,
+    "end_ns": 1795762580840714932,
     "interval_s": 0.1,
     "streams": {
       "dc1-traffic-to-dc1-service": {
         "ident": 1,
         "source": "dc1-traffic:bond0",
         "destination": "dc1-service:bond0",
-        "sent": 1130,
-        "delivered": 1089,
-        "lost_seqs": [
-          278,
-          278,
-          278,
-          278,
-          278,
-          278,
-          278,
-          278,
-          278,
-          279,
-          586,
-          587,
-          588,
-          589,
-          590,
-          591,
-          592,
-          593,
-          594,
-          595,
-          596,
-          597,
-          598,
-          599,
-          600,
-          601,
-          602,
-          603,
-          604,
-          605,
-          606,
-          607,
-          608,
-          609,
-          610,
-          611,
-          612,
-          613,
-          614,
-          781,
-          782
-        ],
+        "sent": 188,
+        "delivered": 188,
+        "lost_seqs": [],
         "duplicates": [],
         "capture_mismatches": [],
-        "max_send_interval_s": 0.114056,
+        "max_send_interval_s": 0.111359,
         "send_gap_limit_s": 0.45,
         "send_pauses": [],
         "cadence_ok": true,
-        "outages": [
-          {
-            "first_seq": 278,
-            "last_seq": 279,
-            "lost": 10,
-            "lower_s": 0.918121,
-            "upper_s": 1.12338,
-            "summary": "10 pings lost at one ping every 100 ms, traffic stopped for 0.918 to 1.123 s",
-            "begins_s": 28.848458,
-            "ends_s": 29.766579,
-            "windows": [
-              "Reboot dc1-dist1"
-            ],
-            "where": [
-              "request absent at destination"
-            ]
-          },
-          {
-            "first_seq": 586,
-            "last_seq": 614,
-            "lost": 29,
-            "lower_s": 2.920399,
-            "upper_s": 3.128704,
-            "summary": "29 pings lost at one ping every 100 ms, traffic stopped for 2.92 to 3.129 s",
-            "begins_s": 61.721243,
-            "ends_s": 64.641642,
-            "windows": [
-              "Reboot dc1-dist2"
-            ],
-            "where": [
-              "reply absent at source",
-              "request absent at destination"
-            ]
-          },
-          {
-            "first_seq": 781,
-            "last_seq": 782,
-            "lost": 2,
-            "lower_s": 0.107438,
-            "upper_s": 0.310816,
-            "summary": "2 pings lost at one ping every 100 ms, traffic stopped for 0.107 to 0.311 s",
-            "begins_s": 82.014635,
-            "ends_s": 82.122073,
-            "windows": [
-              "Reboot dc1-dist2"
-            ],
-            "where": [
-              "request absent at destination"
-            ]
-          }
-        ]
+        "outages": []
       },
       "dc2-traffic-to-dc2-service": {
         "ident": 2,
         "source": "dc2-traffic:bond0",
         "destination": "dc2-service:bond0",
-        "sent": 1129,
-        "delivered": 1129,
+        "sent": 187,
+        "delivered": 187,
         "lost_seqs": [],
         "duplicates": [],
         "capture_mismatches": [],
-        "max_send_interval_s": 0.11251,
+        "max_send_interval_s": 0.113405,
         "send_gap_limit_s": 0.45,
         "send_pauses": [],
         "cadence_ok": true,
@@ -2543,249 +2253,66 @@
         "ident": 3,
         "source": "dc1-traffic:vlan390",
         "destination": "dc2-traffic:vlan390",
-        "sent": 1136,
-        "delivered": 940,
+        "sent": 192,
+        "delivered": 186,
         "lost_seqs": [
-          88,
-          89,
-          90,
+          41,
+          42,
           91,
-          92,
-          93,
-          94,
-          95,
-          96,
-          97,
-          98,
-          99,
-          100,
-          101,
-          102,
-          103,
-          104,
-          105,
-          106,
-          107,
-          108,
-          109,
-          110,
-          111,
-          112,
           113,
           114,
-          115,
-          116,
-          117,
-          118,
-          119,
-          120,
-          121,
-          122,
-          123,
-          124,
-          125,
-          126,
-          127,
-          128,
-          129,
-          130,
-          131,
-          132,
-          133,
-          134,
-          135,
-          136,
-          137,
-          138,
-          139,
-          140,
-          141,
-          142,
-          143,
-          144,
-          145,
-          146,
-          147,
-          148,
-          149,
-          150,
-          151,
-          152,
-          153,
-          154,
-          155,
-          156,
-          157,
-          158,
-          159,
-          160,
-          161,
-          162,
-          163,
-          164,
-          165,
-          166,
-          167,
-          168,
-          169,
-          170,
-          171,
-          172,
-          173,
-          174,
-          175,
-          176,
-          177,
-          178,
-          179,
-          180,
-          181,
-          182,
-          183,
-          184,
-          185,
-          186,
-          187,
-          188,
-          189,
-          190,
-          191,
-          192,
-          193,
-          194,
-          195,
-          196,
-          197,
-          198,
-          199,
-          200,
-          201,
-          202,
-          203,
-          204,
-          205,
-          206,
-          207,
-          208,
-          209,
-          210,
-          211,
-          212,
-          213,
-          214,
-          215,
-          216,
-          217,
-          218,
-          219,
-          220,
-          221,
-          222,
-          223,
-          224,
-          225,
-          226,
-          227,
-          228,
-          229,
-          230,
-          231,
-          232,
-          233,
-          234,
-          235,
-          236,
-          237,
-          238,
-          239,
-          240,
-          241,
-          242,
-          243,
-          244,
-          245,
-          246,
-          247,
-          248,
-          249,
-          250,
-          251,
-          252,
-          253,
-          254,
-          255,
-          256,
-          257,
-          258,
-          259,
-          260,
-          261,
-          262,
-          263,
-          264,
-          265,
-          266,
-          267,
-          268,
-          269,
-          270,
-          271,
-          272,
-          273,
-          274,
-          275,
-          276,
-          277,
-          278,
-          279,
-          281,
-          281,
-          281,
-          281
+          115
         ],
         "duplicates": [],
         "capture_mismatches": [],
-        "max_send_interval_s": 2.147739,
+        "max_send_interval_s": 0.110954,
         "send_gap_limit_s": 0.45,
-        "send_pauses": [
-          {
-            "from_s": 29.225042,
-            "to_s": 31.372781,
-            "gap_s": 2.147739,
-            "after_seq": 281,
-            "before_seq": 281
-          }
-        ],
-        "cadence_ok": false,
+        "send_pauses": [],
+        "cadence_ok": true,
         "outages": [
           {
-            "first_seq": 88,
-            "last_seq": 279,
-            "lost": 192,
-            "lower_s": 19.878092,
-            "upper_s": 20.084518,
-            "summary": "192 pings lost at one ping every 100 ms, traffic stopped for 19.878 to 20.085 s",
-            "begins_s": 8.840399,
-            "ends_s": 28.718491,
+            "first_seq": 41,
+            "last_seq": 42,
+            "lost": 2,
+            "lower_s": 0.105371,
+            "upper_s": 0.312481,
+            "summary": "2 pings lost at one ping every 100 ms, traffic stopped for 0.105 to 0.312 s",
+            "begins_s": 4.06946,
+            "ends_s": 4.174831,
             "windows": [
-              "Reboot dc1-dist1"
+              "DCI member down"
             ],
             "where": [
-              "reply absent at source",
               "request absent at destination"
             ]
           },
           {
-            "first_seq": 281,
-            "last_seq": 281,
-            "lost": 4,
-            "lower_s": 0.302383,
-            "upper_s": 2.550267,
-            "summary": "4 pings lost at one ping every 100 ms, traffic stopped for 0.302 to 2.55 s",
-            "begins_s": 28.922659,
-            "ends_s": 29.225042,
+            "first_seq": 91,
+            "last_seq": 91,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.207732,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.208 s",
+            "begins_s": 9.179665,
+            "ends_s": 9.179665,
             "windows": [
-              "Reboot dc1-dist1"
+              "DCI member back"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 113,
+            "last_seq": 115,
+            "lost": 3,
+            "lower_s": 0.21055,
+            "upper_s": 0.413167,
+            "summary": "3 pings lost at one ping every 100 ms, traffic stopped for 0.211 to 0.413 s",
+            "begins_s": 11.43025,
+            "ends_s": 11.6408,
+            "windows": [
+              "DCI member back"
             ],
             "where": [
               "request absent at destination"
@@ -2797,326 +2324,87 @@
         "ident": 4,
         "source": "dc2-traffic:vlan390",
         "destination": "dc1-traffic:vlan390",
-        "sent": 1150,
-        "delivered": 938,
+        "sent": 192,
+        "delivered": 185,
         "lost_seqs": [
-          88,
-          89,
-          90,
+          41,
+          42,
           91,
           92,
-          93,
-          94,
-          95,
-          96,
-          97,
-          98,
-          99,
-          100,
-          101,
-          102,
-          103,
-          104,
-          105,
-          106,
-          107,
-          108,
-          109,
-          110,
-          111,
-          112,
-          113,
           114,
           115,
-          116,
-          117,
-          118,
-          119,
-          120,
-          121,
-          122,
-          123,
-          124,
-          125,
-          126,
-          127,
-          128,
-          129,
-          130,
-          131,
-          132,
-          133,
-          134,
-          135,
-          136,
-          137,
-          138,
-          139,
-          140,
-          141,
-          142,
-          143,
-          144,
-          145,
-          146,
-          147,
-          148,
-          149,
-          150,
-          151,
-          152,
-          153,
-          154,
-          155,
-          156,
-          157,
-          158,
-          159,
-          160,
-          161,
-          162,
-          163,
-          164,
-          165,
-          166,
-          167,
-          168,
-          169,
-          170,
-          171,
-          172,
-          173,
-          174,
-          175,
-          176,
-          177,
-          178,
-          179,
-          180,
-          181,
-          182,
-          183,
-          184,
-          185,
-          186,
-          187,
-          188,
-          189,
-          190,
-          191,
-          192,
-          193,
-          194,
-          195,
-          196,
-          197,
-          198,
-          199,
-          200,
-          201,
-          202,
-          203,
-          204,
-          205,
-          206,
-          207,
-          208,
-          209,
-          210,
-          211,
-          212,
-          213,
-          214,
-          215,
-          216,
-          217,
-          218,
-          219,
-          220,
-          221,
-          222,
-          223,
-          224,
-          225,
-          226,
-          227,
-          228,
-          229,
-          230,
-          231,
-          232,
-          233,
-          234,
-          235,
-          236,
-          237,
-          238,
-          239,
-          240,
-          241,
-          242,
-          243,
-          244,
-          245,
-          246,
-          247,
-          248,
-          249,
-          250,
-          251,
-          252,
-          253,
-          254,
-          255,
-          256,
-          257,
-          258,
-          259,
-          260,
-          261,
-          262,
-          263,
-          264,
-          265,
-          266,
-          267,
-          268,
-          269,
-          270,
-          271,
-          272,
-          273,
-          274,
-          275,
-          276,
-          277,
-          278,
-          279,
-          281,
-          282,
-          283,
-          284,
-          285,
-          286,
-          287,
-          288,
-          289,
-          290,
-          291,
-          292,
-          293,
-          294,
-          295,
-          296,
-          297,
-          298,
-          299,
-          300
+          116
         ],
         "duplicates": [],
         "capture_mismatches": [],
-        "max_send_interval_s": 0.110447,
+        "max_send_interval_s": 0.10693,
         "send_gap_limit_s": 0.45,
         "send_pauses": [],
         "cadence_ok": true,
         "outages": [
           {
-            "first_seq": 88,
-            "last_seq": 279,
-            "lost": 192,
-            "lower_s": 19.88427,
-            "upper_s": 20.091804,
-            "summary": "192 pings lost at one ping every 100 ms, traffic stopped for 19.884 to 20.092 s",
-            "begins_s": 8.842258,
-            "ends_s": 28.726528,
+            "first_seq": 41,
+            "last_seq": 42,
+            "lost": 2,
+            "lower_s": 0.10693,
+            "upper_s": 0.308616,
+            "summary": "2 pings lost at one ping every 100 ms, traffic stopped for 0.107 to 0.309 s",
+            "begins_s": 4.069518,
+            "ends_s": 4.176448,
             "windows": [
-              "Reboot dc1-dist1"
+              "DCI member down"
             ],
             "where": [
+              "reply absent at source",
               "request absent at destination"
             ]
           },
           {
-            "first_seq": 281,
-            "last_seq": 300,
-            "lost": 20,
-            "lower_s": 1.978151,
-            "upper_s": 2.185442,
-            "summary": "20 pings lost at one ping every 100 ms, traffic stopped for 1.978 to 2.185 s",
-            "begins_s": 28.933555,
-            "ends_s": 30.911706,
+            "first_seq": 91,
+            "last_seq": 92,
+            "lost": 2,
+            "lower_s": 0.104856,
+            "upper_s": 0.31117,
+            "summary": "2 pings lost at one ping every 100 ms, traffic stopped for 0.105 to 0.311 s",
+            "begins_s": 9.15781,
+            "ends_s": 9.262666,
             "windows": [
-              "Reboot dc1-dist1"
+              "DCI member back"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 114,
+            "last_seq": 116,
+            "lost": 3,
+            "lower_s": 0.209239,
+            "upper_s": 0.41713,
+            "summary": "3 pings lost at one ping every 100 ms, traffic stopped for 0.209 to 0.417 s",
+            "begins_s": 11.50045,
+            "ends_s": 11.709689,
+            "windows": [
+              "DCI member back"
             ],
             "where": [
               "request absent at destination"
             ]
           }
         ]
-      },
-      "bypass-dc1-to-dc2": {
-        "ident": 5,
-        "source": "dc1-traffic:eth3",
-        "destination": "dc2-traffic:eth3",
-        "sent": 1129,
-        "delivered": 1129,
-        "lost_seqs": [],
-        "duplicates": [],
-        "capture_mismatches": [],
-        "max_send_interval_s": 0.111717,
-        "send_gap_limit_s": 0.45,
-        "send_pauses": [],
-        "cadence_ok": true,
-        "outages": []
-      },
-      "bypass-dc2-to-dc1": {
-        "ident": 6,
-        "source": "dc2-traffic:eth3",
-        "destination": "dc1-traffic:eth3",
-        "sent": 1129,
-        "delivered": 1129,
-        "lost_seqs": [],
-        "duplicates": [],
-        "capture_mismatches": [],
-        "max_send_interval_s": 0.111111,
-        "send_gap_limit_s": 0.45,
-        "send_pauses": [],
-        "cadence_ok": true,
-        "outages": []
       }
-    }
-  },
-  "reboots": {
-    "Reboot dc1-dist1": {
-      "switch": "dc1-dist1",
-      "verdict": "pass",
-      "limit_s": 60.0,
-      "before_uptime_s": 386.0,
-      "after_uptime_s": 23.0,
-      "elapsed_s": 30.877206955,
-      "healthy_s": 33.824224771,
-      "state": "pass"
-    },
-    "Reboot dc1-dist2": {
-      "switch": "dc1-dist2",
-      "verdict": "pass",
-      "limit_s": 60.0,
-      "before_uptime_s": 439.0,
-      "after_uptime_s": 23.0,
-      "elapsed_s": 30.944589271,
-      "healthy_s": 33.88188206,
-      "state": "pass"
     }
   },
   "closing": {
     "window": "after the steps",
-    "start_s": 114.126697,
-    "end_s": 117.634321,
+    "start_s": 16.185211,
+    "end_s": 19.593048,
     "verdict": "pass",
     "streams": {
       "dc1-traffic-to-dc1-service": {
-        "delivered": 34,
-        "min_delivered": 30,
+        "delivered": 33,
+        "min_delivered": 29,
         "lost": 0,
         "duplicates": 0,
         "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
@@ -3124,39 +2412,23 @@
       },
       "dc2-traffic-to-dc2-service": {
         "delivered": 33,
-        "min_delivered": 30,
+        "min_delivered": 29,
         "lost": 0,
         "duplicates": 0,
         "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
         "ok": true
       },
       "dc1-to-dc2-over-dci": {
-        "delivered": 35,
-        "min_delivered": 30,
+        "delivered": 34,
+        "min_delivered": 29,
         "lost": 0,
         "duplicates": 0,
         "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
         "ok": true
       },
       "dc2-to-dc1-over-dci": {
-        "delivered": 34,
-        "min_delivered": 30,
-        "lost": 0,
-        "duplicates": 0,
-        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-        "ok": true
-      },
-      "bypass-dc1-to-dc2": {
-        "delivered": 34,
-        "min_delivered": 30,
-        "lost": 0,
-        "duplicates": 0,
-        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
-        "ok": true
-      },
-      "bypass-dc2-to-dc1": {
-        "delivered": 34,
-        "min_delivered": 30,
+        "delivered": 33,
+        "min_delivered": 29,
         "lost": 0,
         "duplicates": 0,
         "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",

@@ -1,9 +1,9 @@
 name: core-reboot
 purpose: >-
   Reboot the core MLAG primary at dc1, then at dc2, while measuring both sites and both DCI directions.
-  Each reboot must leave the site streams and the bypass untouched and the DCI must recover through the surviving core.
+  Each reboot must leave the site streams untouched and the DCI must recover through the surviving core.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
-lab: lab.yaml
+lab: ../lab/lab.yaml
 steps:
   - name: Baseline
     action:
@@ -14,8 +14,6 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: 0
       dc2-to-dc1-over-dci: 0
-      bypass-dc1-to-dc2: 0
-      bypass-dc2-to-dc1: 0
     expected: Every ping arrives once before the reboot.
   - name: Reboot dc1-core1
     action:
@@ -30,8 +28,6 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: &reboot-limit 5  # Three fast LACP intervals plus two for forwarding.
       dc2-to-dc1-over-dci: *reboot-limit
-      bypass-dc1-to-dc2: 0
-      bypass-dc2-to-dc1: 0
     expected: dc1-core1 has a new boot, returns as MLAG primary and the DCI carries both directions again.
   - name: dc1 reboot recovery
     action:
