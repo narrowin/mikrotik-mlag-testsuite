@@ -31,3 +31,31 @@ name=$(sed -n 's/^name: *//p' topology.clab.yml)
 # Containerlab checks the collector bind path before it creates the node directory.
 mkdir -p "clab-$name/syslog"
 "$CLAB" deploy -t topology.clab.yml
+
+# Return only when every host bond is up: each LACP member in the active aggregator
+# and in sync, collecting and distributing, or an active-backup bond with an active member.
+# Containers without bond0, such as the collector and the CHRs, are skipped.
+bond_down() {
+    docker exec "$1" cat /proc/net/bonding/bond0 2>/dev/null | awk '
+        /^Bonding Mode: fault-tolerance/ { ab = 1 }
+        /^Currently Active Slave:/ { active = $4 }
+        /^\tNumber of ports:/ { ports = $4 }
+        /^Slave Interface:/ { slaves++; actor = 0 }
+        /^details actor lacp pdu:/ { actor = 1 }
+        actor && /port state:/ { if (int($3 / 8) % 8 == 7) synced++; actor = 0 }
+        END {
+            if (!slaves) exit 1
+            if (ab) exit (active != "" && active != "None")
+            exit (ports == slaves && synced == slaves)
+        }'
+}
+deadline=$(($(date +%s) + 60))
+for host in $(docker ps --filter "label=containerlab=$name" --format '{{.Names}}'); do
+    while bond_down "$host"; do
+        if [ "$(date +%s)" -ge "$deadline" ]; then
+            echo "bond0 of $host is not up 60 s after deploy" >&2
+            exit 1
+        fi
+        sleep 1
+    done
+done

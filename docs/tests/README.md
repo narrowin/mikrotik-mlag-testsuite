@@ -19,7 +19,7 @@ Containerlab writes the running lab to `lab/clab-<name>/`, which the root `.giti
 Medium-two-pair-strict and small-mobile use some files of another lab, as their READMEs say.
 
 Every lab uses the files in [tests/shared](../../tests/shared): the [Dockerfile](../../tests/shared/client.Dockerfile) of the host image, the collector config [rsyslog.conf](../../tests/shared/rsyslog.conf) and [start.sh](../../tests/shared/start.sh).
-`tests/shared/start.sh <lab-folder> [age]` builds the host image `small-mlag-client:local`, creates the collector folder and deploys the lab. Only small-mobile takes the `age` profile.
+`tests/shared/start.sh <lab-folder> [age]` builds the host image `small-mlag-client:local`, creates the collector folder and deploys the lab. It returns once the bond of every Linux host is up, or fails after 60 s and names the host. Only small-mobile takes the `age` profile.
 
 ## Run a lab
 

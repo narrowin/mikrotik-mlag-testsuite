@@ -10,8 +10,6 @@ Run the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these 
 LAB=tests/small-mobile NAME=small-mlag-mobile CONFIG=tests/small/lab/devices.yml
 ```
 
-The LACP bonds of client1 and client2 became eligible about 10 s after the start on 27 November 2026. Wait that long before the first test, because a test started at once fails its state check before the steps.
-
 Use the default profile for every case except MAC ageing. For `CASE=mac-age-relearn`, start the lab with the `age` argument, which starts both switches at ten seconds of ageing and pins the necessary client neighbours. Remove the lab with the same ageing value it was started with. Teardown discards the profile. The case itself clears both egress filters.
 
 ```sh
