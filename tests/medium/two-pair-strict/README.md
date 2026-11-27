@@ -59,7 +59,7 @@ Old values are quoted from the results index at commit `3af4cd8` (`results/index
 | --- | --- | --- | --- |
 | baseline | Run 01 pass, no loss | PASS, no loss | Same |
 | calibration | No old result | PASS, 1.87289 to 2.07917 s | Not comparable |
-| inter-pair-member-flap | No old result | FAIL, the whole 8 s down hold | Not comparable. The same stop as in the two-pair lab, explained in its README. |
+| inter-pair-member-flap | No old result | FAIL, the whole 8 s down hold | Not comparable. The same RouterOS finding as in the two-pair lab: requests reach switch-b1 and nothing leaves it on any port, the peer link included, although host2's entry is on the peer port within about 2 s. |
 | reboot-a-primary | Run 01 INVALID: Pair A primary down 1.912816 to 2.591661 s, back 16.447632 to 16.650563 s; the management TAP showed one closed guest absence | FAIL, 18.1369 to 18.345 s | No valid old result. The old invalid run also lost about 16.5 s. |
 | reboot-a-secondary | Run 01 did not reach evaluation | PASS, 0 lost | No valid old result |
 | reboot-b-primary | No old result | FAIL, 16.5463 to 16.766 s | Not comparable |
