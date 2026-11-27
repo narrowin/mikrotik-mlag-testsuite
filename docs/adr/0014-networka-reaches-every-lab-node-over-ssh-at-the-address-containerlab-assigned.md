@@ -10,7 +10,7 @@ Host keys are neither checked nor stored: every `devices.yml` sets `ssh_known_ho
 
 On 2026-11-26 a plan had Networka fall back to `docker exec` for Linux nodes.
 The operator rejected it: "it's overcomplicating things if you actually go with the Docker fallback."
-In his view a node that is tested must run SSH and accept a login.
+In the operator's view a node that is tested must run SSH and accept a login.
 Committed addresses had been chosen on 2026-11-25 because replay needed them and two labs shared one deploy folder.
 Now each lab has its own folder and management subnet, and replay reads the saved `topology-data.json`, so committed addresses only duplicate what containerlab already knows.
 A lab is redeployed many times a day and gets new host keys each time, so a stored key only produces mismatches.

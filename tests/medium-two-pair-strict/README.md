@@ -25,7 +25,6 @@ Run on 27 November 2026 on RouterOS 7.26beta7 with Networka 0.5.1 and the qualif
 | Test | Verdict | Longest measured stop of the host streams |
 | --- | --- | --- |
 | baseline | PASS | 0 lost |
-| calibration | PASS | Bypass lost 19, 1.87289 to 2.07917 s |
 | inter-pair-member-flap | FAIL | Member down: host1 to host2 lost 78, 8.05368 to 8.26084 s; host2 to host1 lost 79, 8.12048 to 8.33055 s. The same outage runs into the member back step. |
 | reboot-a-primary | FAIL | host1 to host2 lost 175, 18.1305 to 18.337 s; host2 to host1 lost 175, 18.1369 to 18.345 s |
 | reboot-a-secondary | PASS | 0 lost |
@@ -41,7 +40,6 @@ Old values are quoted from the results index at commit `3af4cd8` (`results/index
 | Test | Old verdict and loss | New verdict and loss | Reason for the difference |
 | --- | --- | --- | --- |
 | baseline | Run 01 pass, no loss | PASS, no loss | Same |
-| calibration | No old result | PASS, 1.87289 to 2.07917 s | Not comparable |
 | inter-pair-member-flap | No old result | FAIL, the whole 8 s down hold | Not comparable. The same unexplained stop as in the two-pair lab: requests reach switch-b1 and nothing leaves it on any port, the peer link included, although host2's entry is on the peer port within about 2 s. |
 | reboot-a-primary | Run 01 INVALID: Pair A primary down 1.912816 to 2.591661 s, back 16.447632 to 16.650563 s; the management TAP showed one closed guest absence | FAIL, 18.1369 to 18.345 s | No valid old result. The old invalid run also lost about 16.5 s. |
 | reboot-a-secondary | Run 01 did not reach evaluation | PASS, 0 lost | No valid old result |

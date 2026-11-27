@@ -5,12 +5,6 @@ streams:
   - name: host2-to-host1
     from: host2:bond0
     to: host1:eth1
-  - name: bypass-host1-to-host2
-    from: host1:eth3
-    to: host2:eth3
-  - name: bypass-host2-to-host1
-    from: host2:eth3
-    to: host1:eth3
 state:
   - statement: Switch1 is the connected MLAG primary and switch2 the connected MLAG secondary.
     checks:

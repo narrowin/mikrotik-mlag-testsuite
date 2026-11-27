@@ -12,7 +12,7 @@ The old labs worked around this: they bind-mounted `qemu-data-link.sh` over the 
 The operator's containerlab change sets 10 Gbit/s full duplex and forwards LACP and LLDP frames natively.
 The Small lab qualified it live on 2026-11-26: all 8 data ports came up at 10 Gbit/s full duplex and all six Linux bond members passed their checks.
 The operator then approved removing both CHR helper scripts, their mounts and the bridge startup command.
-On 2026-11-27 he said of the native build: "this is for the public. We need to use this."
+On 2026-11-27 the operator said of the native build: "this is for the public. We need to use this."
 
 The no-learning mode was kept in the old labs because an audit said a learning bridge dropped replies in a failover.
 That claim cited no raw run, the native launcher has no learning setting, and the Small cable and reboot tests passed with learning on.

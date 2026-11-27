@@ -1,12 +1,11 @@
 #!/bin/sh
 set -eu
 
-# The host name gives the site VLAN, the host's last address byte and, on a traffic host, its bypass address.
-bypass=
+# The host name gives the site VLAN and the host's last address byte.
 case "$(hostname)" in
-    dc1-traffic) site=110 host=16 bypass=1 ;;
+    dc1-traffic) site=110 host=16 ;;
     dc1-service) site=110 host=17 ;;
-    dc2-traffic) site=120 host=26 bypass=2 ;;
+    dc2-traffic) site=120 host=26 ;;
     dc2-service) site=120 host=27 ;;
 esac
 
@@ -20,14 +19,14 @@ done
 ip address add "10.$site.0.$host/24" dev bond0
 ip link set bond0 up
 
-# A traffic host reaches the other site over VLAN 390 through the DCI and over the bypass without any switch.
-if [ -n "$bypass" ]; then
-    ip link add link bond0 name vlan390 type vlan id 390
-    ip address add "198.18.40.$host/24" dev vlan390
-    ip link set vlan390 up
-    ip address add "198.51.100.$bypass/30" dev eth3
-    ip link set eth3 up
-fi
+# A traffic host reaches the other site over VLAN 390 through the DCI.
+case "$(hostname)" in
+    *-traffic)
+        ip link add link bond0 name vlan390 type vlan id 390
+        ip address add "198.18.40.$host/24" dev vlan390
+        ip link set vlan390 up
+        ;;
+esac
 
 # start.sh waits for this file, which exists only when every line above succeeded.
 touch /run/host-setup.done

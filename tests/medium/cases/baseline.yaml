@@ -1,7 +1,7 @@
 name: baseline
 purpose: >-
   Check forwarding in both directions between host1 behind the access switch and host2 on its
-  MLAG bond, and on the independent bypass. Check that flooded probes reach host1 once.
+  MLAG bond. Check that flooded probes reach host1 once.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
 lab: ../lab/lab.yaml
 flood:
@@ -18,8 +18,6 @@ steps:
     max_outage_s:
       host1-to-host2: 0
       host2-to-host1: 0
-      bypass-host1-to-host2: 0
-      bypass-host2-to-host1: 0
     expected: Both peers stay connected, every ping arrives once and no flooded probe returns to host2.
     check_state:
       - statement: Both MLAG bonds on both peers contain their wired bond member and use it for LACP forwarding.

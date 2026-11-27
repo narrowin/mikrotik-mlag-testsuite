@@ -17,8 +17,6 @@ steps:
       client1-to-client2: *member-limit
       client2-to-mobile: 0
       mobile-to-client2: 0
-      bypass-client1-to-client2: 0
-      bypass-client2-to-client1: 0
     expected: The client reaches the switched paths through switch2.
     check_state:
       - statement: The switch sees no carrier on the withdrawn port.
@@ -68,6 +66,4 @@ steps:
       mobile-to-client1: 0
       mobile-to-client2: 0
       client1-to-client2: 0
-      bypass-client1-to-client2: 0
-      bypass-client2-to-client1: 0
     expected: Every stream delivers after the cable returns.

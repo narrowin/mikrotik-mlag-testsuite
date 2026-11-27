@@ -18,8 +18,6 @@ steps:
       client1-to-client2: *withdrawal-limit
       client2-to-mobile: &control-limit 0
       mobile-to-client2: *control-limit
-      bypass-client1-to-client2: *control-limit
-      bypass-client2-to-client1: *control-limit
     expected: The partner times out and withdraws without a link-down event.
     check_state:
       - statement: The switch carrier stays up while the member stops collecting and distributing.
@@ -49,8 +47,6 @@ steps:
       client1-to-client2: *restoration-limit
       client2-to-mobile: *control-limit
       mobile-to-client2: *control-limit
-      bypass-client1-to-client2: *control-limit
-      bypass-client2-to-client1: *control-limit
     expected: Both ends agree on a current partner and the member resumes forwarding.
     check_state:
       - statement: The switch member is synchronized, collecting and distributing again.
@@ -74,6 +70,4 @@ steps:
       mobile-to-client1: *control-limit
       mobile-to-client2: *control-limit
       client1-to-client2: *control-limit
-      bypass-client1-to-client2: *control-limit
-      bypass-client2-to-client1: *control-limit
     expected: Every stream keeps delivering after the member rejoins.

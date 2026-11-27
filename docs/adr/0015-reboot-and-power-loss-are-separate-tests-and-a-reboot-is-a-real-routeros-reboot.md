@@ -13,7 +13,7 @@ Power loss keeps the switch off for 20 s, well past the 3 s fast LACP timeout, s
 Both tests then go through the same rejoin and the default 60 s MLAG initialisation delay.
 
 On 2026-11-25 the operator noticed that a CHR is back about 15 s after `/system reboot` and asked: "So yeah, we should use the power loss case then, not do the reboot at all, right?"
-On 2026-11-27 he kept both.
+On 2026-11-27 the operator kept both.
 The fast CHR reboot is accepted as a test.
 A slower hardware reboot only lengthens the time with a single switch, and the power loss gap covers that time.
 

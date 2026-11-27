@@ -22,8 +22,8 @@ With the access switch as root, VLAN 110 did not forward at all.
 These figures come from the old suite's plans, not from named `nw test` runs.
 
 That morning the operator asked for each lab to run first without and then with spanning tree, on the same wiring: "Let's test and verify from the beginning without spanning tree and see if everything works."
-That evening he limited live tests to spanning tree off.
-On 2026-11-27 he approved RSTP labs for Small, Medium and the two-pair lab, and chose the two root placements above.
+That evening the operator limited live tests to spanning tree off.
+On 2026-11-27 the operator approved RSTP labs for Small, Medium and the two-pair lab, and chose the two root placements above.
 
 ## Consequences
 

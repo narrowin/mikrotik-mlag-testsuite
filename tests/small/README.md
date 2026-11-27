@@ -16,7 +16,7 @@ The cable test is `CASE=bond-member-loss` and the reboot of switch1 in its curre
 
 ## Additional Small cases
 
-Cable delay and sustained one-way loss use the same topology. The mobile setup adds an active-backup host and an independent bypass for the thirteen historical cases.
+Cable delay and sustained one-way loss use the same topology. The mobile setup adds an active-backup host for the eleven historical cases.
 
 [Cable delay](cases/cable-delay.yaml), [Sustained cable loss](cases/cable-packet-loss.yaml), [Mobile Small guide](../small-mobile/README.md)
 

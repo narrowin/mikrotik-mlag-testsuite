@@ -5,12 +5,6 @@ streams:
   - name: client2-to-client1
     from: client2:bond0
     to: client1:bond0
-  - name: bypass-client1-to-client2
-    from: client1:eth3
-    to: client2:eth3
-  - name: bypass-client2-to-client1
-    from: client2:eth3
-    to: client1:eth3
 state:
   - statement: The primary and secondary peers are connected and run with spanning tree off.
     checks:

@@ -20,9 +20,9 @@ RSTP off means no spanning tree on any bridge (`protocol-mode=none`). RSTP on ha
 | Lab | Topology | RSTP off | RSTP on | Worst stop, RSTP off | Worst stop, RSTP on |
 | --- | --- | --- | --- | --- | --- |
 | [Small](tests/small/README.md) | One MLAG pair | ![PASS](docs/diagrams/result-pass.svg "PASS") 3&nbsp;of&nbsp;4, 1&nbsp;error | ![PASS](docs/diagrams/result-pass.svg "PASS") [3&nbsp;of&nbsp;4, 1&nbsp;error](tests/small-rstp/README.md) | 2.40–2.61&nbsp;s of&nbsp;4&nbsp;s, Cable client1 to switch2 back, client1&nbsp;→&nbsp;client2 | 2.43–2.64&nbsp;s of&nbsp;4&nbsp;s, Cable client1 to switch2 back, client1&nbsp;→&nbsp;client2 |
-| [Medium](tests/medium/README.md) | One MLAG pair + access switch | ![PASS](docs/diagrams/result-pass.svg "PASS") 6&nbsp;of&nbsp;6 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [3&nbsp;of&nbsp;6, 1&nbsp;error](tests/medium-rstp/README.md) | 2.51–2.71&nbsp;s of&nbsp;5&nbsp;s, Reboot switch2, host1&nbsp;→&nbsp;host2 | 9.80–10.01&nbsp;s of&nbsp;5&nbsp;s, switch1 power lost, host2&nbsp;→&nbsp;host1 |
-| [Medium two-pair](tests/medium-two-pair/README.md) | Two MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;7 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [4&nbsp;of&nbsp;7](tests/medium-two-pair-rstp/README.md) | 17.93–18.13&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-b1, host1&nbsp;→&nbsp;host2 | 21.54–21.75&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host2&nbsp;→&nbsp;host1 |
-| [Medium two-pair-strict](tests/medium-two-pair-strict/README.md) | Two MLAG pairs + `lacp-strict` | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;7 | not run | 18.14–18.35&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host2&nbsp;→&nbsp;host1 | — |
+| [Medium](tests/medium/README.md) | One MLAG pair + access switch | ![PASS](docs/diagrams/result-pass.svg "PASS") 5&nbsp;of&nbsp;5 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [2&nbsp;of&nbsp;5, 1&nbsp;error](tests/medium-rstp/README.md) | 2.51–2.71&nbsp;s of&nbsp;5&nbsp;s, Reboot switch2, host1&nbsp;→&nbsp;host2 | 9.80–10.01&nbsp;s of&nbsp;5&nbsp;s, switch1 power lost, host2&nbsp;→&nbsp;host1 |
+| [Medium two-pair](tests/medium-two-pair/README.md) | Two MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 3&nbsp;of&nbsp;6 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [3&nbsp;of&nbsp;6](tests/medium-two-pair-rstp/README.md) | 17.93–18.13&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-b1, host1&nbsp;→&nbsp;host2 | 21.54–21.75&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host2&nbsp;→&nbsp;host1 |
+| [Medium two-pair-strict](tests/medium-two-pair-strict/README.md) | Two MLAG pairs + `lacp-strict` | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 3&nbsp;of&nbsp;6 | not run | 18.14–18.35&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host2&nbsp;→&nbsp;host1 | — |
 | [Large](tests/large/README.md) | Two sites, four MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 3&nbsp;of&nbsp;5 | not run | 20.64–20.85&nbsp;s of&nbsp;5&nbsp;s, Reboot dc1-core1, dc1-traffic&nbsp;→&nbsp;dc2-traffic | — |
 
 The values are generated with `nw test summary tests/results.yaml` from the runs that [tests/results.yaml](tests/results.yaml) lists.
@@ -107,7 +107,7 @@ If you use Codespaces, choose **Stop codespace** when you are done to stop compu
 | Lab | What it is |
 | --- | --- |
 | [Small](tests/small/README.md) | One MLAG pair and three Linux clients bonded to both peers. |
-| [Small with a mobile host](tests/small-mobile/README.md) | The Small pair with an active-backup host and a bypass between two hosts. |
+| [Small with a mobile host](tests/small-mobile/README.md) | The Small pair with an active-backup host. |
 | [Medium](tests/medium/README.md) | One MLAG pair, an access switch with one LACP bond to both peers, and two hosts. |
 | [Medium with two pairs](tests/medium-two-pair/README.md) | Two MLAG pairs joined by one LACP bond. |
 | [Two pairs with lacp-strict](tests/medium-two-pair-strict/README.md) | The two-pair lab with `lacp-strict=yes` on the bond between the pairs. |

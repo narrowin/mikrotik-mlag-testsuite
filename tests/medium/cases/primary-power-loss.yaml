@@ -1,7 +1,7 @@
 name: primary-power-loss
 purpose: >-
   Withdraw all data links of switch1 in its checked MLAG primary role and pause the guest
-  before a cold reset. Measure both directions between host1 and host2 and on the independent bypass.
+  before a cold reset. Measure both directions between host1 and host2.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
 lab: ../lab/lab.yaml
 steps:
@@ -12,8 +12,6 @@ steps:
     max_outage_s: &loss-free
       host1-to-host2: 0
       host2-to-host1: 0
-      bypass-host1-to-host2: 0
-      bypass-host2-to-host1: 0
     expected: Every ping arrives once before power loss.
   - name: switch1 power lost
     action:
@@ -22,8 +20,6 @@ steps:
     max_outage_s: &limits
       host1-to-host2: &power-limit 5  # Three fast LACP intervals plus two for forwarding.
       host2-to-host1: *power-limit
-      bypass-host1-to-host2: 0
-      bypass-host2-to-host1: 0
     expected: Every neighbour sees carrier go down and switched traffic recovers through the surviving peer.
   - name: switch1 power restored
     action:

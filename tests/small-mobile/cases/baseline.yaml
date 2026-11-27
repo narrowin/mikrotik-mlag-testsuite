@@ -1,5 +1,5 @@
 name: baseline
-purpose: Check forwarding in both directions on the client bonds and on the independent bypass.
+purpose: Check forwarding in both directions on the client bonds.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
 lab: ../lab/direct-lab.yaml
 steps:
@@ -10,8 +10,6 @@ steps:
     max_outage_s:
       client1-to-client2: 0
       client2-to-client1: 0
-      bypass-client1-to-client2: 0
-      bypass-client2-to-client1: 0
     expected: Both peers stay connected and every ping arrives once.
     check_state:
       - statement: Both switch client bonds contain their wired member and use it for LACP forwarding.

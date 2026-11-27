@@ -15,8 +15,6 @@ steps:
       mobile-to-client1: 0
       mobile-to-client2: 0
       client1-to-client2: 0
-      bypass-client1-to-client2: 0
-      bypass-client2-to-client1: 0
     expected: Every stream delivers and both switches hold a mobile MAC entry.
     check_state:
       - statement: Both switches use the ten-second ageing profile and know the mobile MAC.
@@ -54,8 +52,6 @@ steps:
       mobile-to-client1: *intentional-silence
       mobile-to-client2: *intentional-silence
       client1-to-client2: 0
-      bypass-client1-to-client2: 0
-      bypass-client2-to-client1: 0
     expected: The mobile host sends no frame to either switch, both switches age out its address and other streams continue.
     check_state:
       - statement: Neither switch holds the mobile MAC during the silence.

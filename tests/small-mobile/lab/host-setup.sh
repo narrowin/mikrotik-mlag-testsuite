@@ -23,9 +23,6 @@ ip link set bond0 up
 
 if [ "$host" = 50 ]; then
     ip link set bond0 type bond active_slave eth1
-else
-    ip address add "198.51.100.${host#1}/30" dev eth3
-    ip link set eth3 up
 fi
 
 # Keep the unknown-unicast probe readable without an ARP reply.

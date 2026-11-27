@@ -12,7 +12,7 @@ Raw captures may still go privately to MikroTik support for a ticket.
 On 2026-11-24 one campaign's evidence was about 315 MB, and full captures later piled up to 21 GB on the lab VM.
 The operator rejected publishing them: anyone can rerun the committed labs, so a public copy of the packets adds nothing.
 Removing large files from git history later takes coordinated work, so they must never enter it.
-On 2026-11-25 he also rejected keeping full captures of failed runs for later manual analysis: "get rid of them only keep what is needed for proof after a run".
+On 2026-11-25 the operator also rejected keeping full captures of failed runs for later manual analysis: "get rid of them only keep what is needed for proof after a run".
 Cutting the evidence down to the slices that prove the verdict is part of every run, not a cleanup step afterwards.
 
 ## Considered options

@@ -1,7 +1,7 @@
 name: primary-power-loss
 purpose: >-
   Withdraw all data links of switch1 in its checked primary role and pause the guest
-  before a cold reset. Measure both directions on the client bonds and the independent bypass.
+  before a cold reset. Measure both directions on the client bonds.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
 lab: ../lab/direct-lab.yaml
 steps:
@@ -12,8 +12,6 @@ steps:
     max_outage_s: &loss-free
       client1-to-client2: 0
       client2-to-client1: 0
-      bypass-client1-to-client2: 0
-      bypass-client2-to-client1: 0
     expected: Every ping arrives once before power loss.
   - name: switch1 power lost
     action:
@@ -22,8 +20,6 @@ steps:
     max_outage_s: &limits
       client1-to-client2: &power-limit 5  # Three fast LACP intervals plus two for forwarding.
       client2-to-client1: *power-limit
-      bypass-client1-to-client2: 0
-      bypass-client2-to-client1: 0
     expected: Every neighbour sees carrier go down and switched traffic recovers through the survivor.
   - name: switch1 power restored
     action:

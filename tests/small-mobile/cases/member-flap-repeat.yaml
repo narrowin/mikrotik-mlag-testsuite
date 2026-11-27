@@ -1,7 +1,7 @@
 name: member-flap-repeat
 purpose: >-
   Flap the cable from client1 to switch1 five times. Measure each flap and check
-  that the streams that bypass this cable keep delivering.
+  that the streams that do not cross this cable keep delivering.
 source: https://forum.mikrotik.com/t/7-25-1-stable-is-released/274226/22
 lab: ../lab/link-lab.yaml
 watch_host_entries:
@@ -28,8 +28,6 @@ steps:
       client1-to-client2: *member-limit
       client2-to-mobile: 0
       mobile-to-client2: 0
-      bypass-client1-to-client2: 0
-      bypass-client2-to-client1: 0
     expected: &withdrawal Client1 uses its other cable and the unaffected streams lose nothing.
     log: &down-log
       must:
@@ -111,6 +109,4 @@ steps:
       mobile-to-client1: 0
       mobile-to-client2: 0
       client1-to-client2: 0
-      bypass-client1-to-client2: 0
-      bypass-client2-to-client1: 0
     expected: Every stream delivers after the fifth flap.

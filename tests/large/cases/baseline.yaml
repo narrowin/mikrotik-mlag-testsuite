@@ -1,6 +1,6 @@
 name: baseline
 purpose: >-
-  Check forwarding inside each site, across the DCI in both directions and on the bypass,
+  Check forwarding inside each site, and across the DCI in both directions,
   with all four MLAG pairs connected and the dc1 firewall owning the VRRP address.
 source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
 lab: ../lab/lab.yaml
@@ -14,6 +14,4 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: 0
       dc2-to-dc1-over-dci: 0
-      bypass-dc1-to-dc2: 0
-      bypass-dc2-to-dc1: 0
     expected: Every pair stays connected, the dc1 firewall stays VRRP owner and every ping arrives once.

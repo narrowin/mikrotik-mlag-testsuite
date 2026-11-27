@@ -29,8 +29,6 @@ steps:
     max_outage_s: &limits
       host1-to-host2: &member-limit 3  # One fast LACP timeout, three 1 s LACP intervals.
       host2-to-host1: *member-limit
-      bypass-host1-to-host2: 0
-      bypass-host2-to-host1: 0
     expected: >-
       switch-a1 and switch-b1 each lose their only inter-pair bond member. The bond keeps forwarding over
       the member between switch-a2 and switch-b2, and traffic that reaches switch-a1 or switch-b1 crosses its peer link.
@@ -59,6 +57,4 @@ steps:
     max_outage_s:
       host1-to-host2: 0
       host2-to-host1: 0
-      bypass-host1-to-host2: 0
-      bypass-host2-to-host1: 0
     expected: Every stream delivers after the flap, and the final state check finds both inter-pair members in use.

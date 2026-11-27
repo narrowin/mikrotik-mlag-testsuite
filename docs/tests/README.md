@@ -57,7 +57,7 @@ sudo "$CLAB" destroy -t "$LAB/lab/topology.clab.yml" --cleanup
 
 ## Add a test
 
-A test is a list of steps. This step from [tests/medium/cases/primary-reboot.yaml](../../tests/medium/cases/primary-reboot.yaml) reboots switch1, waits up to 60 s for the lab state checks to pass again, keeps measuring for 16 s and allows each host stream to stop for at most 5 s and the bypass for none.
+A test is a list of steps. This step from [tests/medium/cases/primary-reboot.yaml](../../tests/medium/cases/primary-reboot.yaml) reboots switch1, waits up to 60 s for the lab state checks to pass again, keeps measuring for 16 s and allows each host stream to stop for at most 5 s.
 
 ```yaml
   - name: Reboot switch1
@@ -70,8 +70,6 @@ A test is a list of steps. This step from [tests/medium/cases/primary-reboot.yam
     max_outage_s:
       host1-to-host2: &reboot-limit 5  # Three fast LACP intervals plus two for forwarding.
       host2-to-host1: *reboot-limit
-      bypass-host1-to-host2: 0
-      bypass-host2-to-host1: 0
 ```
 
 1. Copy the nearest test in the lab's `cases/` folder and change the steps.
