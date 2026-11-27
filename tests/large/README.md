@@ -5,6 +5,17 @@ Each site has a core MLAG pair (`core1`, `core2`), a distribution MLAG pair (`di
 Peer 1 of each pair is configured as MLAG primary.
 A collector node, `syslog`, receives the log of all ten CHRs.
 
+## Networka 0.5.2 live runs
+
+Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links below open the generated reports; full evidence stays in `test-results/networka-0.5.2-20261127/large/`. Earlier measurements below remain historical.
+
+- [PASS — baseline](runs/networka-0.5.2-20261127/baseline/report.md)
+- [FAIL — core-reboot](runs/networka-0.5.2-20261127/core-reboot/report.md)
+- [PASS — dci-member-loss](runs/networka-0.5.2-20261127/dci-member-loss/report.md)
+- [FAIL — distribution-reboot](runs/networka-0.5.2-20261127/distribution-reboot/report.md)
+- [PASS — firewall-loss](runs/networka-0.5.2-20261127/firewall-loss/report.md)
+- [FAIL — site-power-loss](runs/networka-0.5.2-20261127/site-power-loss/report.md)
+
 ## Wiring
 
 Each pair has a single-member peer link. Every other connection is one LACP bond, and both peers of a pair give their side the same `mlag-id`.

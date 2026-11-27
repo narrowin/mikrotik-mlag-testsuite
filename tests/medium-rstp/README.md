@@ -8,6 +8,16 @@ The folder holds only what differs: [topology.clab.yml](lab/topology.clab.yml), 
 Each test in `cases/` is a symbolic link to the base test of the same name, and Networka resolves its `lab: ../lab/lab.yaml` from the link's folder, so it runs with this lab's `lab.yaml`.
 The startup config, host setup and inventory are the base lab's files in [tests/medium/lab](../medium/lab).
 
+## Networka 0.5.2 live runs
+
+Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links below open the generated reports; full evidence stays in `test-results/networka-0.5.2-20261127/medium-rstp/`. Earlier measurements below remain historical.
+
+- [PASS — baseline](runs/networka-0.5.2-20261127/baseline/report.md)
+- [FAIL — primary-power-loss](runs/networka-0.5.2-20261127/primary-power-loss/report.md)
+- [FAIL — primary-reboot](runs/networka-0.5.2-20261127/primary-reboot/report.md)
+- [PASS — secondary-power-loss](runs/networka-0.5.2-20261127/secondary-power-loss/report.md)
+- [FAIL — secondary-reboot](runs/networka-0.5.2-20261127/secondary-reboot/report.md)
+
 ## Commands
 
 Start, run, replay and remove the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these values.

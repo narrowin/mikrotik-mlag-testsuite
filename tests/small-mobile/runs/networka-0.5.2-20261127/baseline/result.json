@@ -1,0 +1,885 @@
+{
+  "name": "baseline",
+  "purpose": "Check forwarding in both directions on the client bonds.",
+  "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
+  "verdict": "pass",
+  "reasons": [],
+  "state": {
+    "before": {
+      "verdict": "pass",
+      "statements": [
+        {
+          "statement": "The primary and secondary peers are connected and run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both cables of client1 and client2 are eligible in their LACP bonds.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "verdict": "pass",
+      "statements": [
+        {
+          "statement": "The primary and secondary peers are connected and run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both cables of client1 and client2 are eligible in their LACP bonds.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quiet": {
+    "window": "quiet window",
+    "start_s": 0.0,
+    "end_s": 3.740406,
+    "verdict": "pass",
+    "streams": {
+      "client1-to-client2": {
+        "delivered": 35,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "client2-to-client1": {
+        "delivered": 35,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "name": "Steady traffic",
+      "expected": "Both peers stay connected and every ping arrives once.",
+      "state_check": {
+        "verdict": "pass",
+        "statements": [
+          {
+            "statement": "Both switch client bonds contain their wired member and use it for LACP forwarding.",
+            "source": null,
+            "verdict": "pass",
+            "checks": [
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "bond_members",
+                "params": {
+                  "bond": "client1"
+                },
+                "expected": [
+                  "ether3"
+                ],
+                "observed": [
+                  "ether3"
+                ],
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "bond_members",
+                "params": {
+                  "bond": "client1"
+                },
+                "expected": [
+                  "ether3"
+                ],
+                "observed": [
+                  "ether3"
+                ],
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "bond_members",
+                "params": {
+                  "bond": "client2"
+                },
+                "expected": [
+                  "ether4"
+                ],
+                "observed": [
+                  "ether4"
+                ],
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "bond_members",
+                "params": {
+                  "bond": "client2"
+                },
+                "expected": [
+                  "ether4"
+                ],
+                "observed": [
+                  "ether4"
+                ],
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "lacp_member",
+                "params": {
+                  "bond": "client1",
+                  "member": "ether3"
+                },
+                "expected": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "observed": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "lacp_member",
+                "params": {
+                  "bond": "client1",
+                  "member": "ether3"
+                },
+                "expected": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "observed": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "lacp_member",
+                "params": {
+                  "bond": "client2",
+                  "member": "ether4"
+                },
+                "expected": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "observed": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "lacp_member",
+                "params": {
+                  "bond": "client2",
+                  "member": "ether4"
+                },
+                "expected": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "observed": {
+                  "actor": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  },
+                  "partner": {
+                    "synchronization": true,
+                    "collecting": true,
+                    "distributing": true
+                  }
+                },
+                "verdict": "pass",
+                "reason": null
+              }
+            ]
+          },
+          {
+            "statement": "Both switch client bridge ports are forwarding and both peer ports have carrier.",
+            "source": null,
+            "verdict": "pass",
+            "checks": [
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "bridge_port",
+                "params": {
+                  "bridge": "bridge",
+                  "port": "client1"
+                },
+                "expected": {
+                  "forwarding": true
+                },
+                "observed": {
+                  "forwarding": true
+                },
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "bridge_port",
+                "params": {
+                  "bridge": "bridge",
+                  "port": "client1"
+                },
+                "expected": {
+                  "forwarding": true
+                },
+                "observed": {
+                  "forwarding": true
+                },
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "bridge_port",
+                "params": {
+                  "bridge": "bridge",
+                  "port": "client2"
+                },
+                "expected": {
+                  "forwarding": true
+                },
+                "observed": {
+                  "forwarding": true
+                },
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "bridge_port",
+                "params": {
+                  "bridge": "bridge",
+                  "port": "client2"
+                },
+                "expected": {
+                  "forwarding": true
+                },
+                "observed": {
+                  "forwarding": true
+                },
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "interface_up",
+                "params": {
+                  "interface": "ether2"
+                },
+                "expected": true,
+                "observed": true,
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "interface_up",
+                "params": {
+                  "interface": "ether2"
+                },
+                "expected": true,
+                "observed": true,
+                "verdict": "pass",
+                "reason": null
+              }
+            ]
+          }
+        ]
+      },
+      "hold_s": 4.0,
+      "start_s": 3.740406,
+      "end_s": 8.598209,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 47,
+          "delivered": 47,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client2-to-client1": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 47,
+          "delivered": 47,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    }
+  ],
+  "log": [],
+  "switch_log": {
+    "file": "syslog/switches.log",
+    "saved": true,
+    "lines": {
+      "switch1": 2,
+      "switch2": 2
+    },
+    "markers": {
+      "switch1": {
+        "start": -2.066957,
+        "end": 10.598633
+      },
+      "switch2": {
+        "start": -1.486805,
+        "end": 10.640773
+      }
+    }
+  },
+  "validity": [
+    {
+      "check": "capture at client1:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at client2:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "every stream and its captures stayed up",
+      "ok": true
+    },
+    {
+      "check": "every cable set down was set up again",
+      "ok": true
+    },
+    {
+      "check": "the wall clock and the monotonic clock of the lab host agree within 50 ms",
+      "ok": true
+    },
+    {
+      "check": "client1-to-client2 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "client1-to-client2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "client2-to-client1 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "client2-to-client1 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "client1-to-client2 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "client2-to-client1 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    }
+  ],
+  "traffic": {
+    "start_ns": 1795767112648363000,
+    "end_ns": 1795767122690321232,
+    "interval_s": 0.1,
+    "streams": {
+      "client1-to-client2": {
+        "ident": 1,
+        "source": "client1:bond0",
+        "destination": "client2:bond0",
+        "sent": 96,
+        "delivered": 96,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.113099,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": []
+      },
+      "client2-to-client1": {
+        "ident": 2,
+        "source": "client2:bond0",
+        "destination": "client1:bond0",
+        "sent": 96,
+        "delivered": 96,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.112967,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": []
+      }
+    }
+  },
+  "closing": {
+    "window": "after the steps",
+    "start_s": 8.598209,
+    "end_s": 10.041958,
+    "verdict": "pass",
+    "streams": {
+      "client1-to-client2": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "client2-to-client1": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  }
+}

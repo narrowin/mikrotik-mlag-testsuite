@@ -1,0 +1,2252 @@
+{
+  "name": "mac-age-relearn",
+  "purpose": "Silence the active-backup host beyond the bridge ageing interval and measure how quickly flooding stops once its first frame returns.",
+  "source": "https://forum.mikrotik.com/t/strange-traffic-flooding-in-mlag-setup/271419",
+  "verdict": "pass",
+  "reasons": [],
+  "state": {
+    "before": {
+      "verdict": "pass",
+      "statements": [
+        {
+          "statement": "The primary and secondary peers are connected and run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both cables of client1 and client2 are eligible in their LACP bonds.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "verdict": "pass",
+      "statements": [
+        {
+          "statement": "The primary and secondary peers are connected and run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both cables of client1 and client2 are eligible in their LACP bonds.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quiet": {
+    "window": "quiet window",
+    "start_s": 0.0,
+    "end_s": 3.810206,
+    "verdict": "pass",
+    "streams": {
+      "client1-to-mobile": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "client2-to-mobile": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mobile-to-client1": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mobile-to-client2": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "client1-to-client2": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "name": "Mobile learned",
+      "expected": "Every stream delivers and both switches hold a mobile MAC entry.",
+      "state_check": {
+        "verdict": "pass",
+        "statements": [
+          {
+            "statement": "Both switches use the ten-second ageing profile and know the mobile MAC.",
+            "source": null,
+            "verdict": "pass",
+            "checks": [
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "property",
+                "params": {
+                  "menu": "/interface/bridge",
+                  "where": {
+                    "name": "bridge"
+                  },
+                  "name": "ageing-time"
+                },
+                "expected": "00:00:10",
+                "observed": "00:00:10",
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "property",
+                "params": {
+                  "menu": "/interface/bridge",
+                  "where": {
+                    "name": "bridge"
+                  },
+                  "name": "ageing-time"
+                },
+                "expected": "00:00:10",
+                "observed": "00:00:10",
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "host_entry",
+                "params": {
+                  "bridge": "bridge",
+                  "mac": "02:00:00:11:00:50"
+                },
+                "expected": "ether5",
+                "observed": "ether5",
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "host_entry",
+                "params": {
+                  "bridge": "bridge",
+                  "mac": "02:00:00:11:00:50"
+                },
+                "expected": "ether2",
+                "observed": "ether2",
+                "verdict": "pass",
+                "reason": null
+              }
+            ]
+          }
+        ]
+      },
+      "hold_s": 4.0,
+      "start_s": 3.810206,
+      "end_s": 7.945765,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 40,
+          "delivered": 40,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 40,
+          "delivered": 40,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 40,
+          "delivered": 40,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 40,
+          "delivered": 40,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 40,
+          "delivered": 40,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "Mobile silent",
+      "expected": "The mobile host sends no frame to either switch, both switches age out its address and other streams continue.",
+      "mobile": {
+        "verdict": "pass",
+        "bond": "client3:bond0",
+        "dropped": {
+          "client3:eth1": 971,
+          "client3:eth2": 0
+        },
+        "taps": {
+          "eth1": "switch1:tap4",
+          "eth2": "switch2:tap4"
+        },
+        "held_s": 25.062742,
+        "first_host_frame_s": 33.053577,
+        "delivery": {
+          "client1-to-mobile": {
+            "first_reply_s": 0.031096,
+            "limit_s": 1.0
+          },
+          "client2-to-mobile": {
+            "first_reply_s": 0.040027,
+            "limit_s": 1.0
+          },
+          "mobile-to-client1": {
+            "first_reply_s": 0.056921,
+            "limit_s": 1.0
+          },
+          "mobile-to-client2": {
+            "first_reply_s": 0.000892,
+            "limit_s": 1.0
+          }
+        },
+        "flooding": {
+          "client1-to-mobile": {
+            "captures": [
+              "client2:eth1",
+              "client2:eth2"
+            ],
+            "before_silence": 0,
+            "while_silent": 0,
+            "after_first_frame": 0,
+            "last_flood_after_first_frame_s": 0.0,
+            "limit_s": 1.0
+          },
+          "client2-to-mobile": {
+            "captures": [
+              "client1:eth1",
+              "client1:eth2"
+            ],
+            "before_silence": 0,
+            "while_silent": 0,
+            "after_first_frame": 0,
+            "last_flood_after_first_frame_s": 0.0,
+            "limit_s": 1.0
+          }
+        }
+      },
+      "state_check": {
+        "verdict": "pass",
+        "statements": [
+          {
+            "statement": "Neither switch holds the mobile MAC during the silence.",
+            "source": null,
+            "verdict": "pass",
+            "checks": [
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "host_entry",
+                "params": {
+                  "bridge": "bridge",
+                  "mac": "02:00:00:11:00:50"
+                },
+                "expected": null,
+                "observed": null,
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "host_entry",
+                "params": {
+                  "bridge": "bridge",
+                  "mac": "02:00:00:11:00:50"
+                },
+                "expected": null,
+                "observed": null,
+                "verdict": "pass",
+                "reason": null
+              }
+            ]
+          }
+        ]
+      },
+      "hold_s": 25.0,
+      "start_s": 7.945765,
+      "end_s": 33.022593,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 26.0,
+          "lower_s": 24.931637,
+          "upper_s": 25.145494,
+          "lost": 240,
+          "summary": "240 pings lost in total at one ping every 100 ms, longest measured stop 24.9316 to 25.1455 s",
+          "duplicates": 0,
+          "sent": 240,
+          "delivered": 0,
+          "verdict": "pass",
+          "reason": "240 pings lost in total at one ping every 100 ms, longest measured stop 24.9316 to 25.1455 s, within 26 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 26.0,
+          "lower_s": 24.948588,
+          "upper_s": 25.154003,
+          "lost": 240,
+          "summary": "240 pings lost in total at one ping every 100 ms, longest measured stop 24.9486 to 25.154 s",
+          "duplicates": 0,
+          "sent": 240,
+          "delivered": 0,
+          "verdict": "pass",
+          "reason": "240 pings lost in total at one ping every 100 ms, longest measured stop 24.9486 to 25.154 s, within 26 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 26.0,
+          "lower_s": 24.992582,
+          "upper_s": 25.201762,
+          "lost": 245,
+          "summary": "245 pings lost in total at one ping every 100 ms, longest measured stop 24.9926 to 25.2018 s",
+          "duplicates": 0,
+          "sent": 245,
+          "delivered": 0,
+          "verdict": "pass",
+          "reason": "245 pings lost in total at one ping every 100 ms, longest measured stop 24.9926 to 25.2018 s, within 26 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 26.0,
+          "lower_s": 24.936536,
+          "upper_s": 25.145476,
+          "lost": 245,
+          "summary": "245 pings lost in total at one ping every 100 ms, longest measured stop 24.9365 to 25.1455 s",
+          "duplicates": 0,
+          "sent": 245,
+          "delivered": 0,
+          "verdict": "pass",
+          "reason": "245 pings lost in total at one ping every 100 ms, longest measured stop 24.9365 to 25.1455 s, within 26 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 240,
+          "delivered": 240,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "Mobile sends again",
+      "expected": "Delivery resumes and unknown-unicast flooding stops within one second of the first host frame.",
+      "mobile": {
+        "verdict": "pass",
+        "bond": "client3:bond0",
+        "dropped": {
+          "client3:eth1": 971,
+          "client3:eth2": 0
+        },
+        "taps": {
+          "eth1": "switch1:tap4",
+          "eth2": "switch2:tap4"
+        },
+        "held_s": 25.062742,
+        "first_host_frame_s": 33.053577,
+        "delivery": {
+          "client1-to-mobile": {
+            "first_reply_s": 0.031096,
+            "limit_s": 1.0
+          },
+          "client2-to-mobile": {
+            "first_reply_s": 0.040027,
+            "limit_s": 1.0
+          },
+          "mobile-to-client1": {
+            "first_reply_s": 0.056921,
+            "limit_s": 1.0
+          },
+          "mobile-to-client2": {
+            "first_reply_s": 0.000892,
+            "limit_s": 1.0
+          }
+        },
+        "flooding": {
+          "client1-to-mobile": {
+            "captures": [
+              "client2:eth1",
+              "client2:eth2"
+            ],
+            "before_silence": 0,
+            "while_silent": 0,
+            "after_first_frame": 0,
+            "last_flood_after_first_frame_s": 0.0,
+            "limit_s": 1.0
+          },
+          "client2-to-mobile": {
+            "captures": [
+              "client1:eth1",
+              "client1:eth2"
+            ],
+            "before_silence": 0,
+            "while_silent": 0,
+            "after_first_frame": 0,
+            "last_flood_after_first_frame_s": 0.0,
+            "limit_s": 1.0
+          }
+        }
+      },
+      "state_check": {
+        "verdict": "pass",
+        "statements": [
+          {
+            "statement": "Both switches relearned the mobile MAC on the original path.",
+            "source": null,
+            "verdict": "pass",
+            "checks": [
+              {
+                "name": null,
+                "device": "switch1",
+                "check": "host_entry",
+                "params": {
+                  "bridge": "bridge",
+                  "mac": "02:00:00:11:00:50"
+                },
+                "expected": "ether5",
+                "observed": "ether5",
+                "verdict": "pass",
+                "reason": null
+              },
+              {
+                "name": null,
+                "device": "switch2",
+                "check": "host_entry",
+                "params": {
+                  "bridge": "bridge",
+                  "mac": "02:00:00:11:00:50"
+                },
+                "expected": "ether2",
+                "observed": "ether2",
+                "verdict": "pass",
+                "reason": null
+              }
+            ]
+          }
+        ]
+      },
+      "hold_s": 5.0,
+      "start_s": 33.022593,
+      "end_s": 38.09208,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 26.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 49,
+          "delivered": 49,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 26.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 49,
+          "delivered": 49,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 26.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 48,
+          "delivered": 48,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 26.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 49,
+          "delivered": 49,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 49,
+          "delivered": 49,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "Mobile recovery",
+      "expected": "Every stream keeps delivering and the relearned destination stays unicast.",
+      "hold_s": 3.0,
+      "start_s": 38.09208,
+      "end_s": 41.092265,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 28,
+          "delivered": 28,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    }
+  ],
+  "log": [],
+  "switch_log": {
+    "file": "syslog/switches.log",
+    "saved": true,
+    "lines": {
+      "switch1": 2,
+      "switch2": 2
+    },
+    "markers": {
+      "switch1": {
+        "start": -2.013202,
+        "end": 43.061325
+      },
+      "switch2": {
+        "start": -1.451882,
+        "end": 43.104531
+      }
+    }
+  },
+  "validity": [
+    {
+      "check": "capture at client1:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at client2:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at client3:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "every stream and its captures stayed up",
+      "ok": true
+    },
+    {
+      "check": "every cable set down was set up again",
+      "ok": true
+    },
+    {
+      "check": "the wall clock and the monotonic clock of the lab host agree within 50 ms",
+      "ok": true
+    },
+    {
+      "check": "client1-to-mobile sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "client1-to-mobile shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "client2-to-mobile sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "client2-to-mobile shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client1 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client1 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client2 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "client1-to-client2 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "client1-to-client2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "client1-to-mobile delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "client2-to-mobile delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client1 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client2 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "client1-to-client2 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    }
+  ],
+  "traffic": {
+    "start_ns": 1795767652387005000,
+    "end_ns": 1795767694913396913,
+    "interval_s": 0.1,
+    "streams": {
+      "client1-to-mobile": {
+        "ident": 1,
+        "source": "client1:bond0",
+        "destination": "client3:bond0",
+        "sent": 407,
+        "delivered": 167,
+        "lost_seqs": [
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263,
+          264,
+          265,
+          266,
+          267,
+          268,
+          269,
+          270,
+          271,
+          272,
+          273,
+          274,
+          275,
+          276,
+          277,
+          278,
+          279,
+          280,
+          281,
+          282,
+          283,
+          284,
+          285,
+          286,
+          287,
+          288,
+          289,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.111878,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": [
+          {
+            "first_seq": 78,
+            "last_seq": 317,
+            "lost": 240,
+            "lower_s": 24.931637,
+            "upper_s": 25.145494,
+            "summary": "240 pings lost at one ping every 100 ms, traffic stopped for 24.932 to 25.145 s",
+            "begins_s": 8.046508,
+            "ends_s": 32.978145,
+            "windows": [
+              "Mobile silent"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ]
+      },
+      "client2-to-mobile": {
+        "ident": 2,
+        "source": "client2:bond0",
+        "destination": "client3:bond0",
+        "sent": 407,
+        "delivered": 167,
+        "lost_seqs": [
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263,
+          264,
+          265,
+          266,
+          267,
+          268,
+          269,
+          270,
+          271,
+          272,
+          273,
+          274,
+          275,
+          276,
+          277,
+          278,
+          279,
+          280,
+          281,
+          282,
+          283,
+          284,
+          285,
+          286,
+          287,
+          288,
+          289,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.111767,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": [
+          {
+            "first_seq": 78,
+            "last_seq": 317,
+            "lost": 240,
+            "lower_s": 24.948588,
+            "upper_s": 25.154003,
+            "summary": "240 pings lost at one ping every 100 ms, traffic stopped for 24.949 to 25.154 s",
+            "begins_s": 8.039651,
+            "ends_s": 32.988239,
+            "windows": [
+              "Mobile silent"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ]
+      },
+      "mobile-to-client1": {
+        "ident": 3,
+        "source": "client3:bond0",
+        "destination": "client1:bond0",
+        "sent": 412,
+        "delivered": 167,
+        "lost_seqs": [
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.112091,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": [
+          {
+            "first_seq": 78,
+            "last_seq": 123,
+            "lost": 245,
+            "lower_s": 24.992582,
+            "upper_s": 25.201762,
+            "summary": "245 pings lost at one ping every 100 ms, traffic stopped for 24.993 to 25.202 s",
+            "begins_s": 8.010071,
+            "ends_s": 33.002653,
+            "windows": [
+              "Mobile silent"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          }
+        ]
+      },
+      "mobile-to-client2": {
+        "ident": 4,
+        "source": "client3:bond0",
+        "destination": "client2:bond0",
+        "sent": 412,
+        "delivered": 167,
+        "lost_seqs": [
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.111828,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": [
+          {
+            "first_seq": 78,
+            "last_seq": 123,
+            "lost": 245,
+            "lower_s": 24.936536,
+            "upper_s": 25.145476,
+            "summary": "245 pings lost at one ping every 100 ms, traffic stopped for 24.937 to 25.145 s",
+            "begins_s": 8.010075,
+            "ends_s": 32.946611,
+            "windows": [
+              "Mobile silent"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          }
+        ]
+      },
+      "client1-to-client2": {
+        "ident": 5,
+        "source": "client1:bond0",
+        "destination": "client2:bond0",
+        "sent": 407,
+        "delivered": 407,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.112714,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": []
+      }
+    }
+  },
+  "closing": {
+    "window": "after the steps",
+    "start_s": 41.092265,
+    "end_s": 42.526392,
+    "verdict": "pass",
+    "streams": {
+      "client1-to-mobile": {
+        "delivered": 13,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "client2-to-mobile": {
+        "delivered": 13,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mobile-to-client1": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mobile-to-client2": {
+        "delivered": 13,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "client1-to-client2": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  }
+}

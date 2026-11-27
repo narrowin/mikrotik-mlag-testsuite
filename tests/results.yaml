@@ -3,74 +3,64 @@ chart: ../docs/diagrams/results-worst-stop.svg
 chart_alt: Worst traffic stop per lab with RSTP off and on, against its limit
 pass_icon: ../docs/diagrams/result-pass.svg
 fail_icon: ../docs/diagrams/result-fail.svg
-caption: >-
-  RSTP off means no spanning tree on any bridge (`protocol-mode=none`).
-  RSTP on has the MLAG pair as root. RouterOS 7.26beta7; `nw test` live
-  runs of 26 and 27 November 2026
-modes: [RSTP off, RSTP on]
+caption: RSTP off means no spanning tree on any bridge (`protocol-mode=none`). RSTP on has the MLAG pair
+  as root. RouterOS 7.26beta7; Networka 0.5.2; live runs of 27 November 2026
+modes:
+- RSTP off
+- RSTP on
 rows:
-  - lab: Small
-    topology: One MLAG pair
-    link: small/README.md
-    cells:
-      RSTP off:
-        runs:
-          - small/runs/canonical-bond-member-loss.tJV4xJ
-          - small/runs/canonical-cable-delay.N7ZUQH
-          - small/runs/canonical-cable-packet-loss.7OqL68
-          - small/runs/canonical-switch-reboot.AKnd4T
-      RSTP on:
-        runs:
-          - small-rstp/runs/20261127T061300Z
-        link: small-rstp/README.md
-  - lab: Medium
-    topology: One MLAG pair + access switch
-    link: medium/README.md
-    cells:
-      RSTP off:
-        runs:
-          - medium/runs/02-baseline
-          - medium/runs/04-secondary-reboot
-          - medium/runs/05-primary-reboot
-          - medium/runs/06-secondary-power-loss
-          - medium/runs/07-primary-power-loss
-      RSTP on:
-        runs:
-          - medium-rstp/runs/20261127T061300Z
-        link: medium-rstp/README.md
-  - lab: Medium two-pair
-    topology: Two MLAG pairs
-    link: medium-two-pair/README.md
-    cells:
-      RSTP off:
-        runs:
-          - medium-two-pair/runs/baseline.wWwlBH
-          - medium-two-pair/runs/inter-pair-member-flap.jnVUpF
-          - medium-two-pair/runs/reboot-a-primary.FKqkQ2
-          - medium-two-pair/runs/reboot-a-secondary.i6iXL9
-          - medium-two-pair/runs/reboot-b-primary.ufBdgC
-          - medium-two-pair/runs/reboot-b-secondary.NW4WQm
-      RSTP on:
-        runs:
-          - medium-two-pair-rstp/runs/20261127T061300Z
-        link: medium-two-pair-rstp/README.md
-  - lab: Medium two-pair-strict
-    topology: "Two MLAG pairs + `lacp-strict`"
-    label: Two MLAG pairs, lacp-strict
-    link: medium-two-pair-strict/README.md
-    cells:
-      RSTP off:
-        runs:
-          - medium-two-pair-strict/runs/baseline.CkfS33
-          - medium-two-pair-strict/runs/inter-pair-member-flap.s2W0h0
-          - medium-two-pair-strict/runs/reboot-a-primary.qPw3mW
-          - medium-two-pair-strict/runs/reboot-a-secondary.14KY6t
-          - medium-two-pair-strict/runs/reboot-b-primary.l2WMzz
-          - medium-two-pair-strict/runs/reboot-b-secondary.JR3aQf
-  - lab: Large
-    topology: Two sites, four MLAG pairs
-    link: large/README.md
-    cells:
-      RSTP off:
-        runs:
-          - large/runs/20261127T070754Z
+- lab: Small
+  topology: One MLAG pair
+  link: small/README.md
+  cells:
+    RSTP off:
+      runs:
+      - small/runs/networka-0.5.2-20261127
+    RSTP on:
+      runs:
+      - small-rstp/runs/networka-0.5.2-20261127
+      link: small-rstp/README.md
+- lab: Small with MAC-move host
+  topology: One MLAG pair + MAC-move host
+  link: small-mobile/README.md
+  cells:
+    RSTP off:
+      runs:
+      - small-mobile/runs/networka-0.5.2-20261127
+- lab: Medium
+  topology: One MLAG pair + access switch
+  link: medium/README.md
+  cells:
+    RSTP off:
+      runs:
+      - medium/runs/networka-0.5.2-20261127
+    RSTP on:
+      runs:
+      - medium-rstp/runs/networka-0.5.2-20261127
+      link: medium-rstp/README.md
+- lab: Two-pair
+  topology: Two MLAG pairs
+  link: medium-two-pair/README.md
+  cells:
+    RSTP off:
+      runs:
+      - medium-two-pair/runs/networka-0.5.2-20261127
+    RSTP on:
+      runs:
+      - medium-two-pair-rstp/runs/networka-0.5.2-20261127
+      link: medium-two-pair-rstp/README.md
+- lab: Two-pair strict
+  topology: Two MLAG pairs + `lacp-strict`
+  label: Two MLAG pairs, lacp-strict
+  link: medium-two-pair-strict/README.md
+  cells:
+    RSTP off:
+      runs:
+      - medium-two-pair-strict/runs/networka-0.5.2-20261127
+- lab: Large
+  topology: Two sites, four MLAG pairs
+  link: large/README.md
+  cells:
+    RSTP off:
+      runs:
+      - large/runs/networka-0.5.2-20261127

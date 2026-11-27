@@ -1,0 +1,2517 @@
+{
+  "name": "member-flap-repeat",
+  "purpose": "Flap the cable from client1 to switch1 five times. Measure each flap and check that the streams that do not cross this cable keep delivering.",
+  "source": "https://forum.mikrotik.com/t/7-25-1-stable-is-released/274226/22",
+  "verdict": "pass",
+  "reasons": [],
+  "state": {
+    "before": {
+      "verdict": "pass",
+      "statements": [
+        {
+          "statement": "The primary and secondary peers are connected and run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both cables of client1 and client2 are eligible in their LACP bonds.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "verdict": "pass",
+      "statements": [
+        {
+          "statement": "The primary and secondary peers are connected and run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "statement": "Both cables of client1 and client2 are eligible in their LACP bonds.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "client2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quiet": {
+    "window": "quiet window",
+    "start_s": 0.0,
+    "end_s": 3.813666,
+    "verdict": "pass",
+    "streams": {
+      "client1-to-mobile": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "client2-to-mobile": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mobile-to-client1": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mobile-to-client2": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "client1-to-client2": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "name": "Flap 1 down",
+      "expected": "Client1 uses its other cable and the unaffected streams lose nothing.",
+      "cable": "client1:eth1",
+      "state": "down",
+      "hold_s": 1.0,
+      "start_s": 3.813666,
+      "end_s": 4.828544,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.208393,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.208393 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.208393 s, within 3 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.208472,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.208472 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.208472 s, within 3 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.208435,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.208435 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.208435 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 4.195402,
+              "switch": "switch1",
+              "text": "interface,info ether3 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 1 up",
+      "expected": "The restored cable rejoins client1's bond without disrupting the unaffected streams.",
+      "cable": "client1:eth1",
+      "state": "up",
+      "hold_s": 3.0,
+      "start_s": 4.828544,
+      "end_s": 7.843432,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 3.0,
+          "lower_s": 2.502302,
+          "upper_s": 2.704957,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.5023 to 2.70496 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.5023 to 2.70496 s, within 3 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 3.0,
+          "lower_s": 2.505321,
+          "upper_s": 2.710043,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.50532 to 2.71004 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.50532 to 2.71004 s, within 3 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 3.0,
+          "lower_s": 2.501611,
+          "upper_s": 2.704576,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.50161 to 2.70458 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.50161 to 2.70458 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 5.193792,
+              "switch": "switch1",
+              "text": "interface,info ether3 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 2 down",
+      "expected": "Client1 uses its other cable and the unaffected streams lose nothing.",
+      "cable": "client1:eth1",
+      "state": "down",
+      "hold_s": 1.0,
+      "start_s": 7.843432,
+      "end_s": 8.857552,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.207989,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.207989 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.207989 s, within 3 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.208039,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.208039 s",
+          "duplicates": 0,
+          "sent": 9,
+          "delivered": 8,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.208039 s, within 3 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.213493,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.213493 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.213493 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 8.209201,
+              "switch": "switch1",
+              "text": "interface,info ether3 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 2 up",
+      "expected": "The restored cable rejoins client1's bond without disrupting the unaffected streams.",
+      "cable": "client1:eth1",
+      "state": "up",
+      "hold_s": 3.0,
+      "start_s": 8.857552,
+      "end_s": 11.867418,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 3.0,
+          "lower_s": 2.404266,
+          "upper_s": 2.608703,
+          "lost": 24,
+          "summary": "24 pings lost in total at one ping every 100 ms, longest measured stop 2.40427 to 2.6087 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 5,
+          "verdict": "pass",
+          "reason": "24 pings lost in total at one ping every 100 ms, longest measured stop 2.40427 to 2.6087 s, within 3 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 28,
+          "delivered": 28,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 3.0,
+          "lower_s": 2.496088,
+          "upper_s": 2.701183,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.49609 to 2.70118 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.49609 to 2.70118 s, within 3 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 28,
+          "delivered": 28,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 3.0,
+          "lower_s": 2.391513,
+          "upper_s": 2.601006,
+          "lost": 24,
+          "summary": "24 pings lost in total at one ping every 100 ms, longest measured stop 2.39151 to 2.60101 s",
+          "duplicates": 0,
+          "sent": 28,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "24 pings lost in total at one ping every 100 ms, longest measured stop 2.39151 to 2.60101 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 9.219161,
+              "switch": "switch1",
+              "text": "interface,info ether3 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 3 down",
+      "expected": "Client1 uses its other cable and the unaffected streams lose nothing.",
+      "cable": "client1:eth1",
+      "state": "down",
+      "hold_s": 1.0,
+      "start_s": 11.867418,
+      "end_s": 12.880233,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.205549,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.205549 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.205549 s, within 3 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.214273,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.214273 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.214273 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 12.227722,
+              "switch": "switch1",
+              "text": "interface,info ether3 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 3 up",
+      "expected": "The restored cable rejoins client1's bond without disrupting the unaffected streams.",
+      "cable": "client1:eth1",
+      "state": "up",
+      "hold_s": 3.0,
+      "start_s": 12.880233,
+      "end_s": 15.891275,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 3.0,
+          "lower_s": 2.495049,
+          "upper_s": 2.700446,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.49505 to 2.70045 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.49505 to 2.70045 s, within 3 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 3.0,
+          "lower_s": 2.50397,
+          "upper_s": 2.717672,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.50397 to 2.71767 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.50397 to 2.71767 s, within 3 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 3.0,
+          "lower_s": 2.513616,
+          "upper_s": 2.719397,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.51362 to 2.7194 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.51362 to 2.7194 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 13.22511,
+              "switch": "switch1",
+              "text": "interface,info ether3 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 4 down",
+      "expected": "Client1 uses its other cable and the unaffected streams lose nothing.",
+      "cable": "client1:eth1",
+      "state": "down",
+      "hold_s": 1.0,
+      "start_s": 15.891275,
+      "end_s": 16.901481,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.208036,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.208036 s",
+          "duplicates": 0,
+          "sent": 9,
+          "delivered": 8,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.208036 s, within 3 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.211787,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.211787 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.211787 s, within 3 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.20903,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.20903 s",
+          "duplicates": 0,
+          "sent": 9,
+          "delivered": 8,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.20903 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 16.232426,
+              "switch": "switch1",
+              "text": "interface,info ether3 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 4 up",
+      "expected": "The restored cable rejoins client1's bond without disrupting the unaffected streams.",
+      "cable": "client1:eth1",
+      "state": "up",
+      "hold_s": 3.0,
+      "start_s": 16.901481,
+      "end_s": 19.911943,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 3.0,
+          "lower_s": 2.503487,
+          "upper_s": 2.7079,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.50349 to 2.7079 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.50349 to 2.7079 s, within 3 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 28,
+          "delivered": 28,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 3.0,
+          "lower_s": 2.602197,
+          "upper_s": 2.804554,
+          "lost": 26,
+          "summary": "26 pings lost in total at one ping every 100 ms, longest measured stop 2.6022 to 2.80455 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 3,
+          "verdict": "pass",
+          "reason": "26 pings lost in total at one ping every 100 ms, longest measured stop 2.6022 to 2.80455 s, within 3 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 3.0,
+          "lower_s": 2.498853,
+          "upper_s": 2.703401,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.49885 to 2.7034 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured stop 2.49885 to 2.7034 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 17.241297,
+              "switch": "switch1",
+              "text": "interface,info ether3 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 5 down",
+      "expected": "Client1 uses its other cable and the unaffected streams lose nothing.",
+      "cable": "client1:eth1",
+      "state": "down",
+      "hold_s": 1.0,
+      "start_s": 19.911943,
+      "end_s": 20.927529,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.207553,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.207553 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.207553 s, within 3 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 9,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 9,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.205916,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.205916 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured stop 0 to 0.205916 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 20.261535,
+              "switch": "switch1",
+              "text": "interface,info ether3 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 5 up",
+      "expected": "The restored cable rejoins client1's bond without disrupting the unaffected streams.",
+      "cable": "client1:eth1",
+      "state": "up",
+      "hold_s": 8.0,
+      "start_s": 20.927529,
+      "end_s": 28.940638,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 3.0,
+          "lower_s": 2.300761,
+          "upper_s": 2.512602,
+          "lost": 23,
+          "summary": "23 pings lost in total at one ping every 100 ms, longest measured stop 2.30076 to 2.5126 s",
+          "duplicates": 0,
+          "sent": 77,
+          "delivered": 54,
+          "verdict": "pass",
+          "reason": "23 pings lost in total at one ping every 100 ms, longest measured stop 2.30076 to 2.5126 s, within 3 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 77,
+          "delivered": 77,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 3.0,
+          "lower_s": 2.393362,
+          "upper_s": 2.6002,
+          "lost": 24,
+          "summary": "24 pings lost in total at one ping every 100 ms, longest measured stop 2.39336 to 2.6002 s",
+          "duplicates": 0,
+          "sent": 77,
+          "delivered": 53,
+          "verdict": "pass",
+          "reason": "24 pings lost in total at one ping every 100 ms, longest measured stop 2.39336 to 2.6002 s, within 3 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 77,
+          "delivered": 77,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 3.0,
+          "lower_s": 2.392247,
+          "upper_s": 2.601714,
+          "lost": 24,
+          "summary": "24 pings lost in total at one ping every 100 ms, longest measured stop 2.39225 to 2.60171 s",
+          "duplicates": 0,
+          "sent": 77,
+          "delivered": 53,
+          "verdict": "pass",
+          "reason": "24 pings lost in total at one ping every 100 ms, longest measured stop 2.39225 to 2.60171 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 21.270533,
+              "switch": "switch1",
+              "text": "interface,info ether3 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap recovery",
+      "expected": "Every stream delivers after the fifth flap.",
+      "hold_s": 3.0,
+      "start_s": 28.940638,
+      "end_s": 31.965811,
+      "verdict": "pass",
+      "streams": {
+        "client1-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client2-to-mobile": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client1": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mobile-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "client1-to-client2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    }
+  ],
+  "log": [
+    {
+      "kind": "must_not",
+      "switch": "every",
+      "text": "heartbeat timeout",
+      "verdict": "pass",
+      "reason": "not logged",
+      "lines": []
+    }
+  ],
+  "switch_log": {
+    "file": "syslog/switches.log",
+    "saved": true,
+    "lines": {
+      "switch1": 22,
+      "switch2": 2
+    },
+    "markers": {
+      "switch1": {
+        "start": -1.689917,
+        "end": 33.97341
+      },
+      "switch2": {
+        "start": -1.401417,
+        "end": 34.017128
+      }
+    }
+  },
+  "validity": [
+    {
+      "check": "capture at client1:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at client2:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at client3:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "every stream and its captures stayed up",
+      "ok": true
+    },
+    {
+      "check": "every cable set down was set up again",
+      "ok": true
+    },
+    {
+      "check": "the wall clock and the monotonic clock of the lab host agree within 50 ms",
+      "ok": true
+    },
+    {
+      "check": "client1-to-mobile sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "client1-to-mobile shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "client2-to-mobile sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "client2-to-mobile shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client1 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client1 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client2 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "client1-to-client2 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "client1-to-client2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "client1-to-mobile delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "client2-to-mobile delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client1 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "mobile-to-client2 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "client1-to-client2 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    }
+  ],
+  "traffic": {
+    "start_ns": 1795767202306040000,
+    "end_ns": 1795767235730984853,
+    "interval_s": 0.1,
+    "streams": {
+      "client1-to-mobile": {
+        "ident": 1,
+        "source": "client1:bond0",
+        "destination": "client3:bond0",
+        "sent": 320,
+        "delivered": 194,
+        "lost_seqs": [
+          38,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          77,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          155,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          193,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.111017,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": [
+          {
+            "first_seq": 38,
+            "last_seq": 38,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.208393,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.208 s",
+            "begins_s": 3.8512,
+            "ends_s": 3.8512,
+            "windows": [
+              "Flap 1 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 49,
+            "last_seq": 73,
+            "lost": 25,
+            "lower_s": 2.502302,
+            "upper_s": 2.704957,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.502 to 2.705 s",
+            "begins_s": 4.975742,
+            "ends_s": 7.478044,
+            "windows": [
+              "Flap 1 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 77,
+            "last_seq": 77,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.207989,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.208 s",
+            "begins_s": 7.89411,
+            "ends_s": 7.89411,
+            "windows": [
+              "Flap 2 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 88,
+            "last_seq": 111,
+            "lost": 24,
+            "lower_s": 2.404266,
+            "upper_s": 2.608703,
+            "summary": "24 pings lost at one ping every 100 ms, traffic stopped for 2.404 to 2.609 s",
+            "begins_s": 9.024128,
+            "ends_s": 11.428394,
+            "windows": [
+              "Flap 2 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 126,
+            "last_seq": 150,
+            "lost": 25,
+            "lower_s": 2.495049,
+            "upper_s": 2.700446,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.495 to 2.7 s",
+            "begins_s": 12.972116,
+            "ends_s": 15.467165,
+            "windows": [
+              "Flap 3 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 155,
+            "last_seq": 155,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.208036,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.208 s",
+            "begins_s": 15.988055,
+            "ends_s": 15.988055,
+            "windows": [
+              "Flap 4 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 165,
+            "last_seq": 189,
+            "lost": 25,
+            "lower_s": 2.503487,
+            "upper_s": 2.7079,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.503 to 2.708 s",
+            "begins_s": 17.021223,
+            "ends_s": 19.52471,
+            "windows": [
+              "Flap 4 up"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 193,
+            "last_seq": 193,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.207553,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.208 s",
+            "begins_s": 19.939872,
+            "ends_s": 19.939872,
+            "windows": [
+              "Flap 5 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 205,
+            "last_seq": 227,
+            "lost": 23,
+            "lower_s": 2.300761,
+            "upper_s": 2.512602,
+            "summary": "23 pings lost at one ping every 100 ms, traffic stopped for 2.301 to 2.513 s",
+            "begins_s": 21.183546,
+            "ends_s": 23.484307,
+            "windows": [
+              "Flap 5 up"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ]
+      },
+      "client2-to-mobile": {
+        "ident": 2,
+        "source": "client2:bond0",
+        "destination": "client3:bond0",
+        "sent": 320,
+        "delivered": 320,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.111102,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": []
+      },
+      "mobile-to-client1": {
+        "ident": 3,
+        "source": "client3:bond0",
+        "destination": "client1:bond0",
+        "sent": 320,
+        "delivered": 191,
+        "lost_seqs": [
+          38,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          77,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          115,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          154,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.116419,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": [
+          {
+            "first_seq": 38,
+            "last_seq": 38,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.208472,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.208 s",
+            "begins_s": 3.862785,
+            "ends_s": 3.862785,
+            "windows": [
+              "Flap 1 down"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 48,
+            "last_seq": 72,
+            "lost": 25,
+            "lower_s": 2.505321,
+            "upper_s": 2.710043,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.505 to 2.71 s",
+            "begins_s": 4.897712,
+            "ends_s": 7.403033,
+            "windows": [
+              "Flap 1 up"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 77,
+            "last_seq": 77,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.208039,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.208 s",
+            "begins_s": 7.926435,
+            "ends_s": 7.926435,
+            "windows": [
+              "Flap 2 down"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 87,
+            "last_seq": 111,
+            "lost": 25,
+            "lower_s": 2.496088,
+            "upper_s": 2.701183,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.496 to 2.701 s",
+            "begins_s": 8.963148,
+            "ends_s": 11.459236,
+            "windows": [
+              "Flap 2 up"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 115,
+            "last_seq": 115,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.205549,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.206 s",
+            "begins_s": 11.875746,
+            "ends_s": 11.875746,
+            "windows": [
+              "Flap 3 down"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 126,
+            "last_seq": 150,
+            "lost": 25,
+            "lower_s": 2.50397,
+            "upper_s": 2.717672,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.504 to 2.718 s",
+            "begins_s": 13.011074,
+            "ends_s": 15.515044,
+            "windows": [
+              "Flap 3 up"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 154,
+            "last_seq": 154,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.211787,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.212 s",
+            "begins_s": 15.931427,
+            "ends_s": 15.931427,
+            "windows": [
+              "Flap 4 down"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 164,
+            "last_seq": 189,
+            "lost": 26,
+            "lower_s": 2.602197,
+            "upper_s": 2.804554,
+            "summary": "26 pings lost at one ping every 100 ms, traffic stopped for 2.602 to 2.805 s",
+            "begins_s": 16.987496,
+            "ends_s": 19.589693,
+            "windows": [
+              "Flap 4 up"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 204,
+            "last_seq": 227,
+            "lost": 24,
+            "lower_s": 2.393362,
+            "upper_s": 2.6002,
+            "summary": "24 pings lost at one ping every 100 ms, traffic stopped for 2.393 to 2.6 s",
+            "begins_s": 21.154613,
+            "ends_s": 23.547975,
+            "windows": [
+              "Flap 5 up"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          }
+        ]
+      },
+      "mobile-to-client2": {
+        "ident": 4,
+        "source": "client3:bond0",
+        "destination": "client2:bond0",
+        "sent": 320,
+        "delivered": 320,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.111133,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": []
+      },
+      "client1-to-client2": {
+        "ident": 5,
+        "source": "client1:bond0",
+        "destination": "client2:bond0",
+        "sent": 320,
+        "delivered": 192,
+        "lost_seqs": [
+          38,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          77,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          115,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          154,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          192,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "max_send_interval_s": 0.117192,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true,
+        "outages": [
+          {
+            "first_seq": 38,
+            "last_seq": 38,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.208435,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.208 s",
+            "begins_s": 3.851194,
+            "ends_s": 3.851194,
+            "windows": [
+              "Flap 1 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 49,
+            "last_seq": 73,
+            "lost": 25,
+            "lower_s": 2.501611,
+            "upper_s": 2.704576,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.502 to 2.705 s",
+            "begins_s": 4.992449,
+            "ends_s": 7.49406,
+            "windows": [
+              "Flap 1 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 77,
+            "last_seq": 77,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.213493,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.213 s",
+            "begins_s": 7.917751,
+            "ends_s": 7.917751,
+            "windows": [
+              "Flap 2 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 88,
+            "last_seq": 111,
+            "lost": 24,
+            "lower_s": 2.391513,
+            "upper_s": 2.601006,
+            "summary": "24 pings lost at one ping every 100 ms, traffic stopped for 2.392 to 2.601 s",
+            "begins_s": 9.059684,
+            "ends_s": 11.451197,
+            "windows": [
+              "Flap 2 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 115,
+            "last_seq": 115,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.214273,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.214 s",
+            "begins_s": 11.883885,
+            "ends_s": 11.883885,
+            "windows": [
+              "Flap 3 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 125,
+            "last_seq": 149,
+            "lost": 25,
+            "lower_s": 2.513616,
+            "upper_s": 2.719397,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.514 to 2.719 s",
+            "begins_s": 12.929496,
+            "ends_s": 15.443112,
+            "windows": [
+              "Flap 3 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 154,
+            "last_seq": 154,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.20903,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.209 s",
+            "begins_s": 15.963035,
+            "ends_s": 15.963035,
+            "windows": [
+              "Flap 4 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 164,
+            "last_seq": 188,
+            "lost": 25,
+            "lower_s": 2.498853,
+            "upper_s": 2.703401,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.499 to 2.703 s",
+            "begins_s": 17.008779,
+            "ends_s": 19.507632,
+            "windows": [
+              "Flap 4 up"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 192,
+            "last_seq": 192,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.205916,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.206 s",
+            "begins_s": 19.923199,
+            "ends_s": 19.923199,
+            "windows": [
+              "Flap 5 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 204,
+            "last_seq": 227,
+            "lost": 24,
+            "lower_s": 2.392247,
+            "upper_s": 2.601714,
+            "summary": "24 pings lost at one ping every 100 ms, traffic stopped for 2.392 to 2.602 s",
+            "begins_s": 21.171871,
+            "ends_s": 23.564118,
+            "windows": [
+              "Flap 5 up"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "closing": {
+    "window": "after the steps",
+    "start_s": 31.965811,
+    "end_s": 33.424945,
+    "verdict": "pass",
+    "streams": {
+      "client1-to-mobile": {
+        "delivered": 13,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "client2-to-mobile": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mobile-to-client1": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mobile-to-client2": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "client1-to-client2": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "host_watch": {
+    "verdict": "pass",
+    "interval_s": 0.35,
+    "devices": {
+      "switch1": {
+        "samples_per_step": {
+          "Flap 1 down": 2,
+          "Flap 1 up": 9,
+          "Flap 2 down": 3,
+          "Flap 2 up": 8,
+          "Flap 3 down": 3,
+          "Flap 3 up": 9,
+          "Flap 4 down": 3,
+          "Flap 4 up": 8,
+          "Flap 5 down": 3,
+          "Flap 5 up": 23,
+          "Flap recovery": 9
+        },
+        "missing_samples_s": {
+          "02:00:00:11:00:12": [],
+          "02:00:00:11:00:50": []
+        },
+        "max_sample_interval_s": 0.355093
+      },
+      "switch2": {
+        "samples_per_step": {
+          "Flap 1 down": 2,
+          "Flap 1 up": 9,
+          "Flap 2 down": 3,
+          "Flap 2 up": 8,
+          "Flap 3 down": 3,
+          "Flap 3 up": 9,
+          "Flap 4 down": 3,
+          "Flap 4 up": 8,
+          "Flap 5 down": 3,
+          "Flap 5 up": 23,
+          "Flap recovery": 9
+        },
+        "missing_samples_s": {
+          "02:00:00:11:00:12": [],
+          "02:00:00:11:00:50": []
+        },
+        "max_sample_interval_s": 0.354781
+      }
+    }
+  }
+}

@@ -7,6 +7,16 @@ Switch1 is configured as MLAG primary (`mlag-priority=10`) and switch2 as MLAG s
 Every bridge runs with spanning tree off, set in the startup config [switch.rsc](lab/switch.rsc).
 A collector node, `syslog`, receives the log of all three switches.
 
+## Networka 0.5.2 live runs
+
+Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links below open the generated reports; full evidence stays in `test-results/networka-0.5.2-20261127/medium/`. Earlier measurements below remain historical.
+
+- [PASS — baseline](runs/networka-0.5.2-20261127/baseline/report.md)
+- [PASS — primary-power-loss](runs/networka-0.5.2-20261127/primary-power-loss/report.md)
+- [PASS — primary-reboot](runs/networka-0.5.2-20261127/primary-reboot/report.md)
+- [PASS — secondary-power-loss](runs/networka-0.5.2-20261127/secondary-power-loss/report.md)
+- [FAIL — secondary-reboot](runs/networka-0.5.2-20261127/secondary-reboot/report.md)
+
 ## Commands
 
 Start, run, replay and remove the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these values.

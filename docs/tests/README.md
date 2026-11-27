@@ -26,7 +26,7 @@ Every lab uses the files in [tests/shared](../../tests/shared): the [Dockerfile]
 Live tests run in the OrbStack VM `mlag-external` (`orb -m mlag-external`), where the repository has the same path.
 The host needs Docker, sudo, tcpdump, tshark, ping, nsenter and `tc` from iproute2.
 Use Containerlab with native CHR support from commit `06ac3ca4d442ce4f937b50bd7c04d5f32fb3173b`. On the VM this is the qualified ARM64 build with SHA-256 `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`.
-The lockfile pins Networka 0.5.1 from PyPI, and the VM-local uv environment keeps each checkout separate.
+The lockfile pins Networka 0.5.2 from PyPI, and the VM-local uv environment keeps each checkout separate. The release wheel and source archive are also kept in the Networka checkout's `dist/` folder.
 
 At most three labs with tests may run in the VM at once, counting the labs of other sessions. Check first what is running and deployed, and touch no lab you did not start.
 

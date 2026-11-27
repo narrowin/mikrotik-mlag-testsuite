@@ -1,0 +1,91 @@
+name: baseline
+purpose: Check forwarding in both directions on the client bonds.
+source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+lab: ../lab/direct-lab.yaml
+steps:
+  - name: Steady traffic
+    action:
+      observe: true
+    hold_s: 4  # Observe one interval beyond the three-second fast LACP timeout.
+    max_outage_s:
+      client1-to-client2: 0
+      client2-to-client1: 0
+    expected: Both peers stay connected and every ping arrives once.
+    check_state:
+      - statement: Both switch client bonds contain their wired member and use it for LACP forwarding.
+        checks:
+          - device: switch1
+            check: bond_members
+            params: &first-bond
+              bond: client1
+            expected: &first-port
+              - ether3
+          - device: switch2
+            check: bond_members
+            params: *first-bond
+            expected: *first-port
+          - device: switch1
+            check: bond_members
+            params: &second-bond
+              bond: client2
+            expected: &second-port
+              - ether4
+          - device: switch2
+            check: bond_members
+            params: *second-bond
+            expected: *second-port
+          - device: switch1
+            check: lacp_member
+            params: &first-member
+              bond: client1
+              member: ether3
+            expected: &in-use
+              synchronization: true
+              collecting: true
+              distributing: true
+          - device: switch2
+            check: lacp_member
+            params: *first-member
+            expected: *in-use
+          - device: switch1
+            check: lacp_member
+            params: &second-member
+              bond: client2
+              member: ether4
+            expected: *in-use
+          - device: switch2
+            check: lacp_member
+            params: *second-member
+            expected: *in-use
+      - statement: Both switch client bridge ports are forwarding and both peer ports have carrier.
+        checks:
+          - device: switch1
+            check: bridge_port
+            params: &first-bridge-port
+              bridge: bridge
+              port: client1
+            expected: &forwarding
+              forwarding: true
+          - device: switch2
+            check: bridge_port
+            params: *first-bridge-port
+            expected: *forwarding
+          - device: switch1
+            check: bridge_port
+            params: &second-bridge-port
+              bridge: bridge
+              port: client2
+            expected: *forwarding
+          - device: switch2
+            check: bridge_port
+            params: *second-bridge-port
+            expected: *forwarding
+          - device: switch1
+            check: interface_up
+            params: &peer-port
+              interface: ether2
+            expected: true
+          - device: switch2
+            check: interface_up
+            params: *peer-port
+            expected: true

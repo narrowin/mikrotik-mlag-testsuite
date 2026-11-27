@@ -4,7 +4,6 @@ Open work after the Medium and Large labs moved to Networka, as of 27 November 2
 
 ## Networka
 
-- `pyproject.toml` follows Networka `main` from GitHub (`64e45a6`, `uv.lock` at `a61d3cf`). When Networka 0.5.2 is released, pin it, load every test file and run one test per lab on it.
 - `nw test summary` ranks a lab's worst stop by the largest measured stop, even when it is within its limit. The front page shows Large's expected 39.9 s dc1 outage in site power loss instead of the failing DCI stop. Rank by stops that break their limit.
 - A powered-off Linux host keeps its bond and neighbour state, and streams from it show lower bounds near 0 because their pings were never sent. Decide whether those streams count as unverified.
 

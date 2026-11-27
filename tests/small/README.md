@@ -4,6 +4,15 @@ The lab is two MikroTik CHR switches, `switch1` and `switch2`, joined by a peer 
 Three Linux clients, `client1` to `client3`, each have one cable to each switch, bonded with LACP.
 A collector node, `syslog`, receives the log of both switches.
 
+## Networka 0.5.2 live runs
+
+Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links below open the generated reports; full evidence stays in `test-results/networka-0.5.2-20261127/small/`. Earlier measurements below remain historical.
+
+- [FAIL — bond-member-loss](runs/networka-0.5.2-20261127/bond-member-loss/report.md)
+- [FAIL — cable-delay](runs/networka-0.5.2-20261127/cable-delay/report.md)
+- [ERROR — cable-packet-loss](runs/networka-0.5.2-20261127/cable-packet-loss/report.md)
+- [PASS — switch-reboot](runs/networka-0.5.2-20261127/switch-reboot/report.md)
+
 ## Commands
 
 Start, run, replay and remove the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these values.

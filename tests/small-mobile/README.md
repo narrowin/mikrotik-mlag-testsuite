@@ -2,6 +2,22 @@
 
 Both switches run with spanning tree off. Switch1 is configured as MLAG primary and switch2 as secondary. Client1 and client2 have dual LACP links. Client3 uses an active-backup bond with the same MAC on either link.
 
+## Networka 0.5.2 live runs
+
+Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2. Each listed test ran once; `mac-age-relearn` used the required ageing profile. Every replay produced byte-identical `result.json` and `report.md`. These links open the generated reports. Full evidence stays in `test-results/networka-0.5.2-20261127/small-mobile/` and `small-mobile-age/`.
+
+- [PASS — baseline](runs/networka-0.5.2-20261127/baseline/report.md)
+- [PASS — bond-member-loss](runs/networka-0.5.2-20261127/bond-member-loss/report.md)
+- [PASS — lacp-timeout](runs/networka-0.5.2-20261127/lacp-timeout/report.md)
+- [PASS — mac-age-relearn](runs/networka-0.5.2-20261127/mac-age-relearn/report.md)
+- [PASS — mac-move](runs/networka-0.5.2-20261127/mac-move/report.md)
+- [PASS — member-flap-repeat](runs/networka-0.5.2-20261127/member-flap-repeat/report.md)
+- [PASS — peer-link-loss](runs/networka-0.5.2-20261127/peer-link-loss/report.md)
+- [PASS — primary-power-loss](runs/networka-0.5.2-20261127/primary-power-loss/report.md)
+- [PASS — primary-reboot](runs/networka-0.5.2-20261127/primary-reboot/report.md)
+- [PASS — secondary-power-loss](runs/networka-0.5.2-20261127/secondary-power-loss/report.md)
+- [PASS — secondary-reboot](runs/networka-0.5.2-20261127/secondary-reboot/report.md)
+
 ## Run a case
 
 Run the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these values. The mobile lab uses the Small inventory.

@@ -9,6 +9,17 @@ The bridge settings, the host bond hash (`layer2+3`), the host MACs and addresse
 A collector node, `syslog`, receives the log of all four switches.
 The [strict variant](../medium-two-pair-strict/README.md) is the same lab with `lacp-strict=yes`.
 
+## Networka 0.5.2 live runs
+
+Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links below open the generated reports; full evidence stays in `test-results/networka-0.5.2-20261127/medium-two-pair/`. Earlier measurements below remain historical.
+
+- [PASS — baseline](runs/networka-0.5.2-20261127/baseline/report.md)
+- [PASS — inter-pair-member-flap](runs/networka-0.5.2-20261127/inter-pair-member-flap/report.md)
+- [FAIL — reboot-a-primary](runs/networka-0.5.2-20261127/reboot-a-primary/report.md)
+- [PASS — reboot-a-secondary](runs/networka-0.5.2-20261127/reboot-a-secondary/report.md)
+- [FAIL — reboot-b-primary](runs/networka-0.5.2-20261127/reboot-b-primary/report.md)
+- [PASS — reboot-b-secondary](runs/networka-0.5.2-20261127/reboot-b-secondary/report.md)
+
 ## Commands
 
 Start, run, replay and remove the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these values.

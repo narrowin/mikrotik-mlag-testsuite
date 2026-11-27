@@ -1,0 +1,37 @@
+name: secondary-reboot
+purpose: >-
+  Reboot switch2 in its checked MLAG secondary role and measure both directions between host1 and host2.
+source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+lab: ../lab/lab.yaml
+flood:
+  from: host2:bond0
+  to: host1:eth1
+  broadcast: 10.110.0.255
+  unicast: 10.110.0.99
+  unicast_mac: "02:00:00:21:00:99"
+steps:
+  - name: Baseline
+    action:
+      observe: true
+    hold_s: 4  # Four seconds of uninterrupted traffic before the reboot.
+    max_outage_s: &loss-free
+      host1-to-host2: 0
+      host2-to-host1: 0
+    expected: Every ping arrives once before the reboot.
+  - name: Reboot switch2
+    action:
+      reboot: switch2
+    # Allow boot and LACP recovery, plus the CHR SSH cooldown if it refuses an early login.
+    wait_healthy_s: 60
+    # Continue through the post-boot observation, beyond five fast LACP timeouts.
+    hold_s: 16
+    max_outage_s:
+      host1-to-host2: &reboot-limit 5  # Three fast LACP intervals plus two for forwarding.
+      host2-to-host1: *reboot-limit
+    expected: The MLAG secondary has a new boot, and the access switch uplink and the host2 bond return to service.
+  - name: Reboot recovery
+    action:
+      observe: true
+    hold_s: 3  # A fast LACP timeout yields 30 pings at the 100 ms cadence.
+    max_outage_s: *loss-free
+    expected: Every stream keeps delivering after the reboot.

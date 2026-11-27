@@ -1,0 +1,73 @@
+name: lacp-timeout
+purpose: Suppress only the LACPDUs from client1 to switch1 while the cable keeps carrier.
+source: https://standards.ieee.org/ieee/802.1AX/6768/
+lab: ../lab/link-lab.yaml
+log:
+  must_not:
+    - switch: switch1
+      text: ether3 link down
+steps:
+  - name: LACPDUs blocked
+    action:
+      silence_lacp: &cable client1:eth1
+      bond: bond0
+    hold_s: &capture-hold 8  # More than two three-second fast LACP timeouts.
+    max_outage_s:
+      client1-to-mobile: &withdrawal-limit 4  # One fast LACP timeout plus one message.
+      mobile-to-client1: *withdrawal-limit
+      client1-to-client2: *withdrawal-limit
+      client2-to-mobile: &control-limit 0
+      mobile-to-client2: *control-limit
+    expected: The partner times out and withdraws without a link-down event.
+    check_state:
+      - statement: The switch carrier stays up while the member stops collecting and distributing.
+        checks:
+          - device: switch1
+            check: interface_up
+            params:
+              interface: ether3
+            expected: true
+          - device: switch1
+            check: lacp_actor
+            params: &guest-member
+              bond: client1
+              member: ether3
+            expected:
+              defaulted: true
+              collecting: false
+              distributing: false
+  - name: LACPDUs resumed
+    action:
+      silence_lacp: *cable
+      clear: true
+    hold_s: *capture-hold
+    max_outage_s:
+      client1-to-mobile: &restoration-limit 3  # One fast LACP timeout for the member to rejoin.
+      mobile-to-client1: *restoration-limit
+      client1-to-client2: *restoration-limit
+      client2-to-mobile: *control-limit
+      mobile-to-client2: *control-limit
+    expected: Both ends agree on a current partner and the member resumes forwarding.
+    check_state:
+      - statement: The switch member is synchronized, collecting and distributing again.
+        checks:
+          - device: switch1
+            check: lacp_member
+            params: *guest-member
+            expected:
+              synchronization: true
+              collecting: true
+              distributing: true
+              expired: false
+              defaulted: false
+  - name: LACP recovery
+    action:
+      observe: true
+    hold_s: 3  # Verify uninterrupted delivery for one more fast LACP timeout.
+    max_outage_s:
+      client1-to-mobile: *control-limit
+      client2-to-mobile: *control-limit
+      mobile-to-client1: *control-limit
+      mobile-to-client2: *control-limit
+      client1-to-client2: *control-limit
+    expected: Every stream keeps delivering after the member rejoins.
