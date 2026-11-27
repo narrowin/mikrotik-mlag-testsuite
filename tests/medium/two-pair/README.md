@@ -5,6 +5,7 @@ Switch-a1 and switch-b1 are configured as MLAG primary (`mlag-priority=10`), swi
 One distributed LACP bond, `inter-pair`, joins the pairs: switch-a1 to switch-b1 and switch-a2 to switch-b2, each on `ether3` (mlag-id 11 on pair A, 21 on pair B).
 `host1` has an LACP bond to pair B and `host2` to pair A, so both host streams cross both pairs. A bypass cable joins the hosts outside the switches.
 Every bridge runs with spanning tree off and the inter-pair bond with `lacp-strict=no`, both set in the startup config [switch.rsc](switch.rsc).
+The bridge settings, the host bond hash (`layer2+3`), the host MACs and addresses and the permanent neighbour entries follow the old two-pair suite, so both host streams use the cables to the MLAG primaries.
 A collector node, `syslog`, receives the log of all four switches.
 The [strict variant](../two-pair-strict/README.md) is the same lab with `lacp-strict=yes`.
 
@@ -54,43 +55,45 @@ A reboot test judges the withdrawal and the return of the switch as one step, so
 
 ## Live verdicts
 
-Run on 26 November 2026 on RouterOS 7.26beta7 with Networka 0.5.1. Every attempt replayed with byte-identical `result.json` and `report.md`. The verdict and the measured stops are quoted from each generated `report.md`. Evidence is under `test-results/medium-two-pair/4b/`, not in git.
+Run on 27 November 2026 on RouterOS 7.26beta7 with Networka 0.5.1 and the qualified Containerlab build (SHA-256 `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`). Every attempt replayed with byte-identical `result.json` and `report.md`. The verdict and the measured stops are quoted from each generated `report.md`, at one ping every 100 ms. Evidence is under `test-results/medium-two-pair/r3/4b/`, not in git.
 
-| Test | Verdict | Measured stop of the host streams |
+| Test | Verdict | Longest measured stop of the host streams |
 | --- | --- | --- |
 | baseline | PASS | 0 lost |
-| calibration, attempt 1 | ERROR | The captured one-way ping gap does not bracket the applied cut. Bypass lost 19 at one ping every 100 ms, 1.88089 to 2.08897 s. |
-| calibration, attempt 2 | PASS | Bypass lost 19 at one ping every 100 ms, 1.87993 to 2.09093 s |
-| inter-pair-member-flap | PASS | 0 lost. Both host MACs stayed in the host table of all four switches in every sample, 54 samples per switch, longest interval 0.357825 s. |
-| reboot-a-primary | PASS | 0 lost |
-| reboot-a-secondary | FAIL | host1 to host2 lost 179 at one ping every 100 ms, 18.5386 to 18.7434 s. host2 to host1 lost 179, 18.5526 to 18.7573 s. |
-| reboot-b-primary | PASS | 0 lost |
-| reboot-b-secondary | FAIL | host2 to host1 lost 180 at one ping every 100 ms, 18.2347 to 18.4413 s. host1 to host2 is unverified: sender cadence was invalid in this step. |
+| calibration | PASS | Bypass lost 19, 1.87313 to 2.08089 s |
+| inter-pair-member-flap | FAIL | Member down: host1 to host2 lost 78, 8.02404 to 8.23448 s; host2 to host1 lost 78, 8.01614 to 8.21984 s. The same outage runs into the member back step. Both host MACs stayed in every host-table sample. |
+| reboot-a-primary | FAIL | host1 to host2 lost 159, 16.4552 to 16.6658 s; host2 to host1 lost 158, 16.3528 to 16.5577 s |
+| reboot-a-secondary | PASS | 0 lost |
+| reboot-b-primary | FAIL | host1 to host2 lost 173, 17.9267 to 18.133 s; host2 to host1 lost 173, 17.8922 to 18.1011 s |
+| reboot-b-secondary | PASS | 0 lost |
 
-The calibration error came from Networka's bracket check. The first lost request was sent 102 ms after the rule was installed, and the check allows one 100 ms interval.
+After the runs host1 had sent 5908 packets on `eth1` and 545 on `eth2`, host2 5943 on `eth1` and 534 on `eth2`, so the host traffic used the primaries (`test-results/medium-two-pair/r3/03-cases-4b.log`).
 
 ## Comparison with the old suite
 
 Old values are quoted from the results index at commit `3af4cd8`: the per-run rows of `results/index/phases.jsonl` and the fault rows of `results/index/faults.tsv`, Medium lab, STP off, cases `two-pair-stp-off-*`.
-Runs are named by suite and run folder: `d1` and `d2` are `2026-11-24-forwarding-checks/debian-two-pair-stp-off-suite/01-*` and `02-*`, `f1` is `debian-two-pair-stp-off-flap-once/01-*`, `t1` is `2026-11-24-two-pair/stp-off/01-*`, and `g1` is `2026-11-24-two-pair/invalid-priority-gate-stp-off/01-*`.
-Old stops are the worst graded stream per phase, with probes every 100 ms.
+`d1` and `d2` are `2026-11-24-forwarding-checks/debian-two-pair-stp-off-suite/01-*` and `02-*`, `f1` is `2026-11-24-forwarding-checks/debian-two-pair-stp-off-flap-once/01-*`, `t1` is `2026-11-24-two-pair/stp-off/01-*`, and `g1` is `2026-11-24-two-pair/invalid-priority-gate-stp-off/01-*`.
+Old stops are the worst graded stream per phase. The old suite graded a reboot's withdrawal and return as two phases; here one step covers both.
 
 | Test | Old verdict and loss | New verdict and loss | Reason for the difference |
 | --- | --- | --- | --- |
-| baseline | d1, d2, t1 pass, no loss. g1 error: the bridge priority gate withheld the fault. | PASS, no loss | Same result |
-| calibration | d1 pass, 1.872019 to 2.081 s, 19 probes. d2 pass, 1.978537 to 2.184975 s, 20 probes. t1 pass, 1.889029 to 2.100212 s, 19 probes. | ERROR, then PASS, 1.87993 to 2.09093 s, 19 pings | Loss is in the old range. The error is Networka's start-time check, described above, which the old suite did not have. |
-| inter-pair-member-flap | f1 pass, down 0.212446 to 0.417557 s, back 0.104846 to 0.310466 s. d1 pass, down 0.102805 to 0.308185 s, back 0.104577 to 0.309174 s. d2 pass, down 0.316025 to 0.527068 s, back 0.206342 to 0.411297 s. | PASS, 0 lost | The host traffic does not cross the flapped member, see below. The old run's host-table size is not in the export. The new run checks that both host entries stay present on all four switches. |
-| reboot-a-primary | faults.tsv: loss over the limit in Pair A primary down, 3 of 3 runs, 19.668 to 23.344 s | PASS, 0 lost | No host traffic passes switch-a1, see below |
-| reboot-a-secondary | d1, d2 pass, no loss in either phase. t1 did not reach evaluation. | FAIL, 18.5526 to 18.7573 s (host2 to host1) | The host traffic passes switch-a2 |
-| reboot-b-primary | faults.tsv: loss over the limit in Pair B primary down, 2 of 2 runs, 20.664 to 22.177 s | PASS, 0 lost | No host traffic passes switch-b1 |
-| reboot-b-secondary | d1, d2 pass, no loss in either phase | FAIL, 18.2347 to 18.4413 s; host1 to host2 unverified | The host traffic passes switch-b2. The old hosts pinned each other's address as a permanent neighbour. These hosts resolve it, and host1's ping sender stalled during the outage. |
+| baseline | d1, d2, t1 pass, no loss. g1 error: the bridge priority gate withheld the fault. | PASS, no loss | Same |
+| calibration | d1 pass, 1.872019 to 2.081 s. d2 pass, 1.978537 to 2.184975 s. t1 pass, 1.889029 to 2.100212 s. | PASS, 1.87313 to 2.08089 s | Same |
+| inter-pair-member-flap | f1 pass, down 0.212446 to 0.417557 s, back 0.104846 to 0.310466 s. d1 pass, down 0.102805 to 0.308185 s, back 0.104577 to 0.309174 s. d2 pass, down 0.316025 to 0.527068 s, back 0.206342 to 0.411297 s. | FAIL, the whole 8 s down hold | See the flap section below. Not caused by the host setup or the bridge settings. |
+| reboot-a-primary | faults.tsv: loss over the limit in Pair A primary down, 3 of 3 runs, 19.668 to 23.344 s | FAIL, 16.3528 to 16.6658 s | Same fault. The stop is 3 to 7 s shorter, see below. |
+| reboot-a-secondary | d1, d2 pass, no loss in either phase. t1 did not reach evaluation. | PASS, 0 lost | Same |
+| reboot-b-primary | faults.tsv: loss over the limit in Pair B primary down, 2 of 2 runs, 20.664 to 22.177 s | FAIL, 17.8922 to 18.133 s | Same fault. The stop is 2 to 4 s shorter, see below. |
+| reboot-b-secondary | d1, d2 pass, no loss in either phase | PASS, 0 lost | Same |
 
-The old suite graded withdrawal and return as two phases. Here one reboot step covers both.
+Primary reboots: the other pair keeps sending into the rebooting switch, as in the old suite. [Fault 2](../../../docs/plans/routeros-failures-report.md#fault-2-two-mlag-pairs-keep-sending-into-a-rebooting-switch)
+The stop ends when the rebooted switch forwards again, about 1 s after its peer logged `"bridge" peer link down`.
+The new stops are shorter than the old range. The old switches ran behind a QEMU wrapper and these run as native Containerlab CHRs, which may restart faster. That cause is not verified.
 
-The reboot results swap roles because of the host bond hash, not because RouterOS changed.
-The old hosts used `xmit_hash_policy layer2+3` (`labs/shared/client-network.sh`), and the old fault report states that no test traffic used the secondaries' links. [Fault 2](../../../docs/plans/routeros-failures-report.md#fault-2-two-mlag-pairs-keep-sending-into-a-rebooting-switch)
-These hosts use the Linux default `layer2`, like the Small lab, and both send and receive on `eth2`, the cable to the MLAG secondary.
-After the runs, host1 `eth2` had sent 5218 packets and `eth1` 489, and host2 `eth2` 5135 and `eth1` 580 (`test-results/medium-two-pair/04-member-counters.log`).
-So the host traffic crosses switch-a2, switch-b2 and their inter-pair cable, and the primary reboots and the flap of the primaries' cable lose nothing.
-The secondary FAIL is the same RouterOS fault the old suite found on the primaries: the other pair keeps sending into the rebooting switch for about 20 s. The surviving peer logged `MLAG: remote heartbeat timeout` 11 to 13 s after the reboot was dispatched.
-A lab in which host traffic crosses every switch would need a second stream pair on the other bond member. That is an open choice for the operator.
+### Inter-pair member flap
+
+When the cable switch-a1 `ether3` to switch-b1 `ether3` goes down, both switches log `inter-pair link down`, and the host streams stop until the cable returns.
+ICMP captures on every switch port in a diagnostic run show host1's requests arriving at switch-b1 `ether4` throughout the down hold, but none leaving switch-b1 on any port, the peer link included (`test-results/medium-two-pair/r3/flap-caps*/`).
+Host-table samples show switch-b1 moving host2's entry from `inter-pair` to the peer port `ether2` within about 2 s, and it still forwards nothing to the peer port (`test-results/medium-two-pair/r2/03-flap-samples.log`).
+In old run d2 the streams returned 0.45 s after the cable went down, and a sample 0.8 s after it showed the old primary with host2's entry on `ether2` (`results/2026-11-24-forwarding-checks/debian-two-pair-stp-off-suite/02-two-pair-stp-off-interpair-member-flap/timeline.tsv`).
+The first flap failure used the default bridge settings. Setting the old suite's bridge options in the startup config (fixed `admin-mac`, `frame-types=admit-only-vlan-tagged` on the bridge and the peer port, `edge=yes` on the host bond) still stopped traffic for 5.1 s in one diagnostic run and 8.0 s in another and in the recorded run. Those options are kept, because they match the old suite.
+Two differences from the old lab remain untested. The old switches ran behind a QEMU data-link wrapper, and the old runner disabled, reset and re-enabled every bridge over SSH before each case. Until one of them is shown to cause the stop, this FAIL is a RouterOS finding: a switch whose member of a distributed MLAG bond goes down does not forward that bond's traffic over the peer link.

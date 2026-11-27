@@ -37,17 +37,19 @@ The limits are the two-pair ones. The `two-pair-stp-off-strict-*` cases of the o
 
 ## Live verdicts
 
-Run on 26 November 2026 on RouterOS 7.26beta7 with Networka 0.5.1. Every attempt replayed with byte-identical `result.json` and `report.md`. The verdict and the measured stops are quoted from each generated `report.md`. Evidence is under `test-results/medium-two-pair/4c/`, not in git.
+Run on 27 November 2026 on RouterOS 7.26beta7 with Networka 0.5.1 and the qualified Containerlab build (SHA-256 `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`). Every attempt replayed with byte-identical `result.json` and `report.md`. The verdict and the measured stops are quoted from each generated `report.md`, at one ping every 100 ms. Evidence is under `test-results/medium-two-pair/r3/4c/`, not in git.
 
-| Test | Verdict | Measured stop of the host streams |
+| Test | Verdict | Longest measured stop of the host streams |
 | --- | --- | --- |
 | baseline | PASS | 0 lost |
-| calibration | PASS | Bypass lost 19 at one ping every 100 ms, 1.87121 to 2.08247 s |
-| inter-pair-member-flap | PASS | 0 lost; both host MACs stayed in the host table of all four switches |
-| reboot-a-primary | PASS | host1 to host2 lost 4 at one ping every 100 ms, 0.316485 to 0.525407 s. host2 to host1 lost 5, 0.403122 to 0.609865 s. |
-| reboot-a-secondary | FAIL | host1 to host2 lost 211 at one ping every 100 ms, 21.8908 to 22.096 s. host2 to host1 lost 211, 21.8999 to 22.1054 s. |
-| reboot-b-primary | PASS | host1 to host2 lost 4 at one ping every 100 ms, 0.316284 to 0.520742 s. host2 to host1 lost 3, 0.206444 to 0.412918 s. |
-| reboot-b-secondary | FAIL | host2 to host1 lost 206 at one ping every 100 ms, 21.3416 to 21.5461 s. host1 to host2 is unverified: sender cadence was invalid in this step. |
+| calibration | PASS | Bypass lost 19, 1.87289 to 2.07917 s |
+| inter-pair-member-flap | FAIL | Member down: host1 to host2 lost 78, 8.05368 to 8.26084 s; host2 to host1 lost 79, 8.12048 to 8.33055 s. The same outage runs into the member back step. |
+| reboot-a-primary | FAIL | host1 to host2 lost 175, 18.1305 to 18.337 s; host2 to host1 lost 175, 18.1369 to 18.345 s |
+| reboot-a-secondary | PASS | 0 lost |
+| reboot-b-primary | FAIL | host1 to host2 lost 160, 16.5593 to 16.766 s; host2 to host1 lost 160, 16.5463 to 16.7493 s |
+| reboot-b-secondary | PASS | 0 lost |
+
+After the runs host1 had sent 5009 packets on `eth1` and 428 on `eth2`, host2 4971 on `eth1` and 448 on `eth2`, so the host traffic used the primaries (`test-results/medium-two-pair/r3/09-4c-counters-destroy.log`).
 
 ## Comparison with the old suite
 
@@ -55,14 +57,12 @@ Old values are quoted from the results index at commit `3af4cd8` (`results/index
 
 | Test | Old verdict and loss | New verdict and loss | Reason for the difference |
 | --- | --- | --- | --- |
-| baseline | Run 01 pass, no loss | PASS, no loss | Same result |
-| calibration | No old result | PASS, 1.87121 to 2.08247 s | Not comparable |
-| inter-pair-member-flap | No old result | PASS, 0 lost | Not comparable |
-| reboot-a-primary | Run 01 INVALID: Pair A primary down 1.912816 to 2.591661 s, back 16.447632 to 16.650563 s; the management TAP showed one closed guest absence | PASS, at most 0.609865 s | The old run is invalid. Here no host traffic passes switch-a1, as in the two-pair lab. |
-| reboot-a-secondary | Run 01 did not reach evaluation | FAIL, 21.8999 to 22.1054 s (host2 to host1) | No valid old result. The host traffic passes switch-a2. |
-| reboot-b-primary | No old result | PASS, at most 0.520742 s | Not comparable |
-| reboot-b-secondary | No old result | FAIL, 21.3416 to 21.5461 s; host1 to host2 unverified | Not comparable |
+| baseline | Run 01 pass, no loss | PASS, no loss | Same |
+| calibration | No old result | PASS, 1.87289 to 2.07917 s | Not comparable |
+| inter-pair-member-flap | No old result | FAIL, the whole 8 s down hold | Not comparable. The same stop as in the two-pair lab, explained in its README. |
+| reboot-a-primary | Run 01 INVALID: Pair A primary down 1.912816 to 2.591661 s, back 16.447632 to 16.650563 s; the management TAP showed one closed guest absence | FAIL, 18.1369 to 18.345 s | No valid old result. The old invalid run also lost about 16.5 s. |
+| reboot-a-secondary | Run 01 did not reach evaluation | PASS, 0 lost | No valid old result |
+| reboot-b-primary | No old result | FAIL, 16.5463 to 16.766 s | Not comparable |
+| reboot-b-secondary | No old result | PASS, 0 lost | Not comparable |
 
-The host traffic takes the secondaries' cables here too. Host1 `eth2` sent 5795 packets and `eth1` 494, host2 `eth2` 5721 and `eth1` 559 (`test-results/medium-two-pair/09-4c-summary.log`). The reason is in the two-pair README.
-`lacp-strict=yes` did not prevent the secondary reboot outage. It lasted 21.3 to 22.1 s here against 18.2 to 18.8 s without it, in one run each.
-The primary reboots lost 0.2 to 0.6 s here and nothing without it, although no host traffic passes the primary. The cause is not verified. A likely one is that strict mode stops the secondary's inter-pair member while LACP renegotiates under the secondary's own system ID.
+`lacp-strict=yes` changed no verdict. The primary reboot stops of 16.5 to 18.3 s fall in the range of the two-pair lab's 16.4 to 18.1 s, in one run each.

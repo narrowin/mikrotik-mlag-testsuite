@@ -8,13 +8,13 @@
 /interface bonding add name=inter-pair mode=802.3ad mlag-id=21 slaves=ether3 lacp-rate=1sec lacp-strict={{.Env.LACP_STRICT}}
 /interface bonding add name=host1 mode=802.3ad mlag-id=22 slaves=ether4 lacp-rate=1sec
 {{end}}
-# Lower MLAG priority makes switch-a1 and switch-b1 the MLAG primaries.
-/interface bridge add name=bridge vlan-filtering=yes protocol-mode=none mlag-peer-port=ether2 mlag-priority={{if eq .ShortName "switch-a1" "switch-b1"}}10{{else}}20{{end}}
+# Lower MLAG priority makes switch-a1 and switch-b1 the MLAG primaries. The bridge settings follow the old two-pair suite, including its fixed bridge MACs.
+/interface bridge add name=bridge vlan-filtering=yes protocol-mode=none mlag-peer-port=ether2 mlag-priority={{if eq .ShortName "switch-a1" "switch-b1"}}10{{else}}20{{end}} auto-mac=no admin-mac=02:00:00:21:00:{{if eq .ShortName "switch-a1"}}11{{else if eq .ShortName "switch-a2"}}14{{else if eq .ShortName "switch-b1"}}12{{else}}13{{end}} frame-types=admit-only-vlan-tagged
 # MLAG carries VLAN 110 tagged on the peer link. VLAN 110 matches the host subnet 10.110.0.0/24.
-/interface bridge port add bridge=bridge interface=ether2
+/interface bridge port add bridge=bridge interface=ether2 frame-types=admit-only-vlan-tagged
 /interface bridge port add bridge=bridge interface=inter-pair pvid=110
-/interface bridge port add bridge=bridge interface={{if eq .ShortName "switch-a1" "switch-a2"}}host2{{else}}host1{{end}} pvid=110
-/interface bridge vlan add bridge=bridge tagged=ether2 vlan-ids=110
+/interface bridge port add bridge=bridge interface={{if eq .ShortName "switch-a1" "switch-a2"}}host2{{else}}host1{{end}} pvid=110 edge=yes
+/interface bridge vlan add bridge=bridge tagged=ether2 untagged=inter-pair,{{if eq .ShortName "switch-a1" "switch-a2"}}host2{{else}}host1{{end}} vlan-ids=110
 # Send the log to the collector from the management VRF via its management interface.
 /system logging action add name=collector target=remote remote={{.Env.COLLECTOR}} vrf=mgmt
 # interface records port changes and script records test markers. Severity rules capture MLAG problems across topics.
