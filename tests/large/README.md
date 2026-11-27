@@ -31,7 +31,7 @@ Each pair has a single-member peer link. Every other connection is one LACP bond
 The site VLAN is 110 at `dc1` and 120 at `dc2`. It stays on the distribution pair.
 VLAN 390 reaches both firewalls and both traffic hosts across the DCI.
 The firewalls share VRRP address 198.18.40.1. The dc1 firewall has priority 150 and owns it; the dc2 firewall has priority 100.
-[Topology](lab/topology.clab.yml) · [RouterOS startup config](lab/routeros.rsc) · [Host setup](lab/host-setup.sh) · [Two-site design](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/plans/two-site-design.md)
+[Topology](lab/topology.clab.yml) · [RouterOS startup config](lab/routeros.rsc) · [Host setup](lab/host-setup.sh) · [Two-site design](../../docs/findings/two-site-design.md)
 
 ## Commands
 

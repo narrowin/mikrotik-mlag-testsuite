@@ -1,6 +1,6 @@
 # MikroTik MLAG test suite
 
-This suite measures how long traffic stops when a switch or link fails in a MikroTik MLAG pair. With multi-chassis link aggregation (MLAG), a server or switch connects to two MikroTik switches over one bonded link and stays connected when one of them fails. The suite builds virtual MLAG networks and breaks them in one way at a time. A test reboots a switch, cuts its power, cuts a link or delays or drops traffic on a link. Packet captures then show how long traffic stopped.
+This suite measures how long traffic stops when a switch or link fails in a MikroTik MLAG pair. With multi-chassis link aggregation (MLAG), a server or switch connects to two MikroTik switches over one bonded link and stays connected when one of them fails. The suite builds virtual MLAG networks and breaks them in one way at a time. A test reboots a switch, cuts its power, cuts a link or delays or drops traffic on a link. Packet captures then show how long traffic stopped. The main finding on RouterOS 7.26beta7 is that [an MLAG bond whose bond member has no LACP partner keeps forwarding](docs/findings/mlag-bond-without-lacp-partner-keeps-forwarding.md): frames loop back to their sender, and traffic between two MLAG pairs stops while one MLAG primary reboots. All measured RouterOS behaviour is in the [findings](docs/findings/README.md).
 
 The labs run RouterOS itself. MikroTik publishes the Cloud Hosted Router (CHR) as an official container image, [`mikrotik/chr`](https://hub.docker.com/r/mikrotik/chr) on Docker Hub, for amd64 and arm64. Each container runs the full CHR in a QEMU virtual machine, so the tests exercise RouterOS's own bridge, LACP and MLAG code. Switch-chip offload on CRS hardware is not covered.
 
@@ -118,7 +118,7 @@ If you use Codespaces, choose **Stop codespace** when you are done to stop compu
 
 - Run a lab, add a test or add a lab. [Labs and tests under tests/](docs/tests/README.md)
 - Look up every lab and test field. [Networka lab test guide](https://github.com/narrowin/networka/blob/main/docs/lab-tests.md)
-- File a bug report with MikroTik. The [RouterOS 7.26beta7 fault report](docs/plans/routeros-failures-report.md) has the evidence and reproduction steps for two MLAG faults. Our earlier reports to MikroTik had limited success, so we do not plan to file these ourselves. Anyone who wants to may use it.
+- File a bug report with MikroTik. The [RouterOS 7.26beta7 findings report](docs/findings/mlag-bond-without-lacp-partner-keeps-forwarding.md) has the evidence and reproduction steps for two MLAG findings. Our earlier reports to MikroTik had limited success, so we do not plan to file these ourselves. Anyone who wants to may use it.
 - Report a setup issue or unexpected result. Include the command you ran and the error or verdict. [GitHub issues](https://github.com/narrowin/mikrotik-mlag-testsuite/issues)
 
 [Documentation index](docs/README.md)

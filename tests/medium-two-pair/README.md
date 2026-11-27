@@ -75,7 +75,7 @@ Old stops are the worst graded stream per phase. The old suite graded a reboot's
 | reboot-b-primary | faults.tsv: loss over the limit in Pair B primary down, 2 of 2 runs, 20.664 to 22.177 s | FAIL, 17.8922 to 18.133 s | Same fault. The stop is 2 to 4 s shorter, see below. |
 | reboot-b-secondary | d1, d2 pass, no loss in either phase | PASS, 0 lost | Same |
 
-Primary reboots: the other pair keeps sending into the rebooting switch, as in the old suite. [Fault 2](../../docs/plans/routeros-failures-report.md#fault-2-two-mlag-pairs-keep-sending-into-a-rebooting-switch)
+Primary reboots: the other pair keeps sending into the rebooting switch, as in the old suite. [Finding 2](../../docs/findings/mlag-bond-without-lacp-partner-keeps-forwarding.md#finding-2-two-mlag-pairs-keep-sending-into-a-rebooting-switch)
 The stop ends when the rebooted switch forwards again, about 1 s after its peer logged `"bridge" peer link down`.
 The new stops are shorter than the old range. The old switches ran behind a QEMU wrapper and these run as native Containerlab CHRs, which may restart faster. That cause is not verified.
 

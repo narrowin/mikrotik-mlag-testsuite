@@ -49,7 +49,7 @@ In a campus, users can create loops below the MLAG pair, so the pair cannot simp
 - **Loops below the MLAG pair:** the labs have no access switches connected to each other and no user-made loops, so they cannot show how a network with spanning tree off reacts to a loop. See the campus section.
 - **Repeats:** most setups ran only a few times. The results tables give the runs of each setup.
 
-RouterOS 7.26beta7 CHRs in Containerlab, 24 November 2026. Working log: [docs/plans/outage-free-setup-search.md](../docs/plans/outage-free-setup-search.md).
+RouterOS 7.26beta7 CHRs in Containerlab, 24 November 2026. Findings: [Spanning tree with MLAG](../docs/findings/spanning-tree-with-mlag.md).
 
 ## Looped and reflected frames
 
@@ -63,7 +63,7 @@ The counts are in **Faults across runs** below. This section explains what the p
 
 ## Two MLAG pairs with spanning tree off
 
-Rebooting the MLAG primary of pair A or pair B stops streams 101 and 201 for about 20 s, against 5 s. The bypass stream lost nothing. Rebooting either MLAG secondary lost nothing, and the inter-pair member flap stayed within its limit. The one-pair Medium lab with spanning tree off passed every reboot, so the outage needs the second pair. The cause is traced in the [fault report](../docs/plans/routeros-failures-report.md#fault-2-two-mlag-pairs-keep-sending-into-a-rebooting-switch).
+Rebooting the MLAG primary of pair A or pair B stops streams 101 and 201 for about 20 s, against 5 s. The bypass stream lost nothing. Rebooting either MLAG secondary lost nothing, and the inter-pair member flap stayed within its limit. The one-pair Medium lab with spanning tree off passed every reboot, so the outage needs the second pair. The cause is traced in the [fault report](../docs/findings/mlag-bond-without-lacp-partner-keeps-forwarding.md#finding-2-two-mlag-pairs-keep-sending-into-a-rebooting-switch).
 
 ## Medium lab with spanning tree off
 

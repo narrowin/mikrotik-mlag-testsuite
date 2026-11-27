@@ -18,4 +18,4 @@ The access switch kept the earlier proposal from the survivor, which advertised 
 
 For the 35 s pause, ARP resolution stopped the host from emitting management probes. The initial phase split was inconclusive. QMP’s recorded resume bounded the return and confirmed the loss persisted until resume.
 
-The captures establish forwarding behavior and virtual carrier for these CHRs. Physical carrier and the blocked port in the original Site A/Site B incident remain unverified. [Historical results](../../docs/plans/primary-reboot-plan.md#recovered-tests-and-their-limits) · [Checksums](SHA256SUMS)
+The captures establish forwarding behavior and virtual carrier for these CHRs. Physical carrier and the blocked port in the original Site A/Site B incident remain unverified. [Historical results](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/plans/primary-reboot-plan.md#recovered-tests-and-their-limits) · [Checksums](SHA256SUMS)

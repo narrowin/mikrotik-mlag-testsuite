@@ -14,7 +14,7 @@ Pick the page by what you need to do. New here? Start with the [quick start](../
 
 | Page | Answers |
 | --- | --- |
-| [RouterOS 7.26beta7 MLAG faults](plans/routeros-failures-report.md) | Which two RouterOS faults do the live runs show, and how do you reproduce them? |
+| [Findings](findings/README.md) | What did the tests find in RouterOS MLAG, and how do you reproduce it? |
 | [Implementation plan](plans/implementation-plan.md) | What is built under `tests/`, and what comes next? |
 | [Small reference setup](plans/clean-setup-spec.md) | What does the Small lab contract require? |
 | [Review of the Small lab](plans/clean-setup-open-findings.md) | Which review findings were fixed, and how was each checked? |
