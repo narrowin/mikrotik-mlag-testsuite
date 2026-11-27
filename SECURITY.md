@@ -10,7 +10,7 @@ Include what you found, how to reproduce it and what it affects. We aim to reply
 
 This repository is a test lab. It deploys RouterOS CHR and Linux containers on isolated Docker networks and runs privileged lab commands with `sudo` on the machine you run it on.
 
-- **In scope:** problems in this repository's scripts, runner and container setup, for example a command that exposes a lab device outside its Docker network or runs untrusted input with root rights.
+- **In scope:** problems in this repository's scripts, labs and container setup, for example a command that exposes a lab device outside its Docker network or runs untrusted input with root rights.
 - **Out of scope:** vulnerabilities in RouterOS itself. Report those to MikroTik at [mikrotik.com/support](https://mikrotik.com/support).
 
 ## Lab credentials

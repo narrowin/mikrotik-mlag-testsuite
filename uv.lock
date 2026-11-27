@@ -192,23 +192,15 @@ wheels = [
 ]
 
 [[package]]
-name = "mlag-lab"
+name = "mikrotik-mlag-testsuite"
 version = "0.1.0"
-source = { editable = "." }
+source = { virtual = "." }
 dependencies = [
     { name = "networka" },
-    { name = "pydantic" },
-    { name = "pyyaml" },
-    { name = "typer" },
 ]
 
 [package.metadata]
-requires-dist = [
-    { name = "networka", specifier = "==0.5.1" },
-    { name = "pydantic", specifier = ">=2,<3" },
-    { name = "pyyaml", specifier = ">=6,<7" },
-    { name = "typer", specifier = ">=0.16,<1" },
-]
+requires-dist = [{ name = "networka", specifier = "==0.5.1" }]
 
 [[package]]
 name = "networka"

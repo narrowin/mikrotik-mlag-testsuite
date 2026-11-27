@@ -2,46 +2,23 @@
 
 Pick the page by what you need to do. New here? Start with the [quick start](../README.md#quick-start).
 
-## Run and review tests
+## Run and add tests
 
 | Page | Answers |
 | --- | --- |
-| [Operator guide](operator-guide.md) | How do I deploy each lab, run its cases and collect a Networka checkpoint? |
-| [Test framework](test-framework.md) | What does each case assert, what does a run write, how do I replay it or run it in CI? |
-| [Small lab walkthrough](walkthrough-small-lab.md) | How does one Small lab run go from wiring to verdict, step by step with links into the code? |
-| [Networka lab test walkthrough](walkthrough-networka-tests.md) | How does one `nw test run` of the Small lab tests go, what ran where, and what did the live run show? |
-| [Syslog](syslog/README.md) | How does RouterOS logging reach the collector, and how do I check it? |
-| [Diagrams](diagrams/README.md) | How do I edit the lab drawings and where is each scenario's evidence? |
+| [Labs and tests under tests/](tests/README.md) | How do I run a lab with `nw test`, add a test or add a lab? |
+| [Small lab test walkthrough](walkthrough-networka-tests.md) | How does one `nw test run` of the Small lab tests go, and what did the live run show? |
+| [Networka lab test guide](https://github.com/narrowin/networka/blob/main/docs/lab-tests.md) | Which lab and test fields, actions and evidence does Networka support? |
 
-## Test cases
+## Findings and plans
 
 | Page | Answers |
 | --- | --- |
-| [Case index](cases/README.md) | Which cases exist, in what order, and which CLI selector runs each one? |
-| [Case catalogue](case-catalog.md) | Which protocol and field-report scenarios are covered, and where do they come from? |
-| [Lab naming](lab-naming.md) | What do the lab, device and case names mean? |
-
-## Plans and status
-
-| Page | Answers |
-| --- | --- |
-| [Validation plan](validation-plan.md) | What must each lab prove, and on which RouterOS version? |
-| [Status report](status-report.md) | Where is the campaign now, and what comes next? |
-| [Two-site design](plans/two-site-design.md) | How should the two sites be wired and tested? |
-| [Primary reboot plan](plans/primary-reboot-plan.md) | Why does losing the MLAG primary stop traffic longer while the pair is the STP root? |
-| [Member failure diagnosis](plans/member-failure-diagnosis.md) | What else is needed to explain the client-link loss result? |
-| [Report generation plan](plans/report-generation-plan.md) | How do runs write their own reports? |
 | [RouterOS 7.26beta7 MLAG faults](plans/routeros-failures-report.md) | Which two RouterOS faults do the live runs show, and how do you reproduce them? |
+| [Implementation plan](plans/implementation-plan.md) | What is built under `tests/`, and what comes next? |
+| [Small reference setup](plans/clean-setup-spec.md) | What does the Small lab contract require? |
+| [Review of the Small lab](plans/clean-setup-open-findings.md) | Which review findings were fixed, and how was each checked? |
 
-## Reference
+## Old suite
 
-| Page | Answers |
-| --- | --- |
-| [Measurement](reference/measurement.md) | How is an outage measured, and when does it pass? |
-| [Protocol cases](reference/protocol-cases.md) | Which forwarding, mobility, STP and LACP tests apply? |
-| [Site cases](reference/site-cases.md) | Which site, hardware and optional-service tests apply? |
-| [Topologies](reference/topologies.md) | Why these lab topologies, in this order? |
-| [Research](reference/research.md) | Which sources and test methods back the plan? |
-| [MLAG fixes](reference/mlag-fixes.md) | Which MikroTik changelog fixes does each test check, and which have no test? |
-
-Results live in [results/](../results/), one dated folder per campaign. [Report template](../results/REPORT-TEMPLATE.md)
+[results/](../results/README.md) is the frozen record of the old `mlag-lab` suite. Its code and documents are in git history at [`95c7482`](https://github.com/narrowin/mikrotik-mlag-testsuite/tree/95c7482).

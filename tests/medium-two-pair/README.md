@@ -24,7 +24,7 @@ Before and after every test, and after a reboot before the hold, it checks MLAG 
 
 ## Tests and their limits
 
-The limits, holds and expectations come from the old suite's case catalogue for the `two-pair-stp-off-*` cases (`src/mlag_lab/intent/two-pair.yaml`) and from the Small tests of the same kind.
+The limits, holds and expectations come from the old suite's case catalogue for the `two-pair-stp-off-*` cases ([`src/mlag_lab/intent/two-pair.yaml`](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/src/mlag_lab/intent/two-pair.yaml)) and from the Small tests of the same kind.
 
 | Test | What it does | Limit per host stream | Source of limit and holds |
 | --- | --- | --- | --- |
@@ -80,5 +80,5 @@ In old run d2 the streams returned 0.45 s after the cable went down, and a sampl
 The first flap failure used the default bridge settings. Setting the old suite's bridge options in the startup config (fixed `admin-mac`, `frame-types=admit-only-vlan-tagged` on the bridge and the peer port, `edge=yes` on the host bond) still stopped traffic for 5.1 s in one diagnostic run and 8.0 s in another and in the recorded run. Those options are kept, because they match the old suite.
 The two other differences from the old lab do not explain it.
 After repeating the old runner's reset over SSH (`lacp-strict=no` on the inter-pair bond, bridge disabled, `protocol-mode=none priority=0x8000`, 2 s wait, bridge enabled), the flap still stopped traffic for the whole down hold in 3 of 3 runs, 8.01868 to 8.33904 s. The host table, bridge ports, MLAG monitor and inter-pair member flags of switch-b1 were the same before and after the reset (`test-results/medium-two-pair/r4/`).
-The old QEMU wrapper only advertised 10 Gbit/s full duplex on the guest NICs (`labs/shared/qemu-data-link.sh`), which the native CHR also reports. Its two-port bridges forwarded STP, LACP and LLDP and did not learn (`labs/shared/forward-control.sh`), which cannot change where a two-port bridge forwards.
+The old QEMU wrapper only advertised 10 Gbit/s full duplex on the guest NICs ([`labs/shared/qemu-data-link.sh`](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/labs/shared/qemu-data-link.sh)), which the native CHR also reports. Its two-port bridges forwarded STP, LACP and LLDP and did not learn ([`labs/shared/forward-control.sh`](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/labs/shared/forward-control.sh)), which cannot change where a two-port bridge forwards.
 The FAIL is therefore a RouterOS finding: when a switch's only member of a distributed MLAG bond goes down, it keeps dropping that bond's traffic for as long as the member stays down. It does not send it over the peer link, although its host table already points the destination at the peer port.

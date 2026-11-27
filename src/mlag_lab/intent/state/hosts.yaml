@@ -1,8 +1,0 @@
-# Both traffic hosts: each bond0 member up and in the active aggregator. The suite reads
-# /proc/net/bonding itself; Networka's Linux normalizers check it. Used by the Small and two-pair gates.
-- {name: "host1 bond0 members eth1, eth2", device: "dc1-traffic-host1", check: "bond_members", params: {bond: "bond0"}, expected: ["eth1", "eth2"]}
-- {name: "host1 bond0 member eth1 up and eligible", device: "dc1-traffic-host1", check: "bond_member", params: {bond: "bond0", member: "eth1"}, expected: {carrier: true, eligible: true}}
-- {name: "host1 bond0 member eth2 up and eligible", device: "dc1-traffic-host1", check: "bond_member", params: {bond: "bond0", member: "eth2"}, expected: {carrier: true, eligible: true}}
-- {name: "host2 bond0 members eth1, eth2", device: "dc1-traffic-host2", check: "bond_members", params: {bond: "bond0"}, expected: ["eth1", "eth2"]}
-- {name: "host2 bond0 member eth1 up and eligible", device: "dc1-traffic-host2", check: "bond_member", params: {bond: "bond0", member: "eth1"}, expected: {carrier: true, eligible: true}}
-- {name: "host2 bond0 member eth2 up and eligible", device: "dc1-traffic-host2", check: "bond_member", params: {bond: "bond0", member: "eth2"}, expected: {carrier: true, eligible: true}}

@@ -20,19 +20,19 @@ body:
     id: setup
     attributes:
       label: Lab and setup
-      description: Small or Medium lab, bridge mode, and anything changed from the lab defaults.
-      placeholder: Medium lab, STP off, mlag-lacp-fallback=no
+      description: Lab folder under tests/, and anything changed from the lab defaults.
+      placeholder: tests/medium, mlag-lacp-fallback=no
     validations:
       required: true
   - type: input
-    id: cases
+    id: tests
     attributes:
-      label: Cases run
-      placeholder: primary-reboot, secondary-reboot, peer-link-loss
+      label: Tests run
+      placeholder: primary-reboot, secondary-reboot
   - type: textarea
     id: result
     attributes:
       label: Result
-      description: Paste the TL;DR and summary table from the generated README.md, or attach the report. Do not attach packet captures.
+      description: Paste or attach the generated report.md of each test. Do not attach packet captures.
     validations:
       required: true

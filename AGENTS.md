@@ -6,17 +6,13 @@ Use `uv` for all Python work in this repository. Run project commands, tests, ch
 
 ## Numbers in write-ups
 
-Counts of how often a fault showed, and loss ranges across runs, come only from `mlag-lab export`: the Faults across runs section of `results/README.md` and `results/index/faults.tsv`. Do not count by hand in notes, reports, tickets or forum posts. Quote the generated row at a pinned commit and name its lab, setup and case. If a write-up needs a count the export does not produce, add it to the export first.
+Counts of how often a fault showed, and loss ranges, come only from the `nw test` reports (`report.md` and `result.json`) of the named runs. Do not count by hand in notes, reports, tickets or forum posts. Name the lab, the test and the runs. `results/` is the frozen record of the old `mlag-lab` suite; quote it only as that, at a pinned commit.
 
 ## Live tests in parallel
 
-Run independent live suites at the same time with `labs/parallel.sh`, never one after another. Run it inside the OrbStack VM from the worktree root, on lab instances 1 to 3, one campaign per instance, campaigns separated by `--`, with `--destroy`. Run at most 3 labs with cases in the VM at once, counting labs of other sessions. A fourth lab with cases distorts timing: at four labs, power-loss boots and bond member restorations that fell at the same moment in several labs stalled the probes for up to 508 ms. Check first that no other session is running a campaign, and never use instance 0 of a lab another session has deployed. Give each worktree its own `UV_PROJECT_ENVIRONMENT` and `MLAG_LABS_COPY`, because the defaults are shared by every checkout in the VM. Destroy only the labs you deployed, with the variables they were deployed with, and never with `containerlab destroy --name`.
+Run live tests in the OrbStack VM as described in [Run a lab](docs/tests/README.md#run-a-lab). At most three labs with tests may run in the VM at once, counting the labs of other sessions. A fourth lab distorts the timing of every lab. Check first what is running and deployed. Touch no lab you did not start, and destroy only your own labs with their topology file.
 
 ```sh
-pgrep -af "mlag-lab|campaign.sh"
+pgrep -af "nw test"
 sudo containerlab inspect --all
-labs/parallel.sh --destroy \
-  1 small /var/tmp/c-small-1 "baseline:--bridge-mode none --case baseline" -- \
-  2 small /var/tmp/c-small-2 "baseline:--bridge-mode none --case baseline" -- \
-  3 medium /var/tmp/c-medium-3 "stp-off:--case medium-stp-off-baseline"
 ```

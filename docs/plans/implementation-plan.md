@@ -1,6 +1,6 @@
 # Implementation plan: Networka lab tests for the MLAG labs
 
-This plan hands the work to the next implementer. It is the only plan. The older notes in `docs/plans/` are history.
+This plan hands the work to the next implementer. It is the only plan. The plans of the old suite were deleted with it and are in git history.
 
 ## Outcome
 
@@ -265,6 +265,7 @@ Each folder below is one lab variant: one topology, one startup config and its l
 
 - Delete `src/mlag_lab/`, `labs/`, the entry points in `pyproject.toml` and the docs that describe them.
 - Done when: `git grep mlag_lab` finds nothing and the README describes only the new way.
+- Done on 27 November 2026. `results/` stays unchanged as the frozen record of the old suite. The old code is in git history at [`95c7482`](https://github.com/narrowin/mikrotik-mlag-testsuite/tree/95c7482). The remaining `git grep mlag_lab` hits are permalinks to that commit and this plan.
 
 ### 6. One-page start for the Cumulus lab
 
@@ -280,6 +281,5 @@ Each folder below is one lab variant: one topology, one startup config and its l
 
 ## What the operator still decides
 
-- What happens to `results/`, the archived runs of the old suite.
 - Whether `labtest.py` gets unit tests.
 - The limit for a cable that comes back. The specification sets 4 s, and the runs measured 2.40 to 2.60 s.
