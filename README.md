@@ -13,7 +13,19 @@ The old `mlag-lab` suite was removed. Its code, and how `results/` was produced,
 ## Results
 
 <!-- results:start -->
-Results of the nw test runs follow.
+![Worst traffic stop per lab, spanning tree off and RSTP, against its limit](docs/diagrams/results-worst-stop.svg)
+
+Spanning tree off, and RSTP with the MLAG pair as root, on RouterOS 7.26beta7; `nw test` live runs of 26 and 27 November 2026, one ping every 100&nbsp;ms per stream.
+
+| Lab | Topology | STP off | RSTP | Worst stop, STP off | Worst stop, RSTP |
+| --- | --- | --- | --- | --- | --- |
+| [Small](tests/small/README.md) | One MLAG pair | ![PASS](docs/diagrams/result-pass.svg "PASS") 2&nbsp;of&nbsp;3, 1&nbsp;error | ![PASS](docs/diagrams/result-pass.svg "PASS") [3&nbsp;of&nbsp;4, 1&nbsp;error](tests/small-rstp/README.md) | 2.40–2.61&nbsp;s of&nbsp;4&nbsp;s, member back, client1&nbsp;→&nbsp;client2 | 2.43–2.64&nbsp;s of&nbsp;4&nbsp;s, member back, client1&nbsp;→&nbsp;client2 |
+| [Medium](tests/medium/README.md) | One MLAG pair + access switch | ![PASS](docs/diagrams/result-pass.svg "PASS") 6&nbsp;of&nbsp;6 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [3&nbsp;of&nbsp;6, 1&nbsp;error](tests/medium-rstp/README.md) | 2.51–2.71&nbsp;s of&nbsp;5&nbsp;s, secondary reboot, host1&nbsp;→&nbsp;host2 | 9.80–10.01&nbsp;s of&nbsp;5&nbsp;s, primary power loss, host2&nbsp;→&nbsp;host1 |
+| [Medium two-pair](tests/medium-two-pair/README.md) | Two MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;7 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [4&nbsp;of&nbsp;7](tests/medium-two-pair-rstp/README.md) | 17.93–18.13&nbsp;s of&nbsp;5&nbsp;s, pair B primary reboot, host1&nbsp;→&nbsp;host2 | 21.54–21.75&nbsp;s of&nbsp;5&nbsp;s, pair A primary reboot, host2&nbsp;→&nbsp;host1 |
+| [Medium two-pair-strict](tests/medium-two-pair-strict/README.md) | Two MLAG pairs + `lacp-strict` | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;7 | not run | 18.14–18.35&nbsp;s of&nbsp;5&nbsp;s, pair A primary reboot, host2&nbsp;→&nbsp;host1 | — |
+| [Large](tests/large/README.md) | Two sites, four MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 2&nbsp;of&nbsp;5 | not run | 20.64–20.85&nbsp;s of&nbsp;5&nbsp;s, core primary reboot, one DCI direction | — |
+
+Each value is quoted from the linked lab README, which gives the per-test verdicts and the runs.
 <!-- results:end -->
 
 [results/](results/README.md) is the frozen result of the old `mlag-lab` suite and is not regenerated.

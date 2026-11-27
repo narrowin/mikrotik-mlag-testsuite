@@ -25,22 +25,22 @@ Run on 27 November 2026 on RouterOS 7.26beta7 with Networka 0.5.1 and the qualif
 | Test | Verdict | Step | Stream | Limit | Measured stop |
 | --- | --- | --- | --- | --- | --- |
 | bond-member-loss | PASS | Cable client1 to switch1 down | client1:bond0 → client2:bond0 | 1 s | 0 s, 0 lost (pass) |
-|  |  | Cable client1 to switch1 down | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
-|  |  | Cable client1 to switch1 back | client1:bond0 → client2:bond0 | 4 s | 0 s, 0 lost (pass) |
-|  |  | Cable client1 to switch1 back | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
-|  |  | Cable client1 to switch2 down | client1:bond0 → client2:bond0 | 1 s | 0 to 0.208647 s, 1 lost (pass) |
-|  |  | Cable client1 to switch2 down | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
-|  |  | Cable client1 to switch2 back | client1:bond0 → client2:bond0 | 4 s | 2.42515 to 2.63643 s, 24 lost (pass) |
-|  |  | Cable client1 to switch2 back | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
+| | | Cable client1 to switch1 down | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
+| | | Cable client1 to switch1 back | client1:bond0 → client2:bond0 | 4 s | 0 s, 0 lost (pass) |
+| | | Cable client1 to switch1 back | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
+| | | Cable client1 to switch2 down | client1:bond0 → client2:bond0 | 1 s | 0 to 0.208647 s, 1 lost (pass) |
+| | | Cable client1 to switch2 down | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
+| | | Cable client1 to switch2 back | client1:bond0 → client2:bond0 | 4 s | 2.42515 to 2.63643 s, 24 lost (pass) |
+| | | Cable client1 to switch2 back | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
 | cable-delay | PASS | Delay on client1 cable | client1:bond0 → client2:bond0 | 0 s | 0 s, 0 lost (pass) |
-|  |  | Delay on client1 cable | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
-|  |  | Cable delay cleared | client1:bond0 → client2:bond0 | 0 s | 0 s, 0 lost (pass) |
-|  |  | Cable delay cleared | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
+| | | Delay on client1 cable | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
+| | | Cable delay cleared | client1:bond0 → client2:bond0 | 0 s | 0 s, 0 lost (pass) |
+| | | Cable delay cleared | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
 | cable-packet-loss | ERROR | One-way cable loss | client1:bond0 → client2:bond0 | 4 s | at least 22.8157 s (diagnostic); Diagnostic only: 220 pings recorded lost, 220 sent in this step (configured interval 100 ms) (unverified. Sender cadence was invalid in this step.) |
-|  |  | One-way cable loss | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
-|  |  | Cable loss cleared | client1:bond0 → client2:bond0 | 4 s | unverified; Diagnostic only: 0 pings recorded lost, 0 sent in this step (configured interval 100 ms) (unverified. No sender pings were captured in this step.) |
-|  |  | Cable loss cleared | client2:bond0 → client3:bond0 | 0 s | unverified; Diagnostic only: 0 pings recorded lost, 143 sent in this step (configured interval 100 ms) (unverified. The step stopped before it completed.) |
+| | | One-way cable loss | client2:bond0 → client3:bond0 | 0 s | 0 s, 0 lost (pass) |
+| | | Cable loss cleared | client1:bond0 → client2:bond0 | 4 s | unverified; Diagnostic only: 0 pings recorded lost, 0 sent in this step (configured interval 100 ms) (unverified. No sender pings were captured in this step.) |
+| | | Cable loss cleared | client2:bond0 → client3:bond0 | 0 s | unverified; Diagnostic only: 0 pings recorded lost, 143 sent in this step (configured interval 100 ms) (unverified. The step stopped before it completed.) |
 | switch-reboot | PASS | Reboot switch1 | client1:bond0 → client2:bond0 | 4 s | 0.31733 to 0.523343 s, 4 lost (pass) |
-|  |  | Reboot switch1 | client2:bond0 → client3:bond0 | 4 s | 0.40252 to 0.610744 s, 5 lost (pass) |
+| | | Reboot switch1 | client2:bond0 → client3:bond0 | 4 s | 0.40252 to 0.610744 s, 5 lost (pass) |
 
 The cable-packet-loss ERROR is the same as in the base lab on 26 November 2026 (`test-results/live-0.5.1/canonical-cable-packet-loss.7OqL68`): client1's eth2 was still not eligible in its bond when the 15 s recovery deadline ran out.
