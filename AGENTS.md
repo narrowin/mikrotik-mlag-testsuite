@@ -32,3 +32,17 @@ Run live tests in the OrbStack VM as described in [Run a lab](docs/tests/README.
 pgrep -af "nw test"
 sudo containerlab inspect --all
 ```
+
+## Agent skills
+
+### Issue tracker
+
+Issues and specs live as local markdown files under `.scratch/<feature>/`. See [docs/agents/issue-tracker.md](docs/agents/issue-tracker.md).
+
+### Triage labels
+
+The five default role names, recorded as a `Status:` line in each issue file. See [docs/agents/triage-labels.md](docs/agents/triage-labels.md).
+
+### Domain docs
+
+Single-context: [GLOSSARY.md](GLOSSARY.md) and [docs/adr/](docs/adr/) at the repo root. See [docs/agents/domain.md](docs/agents/domain.md).
