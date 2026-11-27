@@ -1,13 +1,15 @@
 markdown: ../README.md
-chart: ../docs/diagrams/results-worst-stop.svg
-chart_alt: Worst traffic stop per lab with RSTP off and on, against its limit
+chart: ../docs/diagrams/results-worst-outage.svg
+chart_alt: Worst outage per lab with RSTP off and on, against its limit
 pass_icon: ../docs/diagrams/result-pass.svg
 fail_icon: ../docs/diagrams/result-fail.svg
 caption: RSTP off means no spanning tree on any bridge (`protocol-mode=none`). RSTP on has the MLAG pair
-  as root. RouterOS 7.26beta7; Networka 0.5.2; live runs of 27 November 2026
+  as root; RSTP, access switch root has the Medium access switch as root. RouterOS 7.26beta7; live runs of
+  27 November 2026 with Networka 0.5.2
 modes:
 - RSTP off
 - RSTP on
+- RSTP, access switch root
 rows:
 - lab: Small
   topology: One MLAG pair
@@ -38,6 +40,10 @@ rows:
       runs:
       - medium-rstp/runs/live-20261127-glossary
       link: medium-rstp/README.md
+    RSTP, access switch root:
+      runs:
+      - medium-rstp-access-root/runs/live-20261127-glossary
+      link: medium-rstp-access-root/README.md
 - lab: Two-pair
   topology: Two MLAG pairs
   link: two-pair/README.md

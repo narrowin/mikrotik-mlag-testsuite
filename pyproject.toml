@@ -5,7 +5,11 @@ description = "MikroTik MLAG lab tests for Networka"
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.15"
-dependencies = ["networka==0.5.2"]
+dependencies = ["networka"]
 
 [tool.uv]
 package = false
+
+[tool.uv.sources]
+# Networka main at 03f61c3: it reads the renamed lab keys (name, recovery_deadline_s) and summarizes runs that sent no traffic.
+networka = { git = "https://github.com/narrowin/networka.git", rev = "03f61c33145a51cd714774e5d92bd4735d6196f0" }

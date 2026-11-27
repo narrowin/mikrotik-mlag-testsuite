@@ -13,18 +13,18 @@ The old `mlag-lab` suite was removed. Its code, and how `results/` was produced,
 ## Results
 
 <!-- results:start -->
-![Worst traffic stop per lab with RSTP off and on, against its limit](docs/diagrams/results-worst-stop.svg)
+![Worst outage per lab with RSTP off and on, against its limit](docs/diagrams/results-worst-outage.svg)
 
-RSTP off means no spanning tree on any bridge (`protocol-mode=none`). RSTP on has the MLAG pair as root. RouterOS 7.26beta7; Networka 0.5.2; live runs of 27 November 2026, one ping every 100&nbsp;ms per stream.
+RSTP off means no spanning tree on any bridge (`protocol-mode=none`). RSTP on has the MLAG pair as root; RSTP, access switch root has the Medium access switch as root. RouterOS 7.26beta7; live runs of 27 November 2026 with Networka 0.5.2, one ping every 100&nbsp;ms per stream.
 
-| Lab | Topology | RSTP off | RSTP on | Worst stop, RSTP off | Worst stop, RSTP on |
-| --- | --- | --- | --- | --- | --- |
-| [Small](tests/small/README.md) | One MLAG pair | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 2&nbsp;of&nbsp;4, 1&nbsp;error | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [2&nbsp;of&nbsp;4, 1&nbsp;error](tests/small-rstp/README.md) | 7.51–7.71&nbsp;s of&nbsp;1&nbsp;s, Cable host1 to switch2 down, host1&nbsp;→&nbsp;host2 | 7.51–7.71&nbsp;s of&nbsp;1&nbsp;s, Cable host1 to switch2 down, host1&nbsp;→&nbsp;host2 |
-| [Small with MAC-move host](tests/small-mac-move/README.md) | One MLAG pair + MAC-move host | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 9&nbsp;of&nbsp;11 | not run | 25.01–25.21&nbsp;s of&nbsp;26&nbsp;s, Mobile silent, host2&nbsp;→&nbsp;mac-move-host | — |
-| [Medium](tests/medium/README.md) | One MLAG pair + access switch | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;5 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [2&nbsp;of&nbsp;5](tests/medium-rstp/README.md) | 7.81–8.01&nbsp;s of&nbsp;5&nbsp;s, Reboot switch2, host2&nbsp;→&nbsp;host1 | 18.02–18.23&nbsp;s of&nbsp;5&nbsp;s, Reboot switch1, host1&nbsp;→&nbsp;host2 |
-| [Two-pair](tests/two-pair/README.md) | Two MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;6 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [3&nbsp;of&nbsp;6](tests/two-pair-rstp/README.md) | 24.11–24.31&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-b1, host2&nbsp;→&nbsp;host1 | 24.46–24.67&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host2&nbsp;→&nbsp;host1 |
-| [Two-pair strict](tests/two-pair-strict/README.md) | Two MLAG pairs + `lacp-strict` | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 3&nbsp;of&nbsp;6 | not run | 23.51–23.72&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-b1, host2&nbsp;→&nbsp;host1 | — |
-| [Large](tests/large/README.md) | Two sites, four MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;6 | not run | 0.21–42.81&nbsp;s of&nbsp;216&nbsp;s, dc1 power lost, dc1-traffic&nbsp;→&nbsp;198.18.40.1 | — |
+| Lab | Topology | RSTP off | RSTP on | RSTP, access switch root | Worst outage, RSTP off | Worst outage, RSTP on | Worst outage, RSTP, access switch root |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| [Small](tests/small/README.md) | One MLAG pair | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 2&nbsp;of&nbsp;4, 1&nbsp;error | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [2&nbsp;of&nbsp;4, 1&nbsp;error](tests/small-rstp/README.md) | not run | 7.51–7.71&nbsp;s of&nbsp;1&nbsp;s, Cable host1 to switch2 down, host1&nbsp;→&nbsp;host2 | 7.51–7.71&nbsp;s of&nbsp;1&nbsp;s, Cable host1 to switch2 down, host1&nbsp;→&nbsp;host2 | — |
+| [Small with MAC-move host](tests/small-mac-move/README.md) | One MLAG pair + MAC-move host | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 9&nbsp;of&nbsp;11 | not run | not run | 25.01–25.21&nbsp;s of&nbsp;26&nbsp;s, Mobile silent, host2&nbsp;→&nbsp;mac-move-host | — | — |
+| [Medium](tests/medium/README.md) | One MLAG pair + access switch | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;5 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [2&nbsp;of&nbsp;5](tests/medium-rstp/README.md) | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [0&nbsp;of&nbsp;5](tests/medium-rstp-access-root/README.md) | 7.81–8.01&nbsp;s of&nbsp;5&nbsp;s, Reboot switch2, host2&nbsp;→&nbsp;host1 | 18.02–18.23&nbsp;s of&nbsp;5&nbsp;s, Reboot switch1, host1&nbsp;→&nbsp;host2 | — |
+| [Two-pair](tests/two-pair/README.md) | Two MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;6 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [3&nbsp;of&nbsp;6](tests/two-pair-rstp/README.md) | not run | 24.11–24.31&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-b1, host2&nbsp;→&nbsp;host1 | 24.46–24.67&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-a1, host2&nbsp;→&nbsp;host1 | — |
+| [Two-pair strict](tests/two-pair-strict/README.md) | Two MLAG pairs + `lacp-strict` | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 3&nbsp;of&nbsp;6 | not run | not run | 23.51–23.72&nbsp;s of&nbsp;5&nbsp;s, Reboot switch-b1, host2&nbsp;→&nbsp;host1 | — | — |
+| [Large](tests/large/README.md) | Two sites, four MLAG pairs | ![FAIL](docs/diagrams/result-fail.svg "FAIL") 4&nbsp;of&nbsp;6 | not run | not run | 0.21–42.81&nbsp;s of&nbsp;216&nbsp;s, dc1 power lost, dc1-traffic&nbsp;→&nbsp;198.18.40.1 | — | — |
 
 The values are generated with `nw test summary tests/results.yaml` from the runs that [tests/results.yaml](tests/results.yaml) lists.
 <!-- results:end -->
