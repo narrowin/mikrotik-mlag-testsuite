@@ -45,7 +45,6 @@ The limits, holds and expectations come from the old suite's case catalogue for 
 
 A reboot test judges the withdrawal and the return of the switch as one step, so its limit applies to the longest stop of either.
 
-
 ## Comparison with the old suite
 
 Old values are quoted from the results index at commit `3af4cd8`: the per-run rows of `results/index/phases.jsonl` and the fault rows of `results/index/faults.tsv`, Medium lab, STP off, cases `two-pair-stp-off-*`.

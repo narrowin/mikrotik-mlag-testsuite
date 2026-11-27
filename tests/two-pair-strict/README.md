@@ -29,7 +29,6 @@ LAB=tests/two-pair-strict NAME=two-pair-strict CONFIG=tests/two-pair/lab/devices
 
 The limits are the two-pair ones. The `two-pair-stp-off-strict-*` cases of the old catalogue give the same limits and holds.
 
-
 ## Comparison with the old suite
 
 Old values are quoted from the results index at commit `3af4cd8` (`results/index/phases.jsonl`) and `results/2026-11-24-two-pair/README.md`, Medium lab, STP off, cases `two-pair-stp-off-strict-*`. The only old suite is `2026-11-24-two-pair/stp-off-strict`.

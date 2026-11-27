@@ -42,7 +42,6 @@ The limits, hold times and expectations come from the `medium-stp-off-*` cases o
 | [Secondary power loss](tests/secondary-power-loss.yaml) | Switch2 off for 20 s, then on. Each stream may stop for 5 s, with a 16 s hold and a 3 s recovery, from `medium-stp-off-power-loss-secondary`. 180 s for the cold boot and healthy state, as in the Small power-loss tests. |
 | [Primary power loss](tests/primary-power-loss.yaml) | Switch1 off for 20 s, with the same limits from `medium-stp-off-power-loss-primary`. |
 
-
 ## Comparison with the earlier Medium suite
 
 The old values are quoted from `results/index/streams.tsv` at commit `5929968`, from the `medium-stp-off-*` rows with bridge mode none, and from each run's `result.json` where noted. Both suites send one ping every 100 ms per stream and grade the stream from host1 to host2 (old stream 101) and back (old stream 201). Old runs: `ext-medium-stp-off` runs 01 and 02, `medium-search/stp-off`, `medium-search/stp-off-repeat` and `power-loss/medium-stp-off`.
