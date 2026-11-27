@@ -20,8 +20,12 @@ Open work after the Medium and Large labs moved to Networka, as of 27 November 2
 
 ## Decisions for the operator
 
-- Proposed ADRs 0020 (no bypass cable) and 0021 (no separate baseline test) would remove the bypass streams, calibration tests and baselines from Medium, both two-pair labs, Large, Small mobile and the RSTP labs.
 - The two-pair and strict labs share their tests by symlink; the strict `lab.yaml` repeats the two-pair one to change one value.
+
+## After the glossary and ADRs (27 November)
+
+- Capture slices and run compression (Networka ADR 0008) are not built in Networka; it still keeps full captures.
+- A check that fails on `_Avoid_` words from GLOSSARY.md, once the glossary has settled.
 
 ## Clean-up seen in review
 
