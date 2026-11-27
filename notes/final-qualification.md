@@ -28,4 +28,4 @@ The complete final Small test set is qualified on ARM64 CHR under QEMU TCG. [Pub
 
 The [original bridge comparison](bridge-tc-comparison.md) already reproduced failure without tc. It excludes tc as a necessary cause of that reproduced failure; it does not establish equal recovery timing in every circumstance.
 
-No MikroTik support message was sent. Upstream adoption remains outstanding. Raw evidence and unrelated labs remain untouched.
+The operator has sent the MikroTik support reply. Upstream adoption remains outstanding. Raw evidence stays local.
