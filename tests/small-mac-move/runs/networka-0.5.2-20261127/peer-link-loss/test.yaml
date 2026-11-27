@@ -18,7 +18,7 @@ steps:
       client1-to-client2: *peer-limit
     expected: Both peers lose ICCP and the clients keep their cable to the primary.
     check_state:
-      - statement: Both peer ports have lost carrier and MLAG is disconnected.
+      - name: Both peer ports have lost carrier and MLAG is disconnected.
         checks:
           - device: switch1
             check: interface_up
@@ -47,7 +47,7 @@ steps:
     max_outage_s: *limits
     expected: Both switches reconnect and agree on the shared LACP system ID.
     check_state:
-      - statement: Both peer ports have carrier again and the peers are connected.
+      - name: Both peer ports have carrier again and the peers are connected.
         checks:
           - device: switch1
             check: interface_up

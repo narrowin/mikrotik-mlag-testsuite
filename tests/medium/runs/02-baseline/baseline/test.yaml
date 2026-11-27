@@ -22,7 +22,7 @@ steps:
       bypass-host2-to-host1: 0
     expected: Both peers stay connected, every ping arrives once and no flooded probe returns to host2.
     check_state:
-      - statement: Both MLAG bonds on both peers contain their wired bond member and use it for LACP forwarding.
+      - name: Both MLAG bonds on both peers contain their wired bond member and use it for LACP forwarding.
         checks:
           - device: switch1
             check: bond_members
@@ -67,7 +67,7 @@ steps:
             check: lacp_member
             params: *host-member
             expected: *in-use
-      - statement: Both MLAG bond bridge ports are forwarding on both peers and both peer ports have carrier.
+      - name: Both MLAG bond bridge ports are forwarding on both peers and both peer ports have carrier.
         checks:
           - device: switch1
             check: bridge_port

@@ -20,7 +20,7 @@ steps:
       mac-move-host-to-host2: *control-limit
     expected: The partner times out and withdraws without a link-down event.
     check_state:
-      - statement: The switch carrier stays up while the member stops collecting and distributing.
+      - name: The switch carrier stays up while the member stops collecting and distributing.
         checks:
           - device: switch1
             check: interface_up
@@ -49,7 +49,7 @@ steps:
       mac-move-host-to-host2: *control-limit
     expected: Both ends agree on a current partner and the member resumes forwarding.
     check_state:
-      - statement: The switch member is synchronized, collecting and distributing again.
+      - name: The switch member is synchronized, collecting and distributing again.
         checks:
           - device: switch1
             check: lacp_member

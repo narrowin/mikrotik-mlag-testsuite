@@ -12,7 +12,7 @@ streams:
     from: host2:eth3
     to: host1:eth3
 state:
-  - statement: Both MLAG pairs are connected, with switch-a1 and switch-b1 as MLAG primaries.
+  - name: Both MLAG pairs are connected, with switch-a1 and switch-b1 as MLAG primaries.
     checks:
       - device: switch-a1
         check: mlag
@@ -35,7 +35,7 @@ state:
         check: mlag
         params: *bridge
         expected: *secondary
-  - statement: All four switches run RSTP.
+  - name: All four switches run RSTP.
     checks:
       - device: switch-a1
         check: stp_mode
@@ -53,7 +53,7 @@ state:
         check: stp_mode
         params: *bridge
         expected: rstp
-  - statement: Pair A is the RSTP root bridge with switch-a1's bridge ID, and pair B reaches it through the inter-pair bond.
+  - name: Pair A is the RSTP root bridge with switch-a1's bridge ID, and pair B reaches it through the inter-pair bond.
     checks:
       - device: switch-a1
         check: stp_bridge
@@ -71,7 +71,7 @@ state:
         check: stp_bridge
         params: *bridge
         expected: {root_bridge: false, root_bridge_id: "0x2000.02:00:00:21:00:11", root_port: inter-pair}
-  - statement: Every bridge port of the four switches forwards, and the host ports are edge ports.
+  - name: Every bridge port of the four switches forwards, and the host ports are edge ports.
     checks:
       - device: switch-a1
         check: bridge_port
@@ -121,7 +121,7 @@ state:
         check: bridge_port
         params: {bridge: bridge, port: host1}
         expected: {forwarding: true, edge: true}
-  - statement: The inter-pair bond runs with lacp-strict=no on all four switches.
+  - name: The inter-pair bond runs with lacp-strict=no on all four switches.
     checks:
       - device: switch-a1
         check: property
@@ -143,7 +143,7 @@ state:
         check: property
         params: *strict
         expected: false
-  - statement: Both inter-pair bond members are synchronized, collecting and distributing at all four ends.
+  - name: Both inter-pair bond members are synchronized, collecting and distributing at all four ends.
     checks:
       - device: switch-a1
         check: lacp_member
@@ -166,7 +166,7 @@ state:
         check: lacp_member
         params: *inter-pair-member
         expected: *in-use
-  - statement: Both cables of every host are eligible in its LACP bond.
+  - name: Both cables of every host are eligible in its LACP bond.
     checks:
       - device: host1
         check: bond_member

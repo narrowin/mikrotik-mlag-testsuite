@@ -6,7 +6,7 @@ streams:
     from: client2:bond0
     to: client1:bond0
 state:
-  - statement: The primary and secondary peers are connected and run with spanning tree off.
+  - name: The primary and secondary peers are connected and run with spanning tree off.
     checks:
       - device: switch1
         check: mlag
@@ -41,7 +41,7 @@ state:
         check: property
         params: *fallback
         expected: true
-  - statement: Both cables of client1 and client2 are eligible in their LACP bonds.
+  - name: Both cables of client1 and client2 are eligible in their LACP bonds.
     checks:
       - device: client1
         check: bond_member

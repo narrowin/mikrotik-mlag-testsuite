@@ -17,7 +17,7 @@ steps:
     action:
       impair: *cable
       clear: true
-    wait_healthy_s: 10  # Allow three fast LACP timeouts if the bond needs to settle.
+    recovery_deadline_s: 10  # Allow three fast LACP timeouts if the bond needs to settle.
     hold_s: 3  # Watch for a further fast LACP timeout after the lab is healthy.
     max_outage_s: *limits
     expected: The cable returns to its default queue and all pings keep arriving.

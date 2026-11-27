@@ -14,7 +14,7 @@ steps:
       host2-to-host1: 0
     expected: Both pairs stay connected and every ping arrives once.
     check_state:
-      - statement: Every host bond member on the switches is synchronized, collecting and distributing.
+      - name: Every host bond member on the switches is synchronized, collecting and distributing.
         checks:
           - device: switch-a1
             check: lacp_member
@@ -39,7 +39,7 @@ steps:
             check: lacp_member
             params: *host1-member
             expected: *in-use
-      - statement: The inter-pair bond and the host bond are forwarding bridge ports on all four switches.
+      - name: The inter-pair bond and the host bond are forwarding bridge ports on all four switches.
         checks:
           - device: switch-a1
             check: bridge_port

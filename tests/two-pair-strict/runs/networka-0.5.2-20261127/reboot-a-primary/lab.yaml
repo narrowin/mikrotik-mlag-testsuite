@@ -6,7 +6,7 @@ streams:
     from: host2:bond0
     to: host1:bond0
 state:
-  - statement: Both MLAG pairs are connected, with switch-a1 and switch-b1 as MLAG primaries.
+  - name: Both MLAG pairs are connected, with switch-a1 and switch-b1 as MLAG primaries.
     checks:
       - device: switch-a1
         check: mlag
@@ -29,7 +29,7 @@ state:
         check: mlag
         params: *bridge
         expected: *secondary
-  - statement: All four switches run with spanning tree off.
+  - name: All four switches run with spanning tree off.
     checks:
       - device: switch-a1
         check: stp_mode
@@ -47,7 +47,7 @@ state:
         check: stp_mode
         params: *bridge
         expected: none
-  - statement: The inter-pair bond runs with lacp-strict=yes on all four switches.
+  - name: The inter-pair bond runs with lacp-strict=yes on all four switches.
     checks:
       - device: switch-a1
         check: property
@@ -69,7 +69,7 @@ state:
         check: property
         params: *strict
         expected: true
-  - statement: Both inter-pair bond members are synchronized, collecting and distributing at all four ends.
+  - name: Both inter-pair bond members are synchronized, collecting and distributing at all four ends.
     checks:
       - device: switch-a1
         check: lacp_member
@@ -92,7 +92,7 @@ state:
         check: lacp_member
         params: *inter-pair-member
         expected: *in-use
-  - statement: Both cables of every host are eligible in its LACP bond.
+  - name: Both cables of every host are eligible in its LACP bond.
     checks:
       - device: host1
         check: bond_member

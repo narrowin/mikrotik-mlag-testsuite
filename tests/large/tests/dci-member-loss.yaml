@@ -44,7 +44,7 @@ steps:
       dc2-traffic-to-vrrp: *back-limit
     expected: The returning member rejoins the DCI trunk at both core pairs.
     check_state:
-      - statement: Both ends of the returned member are synchronized, collecting and distributing.
+      - name: Both ends of the returned member are synchronized, collecting and distributing.
         checks:
           - device: dc1-core1
             check: lacp_member

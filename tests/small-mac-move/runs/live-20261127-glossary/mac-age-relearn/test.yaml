@@ -17,7 +17,7 @@ steps:
       host1-to-host2: 0
     expected: Every stream delivers and both switches hold a host entry for the MAC-move host.
     check_state:
-      - statement: Both switches use the ten-second ageing profile and know the MAC address of the MAC-move host.
+      - name: Both switches use the ten-second ageing profile and know the MAC address of the MAC-move host.
         checks:
           - device: switch1
             check: property
@@ -54,7 +54,7 @@ steps:
       host1-to-host2: 0
     expected: the MAC-move host sends no frame to either switch, both switches age out its address and other streams continue.
     check_state:
-      - statement: Neither switch holds the MAC address of the MAC-move host during the silence.
+      - name: Neither switch holds the MAC address of the MAC-move host during the silence.
         checks:
           - device: switch1
             check: host_entry
@@ -73,7 +73,7 @@ steps:
     max_outage_s: *silence-limits
     expected: Delivery resumes and unknown-unicast flooding stops within one second of the first host frame.
     check_state:
-      - statement: Both switches relearned the MAC address of the MAC-move host on the original path.
+      - name: Both switches relearned the MAC address of the MAC-move host on the original path.
         checks:
           - device: switch1
             check: host_entry

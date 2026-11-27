@@ -64,7 +64,7 @@ A test is a list of steps. This step from [tests/medium/tests/primary-reboot.yam
     action:
       reboot: switch1
     # Allow boot and LACP recovery, plus the CHR SSH cooldown if it refuses an early login.
-    wait_healthy_s: 60
+    recovery_deadline_s: 60
     # Continue through the post-boot observation, beyond five fast LACP timeouts.
     hold_s: 16
     max_outage_s:

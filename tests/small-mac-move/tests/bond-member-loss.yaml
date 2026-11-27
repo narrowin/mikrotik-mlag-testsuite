@@ -19,7 +19,7 @@ steps:
       mac-move-host-to-host2: 0
     expected: The host reaches the switched paths through switch2.
     check_state:
-      - statement: The switch sees no carrier on the withdrawn port.
+      - name: The switch sees no carrier on the withdrawn port.
         checks:
           - device: switch1
             check: interface_up
@@ -37,7 +37,7 @@ steps:
     max_outage_s: *limits
     expected: Both ends of the returned cable agree that it is synchronized, collecting and distributing.
     check_state:
-      - statement: The switch sees carrier on the returned port and its LACP member is working.
+      - name: The switch sees carrier on the returned port and its LACP member is working.
         checks:
           - device: switch1
             check: interface_up

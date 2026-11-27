@@ -17,7 +17,7 @@ steps:
       host1-to-host2: 0
     expected: Every stream delivers and no frame addressed to the MAC-move host uses the old cable after its gratuitous ARP.
     check_state:
-      - statement: Both switches learned the MAC-move host on the new path.
+      - name: Both switches learned the MAC-move host on the new path.
         checks:
           - device: switch1
             check: host_entry
@@ -37,7 +37,7 @@ steps:
     max_outage_s: *limits
     expected: Every stream delivers and the second gratuitous ARP ends unicast on the other cable.
     check_state:
-      - statement: Both switches learned the MAC-move host on its original path.
+      - name: Both switches learned the MAC-move host on its original path.
         checks:
           - device: switch1
             check: host_entry

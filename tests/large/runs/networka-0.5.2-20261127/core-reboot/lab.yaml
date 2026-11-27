@@ -21,7 +21,7 @@ streams:
     from: dc2-traffic:vlan390
     to: 198.18.40.1
 state:
-  - statement: All four MLAG pairs are connected with peer 1 as MLAG primary.
+  - name: All four MLAG pairs are connected with peer 1 as MLAG primary.
     checks:
       - device: dc1-core1
         check: mlag
@@ -60,7 +60,7 @@ state:
         check: mlag
         params: *bridge
         expected: *secondary
-  - statement: Every switch runs with spanning tree off.
+  - name: Every switch runs with spanning tree off.
     checks:
       - device: dc1-core1
         check: stp_mode
@@ -94,7 +94,7 @@ state:
         check: stp_mode
         params: *bridge
         expected: *off
-  - statement: Both members of the DCI and of each distribution-to-core trunk are in use.
+  - name: Both members of the DCI and of each distribution-to-core trunk are in use.
     checks:
       - device: dc1-core1
         check: lacp_member
@@ -135,7 +135,7 @@ state:
         check: lacp_member
         params: *uplink
         expected: *in-use
-  - statement: Both cables of each firewall are in use in its LACP bond to the local cores.
+  - name: Both cables of each firewall are in use in its LACP bond to the local cores.
     checks:
       - device: dc1-firewall
         check: lacp_member
@@ -158,7 +158,7 @@ state:
         params: *firewall-second
         expected: *in-use
   # RouterOS lists the master and backup flags only while they are set, so each firewall is checked for the flag it should hold.
-  - statement: The dc1 firewall owns the VRRP address and the dc2 firewall is backup.
+  - name: The dc1 firewall owns the VRRP address and the dc2 firewall is backup.
     checks:
       - device: dc1-firewall
         check: property
@@ -176,7 +176,7 @@ state:
             name: vrrp390
           name: backup
         expected: true
-  - statement: Both cables of every host are eligible in its LACP bond.
+  - name: Both cables of every host are eligible in its LACP bond.
     checks:
       - device: dc1-traffic
         check: bond_member

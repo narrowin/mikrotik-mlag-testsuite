@@ -12,7 +12,7 @@ steps:
       client2-to-client1: 0
     expected: Both peers stay connected and every ping arrives once.
     check_state:
-      - statement: Both switch client bonds contain their wired member and use it for LACP forwarding.
+      - name: Both switch client bonds contain their wired member and use it for LACP forwarding.
         checks:
           - device: switch1
             check: bond_members
@@ -57,7 +57,7 @@ steps:
             check: lacp_member
             params: *second-member
             expected: *in-use
-      - statement: Both switch client bridge ports are forwarding and both peer ports have carrier.
+      - name: Both switch client bridge ports are forwarding and both peer ports have carrier.
         checks:
           - device: switch1
             check: bridge_port

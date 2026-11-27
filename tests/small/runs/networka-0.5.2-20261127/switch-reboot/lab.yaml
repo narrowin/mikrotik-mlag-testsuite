@@ -6,7 +6,7 @@ streams:
     from: client2:bond0
     to: client3:bond0
 state:
-  - statement: Both switches show MLAG connected.
+  - name: Both switches show MLAG connected.
     checks:
       - device: switch1
         check: mlag
@@ -18,7 +18,7 @@ state:
         check: mlag
         params: *bridge
         expected: *connected
-  - statement: Both switches run with spanning tree off.
+  - name: Both switches run with spanning tree off.
     checks:
       - device: switch1
         check: stp_mode
@@ -28,7 +28,7 @@ state:
         check: stp_mode
         params: *bridge
         expected: none
-  - statement: Both cables of every client are eligible in its LACP bond.
+  - name: Both cables of every client are eligible in its LACP bond.
     checks:
       - device: client1
         check: bond_member

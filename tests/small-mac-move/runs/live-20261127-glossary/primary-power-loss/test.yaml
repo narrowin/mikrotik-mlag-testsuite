@@ -25,7 +25,7 @@ steps:
     action:
       power_on: switch1
     # Allow CHR cold boot, SSH cooldown and the default 60 s MLAG initialisation interval.
-    wait_healthy_s: 180
+    recovery_deadline_s: 180
     hold_s: 16  # Continue through the observation after boot, beyond five fast LACP timeouts.
     max_outage_s: *limits
     expected: The primary has a new boot and both host bonds return to service.

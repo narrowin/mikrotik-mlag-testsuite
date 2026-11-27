@@ -18,7 +18,7 @@ steps:
     action:
       impair: *cable
       clear: true
-    wait_healthy_s: 15  # Allow time for LACP to negotiate both members again after the sustained outage.
+    recovery_deadline_s: 15  # Allow time for LACP to negotiate both members again after the sustained outage.
     hold_s: 5  # Watch for delayed loss beyond one fast LACP timeout.
     max_outage_s: *limits
     expected: The cable returns to its default queue and both streams deliver again.

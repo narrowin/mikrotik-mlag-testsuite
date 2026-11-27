@@ -8,7 +8,7 @@ steps:
     action:
       reboot: switch1
     # Prior CHR trials recovered within 21 s. Allow a 30 s SSH login cooldown and one 5 s retry.
-    wait_healthy_s: 60
+    recovery_deadline_s: 60
     # Watch the recovered lab for longer than one 3 s fast-LACP timeout.
     hold_s: 5
     max_outage_s:

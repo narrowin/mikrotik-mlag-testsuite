@@ -6,7 +6,7 @@ streams:
     from: host2:bond0
     to: host1:eth1
 state:
-  - statement: Switch1 is the connected MLAG primary and switch2 the connected MLAG secondary.
+  - name: Switch1 is the connected MLAG primary and switch2 the connected MLAG secondary.
     checks:
       - device: switch1
         check: mlag
@@ -21,7 +21,7 @@ state:
         expected:
           connected: true
           role: secondary
-  - statement: All three switches run with spanning tree off.
+  - name: All three switches run with spanning tree off.
     checks:
       - device: switch1
         check: stp_mode
@@ -35,7 +35,7 @@ state:
         check: stp_mode
         params: *bridge
         expected: none
-  - statement: Both bond members of the access switch uplink are synchronized, collecting and distributing.
+  - name: Both bond members of the access switch uplink are synchronized, collecting and distributing.
     checks:
       - device: access-switch
         check: lacp_member
@@ -52,7 +52,7 @@ state:
           bond: uplink
           member: ether3
         expected: *in-use
-  - statement: Both bond members of host2 have carrier and are eligible in its LACP bond.
+  - name: Both bond members of host2 have carrier and are eligible in its LACP bond.
     checks:
       - device: host2
         check: bond_member

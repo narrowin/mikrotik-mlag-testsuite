@@ -6,7 +6,7 @@ streams:
     from: client2:bond0
     to: client3:bond0
 state:
-  - statement: Both switches show MLAG connected.
+  - name: Both switches show MLAG connected.
     checks:
       - device: switch1
         check: mlag
@@ -18,7 +18,7 @@ state:
         check: mlag
         params: *bridge
         expected: *connected
-  - statement: Both switches run RSTP.
+  - name: Both switches run RSTP.
     checks:
       - device: switch1
         check: stp_mode
@@ -28,7 +28,7 @@ state:
         check: stp_mode
         params: *bridge
         expected: rstp
-  - statement: Both MLAG peers are the RSTP root bridge.
+  - name: Both MLAG peers are the RSTP root bridge.
     checks:
       - device: switch1
         check: stp_bridge
@@ -38,7 +38,7 @@ state:
         check: stp_bridge
         params: *bridge
         expected: {root_bridge: true}
-  - statement: Every bridge port of both peers forwards, and the client ports are edge ports.
+  - name: Every bridge port of both peers forwards, and the client ports are edge ports.
     checks:
       - device: switch1
         check: bridge_port
@@ -72,7 +72,7 @@ state:
         check: bridge_port
         params: {bridge: bridge, port: client3}
         expected: {forwarding: true, edge: true}
-  - statement: Both cables of every client are eligible in its LACP bond.
+  - name: Both cables of every client are eligible in its LACP bond.
     checks:
       - device: client1
         check: bond_member
