@@ -116,7 +116,7 @@ The 5 s reboot limits are local availability requirements copied from the Small 
 
 The site-power report opens with dc2's forwarding and the measured interruption reaching the VRRP address while dc1 is down. dc1's restart and rejoin appear in a separate section, with the time from power-on dispatch until all lab state checks pass against the existing 180 s recovery deadline. Intentional interruptions at dc1 hosts retain their 216 s combined allowance in the detailed table. The later recovery step still requires 0 s on every stream. The dc2 site stream's 0 s and surviving VRRP stream's 4 s limits remain ordinary availability checks. Missing pings at a sender with its data cables down cannot establish service continuity, and the report does not subtract 20 s from an outage bound to claim a recovery time.
 
-The linked site-power report has been regenerated from the unchanged saved `result.json` with the local Networka reporting change. No new live run or verdict is implied. The results summary excludes intentional host interruptions within their combined limits from its worst-outage comparison; confirmed breaches remain eligible.
+The linked site-power report has been regenerated from the unchanged saved `result.json` with the reporting change now included in pinned Networka `30e706a`. No new live run or verdict is implied. The results summary excludes intentional host interruptions within their combined limits from its worst-outage comparison; confirmed breaches remain eligible.
 
 ## Not covered
 
