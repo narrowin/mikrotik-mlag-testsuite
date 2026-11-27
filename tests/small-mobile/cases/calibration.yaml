@@ -1,0 +1,38 @@
+name: calibration
+purpose: Verify that measurement isolates a two-second one-way bypass cut while the five switched streams continue.
+lab: ../lab/link-lab.yaml
+steps:
+  - name: One-way bypass cut
+    action:
+      cut_ping: bypass-client1-to-client2
+      at: client2:eth3
+    hold_s: 2  # The known interruption that the capture must measure.
+    max_outage_s: &cut-limits
+      client1-to-mobile: 0
+      client2-to-mobile: 0
+      mobile-to-client1: 0
+      mobile-to-client2: 0
+      client1-to-client2: 0
+      bypass-client1-to-client2: 2.3  # The two-second injection plus up to three 100 ms probe intervals.
+      bypass-client2-to-client1: 0
+    expected: Only forward bypass requests are lost, and their measured gap encloses the cut.
+  - name: Bypass restored
+    action:
+      cut_ping: bypass-client1-to-client2
+      clear: true
+    hold_s: 3  # A loss-free recovery yields 30 pings at the 100 ms cadence.
+    max_outage_s: *cut-limits
+    expected: The known gap ends and all seven paths deliver again.
+  - name: After calibration
+    action:
+      observe: true
+    hold_s: 3  # Check consecutive delivery over another full fast LACP timeout.
+    max_outage_s:
+      client1-to-mobile: 0
+      client2-to-mobile: 0
+      mobile-to-client1: 0
+      mobile-to-client2: 0
+      client1-to-client2: 0
+      bypass-client1-to-client2: 0
+      bypass-client2-to-client1: 0
+    expected: Every path continues to deliver after the cut.

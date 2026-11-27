@@ -1,0 +1,53 @@
+name: distribution-reboot
+purpose: >-
+  Reboot dc1-dist1 in its MLAG primary role, then dc1-dist2 in its secondary role.
+  The dc1 site stream and both DCI directions must recover through the surviving peer; dc2 and the bypass must continue.
+source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+lab: ../lab/lab.yaml
+steps:
+  - name: Baseline
+    action:
+      observe: true
+    hold_s: 4  # Four seconds of uninterrupted traffic before the first reboot.
+    max_outage_s: &loss-free
+      dc1-traffic-to-dc1-service: 0
+      dc2-traffic-to-dc2-service: 0
+      dc1-to-dc2-over-dci: 0
+      dc2-to-dc1-over-dci: 0
+      bypass-dc1-to-dc2: 0
+      bypass-dc2-to-dc1: 0
+    expected: Every ping arrives once before the reboot.
+  - name: Reboot dc1-dist1
+    action:
+      reboot: dc1-dist1
+    # Allow boot and LACP recovery, plus the CHR SSH cooldown if it refuses an early login.
+    wait_healthy_s: 60
+    # Continue through the post-boot observation, beyond five fast LACP timeouts.
+    hold_s: 16
+    max_outage_s: &reboot-limits
+      dc1-traffic-to-dc1-service: &reboot-limit 5  # Three fast LACP intervals plus two for forwarding.
+      dc2-traffic-to-dc2-service: 0
+      dc1-to-dc2-over-dci: *reboot-limit
+      dc2-to-dc1-over-dci: *reboot-limit
+      bypass-dc1-to-dc2: 0
+      bypass-dc2-to-dc1: 0
+    expected: dc1-dist1 has a new boot, returns as MLAG primary and both dc1 host bonds return to service.
+  - name: dc1-dist1 reboot recovery
+    action:
+      observe: true
+    hold_s: 3  # A fast LACP timeout yields 30 pings at the 100 ms cadence.
+    max_outage_s: *loss-free
+    expected: Every stream keeps delivering after the reboot.
+  - name: Reboot dc1-dist2
+    action:
+      reboot: dc1-dist2
+    wait_healthy_s: 60
+    hold_s: 16
+    max_outage_s: *reboot-limits
+    expected: dc1-dist2 has a new boot, returns as MLAG secondary and both dc1 host bonds return to service.
+  - name: dc1-dist2 reboot recovery
+    action:
+      observe: true
+    hold_s: 3
+    max_outage_s: *loss-free
+    expected: Every stream keeps delivering after the reboot.

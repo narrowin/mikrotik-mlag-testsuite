@@ -9,16 +9,16 @@ A collector node, `syslog`, receives the log of both switches.
 Start, run, replay and remove the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these values.
 
 ```sh
-LAB=tests/small NAME=small-mlag CONFIG=tests/small/devices.yml
+LAB=tests/small NAME=small-mlag CONFIG=tests/small/lab/devices.yml
 ```
 
-The cable test is `CASE=bond-member-loss` and the reboot of switch1 in its current MLAG role is `CASE=switch-reboot`. The two test files give the per-stream limits and their reasons. [Cable test](bond-member-loss.yaml), [Reboot test](switch-reboot.yaml)
+The cable test is `CASE=bond-member-loss` and the reboot of switch1 in its current MLAG role is `CASE=switch-reboot`. The two test files give the per-stream limits and their reasons. [Cable test](cases/bond-member-loss.yaml), [Reboot test](cases/switch-reboot.yaml)
 
 ## Additional Small cases
 
 Cable delay and sustained one-way loss use the same topology. The mobile setup adds an active-backup host and an independent bypass for the thirteen historical cases.
 
-[Cable delay](cable-delay.yaml), [Sustained cable loss](cable-packet-loss.yaml), [Mobile Small guide](mobile/README.md)
+[Cable delay](cases/cable-delay.yaml), [Sustained cable loss](cases/cable-packet-loss.yaml), [Mobile Small guide](../small-mobile/README.md)
 
 ## Measured cable return
 

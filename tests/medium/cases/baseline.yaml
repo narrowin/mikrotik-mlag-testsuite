@@ -1,0 +1,101 @@
+name: baseline
+purpose: >-
+  Check forwarding in both directions between host1 behind the access switch and host2 on its
+  MLAG bond, and on the independent bypass. Check that flooded probes reach host1 once.
+source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+lab: ../lab/lab.yaml
+flood:
+  from: host2:bond0
+  to: host1:eth1
+  broadcast: 10.110.0.255
+  unicast: 10.110.0.99
+  unicast_mac: "02:00:00:21:00:99"
+steps:
+  - name: Steady traffic
+    action:
+      observe: true
+    hold_s: 4  # Observe one interval beyond the three-second fast LACP timeout.
+    max_outage_s:
+      host1-to-host2: 0
+      host2-to-host1: 0
+      bypass-host1-to-host2: 0
+      bypass-host2-to-host1: 0
+    expected: Both peers stay connected, every ping arrives once and no flooded probe returns to host2.
+    check_state:
+      - statement: Both MLAG bonds on both peers contain their wired bond member and use it for LACP forwarding.
+        checks:
+          - device: switch1
+            check: bond_members
+            params: &access-bond
+              bond: access-switch
+            expected: &access-port
+              - ether3
+          - device: switch2
+            check: bond_members
+            params: *access-bond
+            expected: *access-port
+          - device: switch1
+            check: bond_members
+            params: &host-bond
+              bond: host2
+            expected: &host-port
+              - ether4
+          - device: switch2
+            check: bond_members
+            params: *host-bond
+            expected: *host-port
+          - device: switch1
+            check: lacp_member
+            params: &access-member
+              bond: access-switch
+              member: ether3
+            expected: &in-use
+              synchronization: true
+              collecting: true
+              distributing: true
+          - device: switch2
+            check: lacp_member
+            params: *access-member
+            expected: *in-use
+          - device: switch1
+            check: lacp_member
+            params: &host-member
+              bond: host2
+              member: ether4
+            expected: *in-use
+          - device: switch2
+            check: lacp_member
+            params: *host-member
+            expected: *in-use
+      - statement: Both MLAG bond bridge ports are forwarding on both peers and both peer ports have carrier.
+        checks:
+          - device: switch1
+            check: bridge_port
+            params: &access-bridge-port
+              bridge: bridge
+              port: access-switch
+            expected: &forwarding
+              forwarding: true
+          - device: switch2
+            check: bridge_port
+            params: *access-bridge-port
+            expected: *forwarding
+          - device: switch1
+            check: bridge_port
+            params: &host-bridge-port
+              bridge: bridge
+              port: host2
+            expected: *forwarding
+          - device: switch2
+            check: bridge_port
+            params: *host-bridge-port
+            expected: *forwarding
+          - device: switch1
+            check: interface_up
+            params: &peer-port
+              interface: ether2
+            expected: true
+          - device: switch2
+            check: interface_up
+            params: *peer-port
+            expected: true

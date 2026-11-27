@@ -5,7 +5,7 @@ Switch1 is configured as MLAG primary (`mlag-priority=10`) and switch2 as MLAG s
 `access-switch` is a third CHR with one LACP bond, `uplink`, that has one bond member to each peer.
 `host1` has one cable to the access switch. `host2` has an LACP bond with one bond member to each peer.
 A bypass cable joins host1 and host2 outside the switches.
-Every bridge runs with spanning tree off, set in the startup config [switch.rsc](switch.rsc).
+Every bridge runs with spanning tree off, set in the startup config [switch.rsc](lab/switch.rsc).
 A collector node, `syslog`, receives the log of all three switches.
 
 ## Commands
@@ -13,26 +13,26 @@ A collector node, `syslog`, receives the log of all three switches.
 Start, run, replay and remove the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these values.
 
 ```sh
-LAB=tests/medium NAME=medium-mlag CONFIG=tests/medium/devices.yml
+LAB=tests/medium NAME=medium-mlag CONFIG=tests/medium/lab/devices.yml
 ```
 
 ## Streams and state
 
-[lab.yaml](lab.yaml) defines four streams, one ping every 100 ms each: host1 to host2 and host2 to host1 through the switches, and both directions on the bypass.
+[lab.yaml](lab/lab.yaml) defines four streams, one ping every 100 ms each: host1 to host2 and host2 to host1 through the switches, and both directions on the bypass.
 Before and after every test it checks that switch1 is the connected MLAG primary and switch2 the connected MLAG secondary, that all three bridges run with spanning tree off, that both bond members of the access switch uplink are synchronized, collecting and distributing, and that both bond members of host2 have carrier and are eligible.
 
 ## Tests and their limits
 
-The limits, hold times and expectations come from the `medium-stp-off-*` cases of the earlier Medium suite and from the Small tests of the same kind in [mobile](../small/mobile/README.md).
+The limits, hold times and expectations come from the `medium-stp-off-*` cases of the earlier Medium suite and from the Small tests of the same kind in [mobile](../small-mobile/README.md).
 
 | Test | Limits and where they come from |
 | --- | --- |
-| [Baseline](baseline.yaml) | 4 s with no lost ping on any stream, from `medium-stp-off-baseline`. Each flooded probe from host2 reaches host1 once and never returns to host2, from the same case's single copy of each broadcast. The flood probe is the one of the Small secondary reboot. |
-| [Calibration](calibration.yaml) | A 2 s one-way cut of the forward bypass at host2:eth3, then 3 s restored and 3 s more, from `medium-stp-off-calibrate`. The cut stream may stop for 2.3 s, the 2 s cut plus up to three ping intervals, as in the Small reboot calibration. The other streams lose nothing. |
-| [Secondary reboot](secondary-reboot.yaml) | Reboot switch2. Each switched stream may stop for 5 s and the bypass for 0 s, over a 16 s hold and a 3 s recovery, from `medium-stp-off-reboot-secondary`. 60 s for the new boot and healthy state, and the flood probe, as in the Small secondary reboot. |
-| [Primary reboot](primary-reboot.yaml) | Reboot switch1, with the same limits from `medium-stp-off-reboot-primary`. 60 s for recovery, as in the Small primary reboot. |
-| [Secondary power loss](secondary-power-loss.yaml) | Switch2 off for 20 s, then on. Each switched stream may stop for 5 s and the bypass for 0 s, with a 16 s hold and a 3 s recovery, from `medium-stp-off-power-loss-secondary`. 180 s for the cold boot and healthy state, as in the Small power-loss tests. |
-| [Primary power loss](primary-power-loss.yaml) | Switch1 off for 20 s, with the same limits from `medium-stp-off-power-loss-primary`. |
+| [Baseline](cases/baseline.yaml) | 4 s with no lost ping on any stream, from `medium-stp-off-baseline`. Each flooded probe from host2 reaches host1 once and never returns to host2, from the same case's single copy of each broadcast. The flood probe is the one of the Small secondary reboot. |
+| [Calibration](cases/calibration.yaml) | A 2 s one-way cut of the forward bypass at host2:eth3, then 3 s restored and 3 s more, from `medium-stp-off-calibrate`. The cut stream may stop for 2.3 s, the 2 s cut plus up to three ping intervals, as in the Small reboot calibration. The other streams lose nothing. |
+| [Secondary reboot](cases/secondary-reboot.yaml) | Reboot switch2. Each switched stream may stop for 5 s and the bypass for 0 s, over a 16 s hold and a 3 s recovery, from `medium-stp-off-reboot-secondary`. 60 s for the new boot and healthy state, and the flood probe, as in the Small secondary reboot. |
+| [Primary reboot](cases/primary-reboot.yaml) | Reboot switch1, with the same limits from `medium-stp-off-reboot-primary`. 60 s for recovery, as in the Small primary reboot. |
+| [Secondary power loss](cases/secondary-power-loss.yaml) | Switch2 off for 20 s, then on. Each switched stream may stop for 5 s and the bypass for 0 s, with a 16 s hold and a 3 s recovery, from `medium-stp-off-power-loss-secondary`. 180 s for the cold boot and healthy state, as in the Small power-loss tests. |
+| [Primary power loss](cases/primary-power-loss.yaml) | Switch1 off for 20 s, with the same limits from `medium-stp-off-power-loss-primary`. |
 
 ## Live verdicts
 

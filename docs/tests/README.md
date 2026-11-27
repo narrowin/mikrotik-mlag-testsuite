@@ -1,23 +1,25 @@
 # Labs and tests under tests/
 
-Each lab variant is one folder under `tests/`: [Small](../../tests/small/README.md), [Small with a mobile host](../../tests/small/mobile/README.md), [Medium](../../tests/medium/README.md), [Medium with two pairs](../../tests/medium/two-pair/README.md), [two pairs with lacp-strict](../../tests/medium/two-pair-strict/README.md) and [Large](../../tests/large/README.md).
+Each lab is one folder under `tests/`: [Small](../../tests/small/README.md), [Small with a mobile host](../../tests/small-mobile/README.md), [Medium](../../tests/medium/README.md), [Medium with two pairs](../../tests/medium-two-pair/README.md), [two pairs with lacp-strict](../../tests/medium-two-pair-strict/README.md) and [Large](../../tests/large/README.md).
 Networka runs the tests. This repository holds only the labs, the test files and their limits.
 
 ## Layout
 
 | File | Job |
 | --- | --- |
-| `topology.clab.yml` | Containerlab topology. It sets the lab name, its own management subnet, the pinned CHR image, the Linux hosts and the `syslog` collector node. |
-| `switch.rsc` or `routeros.rsc` | RouterOS startup config for every CHR, with per-node branches on `.ShortName`. It brings the lab into the state the tests need, including spanning tree off and remote logging to the collector. |
-| `devices.yml` | Networka inventory: device types and the lab logins. Containerlab supplies the addresses. |
-| `lab.yaml` | Streams, state checks run before and after every test, and the collector file `syslog/switches.log`. |
-| `*.yaml` | One test each. The `lab` field names the lab file. |
-| `start.sh` | Builds the host image, creates the collector folder and deploys the lab. |
-| `host-setup.sh` or `client-setup.sh` | Bonds, addresses and fixed neighbours of the Linux hosts. |
-| `.gitignore` | Ignores `/clab-<name>/` in nested folders. The root `.gitignore` covers only `tests/*/clab-*/`. |
 | `README.md` | Topology, tests, limits with their source, and live verdicts. |
+| `lab/topology.clab.yml` | Containerlab topology. It sets the lab name, its own management subnet, the pinned CHR image, the Linux hosts and the `syslog` collector node. |
+| `lab/switch.rsc` or `lab/routeros.rsc` | RouterOS startup config for every CHR, with per-node branches on `.ShortName`. It brings the lab into the state the tests need, including spanning tree off and remote logging to the collector. |
+| `lab/devices.yml` | Networka inventory: device types and the lab logins. Containerlab supplies the addresses. |
+| `lab/host-setup.sh` | Bonds, addresses and fixed neighbours of the Linux hosts. |
+| `lab/lab.yaml` | Streams, state checks run before and after every test, and the collector file `syslog/switches.log`. Small-mobile has two lab files, `direct-lab.yaml` and `link-lab.yaml`. |
+| `cases/*.yaml` | One test each. The `lab` field names the lab file relative to the test file, for example `../lab/lab.yaml`. |
 
-All labs build the host image `small-mlag-client:local` from [tests/small/client.Dockerfile](../../tests/small/client.Dockerfile) and use the collector config [tests/small/rsyslog.conf](../../tests/small/rsyslog.conf).
+Containerlab writes the running lab to `lab/clab-<name>/`, which the root `.gitignore` ignores.
+Medium-two-pair-strict and small-mobile use some files of another lab, as their READMEs say.
+
+Every lab uses the files in [tests/shared](../../tests/shared): the [Dockerfile](../../tests/shared/client.Dockerfile) of the host image, the collector config [rsyslog.conf](../../tests/shared/rsyslog.conf) and [start.sh](../../tests/shared/start.sh).
+`tests/shared/start.sh <lab-folder> [age]` builds the host image `small-mlag-client:local`, creates the collector folder and deploys the lab. Only small-mobile takes the `age` profile.
 
 ## Run a lab
 
@@ -33,7 +35,7 @@ pgrep -af "nw test|mlag-lab|campaign.sh"
 sudo containerlab inspect --all
 ```
 
-Run from the repository root. Each lab README gives `LAB`, `NAME` and `CONFIG`, and any argument its `start.sh` takes.
+Run from the repository root. Each lab README gives `LAB`, `NAME` and `CONFIG`, and the start profile if the lab has one.
 
 ```sh
 export PATH=/var/tmp/pt1-tools:$PATH  # uv 0.13.10
@@ -42,20 +44,37 @@ lab_nw() {
   sudo env "PATH=/usr/sbin:/sbin:$PATH" "UV_PROJECT_ENVIRONMENT=/var/tmp/mlag-lab-venvs$PWD" \
     uv run --locked nw "$@"
 }
-LAB=tests/small NAME=small-mlag CONFIG=tests/small/devices.yml CASE=bond-member-loss
-sudo env "CLAB=$CLAB" "$LAB/start.sh"
+LAB=tests/small NAME=small-mlag CONFIG=tests/small/lab/devices.yml CASE=bond-member-loss
+sudo env "CLAB=$CLAB" tests/shared/start.sh "$LAB"
 mkdir -p test-results
 RUN=$(mktemp -d test-results/run.XXXXXX)
-lab_nw test run "$LAB/$CASE.yaml" --lab "$LAB/clab-$NAME" --config "$CONFIG" --save "$RUN"
+lab_nw test run "$LAB/cases/$CASE.yaml" --lab "$LAB/lab/clab-$NAME" --config "$CONFIG" --save "$RUN"
 lab_nw test replay "$RUN/$CASE"
-sudo "$CLAB" destroy -t "$LAB/topology.clab.yml" --cleanup
+sudo "$CLAB" destroy -t "$LAB/lab/topology.clab.yml" --cleanup
 ```
 
 `nw test run` exits 0 on pass, 1 on fail and 2 when the result is not verified. `nw test replay` judges the saved evidence again and exits 2 when the result differs from the saved `result.json`.
 
 ## Add a test
 
-1. Copy the nearest test of the same lab and change the steps.
+A test is a list of steps. This step from [tests/medium/cases/primary-reboot.yaml](../../tests/medium/cases/primary-reboot.yaml) reboots switch1, waits up to 60 s for the lab state checks to pass again, keeps measuring for 16 s and allows each host stream to stop for at most 5 s and the bypass for none.
+
+```yaml
+  - name: Reboot switch1
+    action:
+      reboot: switch1
+    # Allow boot and LACP recovery, plus the CHR SSH cooldown if it refuses an early login.
+    wait_healthy_s: 60
+    # Continue through the post-boot observation, beyond five fast LACP timeouts.
+    hold_s: 16
+    max_outage_s:
+      host1-to-host2: &reboot-limit 5  # Three fast LACP intervals plus two for forwarding.
+      host2-to-host1: *reboot-limit
+      bypass-host1-to-host2: 0
+      bypass-host2-to-host1: 0
+```
+
+1. Copy the nearest test in the lab's `cases/` folder and change the steps.
 2. Write the reason for each limit and hold next to the number in the test file.
 3. Run the test live and replay it. The replay must give byte-identical `result.json` and `report.md`.
 4. Add the test with its limits to the lab README, and record the verdict from the generated `report.md` with the date, RouterOS and Networka versions and the number of runs.
@@ -64,10 +83,11 @@ sudo "$CLAB" destroy -t "$LAB/topology.clab.yml" --cleanup
 ## Add a lab
 
 1. Choose a new lab name and an unused management subnet `172.30.x.0/24`, with the collector at `.10`. The labs in use take 100, 101, 110, 111, 112 and 120.
-2. Write the startup config with `protocol-mode=none` on every bridge. Copy the remote logging and the `refresh-collector` scheduler from [tests/small/switch.rsc](../../tests/small/switch.rsc) and set the collector address.
-3. Write the topology links, `devices.yml`, the host setup and `lab.yaml`. In `lab.yaml`, check `stp_mode: none` on every bridge and MLAG connected on every peer.
-4. Copy `start.sh` from [tests/medium/start.sh](../../tests/medium/start.sh) and set the collector folder to `clab-<name>/syslog`.
-5. Add a `.gitignore` when the folder is nested, and a README in the shape of the other labs.
+2. Create the folder `tests/<lab>/` with the subfolders `lab/` and `cases/`.
+3. Write the startup config in `lab/` with `protocol-mode=none` on every bridge. Copy the remote logging and the `refresh-collector` scheduler from [tests/small/lab/switch.rsc](../../tests/small/lab/switch.rsc) and set the collector address.
+4. Write the topology, `devices.yml`, `host-setup.sh` and `lab.yaml` in `lab/`. The topology binds the collector config as `../../shared/rsyslog.conf`. In `lab.yaml`, check `stp_mode: none` on every bridge and MLAG connected on every peer.
+5. Start the lab with `tests/shared/start.sh tests/<lab>`. The script reads the lab name from the topology.
+6. Add a README in the shape of the other labs.
 
 ## Reference
 
