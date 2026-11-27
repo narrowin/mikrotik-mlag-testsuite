@@ -22,3 +22,5 @@ A pass covers RouterOS on CHR, where forwarding happens in the software bridge.
 It does not cover the switch chip offload of CRS hardware or real loss of signal on optics.
 Fixes that only matter on hardware are marked as hardware only.
 The operator's own results on CRS326 and CCR2004 switches are cited, not reproduced, when a reader objects that CHR results do not hold on hardware.
+
+See also [Networka ADR 0004](https://github.com/narrowin/networka/blob/main/docs/adr/0004-lab-actions-run-on-containerlab-only.md).

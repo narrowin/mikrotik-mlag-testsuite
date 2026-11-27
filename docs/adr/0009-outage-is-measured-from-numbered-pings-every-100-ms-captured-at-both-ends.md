@@ -1,3 +1,7 @@
+---
+status: superseded by Networka ADR 0005, https://github.com/narrowin/networka/blob/main/docs/adr/0005-outage-is-measured-from-numbered-pings-every-100-ms-captured-at-both-ends.md
+---
+
 # Outage is measured from numbered pings every 100 ms, captured at both ends
 
 Every stream in a lab file sends one numbered ICMP ping every 100 ms, and Networka captures it at both ends.

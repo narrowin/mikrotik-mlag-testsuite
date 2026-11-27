@@ -24,3 +24,5 @@ A number without its reason looks arbitrary, and the next reader tightens or loo
 A limit set from a timer can hide a regression below it.
 An earlier 3 s limit for a bond member losing carrier would have passed a loss 14 times the 0.217 s the old runs measured, so the Small cable test now allows 1 s for carrier loss and keeps LACP timing for the return.
 Whether the cable return limit stays at 4 s, against the 2.399 to 2.610 s measured on 2026-11-26, is still open.
+
+See also [Networka ADR 0002](https://github.com/narrowin/networka/blob/main/docs/adr/0002-a-test-is-a-yaml-file-of-exact-values-and-running-it-needs-no-ai.md).

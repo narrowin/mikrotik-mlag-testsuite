@@ -1,3 +1,7 @@
+---
+status: superseded by Networka ADR 0006, https://github.com/narrowin/networka/blob/main/docs/adr/0006-replay-judges-saved-evidence-again-and-must-give-a-byte-identical-result.md
+---
+
 # Replay judges a saved run again and must give a byte-identical result
 
 Every run saves the evidence needed to judge it again with the lab offline: the test and lab files as run, the device replies of every state check, the capture slices the judge kept, `events.jsonl` and the device syslog.

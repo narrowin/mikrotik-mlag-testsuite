@@ -28,3 +28,5 @@ A slower hardware reboot only lengthens the time with a single switch, and the p
 Both kinds of test allow each switched stream 5 s, three fast LACP intervals plus two for forwarding, and hold 16 s after the switch returns.
 A power loss test waits up to 180 s for the cold boot, the SSH cooldown and the 60 s MLAG initialisation; a reboot test waits up to 60 s.
 A reboot shorter than the heartbeat timeout means some runs never leave MLAG `connected`; in the old suite 38 of 52 saved Medium reboot runs did not.
+
+See also [Networka ADR 0011](https://github.com/narrowin/networka/blob/main/docs/adr/0011-a-reboot-is-the-switch-s-own-reboot-and-a-power-loss-pauses-the-guest-and-withdraws-carrier.md).

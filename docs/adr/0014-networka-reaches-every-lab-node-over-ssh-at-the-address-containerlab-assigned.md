@@ -1,3 +1,7 @@
+---
+status: superseded by Networka ADR 0010, https://github.com/narrowin/networka/blob/main/docs/adr/0010-networka-reaches-every-lab-node-over-ssh-at-the-address-containerlab-assigned.md
+---
+
 # Networka reaches every lab node over SSH at the address containerlab assigned
 
 Networka reads device state and runs commands on every testable node over SSH, switches and Linux hosts alike.

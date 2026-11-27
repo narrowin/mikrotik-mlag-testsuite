@@ -4,6 +4,7 @@
 
 - [GLOSSARY.md](GLOSSARY.md) gives the one word for each thing in this repo. Read it before writing a test, a report or any text, use its terms, and never use a word on an _Avoid_ line. If a term is missing or disputed, ask the operator instead of inventing one.
 - [docs/adr/](docs/adr/) records why the repo is shaped as it is. Read the matching ADR before changing what it covers, and do not reopen a decision without new evidence. A decision that is hard to reverse, surprising without context and the result of a real trade-off gets a new ADR.
+- Engine words and decisions live in Networka's [GLOSSARY.md](https://github.com/narrowin/networka/blob/main/GLOSSARY.md) and [docs/adr/](https://github.com/narrowin/networka/tree/main/docs/adr), locally in the sibling `../networka` checkout.
 
 ## Dictated words
 

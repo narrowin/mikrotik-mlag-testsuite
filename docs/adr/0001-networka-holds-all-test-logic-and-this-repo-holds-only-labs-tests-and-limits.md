@@ -23,3 +23,5 @@ Using Networka as a library from a local runner was dropped for the same reason.
 
 A change to how a test is judged is a change in the Networka repository, released and then pinned here.
 The lockfile pins Networka 0.5.1 from PyPI.
+
+See also [Networka ADR 0001](https://github.com/narrowin/networka/blob/main/docs/adr/0001-networka-holds-all-test-logic-and-a-lab-is-only-a-description.md).
