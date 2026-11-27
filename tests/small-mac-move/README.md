@@ -2,21 +2,21 @@
 
 Both switches run with spanning tree off. Switch1 is configured as MLAG primary and switch2 as secondary. Host1 and host2 have dual LACP links. The MAC-move host, `mac-move-host`, uses an active-backup bond with the same MAC on either link.
 
-## Networka 0.5.2 live runs
+## Live runs
 
-Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2. Each listed test ran once; `mac-age-relearn` used the required ageing profile. Every replay produced byte-identical `result.json` and `report.md`. These links open the generated reports. Full evidence stays in `test-results/networka-0.5.2-20261127/small-mobile/` and `small-mobile-age/`.
+Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2, after the glossary renames. Each listed test ran once. `mac-age-relearn` ran with the ageing profile. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports; full evidence stays in `test-results/live-20261127-glossary/small-mac-move/` and `test-results/live-20261127-glossary/small-mac-move-age/`.
 
-- [PASS — baseline](runs/networka-0.5.2-20261127/baseline/report.md)
-- [PASS — bond-member-loss](runs/networka-0.5.2-20261127/bond-member-loss/report.md)
-- [PASS — lacp-timeout](runs/networka-0.5.2-20261127/lacp-timeout/report.md)
-- [PASS — mac-age-relearn](runs/networka-0.5.2-20261127/mac-age-relearn/report.md)
-- [PASS — mac-move](runs/networka-0.5.2-20261127/mac-move/report.md)
-- [PASS — member-flap-repeat](runs/networka-0.5.2-20261127/member-flap-repeat/report.md)
-- [PASS — peer-link-loss](runs/networka-0.5.2-20261127/peer-link-loss/report.md)
-- [PASS — primary-power-loss](runs/networka-0.5.2-20261127/primary-power-loss/report.md)
-- [PASS — primary-reboot](runs/networka-0.5.2-20261127/primary-reboot/report.md)
-- [PASS — secondary-power-loss](runs/networka-0.5.2-20261127/secondary-power-loss/report.md)
-- [PASS — secondary-reboot](runs/networka-0.5.2-20261127/secondary-reboot/report.md)
+- [PASS — baseline](runs/live-20261127-glossary/baseline/report.md)
+- [PASS — bond-member-loss](runs/live-20261127-glossary/bond-member-loss/report.md)
+- [FAIL — lacp-timeout](runs/live-20261127-glossary/lacp-timeout/report.md)
+- [PASS — mac-age-relearn](runs/live-20261127-glossary/mac-age-relearn/report.md)
+- [PASS — mac-move](runs/live-20261127-glossary/mac-move/report.md)
+- [PASS — member-flap-repeat](runs/live-20261127-glossary/member-flap-repeat/report.md)
+- [PASS — peer-link-loss](runs/live-20261127-glossary/peer-link-loss/report.md)
+- [PASS — primary-power-loss](runs/live-20261127-glossary/primary-power-loss/report.md)
+- [PASS — primary-reboot](runs/live-20261127-glossary/primary-reboot/report.md)
+- [PASS — secondary-power-loss](runs/live-20261127-glossary/secondary-power-loss/report.md)
+- [FAIL — secondary-reboot](runs/live-20261127-glossary/secondary-reboot/report.md)
 
 ## Run a test
 

@@ -1,0 +1,62 @@
+streams:
+  - name: host1-to-host2
+    from: host1:bond0
+    to: host2:bond0
+  - name: host2-to-host3
+    from: host2:bond0
+    to: host3:bond0
+state:
+  - statement: Both switches show MLAG connected.
+    checks:
+      - device: switch1
+        check: mlag
+        params: &bridge
+          bridge: bridge
+        expected: &connected
+          connected: true
+      - device: switch2
+        check: mlag
+        params: *bridge
+        expected: *connected
+  - statement: Both switches run with spanning tree off.
+    checks:
+      - device: switch1
+        check: stp_mode
+        params: *bridge
+        expected: none
+      - device: switch2
+        check: stp_mode
+        params: *bridge
+        expected: none
+  - statement: Both cables of every host are eligible in its LACP bond.
+    checks:
+      - device: host1
+        check: bond_member
+        params: &first-member
+          bond: bond0
+          member: eth1
+        expected: &eligible
+          eligible: true
+      - device: host1
+        check: bond_member
+        params: &second-member
+          bond: bond0
+          member: eth2
+        expected: *eligible
+      - device: host2
+        check: bond_member
+        params: *first-member
+        expected: *eligible
+      - device: host2
+        check: bond_member
+        params: *second-member
+        expected: *eligible
+      - device: host3
+        check: bond_member
+        params: *first-member
+        expected: *eligible
+      - device: host3
+        check: bond_member
+        params: *second-member
+        expected: *eligible
+switch_log: syslog/switches.log

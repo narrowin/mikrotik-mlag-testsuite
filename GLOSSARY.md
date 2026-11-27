@@ -107,7 +107,7 @@ At a bond end a **cable** carries one **bond member**.
 ## Flagged ambiguities
 
 - Bond member vs cable: "member" was used for the interface in a bond ("Member down") and for the wire a test takes down ("the cable test is bond-member-loss"). Resolved: **bond member** is the interface in a bond, **cable** is the wire a **step** takes down or brings back.
-- Test vs case: "case" was used for one file in `cases/` ("Run a case") and "test" for the same file ("Tests and their limits", "one test each"). Resolved: **test**, the word of `nw test`; "case" names only the folder.
+- Test vs case: "case" was used for one file in `cases/` ("Run a case") and "test" for the same file ("Tests and their limits", "one test each"). Resolved: **test**, the word of `nw test`; the folder is `tests/<lab>/tests/` since 27 November 2026.
 - Fault vs finding: "fault" was used for the injected event ("before every fault") and for a RouterOS misbehaviour ("Faults across runs", "Fault 2"). Resolved: **fault** is the injected event, **finding** is the RouterOS misbehaviour a test proved.
 - Peer link vs peer port: "peer link" was used for the connection (RouterOS logs) and "peer port" for its ends (the MLAG manual, which never says "peer link"). Resolved: **peer link** is the connection, peer port the manual setting at each end.
 - Loss: "loss" was used for faults ("power loss", "peer link loss"), for **lost pings**, for netem packet loss on a **cable** and for the old loss phase. Resolved: "loss" appears only in fault names; the others are **lost pings**, **outage** and **impairment**.

@@ -5,18 +5,22 @@ Open work after the Medium and Large labs moved to Networka, as of 27 November 2
 ## Networka
 
 - `nw test summary` ranks a lab's worst stop by the largest measured stop, even when it is within its limit. The front page shows Large's expected 39.9 s dc1 outage in site power loss instead of the failing DCI stop. Rank by stops that break their limit.
+- `nw test summary` stops with a TypeError on a run whose state check before the test failed, such as every run of Medium RSTP with the access switch as root, so that lab is not in `tests/results.yaml` yet.
 - A powered-off Linux host keeps its bond and neighbour state, and streams from it show lower bounds near 0 because their pings were never sent. Decide whether those streams count as unverified.
 
-## Unexplained differences from the old suite
+## Results of the live runs of 27 November after the renames
 
-- Medium primary power loss: 3 of 8 runs lost 0.21 to 0.52 s right at power off, where the old runs lost nothing. Networka pauses the guest before it withdraws the cables; the old runner did the reverse. Not tested ([tests/medium/README.md](tests/medium/README.md)).
-- Two-pair inter-pair member flap: traffic stops for the whole 8 s down hold, where the old suite lost 0.1 to 0.5 s on the same RouterOS. Every lab difference tested so far is ruled out ([tests/two-pair/README.md](tests/two-pair/README.md)).
-- Two-pair primary reboots stop 2 to 7 s shorter than in the old suite. A faster native CHR restart is a guess, not verified.
+Every lab ran once on `live-20261127-glossary`; the lab READMEs link the reports.
+
+- Medium RSTP with the access switch as root: every test stops at the state check before the test, because the access switch `uplink` never forwards. Both MLAG peers put their port to it back into the proposed root role every 2 s. Find whether RouterOS or the lab causes it ([tests/medium-rstp-access-root/README.md](tests/medium-rstp-access-root/README.md)).
+- Two-pair inter-pair member flap passes without the bypass cable (2.5 to 2.8 s against 3 s); with it, traffic stopped for the whole 8 s down hold. Two-pair strict still fails it with 5.4 to 5.6 s, and two-pair RSTP now fails it.
+- New FAILs against the earlier Networka 0.5.2 run, one run each: Medium secondary reboot stops 7.8 s against 5 s; the MAC-move lab's lacp-timeout stops 5.2 to 5.4 s against 4 s and its secondary reboot returns one flood probe. Small and Small RSTP cable-delay now pass.
+- The run folders before `live-20261127-glossary` under `tests/*/runs/` are superseded; the findings pages still link the `networka-0.5.2-20261127` runs. Decide which to keep.
 
 ## Large
 
-- In the dc1-dist2 reboot, the dc1 stream to the VRRP address is unverified because its sender lost its 100 ms cadence.
-- Core and distribution reboots fail with about 15 to 18 s on the DCI streams against 5 s. This is the known reboot fault, kept as a finding.
+- In the dc1-dist2 reboot, the dc1 stream to the VRRP address is ERROR again (89 lost at 9.17 to 19.82 s), because its sender lost its 100 ms cadence.
+- Core and distribution reboots fail with about 17 to 22 s on the DCI streams against 5 s. This is the known reboot fault, kept as a finding.
 
 ## Decisions for the operator
 
