@@ -37,15 +37,27 @@ mkdir -p "clab-$name/syslog"
 # drops a frame whose destination it learned on the port the frame came in on. In the Small
 # cable test that cut host1's replies off on switch2's peer link for 7.5 s. Turn learning off
 # on every data bridge, but not the management bridge br0, and flush what was learned.
+# Once Containerlab's CHR launcher turns learning off itself, this step finds nothing to do,
+# says so, and is to be removed (TODO.md).
+switches=0
+learning=0
 for switch in $(docker ps --filter "label=containerlab=$name" --filter "label=clab-node-kind=mikrotik_chr" --format '{{.Names}}'); do
-    docker exec "$switch" sh -c '
+    switches=$((switches + 1))
+    learning=$((learning + $(docker exec "$switch" sh -c '
+        n=0
         for port in /sys/class/net/*/brport; do
             bridge=$(basename "$(readlink "${port%/brport}/master")")
             [ "$bridge" = br0 ] && continue
+            [ "$(cat "$port/learning")" = 1 ] || continue
             echo 0 > "$port/learning"
             echo 1 > "/sys/class/net/$bridge/bridge/flush"
-        done'
+            n=$((n + 1))
+        done
+        echo "$n"')))
 done
+if [ "$switches" -gt 0 ] && [ "$learning" -eq 0 ]; then
+    echo "The CHR data bridges already have learning off: this Containerlab build has the fix. Remove the learning step from tests/shared/start.sh (TODO.md)." >&2
+fi
 
 # Return only when every host is ready: its host setup finished and its bond is up.
 # A bond is up when each LACP member is in the active aggregator and in sync, collecting

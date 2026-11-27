@@ -37,3 +37,7 @@ Every lab ran once on `live-20261127-glossary`; the lab READMEs link the reports
 - Large hardcodes its collector address in `tests/large/lab/routeros.rsc`; the other labs take it from `COLLECTOR`.
 - MAC prefixes overlap across labs: the two-pair `admin-mac` `02:00:00:21:00:11` equals the Medium host1 MAC.
 - `tests/shared/start.sh` carries the `age` profile that only the MAC-move lab uses.
+
+## Containerlab
+
+- Remove the learning step from `tests/shared/start.sh` once the labs run a Containerlab build whose CHR launcher creates the data bridges with learning off. `start.sh` then prints "The CHR data bridges already have learning off". Update the pinned build in [docs/tests/README.md](docs/tests/README.md) and [ADR 0008](docs/adr/0008-labs-need-containerlab-with-native-chr-support-and-the-qemu-wrapper-is-retired.md) in the same change.

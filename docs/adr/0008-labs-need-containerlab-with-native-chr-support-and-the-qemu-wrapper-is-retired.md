@@ -25,6 +25,7 @@ With learning off, the test passed on 4 of 4 fresh deploys, where it had failed 
 
 Until the pull request is released, users must build containerlab from the pull request branch.
 The native launcher does not turn learning off, so `start.sh` does it; a lab deployed without `start.sh` has learning on.
+When a Containerlab build already creates the bridges with learning off, `start.sh` says so, and its learning step is removed ([TODO.md](../../TODO.md)).
 The root `README.md` keeps the old wrapper as a manual fallback for a released containerlab, only until a released containerlab version includes native CHR support; then the fallback is removed from the README.
 The published `nw test` results were run on the native build; the frozen old-suite results in `results/` were run with the wrapper on containerlab 0.83.0.
 Only the ARM64 build is qualified; on the lab VM its SHA-256 is `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`.
