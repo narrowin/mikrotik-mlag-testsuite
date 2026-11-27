@@ -2,13 +2,13 @@
 
 ## Setup
 
-![Small lab wiring](../../docs/diagrams/small-lab.png)
+![Small lab wiring](https://raw.githubusercontent.com/narrowin/mikrotik-mlag-testsuite/95c7482/docs/diagrams/small-lab.png)
 
 | | |
 | --- | --- |
-| Lab | Small lab: one MLAG pair with directly attached clients. [Inventory](../../labs/small/README.md) · [Editable drawing](../../docs/diagrams/mlag-scenarios.drawio) |
+| Lab | Small lab: one MLAG pair with directly attached clients. [Inventory](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/labs/small/README.md) · [Editable drawing](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/diagrams/mlag-scenarios.drawio) |
 | Devices | 5: two MikroTik CHR switches (CHR 1 and CHR 2) forming one MLAG pair, two Linux clients each bonded with LACP to both switches, and one Linux host that moves between the switches |
-| RouterOS | 7.26beta7 · [Image digest](../../labs/campaign-image.txt) |
+| RouterOS | 7.26beta7 · [Image digest](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/labs/campaign-image.txt) |
 | Lab platform | Containerlab 0.83.0 in an OrbStack Linux VM on an ARM64 Mac |
 | Spanning tree | RSTP on both switches. The same tests with STP off are still pending. |
 | Date | 24 November 2026 |
@@ -53,7 +53,7 @@ Each run link opens that run's verdict file. On GitHub, links to failed runs hig
 
 ## Reproduce
 
-[Deploy the Small lab](../../labs/small/README.md#deploy) · [Run the tests](../../docs/test-framework.md#execute-locally) · [What each test checks](../../docs/test-framework.md#what-the-cases-assert) · [Reboot commands](../../docs/operator-guide.md#reboot-the-direct-client-pair)
+[Deploy the Small lab](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/labs/small/README.md#deploy) · [Run the tests](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/test-framework.md#execute-locally) · [What each test checks](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/test-framework.md#what-the-cases-assert) · [Reboot commands](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/operator-guide.md#reboot-the-direct-client-pair)
 
 ## Evidence
 

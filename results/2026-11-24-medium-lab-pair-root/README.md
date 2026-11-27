@@ -8,7 +8,7 @@
 | Host | ARM64 OrbStack VM |
 | Wiring | The MLAG pair is the shared RSTP root. Client A connects through an access switch with an LACP uplink to both cores. Client B bonds directly to both cores. [Topology](../../labs/medium/medium-pair-root.clab.yml) |
 | Traffic | VLAN 110 probes in both directions and an independent bypass |
-| Pass target | ≤5 s per direction and phase. [Run commands](../../docs/operator-guide.md#reboot-the-root-pair) |
+| Pass target | ≤5 s per direction and phase. [Run commands](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/operator-guide.md#reboot-the-root-pair) |
 
 ## TL;DR
 
@@ -34,7 +34,7 @@ Neither VLAN direction delivered any of its 62 probes. Both bypass directions de
 
 ## Reproduce
 
-[Case procedure](../../docs/cases/medium-core-reboot.md) · [Deploy, calibrate, and run](../../docs/operator-guide.md#reboot-the-root-pair)
+[Case procedure](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/cases/medium-core-reboot.md) · [Deploy, calibrate, and run](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/operator-guide.md#reboot-the-root-pair)
 
 The packet captures behind this report stay local. Rerun the case with the commands above to get your own captures and verdicts.
 

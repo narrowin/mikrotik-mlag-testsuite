@@ -278,7 +278,7 @@ So spanning tree off is not enough on its own with two pairs. With `lacp-strict=
 - The first `field` secondary reboot (`field/01-two-pair-field-reboot-a-secondary`) is INVALID. CHR 2 rebooted, but the runner's SSH control socket went stale and every state read after the reboot failed with "Permission denied". The runner now clears a dead control socket before it reconnects, and the rerun in `field-secondary-rerun/` passed.
 - Each setup ran once. A CHR reboot keeps the virtual links up, so pair A's secondary learns of the loss only through ICCP, which it did not act on during CHR 1's 16–17 s absence. A real switch drops carrier, which may change this. Repeat on hardware before relying on it.
 
-[Case, wiring and commands](../../docs/cases/medium-two-pair-root.md) · [Field report](https://forum.mikrotik.com/t/mlag-between-crs326-24s-2q-rm-with-more-than-1-000-hosts-macs/269294) · [Only the primary sends BPDUs (EdPa)](https://forum.mikrotik.com/t/mlag-configuration-for-v7-22-1/269918)
+[Case, wiring and commands](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/cases/medium-two-pair-root.md) · [Field report](https://forum.mikrotik.com/t/mlag-between-crs326-24s-2q-rm-with-more-than-1-000-hosts-macs/269294) · [Only the primary sends BPDUs (EdPa)](https://forum.mikrotik.com/t/mlag-configuration-for-v7-22-1/269918)
 
 ## Evidence
 

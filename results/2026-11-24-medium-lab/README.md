@@ -2,15 +2,15 @@
 
 ## Setup
 
-[Editable draw.io](../../docs/diagrams/mlag-scenarios.drawio) · Pages **1 Small**, **2 Medium**, **3 Large**
+[Editable draw.io](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/diagrams/mlag-scenarios.drawio) · Pages **1 Small**, **2 Medium**, **3 Large**
 
 | Lab | Tests covered | STP disabled everywhere | RSTP enabled |
 | --- | --- | --- | --- |
-| [Small lab](../../docs/diagrams/small-lab.png) | Reboot each core; calibration, carrier loss, silent LACP, MAC move | Not run | Both reboots passed. Other tests passed 3/4. |
-| [Medium lab](../../docs/diagrams/medium-lab.png) | Reboot each core; preferred-root loss; combined core and root loss | All four reboots passed | All four reboots failed. Root-loss tests also failed. |
-| [Large lab · both sites](../../docs/diagrams/large-lab.png) | Two-site failover | Pending | Pending |
+| [Small lab](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/diagrams/small-lab.png) | Reboot each core; calibration, carrier loss, silent LACP, MAC move | Not run | Both reboots passed. Other tests passed 3/4. |
+| [Medium lab](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/diagrams/medium-lab.png) | Reboot each core; preferred-root loss; combined core and root loss | All four reboots passed | All four reboots failed. Root-loss tests also failed. |
+| [Large lab · both sites](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/diagrams/large-lab.png) | Two-site failover | Pending | Pending |
 
-[RouterOS 7.26beta7](../../labs/campaign-image.txt) · OrbStack VM `mlag-external` · VLAN 110, both directions · Reboot interruption limit **5 s**. [Test procedure](../../docs/cases/medium-spanning-tree.md) · [Topology and port map](../../labs/medium/README.md)
+[RouterOS 7.26beta7](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/labs/campaign-image.txt) · OrbStack VM `mlag-external` · VLAN 110, both directions · Reboot interruption limit **5 s**. [Test procedure](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/cases/medium-spanning-tree.md) · [Topology and port map](../../labs/medium/README.md)
 
 ## TL;DR
 
@@ -32,13 +32,13 @@
 | RSTP, both hosts directly attached · **Both reboots passed** | Zero lost probes on secondary reboot. The longest gap on primary reboot was ≤2.91 s. | Both hosts used LACP bonds to the cores. |
 | Direct-client regression tests · **3 of 4 passed** | Calibration, silent LACP and MAC move passed. Restoring a client link interrupted traffic for ≥2.39 s against a 1 s limit. | LACP was renegotiating when the link came back. |
 
-Virtual links kept carrier during guest reboots. Disconnecting a root attachment dropped carrier at both ends. The final RSTP baseline passed after a management reset. [Routed first-hop redundancy](../../docs/reference/topologies.md#smallest-lab-for-each-question) remains untested.
+Virtual links kept carrier during guest reboots. Disconnecting a root attachment dropped carrier at both ends. The final RSTP baseline passed after a management reset. [Routed first-hop redundancy](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/reference/topologies.md#smallest-lab-for-each-question) remains untested.
 
 ## Reproduce
 
 | Procedure | Check readiness | Run live | Dry run offline |
 | --- | --- | --- | --- |
-| [Wiring and pass criteria](../../docs/cases/medium-spanning-tree.md) | [Baseline commands](../../docs/operator-guide.md#introduce-rstp-after-the-all-bridges-off-run) · [Measured readiness](../2026-11-24-medium-lab-readiness/README.md) | [External roots](../../docs/operator-guide.md#deploy-the-three-chr-medium-lab) · [Direct clients](../../docs/operator-guide.md#reboot-the-direct-client-pair) | [Replay the four STP-off reboots](../../docs/test-framework.md#replay-the-stp-off-reboots) |
+| [Wiring and pass criteria](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/cases/medium-spanning-tree.md) | [Baseline commands](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/operator-guide.md#introduce-rstp-after-the-all-bridges-off-run) · [Measured readiness](../2026-11-24-medium-lab-readiness/README.md) | [External roots](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/operator-guide.md#deploy-the-three-chr-medium-lab) · [Direct clients](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/operator-guide.md#reboot-the-direct-client-pair) | [Replay the four STP-off reboots](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/test-framework.md#replay-the-stp-off-reboots) |
 
 ## Evidence
 

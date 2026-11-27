@@ -1,6 +1,6 @@
 # Two-CHR OrbStack campaign and postmortem
 
-**24 November 2026.** The evidence was sufficient to reconstruct the failures and restoration. The timing calibration and announced MAC moves passed. Single-member withdrawal and restoration missed the one-second lab target even though the MLAG session stayed connected. A peer-link cut interrupted both clients. The five lab nodes were left healthy in OrbStack’s `debian-clab` VM. [Test plan](../../docs/validation-plan.md)
+**24 November 2026.** The evidence was sufficient to reconstruct the failures and restoration. The timing calibration and announced MAC moves passed. Single-member withdrawal and restoration missed the one-second lab target even though the MLAG session stayed connected. A peer-link cut interrupted both clients. The five lab nodes were left healthy in OrbStack’s `debian-clab` VM. [Test plan](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/validation-plan.md)
 
 ## Topology and run
 

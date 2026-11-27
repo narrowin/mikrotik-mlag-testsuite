@@ -34,7 +34,7 @@ The RSTP baseline delivered **0/44** and **0/43** VLAN probes and **43/43** in e
 
 ## Reproduce
 
-[Readiness procedure](../../docs/test-framework.md#time-initial-readiness-on-the-medium-lab) · [Live baseline-only commands](../../docs/operator-guide.md#introduce-rstp-after-the-all-bridges-off-run) · [Networka management ping](../../docs/operator-guide.md#execute-a-command-on-the-medium-lab) · [Offline replay instructions](../../docs/test-framework.md#read-or-replay-a-run)
+[Readiness procedure](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/test-framework.md#time-initial-readiness-on-the-medium-lab) · [Live baseline-only commands](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/operator-guide.md#introduce-rstp-after-the-all-bridges-off-run) · [Networka management ping](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/operator-guide.md#execute-a-command-on-the-medium-lab) · [Offline replay instructions](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/test-framework.md#read-or-replay-a-run)
 
 For this report’s offline replay, extract the archive below and pass `external-all-stp-off-baseline` and `external-baseline` to the evaluator in separate invocations. Expect exit 0 with STP off and exit 1 with RSTP on.
 
@@ -53,8 +53,8 @@ These captures used the earlier deployment name `dc1-mlag-external` and access-s
 | Small lab, `mlag-small` | SMALL-01 | RSTP | Passed | 8.28 s |
 | Medium lab, `mlag-medium` | MEDIUM-01 | STP disabled on all bridges | Passed | 13.06 s |
 
-Both checks verified MLAG, LACP and loss-free traffic in both VLAN and both bypass directions. All seven CHRs ran the pinned 7.26beta7 image. Device and container names follow the [naming convention](../../docs/lab-naming.md). New JSON and JUnit records include lab names and case IDs.
+Both checks verified MLAG, LACP and loss-free traffic in both VLAN and both bypass directions. All seven CHRs ran the pinned 7.26beta7 image. Device and container names follow the [naming convention](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/lab-naming.md). New JSON and JUnit records include lab names and case IDs.
 
 [Running deployments](renamed-deployments.txt) · [Checksums](SHA256SUMS)
 
-Replay `naming-small-rstp-ready` and `naming-medium-final` from the extracted archive with the [existing evaluator](../../docs/test-framework.md#read-or-replay-a-run). Expect exit 0 for both. The initial Small lab attempt lacked the permanent neighbor entries required by the documented setup. Applying that setup produced the pass recorded above.
+Replay `naming-small-rstp-ready` and `naming-medium-final` from the extracted archive with the [existing evaluator](https://github.com/narrowin/mikrotik-mlag-testsuite/blob/95c7482/docs/test-framework.md#read-or-replay-a-run). Expect exit 0 for both. The initial Small lab attempt lacked the permanent neighbor entries required by the documented setup. Applying that setup produced the pass recorded above.
