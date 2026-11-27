@@ -43,3 +43,6 @@ if [ "${SMALL_MOBILE_AGE:-5m}" = 10s ]; then
         ip neigh replace 10.110.0.50 lladdr 02:00:00:11:00:50 nud permanent dev bond0
     fi
 fi
+
+# start.sh waits for this file, which exists only when every line above succeeded.
+touch /run/host-setup.done

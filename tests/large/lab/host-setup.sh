@@ -28,3 +28,6 @@ if [ -n "$bypass" ]; then
     ip address add "198.51.100.$bypass/30" dev eth3
     ip link set eth3 up
 fi
+
+# start.sh waits for this file, which exists only when every line above succeeded.
+touch /run/host-setup.done

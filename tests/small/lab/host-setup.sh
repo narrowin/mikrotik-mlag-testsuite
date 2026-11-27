@@ -14,3 +14,6 @@ for cable in eth1 eth2; do
 done
 ip address add "10.0.10.$n/24" dev bond0
 ip link set bond0 up
+
+# start.sh waits for this file, which exists only when every line above succeeded.
+touch /run/host-setup.done

@@ -51,7 +51,7 @@ A reboot or power return is healthy only when all these checks pass again.
 The old suite ran no Large case: the `large-*` cases were only planned, so there are no old Large results to match.
 Where a test repeats a fault kind measured on Small or Medium, its row names the old measured range from [results/README.md](../../results/README.md#faults-across-runs) or [results/index/streams.tsv](../../results/index/streams.tsv) at commit `3af4cd8`.
 
-Each verdict is the first line of the generated `report.md` of a live run on 26 November 2026. Each saved run replayed with identical `result.json` and `report.md`. The evidence stays under `test-results/large/`, outside git.
+Each verdict is the first line of the generated `report.md` of a live run on 26 November 2026, with Networka 0.5.1, RouterOS 7.26beta7 and the qualified Containerlab build (SHA-256 `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`). Each saved run replayed with identical `result.json` and `report.md`. The evidence stays under `test-results/large/`, outside git.
 
 | Test | Live verdict and measured stops | Old result of the same fault kind |
 | --- | --- | --- |

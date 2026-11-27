@@ -32,28 +32,38 @@ name=$(sed -n 's/^name: *//p' topology.clab.yml)
 mkdir -p "clab-$name/syslog"
 "$CLAB" deploy -t topology.clab.yml
 
-# Return only when every host bond is up: each LACP member in the active aggregator
-# and in sync, collecting and distributing, or an active-backup bond with an active member.
-# Containers without bond0, such as the collector and the CHRs, are skipped.
+# Return only when every host is ready: its host setup finished and its bond is up.
+# A bond is up when each LACP member is in the active aggregator and in sync, collecting
+# and distributing, or when an active-backup bond has an active member.
+# Containers without host setup, such as the collector and the CHRs, are skipped.
+setup_pending() {
+    docker exec "$1" test -f /lab/host-setup.sh && ! docker exec "$1" test -f /run/host-setup.done
+}
 bond_down() {
     docker exec "$1" cat /proc/net/bonding/bond0 2>/dev/null | awk '
+        # LACP port state bits 3, 4 and 5: in sync, collecting, distributing.
+        function ready(state) { return int(state / 8) % 8 == 7 }
         /^Bonding Mode: fault-tolerance/ { ab = 1 }
         /^Currently Active Slave:/ { active = $4 }
         /^\tNumber of ports:/ { ports = $4 }
-        /^Slave Interface:/ { slaves++; actor = 0 }
+        /^Slave Interface:/ { members++; actor = 0 }
         /^details actor lacp pdu:/ { actor = 1 }
-        actor && /port state:/ { if (int($3 / 8) % 8 == 7) synced++; actor = 0 }
+        actor && /port state:/ { if (ready($3)) ready_members++; actor = 0 }
         END {
-            if (!slaves) exit 1
+            if (!members) exit 1
             if (ab) exit (active != "" && active != "None")
-            exit (ports == slaves && synced == slaves)
+            exit (ports == members && ready_members == members)
         }'
 }
 deadline=$(($(date +%s) + 60))
 for host in $(docker ps --filter "label=containerlab=$name" --format '{{.Names}}'); do
-    while bond_down "$host"; do
+    while setup_pending "$host" || bond_down "$host"; do
         if [ "$(date +%s)" -ge "$deadline" ]; then
-            echo "bond0 of $host is not up 60 s after deploy" >&2
+            if setup_pending "$host"; then
+                echo "host setup of $host did not finish 60 s after deploy" >&2
+            else
+                echo "bond0 of $host is not up 60 s after deploy" >&2
+            fi
             exit 1
         fi
         sleep 1

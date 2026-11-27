@@ -22,3 +22,6 @@ ip neigh replace "10.110.0.$peer" lladdr "02:00:00:11:00:$peer" nud permanent de
 # The bypass cable gives each host a /30 outside the switches.
 ip address add "198.51.100.${n#1}/30" dev eth3
 ip link set eth3 up
+
+# start.sh waits for this file, which exists only when every line above succeeded.
+touch /run/host-setup.done

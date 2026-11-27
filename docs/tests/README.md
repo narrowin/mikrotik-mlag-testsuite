@@ -1,6 +1,6 @@
 # Labs and tests under tests/
 
-Each lab is one folder under `tests/`: [Small](../../tests/small/README.md), [Small with a mobile host](../../tests/small-mobile/README.md), [Medium](../../tests/medium/README.md), [Medium with two pairs](../../tests/medium-two-pair/README.md), [two pairs with lacp-strict](../../tests/medium-two-pair-strict/README.md) and [Large](../../tests/large/README.md).
+Each lab is one folder under `tests/`: [Small](../../tests/small/README.md), [Small with a mobile host](../../tests/small-mobile/README.md), [Medium](../../tests/medium/README.md), [Medium with two pairs](../../tests/medium-two-pair/README.md), [two pairs with lacp-strict](../../tests/medium-two-pair-strict/README.md) and [Large](../../tests/large/README.md), each with spanning tree off. Three labs repeat a base lab with RSTP and the MLAG pair as root: [Small RSTP](../../tests/small-rstp/README.md), [Medium RSTP](../../tests/medium-rstp/README.md) and [two pairs RSTP](../../tests/medium-two-pair-rstp/README.md).
 Networka runs the tests. This repository holds only the labs, the test files and their limits.
 
 ## Layout
@@ -9,9 +9,9 @@ Networka runs the tests. This repository holds only the labs, the test files and
 | --- | --- |
 | `README.md` | Topology, tests, limits with their source, and live verdicts. |
 | `lab/topology.clab.yml` | Containerlab topology. It sets the lab name, its own management subnet, the pinned CHR image, the Linux hosts and the `syslog` collector node. |
-| `lab/switch.rsc` or `lab/routeros.rsc` | RouterOS startup config for every CHR, with per-node branches on `.ShortName`. It brings the lab into the state the tests need, including spanning tree off and remote logging to the collector. |
+| `lab/switch.rsc` or `lab/routeros.rsc` | RouterOS startup config for every CHR, with per-node branches on `.ShortName`. It brings the lab into the state the tests need, including the spanning tree mode and remote logging to the collector. |
 | `lab/devices.yml` | Networka inventory: device types and the lab logins. Containerlab supplies the addresses. |
-| `lab/host-setup.sh` | Bonds, addresses and fixed neighbours of the Linux hosts. |
+| `lab/host-setup.sh` | Bonds, addresses and fixed neighbours of the Linux hosts. Containerlab runs it once per host at deploy. Its last line, `touch /run/host-setup.done`, tells `start.sh` the setup finished. |
 | `lab/lab.yaml` | Streams, state checks run before and after every test, and the collector file `syslog/switches.log`. Small-mobile has two lab files, `direct-lab.yaml` and `link-lab.yaml`. |
 | `cases/*.yaml` | One test each. The `lab` field names the lab file relative to the test file, for example `../lab/lab.yaml`. |
 
@@ -19,11 +19,11 @@ Containerlab writes the running lab to `lab/clab-<name>/`, which the root `.giti
 Medium-two-pair-strict and small-mobile use some files of another lab, as their READMEs say.
 
 Every lab uses the files in [tests/shared](../../tests/shared): the [Dockerfile](../../tests/shared/client.Dockerfile) of the host image, the collector config [rsyslog.conf](../../tests/shared/rsyslog.conf) and [start.sh](../../tests/shared/start.sh).
-`tests/shared/start.sh <lab-folder> [age]` builds the host image `small-mlag-client:local`, creates the collector folder and deploys the lab. It returns once the bond of every Linux host is up, or fails after 60 s and names the host. Only small-mobile takes the `age` profile.
+`tests/shared/start.sh <lab-folder> [age]` builds the host image `small-mlag-client:local`, creates the collector folder and deploys the lab. It returns once every Linux host has finished its host setup and its bond is up, or fails after 60 s and names the host. Only small-mobile takes the `age` profile.
 
 ## Run a lab
 
-Live tests run in the OrbStack VM `mlag-external` (`orb -m mlag-external`), where the repository has the same path, and only with spanning tree off.
+Live tests run in the OrbStack VM `mlag-external` (`orb -m mlag-external`), where the repository has the same path.
 The host needs Docker, sudo, tcpdump, tshark, ping, nsenter and `tc` from iproute2.
 Use Containerlab with native CHR support from commit `06ac3ca4d442ce4f937b50bd7c04d5f32fb3173b`. On the VM this is the qualified ARM64 build with SHA-256 `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`.
 The lockfile pins Networka 0.5.1 from PyPI, and the VM-local uv environment keeps each checkout separate.
@@ -82,7 +82,7 @@ A test is a list of steps. This step from [tests/medium/cases/primary-reboot.yam
 
 ## Add a lab
 
-1. Choose a new lab name and an unused management subnet `172.30.x.0/24`, with the collector at `.10`. The labs in use take 100, 101, 110, 111, 112 and 120.
+1. Choose a new lab name and an unused management subnet `172.30.x.0/24`, with the collector at `.10`. The labs in use take 100, 101, 102, 110, 111, 112, 113, 114 and 120.
 2. Create the folder `tests/<lab>/` with the subfolders `lab/` and `cases/`.
 3. Write the startup config in `lab/` with `protocol-mode=none` on every bridge. Copy the remote logging and the `refresh-collector` scheduler from [tests/small/lab/switch.rsc](../../tests/small/lab/switch.rsc) and set the collector address.
 4. Write the topology, `devices.yml`, `host-setup.sh` and `lab.yaml` in `lab/`. The topology binds the collector config as `../../shared/rsyslog.conf`. In `lab.yaml`, check `stp_mode: none` on every bridge and MLAG connected on every peer.

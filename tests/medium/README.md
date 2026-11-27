@@ -36,7 +36,7 @@ The limits, hold times and expectations come from the `medium-stp-off-*` cases o
 
 ## Live verdicts
 
-On 26 November 2026, with Networka 0.5.1 and RouterOS 7.26beta7, each test ran on a fresh deployment, primary power loss eight times. Each generated report starts with the verdict below. Each replay exited with the same verdict and gave byte-identical `result.json` and `report.md`.
+On 26 November 2026, with Networka 0.5.1, RouterOS 7.26beta7 and the qualified Containerlab build (SHA-256 `feac9ffc57b34ccb8f6793eedf7c13f85fe86c56632cfe6809b0fd068d495929`), each test ran on a fresh deployment, primary power loss eight times. Each generated report starts with the verdict below. Each replay exited with the same verdict and gave byte-identical `result.json` and `report.md`.
 
 | Test | Report verdict |
 | --- | --- |
