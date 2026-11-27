@@ -1,5 +1,5 @@
 ---
-status: superseded by Networka ADR 0005, https://github.com/narrowin/networka/blob/main/docs/adr/0005-outage-is-measured-from-numbered-pings-every-100-ms-captured-at-both-ends.md
+status: superseded by Networka ADR 0005, https://narrowin.github.io/networka/adr/0005-outage-is-measured-from-numbered-pings-every-100-ms-captured-at-both-ends/
 ---
 
 # Outage is measured from numbered pings every 100 ms, captured at both ends
@@ -7,7 +7,7 @@ status: superseded by Networka ADR 0005, https://github.com/narrowin/networka/bl
 Every stream in a lab file sends one numbered ICMP ping every 100 ms, and Networka captures it at both ends.
 Every limit in the test files is written for this cadence.
 Missing evidence is never PASS: a step whose outage cannot be decided from the captures is ERROR.
-How Networka bounds an outage and when it rejects a measurement are Networka's design, described in its [lab test guide](https://github.com/narrowin/networka/blob/main/docs/lab-tests.md).
+How Networka bounds an outage and when it rejects a measurement are Networka's design, described in its [lab test guide](https://narrowin.github.io/networka/lab-tests/).
 
 ## Why
 

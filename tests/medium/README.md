@@ -60,4 +60,4 @@ Primary power loss in detail:
 - The old QEMU wrapper cannot account for a difference. It put each veth and TAP on a private two-port bridge with learning off and LACP, LLDP and STP forwarding on, and it set 10 Gbit/s full duplex. A two-port bridge sends every frame to its only other port whether or not it learns, and native CHR links also forward LACP and LLDP at 10 Gbit/s full duplex.
 - One remaining difference is the order: Networka pauses the guest and then withdraws carrier, while the old runner withdrew carrier and then paused, both within 0.17 s.
 
-The [Networka lab test guide](https://github.com/narrowin/networka/blob/main/docs/lab-tests.md) explains the evidence and replay.
+The [Networka lab test guide](https://narrowin.github.io/networka/lab-tests/) explains the evidence and replay.

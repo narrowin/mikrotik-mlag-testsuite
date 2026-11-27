@@ -89,4 +89,4 @@ A test is a list of steps. This step from [tests/medium/tests/primary-reboot.yam
 
 ## Reference
 
-The [Networka lab test guide](https://github.com/narrowin/networka/blob/main/docs/lab-tests.md) describes every lab and test field, every action, the evidence and the replay. State checks use the [Networka intent check format](https://github.com/narrowin/networka/blob/main/docs/intent.md).
+The [Networka lab test guide](https://narrowin.github.io/networka/lab-tests/) describes every lab and test field, every action, the evidence and the replay. State checks use the [Networka intent check format](https://narrowin.github.io/networka/intent/).

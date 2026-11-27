@@ -1,5 +1,5 @@
 ---
-status: superseded by Networka ADR 0010, https://github.com/narrowin/networka/blob/main/docs/adr/0010-networka-reaches-every-lab-node-over-ssh-at-the-address-containerlab-assigned.md
+status: superseded by Networka ADR 0010, https://narrowin.github.io/networka/adr/0010-networka-reaches-every-lab-node-over-ssh-at-the-address-containerlab-assigned/
 ---
 
 # Networka reaches every lab node over SSH at the address containerlab assigned

@@ -1,5 +1,5 @@
 ---
-status: superseded by Networka ADR 0006, https://github.com/narrowin/networka/blob/main/docs/adr/0006-replay-judges-saved-evidence-again-and-must-give-a-byte-identical-result.md
+status: superseded by Networka ADR 0006, https://narrowin.github.io/networka/adr/0006-replay-judges-saved-evidence-again-and-must-give-a-byte-identical-result/
 ---
 
 # Replay judges a saved run again and must give a byte-identical result

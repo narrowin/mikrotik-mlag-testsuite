@@ -93,7 +93,7 @@ _Avoid_: legacy, previous framework, migration, backward compatibility
 
 ### Engine terms
 
-[Networka's GLOSSARY.md](https://github.com/narrowin/networka/blob/main/GLOSSARY.md) defines these words, and this repository uses them in that sense:
+[Networka's GLOSSARY.md](https://narrowin.github.io/networka/glossary/) defines these words, and this repository uses them in that sense:
 **lab**, **host**, **collector**, **test**, **step**, **fault**, **cable**, **reboot**, **power loss**, **baseline**, **state check**, **stream**, **ping**, **lost ping**, **outage**, **limit**, **run**, **evidence**, **judge**, **verdict**, **replay**, **report** and **Networka**.
 In the Large lab, hosts have the roles traffic host and service host.
 At a bond end a **cable** carries one **bond member**.

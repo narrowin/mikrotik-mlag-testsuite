@@ -17,4 +17,4 @@ Small and its RSTP lab already have no bypass and no calibration test.
 The bypass cable, its streams and the calibration tests were removed from every lab under `tests/` on 2026-11-27.
 Before that, Medium, the two-pair lab, the two-pair strict lab, Large, the MAC-move lab and the RSTP labs of Medium and the two-pair lab had a bypass cable and `bypass-*` streams with 0 s limits, and all but Large had calibration tests that cut it.
 
-See also [Networka ADR 0012](https://github.com/narrowin/networka/blob/main/docs/adr/0012-validity-checks-prove-the-measurement.md).
+See also [Networka ADR 0012](https://narrowin.github.io/networka/adr/0012-validity-checks-prove-the-measurement/).

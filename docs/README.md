@@ -8,7 +8,7 @@ Pick the page by what you need to do. New here? Start with the [quick start](../
 | --- | --- |
 | [Labs and tests under tests/](tests/README.md) | How do I run a lab with `nw test`, add a test or add a lab? |
 | [Small lab test walkthrough](walkthrough-networka-tests.md) | How does one `nw test run` of the Small lab tests go, and what did the live run show? |
-| [Networka lab test guide](https://github.com/narrowin/networka/blob/main/docs/lab-tests.md) | Which lab and test fields, actions and evidence does Networka support? |
+| [Networka lab test guide](https://narrowin.github.io/networka/lab-tests/) | Which lab and test fields, actions and evidence does Networka support? |
 
 ## Findings and plans
 

@@ -28,4 +28,4 @@ A lab with different settings is its own folder, with its own name and managemen
 `tests/two-pair-strict/` exists only because `lacp-strict=yes` must be set at boot; it reuses the two-pair startup config through a topology variable and links to the two-pair tests.
 A test that leaves the lab broken shows up as an ERROR in the next test's starting state checks.
 
-See also [Networka ADR 0003](https://github.com/narrowin/networka/blob/main/docs/adr/0003-a-lab-test-pushes-no-configuration-and-state-checks-prove-the-lab-state.md).
+See also [Networka ADR 0003](https://narrowin.github.io/networka/adr/0003-a-lab-test-pushes-no-configuration-and-state-checks-prove-the-lab-state/).
