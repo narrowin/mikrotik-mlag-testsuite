@@ -12,6 +12,8 @@ topology:
       env:
         COLLECTOR: 172.30.110.10
         STP_MODE: none
+        # The spanning-tree root placement, read only when STP_MODE is not none.
+        STP_ROOT: pair
   groups:
     hosts:
       kind: linux

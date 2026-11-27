@@ -1,6 +1,6 @@
 # Labs and tests under tests/
 
-Each lab is one folder under `tests/`: [Small](../../tests/small/README.md), [Small with a MAC-move host](../../tests/small-mac-move/README.md), [Medium](../../tests/medium/README.md), [Two-pair](../../tests/two-pair/README.md), [Two-pair strict](../../tests/two-pair-strict/README.md) and [Large](../../tests/large/README.md), each with spanning tree off. Three labs repeat a base lab with RSTP and the MLAG pair as root: [Small RSTP](../../tests/small-rstp/README.md), [Medium RSTP](../../tests/medium-rstp/README.md) and [Two-pair RSTP](../../tests/two-pair-rstp/README.md).
+Each lab is one folder under `tests/`: [Small](../../tests/small/README.md), [Small with a MAC-move host](../../tests/small-mac-move/README.md), [Medium](../../tests/medium/README.md), [Two-pair](../../tests/two-pair/README.md), [Two-pair strict](../../tests/two-pair-strict/README.md) and [Large](../../tests/large/README.md), each with spanning tree off. Three labs repeat a base lab with RSTP and the MLAG pair as root: [Small RSTP](../../tests/small-rstp/README.md), [Medium RSTP](../../tests/medium-rstp/README.md) and [Two-pair RSTP](../../tests/two-pair-rstp/README.md). [Medium RSTP with the access switch as root](../../tests/medium-rstp-access-root/README.md) repeats Medium with a switch outside the pair as root.
 Networka runs the tests. This repository holds only the labs, the test files and their limits.
 
 ## Layout
@@ -80,7 +80,7 @@ A test is a list of steps. This step from [tests/medium/tests/primary-reboot.yam
 
 ## Add a lab
 
-1. Choose a new lab name and an unused management subnet `172.30.x.0/24`, with the collector at `.10`. The labs in use take 100, 101, 102, 110, 111, 112, 113, 114 and 120.
+1. Choose a new lab name and an unused management subnet `172.30.x.0/24`, with the collector at `.10`. The labs in use take 100, 101, 102, 110, 111, 112, 113, 114, 115 and 120.
 2. Create the folder `tests/<lab>/` with the subfolders `lab/` and `tests/`.
 3. Write the startup config in `lab/` with `protocol-mode=none` on every bridge. Copy the remote logging and the `refresh-collector` scheduler from [tests/small/lab/switch.rsc](../../tests/small/lab/switch.rsc) and set the collector address.
 4. Write the topology, `devices.yml`, `host-setup.sh` and `lab.yaml` in `lab/`. The topology binds the collector config as `../../shared/rsyslog.conf`. In `lab.yaml`, check `stp_mode: none` on every bridge and MLAG connected on every peer.

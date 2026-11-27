@@ -1,6 +1,6 @@
 # Medium MLAG lab with RSTP
 
-This is the [Medium lab](../medium/README.md) with RSTP on every bridge and the MLAG pair as root bridge. Switch1 and switch2 have priority `0x1000` and the access switch `0x8000`; host ports are edge ports, and the peer link and the uplinks are not.
+This is the [Medium lab](../medium/README.md) with RSTP on every bridge and the MLAG pair as root bridge. [Medium RSTP with the access switch as root](../medium-rstp-access-root/README.md) is the same lab with a switch outside the pair as root. Switch1 and switch2 have priority `0x1000` and the access switch `0x8000`; host ports are edge ports, and the peer link and the uplinks are not.
 Both MLAG peers carry the same bridge priority and the same port STP settings, as the MikroTik MLAG manual requires. The switches also send the `stp` log topic to the collector.
 The lab has its own name, `medium-mlag-rstp`, and management subnet, `172.30.113.0/24`, so it can run next to the base lab.
 

@@ -10,8 +10,8 @@ steps:
       observe: true
     hold_s: 4  # Four seconds of steady traffic before power loss.
     max_outage_s: &loss-free
-      host1-to-host2: 0
-      host2-to-host1: 0
+      host1-to-host2: 0  # No fault is in effect in this step, so no ping may be lost.
+      host2-to-host1: 0  # No fault is in effect in this step, so no ping may be lost.
     expected: Every ping arrives once before power loss.
   - name: switch1 power lost
     action:

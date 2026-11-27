@@ -12,6 +12,8 @@ topology:
       env:
         COLLECTOR: 172.30.113.10
         STP_MODE: rstp
+        # The MLAG pair is the RSTP root bridge.
+        STP_ROOT: pair
   groups:
     hosts:
       kind: linux

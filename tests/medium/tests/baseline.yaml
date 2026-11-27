@@ -16,8 +16,8 @@ steps:
       observe: true
     hold_s: 4  # Observe one interval beyond the three-second fast LACP timeout.
     max_outage_s:
-      host1-to-host2: 0
-      host2-to-host1: 0
+      host1-to-host2: 0  # No fault is in effect in this step, so no ping may be lost.
+      host2-to-host1: 0  # No fault is in effect in this step, so no ping may be lost.
     expected: Both peers stay connected, every ping arrives once and no flooded probe returns to host2.
     check_state:
       - statement: Both MLAG bonds on both peers contain their wired bond member and use it for LACP forwarding.
