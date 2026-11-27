@@ -13,11 +13,11 @@ The old `mlag-lab` suite was removed. Its code, and how `results/` was produced,
 ## Results
 
 <!-- results:start -->
-![Worst traffic stop per lab, spanning tree off and RSTP, against its limit](docs/diagrams/results-worst-stop.svg)
+![Worst traffic stop per lab with RSTP off and on, against its limit](docs/diagrams/results-worst-stop.svg)
 
-Spanning tree off, and RSTP with the MLAG pair as root, on RouterOS 7.26beta7; `nw test` live runs of 26 and 27 November 2026, one ping every 100&nbsp;ms per stream.
+RSTP off means no spanning tree on any bridge (`protocol-mode=none`). RSTP on has the MLAG pair as root. RouterOS 7.26beta7; `nw test` live runs of 26 and 27 November 2026, one ping every 100&nbsp;ms per stream.
 
-| Lab | Topology | STP off | RSTP | Worst stop, STP off | Worst stop, RSTP |
+| Lab | Topology | RSTP off | RSTP on | Worst stop, RSTP off | Worst stop, RSTP on |
 | --- | --- | --- | --- | --- | --- |
 | [Small](tests/small/README.md) | One MLAG pair | ![PASS](docs/diagrams/result-pass.svg "PASS") 2&nbsp;of&nbsp;3, 1&nbsp;error | ![PASS](docs/diagrams/result-pass.svg "PASS") [3&nbsp;of&nbsp;4, 1&nbsp;error](tests/small-rstp/README.md) | 2.40–2.61&nbsp;s of&nbsp;4&nbsp;s, member back, client1&nbsp;→&nbsp;client2 | 2.43–2.64&nbsp;s of&nbsp;4&nbsp;s, member back, client1&nbsp;→&nbsp;client2 |
 | [Medium](tests/medium/README.md) | One MLAG pair + access switch | ![PASS](docs/diagrams/result-pass.svg "PASS") 6&nbsp;of&nbsp;6 | ![FAIL](docs/diagrams/result-fail.svg "FAIL") [3&nbsp;of&nbsp;6, 1&nbsp;error](tests/medium-rstp/README.md) | 2.51–2.71&nbsp;s of&nbsp;5&nbsp;s, secondary reboot, host1&nbsp;→&nbsp;host2 | 9.80–10.01&nbsp;s of&nbsp;5&nbsp;s, primary power loss, host2&nbsp;→&nbsp;host1 |
