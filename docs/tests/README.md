@@ -31,7 +31,7 @@ The lockfile pins Networka 0.5.1 from PyPI, and the VM-local uv environment keep
 At most three labs with tests may run in the VM at once, counting the labs of other sessions. Check first what is running and deployed, and touch no lab you did not start.
 
 ```sh
-pgrep -af "nw test|mlag-lab|campaign.sh"
+pgrep -af "nw test"
 sudo containerlab inspect --all
 ```
 
