@@ -1,8 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="830" height="372" viewBox="0 0 830 372" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#1f2328">
   <rect width="830" height="372" fill="#ffffff"/>
   <text x="300" y="16" font-size="12" fill="#57606a">Worst traffic stop in any test, seconds (upper bound, one ping every 100 ms)</text>
-
-  <!-- grid: x = 300 + 22 * seconds -->
   <g stroke="#d0d7de" stroke-width="1">
     <line x1="300" y1="26" x2="300" y2="330"/>
     <line x1="520" y1="26" x2="520" y2="330"/>
@@ -17,8 +15,6 @@
     <text x="630" y="348">15</text>
     <text x="740" y="348">20 s</text>
   </g>
-
-  <!-- rows of 60 px from y=30; RSTP off line at top+20, RSTP on line at top+42 -->
   <g stroke="#eaeef2" stroke-width="1">
     <line x1="10" y1="90" x2="820" y2="90"/>
     <line x1="10" y1="150" x2="820" y2="150"/>
@@ -33,41 +29,37 @@
     <text x="10" y="305">Two sites, four MLAG pairs</text>
   </g>
   <g font-size="12" fill="#57606a" text-anchor="end">
-    <text x="288" y="54">RSTP off</text><text x="288" y="76">RSTP on</text>
-    <text x="288" y="114">RSTP off</text><text x="288" y="136">RSTP on</text>
-    <text x="288" y="174">RSTP off</text><text x="288" y="196">RSTP on</text>
-    <text x="288" y="234">RSTP off</text><text x="288" y="256">RSTP on</text>
-    <text x="288" y="294">RSTP off</text><text x="288" y="316">RSTP on</text>
+    <text x="288" y="54">RSTP off</text>
+    <text x="288" y="76">RSTP on</text>
+    <text x="288" y="114">RSTP off</text>
+    <text x="288" y="136">RSTP on</text>
+    <text x="288" y="174">RSTP off</text>
+    <text x="288" y="196">RSTP on</text>
+    <text x="288" y="234">RSTP off</text>
+    <text x="288" y="256">RSTP on</text>
+    <text x="288" y="294">RSTP off</text>
+    <text x="288" y="316">RSTP on</text>
   </g>
-
-  <!-- marks: PASS = green circle, FAIL = red square -->
   <g stroke="#fff" stroke-width="4" paint-order="stroke">
-  <!-- One MLAG pair: off 2.61 s PASS (S1); RSTP 2.64 s PASS (S6), limit 4 s -->
   <circle cx="357.4" cy="50" r="6" fill="#1a7f37" stroke="none"/>
-  <text x="368" y="54">2.61 s · limit 4 s</text>
-  <circle cx="358.1" cy="72" r="6" fill="#1a7f37" stroke="none"/>
-  <text x="369" y="76">2.64 s · limit 4 s</text>
-  <!-- One pair + access switch: off 2.71 s PASS (S2); RSTP 10.01 s FAIL (S7) -->
-  <circle cx="359.6" cy="110" r="6" fill="#1a7f37" stroke="none"/>
-  <text x="370" y="114">2.71 s</text>
-  <rect x="514.2" y="126" width="12" height="12" fill="#cf222e" stroke="none"/>
-  <text x="533" y="136">10.01 s</text>
-  <!-- Two MLAG pairs: off 18.13 s FAIL (S3); RSTP 21.75 s FAIL (S8), label left -->
+  <text x="369.4" y="54">2.61 s · limit 4 s</text>
+  <circle cx="358" cy="72" r="6" fill="#1a7f37" stroke="none"/>
+  <text x="370" y="76">2.64 s · limit 4 s</text>
+  <circle cx="359.7" cy="110" r="6" fill="#1a7f37" stroke="none"/>
+  <text x="371.7" y="114">2.71 s</text>
+  <rect x="514.1" y="126" width="12" height="12" fill="#cf222e" stroke="none"/>
+  <text x="532.1" y="136">10.01 s</text>
   <rect x="692.9" y="164" width="12" height="12" fill="#cf222e" stroke="none"/>
-  <text x="712" y="174">18.13 s</text>
+  <text x="710.9" y="174">18.13 s</text>
   <rect x="772.5" y="186" width="12" height="12" fill="#cf222e" stroke="none"/>
-  <text x="765" y="196" text-anchor="end">21.75 s</text>
-  <!-- Two MLAG pairs, lacp-strict: off 18.35 s FAIL (S4); RSTP not run -->
-  <rect x="697.7" y="224" width="12" height="12" fill="#cf222e" stroke="none"/>
-  <text x="717" y="234">18.35 s</text>
-  <!-- Two sites: off 20.85 s FAIL (S5); RSTP not run -->
-  <rect x="752.7" y="284" width="12" height="12" fill="#cf222e" stroke="none"/>
-  <text x="771" y="294">20.85 s</text>
+  <text x="766.5" y="196" text-anchor="end">21.75 s</text>
+  <rect x="697.6" y="224" width="12" height="12" fill="#cf222e" stroke="none"/>
+  <text x="715.6" y="234">18.35 s</text>
+  <rect x="752.6" y="284" width="12" height="12" fill="#cf222e" stroke="none"/>
+  <text x="770.6" y="294">20.85 s</text>
   </g>
   <text x="306" y="256" fill="#8c959f" font-style="italic">not run</text>
   <text x="306" y="316" fill="#8c959f" font-style="italic">not run</text>
-
-  <!-- legend -->
   <g font-size="12" fill="#57606a">
     <circle cx="306" cy="362" r="5" fill="#1a7f37"/><text x="316" y="366">PASS</text>
     <rect x="358" y="356" width="10" height="10" fill="#cf222e"/><text x="374" y="366">FAIL</text>

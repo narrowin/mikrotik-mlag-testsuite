@@ -1,0 +1,41 @@
+name: secondary-power-loss
+purpose: >-
+  Withdraw all data links of switch2 in its checked MLAG secondary role and pause the guest
+  before a cold reset. Measure both directions between host1 and host2 and on the independent bypass.
+source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+lab: ../lab/lab.yaml
+steps:
+  - name: Baseline
+    action:
+      observe: true
+    hold_s: 4  # Four seconds of steady traffic before power loss.
+    max_outage_s: &loss-free
+      host1-to-host2: 0
+      host2-to-host1: 0
+      bypass-host1-to-host2: 0
+      bypass-host2-to-host1: 0
+    expected: Every ping arrives once before power loss.
+  - name: switch2 power lost
+    action:
+      power_off: switch2
+    hold_s: 20  # Keep the switch off well past the fast LACP and ICCP timers.
+    max_outage_s: &limits
+      host1-to-host2: &power-limit 5  # Three fast LACP intervals plus two for forwarding.
+      host2-to-host1: *power-limit
+      bypass-host1-to-host2: 0
+      bypass-host2-to-host1: 0
+    expected: Every neighbour sees carrier go down and switched traffic recovers through the surviving peer.
+  - name: switch2 power restored
+    action:
+      power_on: switch2
+    # Allow CHR cold boot, SSH cooldown and the default 60 s MLAG initialisation interval.
+    wait_healthy_s: 180
+    hold_s: 16  # Continue through the observation after boot, beyond five fast LACP timeouts.
+    max_outage_s: *limits
+    expected: The MLAG secondary has a new boot, and the access switch uplink and the host2 bond return to service.
+  - name: Power recovery
+    action:
+      observe: true
+    hold_s: 3  # A fast LACP timeout yields 30 pings at the 100 ms cadence.
+    max_outage_s: *loss-free
+    expected: Every stream keeps delivering after power returns.
