@@ -38,7 +38,7 @@ Start with the [Small lab](tests/small/README.md): two CHRs as the MLAG pair, jo
 
 - A Linux host with Docker, sudo, tcpdump, tshark, ping, nsenter and `tc` from iproute2. On a Mac with Apple Silicon, use a Linux VM such as one in [OrbStack](https://orbstack.dev/download).
 - [uv](https://docs.astral.sh/uv/) and [Git](https://git-scm.com/install/).
-- Containerlab with native CHR full duplex and LACP. A released Containerlab does not have it yet; see [Containerlab version](#containerlab-version).
+- Containerlab with native CHR full duplex and LACP. A released Containerlab does not have it yet. Build it first as in [Containerlab version](#containerlab-version).
 
 ### Run a test
 
@@ -51,7 +51,23 @@ CLAB=/usr/local/bin/containerlab
 sudo env "CLAB=$CLAB" tests/shared/start.sh tests/small
 ```
 
-`start.sh` returns once the bond of every Linux host is up. It fails after 60 s and names the host whose bond is down. Then run the cable test and replay it as described in [Run a lab](docs/tests/README.md#run-a-lab), with the values in the [Small lab README](tests/small/README.md#commands). `nw test run` exits 0 on pass, 1 on fail and 2 when the result is not verified. Each test writes `report.md` and `result.json` into the folder you pass with `--save`.
+`start.sh` returns once the bond of every Linux host is up. It fails after 60 s and names the host whose bond is down.
+
+Then run the cable test and replay it. `nw test run` runs as root because it captures packets in the lab containers. `lab_nw` passes your `PATH` to sudo so that root finds uv and `tc`. It keeps the Python environment outside the checkout, so root does not own a `.venv` in it.
+
+```sh
+lab_nw() {
+  sudo env "PATH=/usr/sbin:/sbin:$PATH" "UV_PROJECT_ENVIRONMENT=/var/tmp/mlag-lab-venvs$PWD" \
+    uv run --locked nw "$@"
+}
+mkdir -p test-results
+RUN=$(mktemp -d test-results/run.XXXXXX)
+lab_nw test run tests/small/cases/bond-member-loss.yaml --lab tests/small/lab/clab-small-mlag \
+  --config tests/small/lab/devices.yml --save "$RUN"
+lab_nw test replay "$RUN/bond-member-loss"
+```
+
+`nw test run` exits 0 on pass, 1 on fail and 2 when the result is not verified. `nw test replay` judges the saved evidence again and exits 2 when the result differs from the saved `result.json`. Each test writes `report.md`, `result.json`, the captures and the switch log `syslog.log` into a folder named after the test inside `$RUN`. The other Small tests are listed in the [Small lab README](tests/small/README.md#commands).
 
 Remove the lab when you are done.
 
@@ -69,6 +85,7 @@ The labs need Containerlab with native CHR full duplex and LACP, from [srl-labs/
    git clone -b feat/mikrotik-chr-data-speed https://github.com/mischadiehm/containerlab.git
    cd containerlab && make build
    sudo install -m 4755 bin/containerlab /usr/local/bin/containerlab
+   cd ..
    ```
 
    `/usr/local/bin` comes before `/usr/bin` in `PATH` and in sudo's `secure_path`, so this build runs instead of the packaged one. Remove `/usr/local/bin/containerlab` to go back. The build reports version 0.0.0.
