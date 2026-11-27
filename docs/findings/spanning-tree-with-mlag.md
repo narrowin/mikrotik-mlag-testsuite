@@ -10,7 +10,7 @@ This page records the measurements behind it.
 
 ## Source
 
-- All runs are from the old suite on 24 and 25 November 2026, RouterOS 7.26beta7 CHR, one ping every 100 ms per stream.
+- The historical comparisons below are from the old suite on 24 and 25 November 2026, RouterOS 7.26beta7 CHR, one ping every 100 ms per stream. The current Networka investigation is linked under [Current labs](#current-labs).
 - Single-run outages come from `results/index/streams.tsv` at commit `95c7482`, named by campaign, suite and run under `results/`.
 - Counts of how often a fault showed come from [Faults across runs](../../results/README.md#faults-across-runs) and `results/index/faults.tsv` at the same commit.
 - Verdicts per suite come from the generated [Medium lab](../../results/README.md#medium-lab) and [Small lab](../../results/README.md#small-lab) tables.
@@ -119,3 +119,5 @@ No RouterOS bond setting tried shortened it.
 ## Current labs
 
 The current RSTP labs repeat the MLAG-pair-as-root tests with Networka; their results are in the [README results table](../../README.md#results).
+
+The [27 November access-root investigation](../../tests/medium-rstp-access-root/README.md#rstp-agreement-investigation-27-november-2026) isolates a RouterOS 7.26beta7 RSTP/MLAG agreement problem: proposals reach the CHR, but the non-edge access uplink does not receive agreement and stays blocked. Default peer-port settings still block after a fresh deployment. Timer-based forwarding passes the unchanged baseline, and restoring rapid RSTP restores the blocker. The startup config and state checks are retained.

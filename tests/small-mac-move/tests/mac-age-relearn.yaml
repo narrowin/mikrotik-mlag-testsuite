@@ -44,10 +44,10 @@ steps:
   - name: Mobile silent
     action:
       silence_host: &mac-move-host mac-move-host:bond0
-      relearn_s: 1  # Lab target measured from the first host frame at a switch TAP after clearing the filter.
+      relearn_s: 1  # Local relearning limit measured from the first returning host frame at a switch TAP.
     hold_s: 25  # Let the ten-second bridge timer expire and continue probing through unknown-unicast flooding.
     max_outage_s: &silence-limits
-      host1-to-mac-move-host: &intentional-silence 26  # The 25 s cut plus the one-second relearn target.
+      host1-to-mac-move-host: &intentional-silence 26  # Combined interruption allowance: 25 s intentional silence plus the existing 1 s relearning limit.
       host2-to-mac-move-host: *intentional-silence
       mac-move-host-to-host1: *intentional-silence
       mac-move-host-to-host2: *intentional-silence
@@ -68,7 +68,7 @@ steps:
     action:
       silence_host: *mac-move-host
       clear: true
-    hold_s: 5  # Observe delivery and any flooding after the one-second relearn target.
+    hold_s: 5  # Observe delivery and any flooding after the existing one-second relearning limit.
     # The capture tracks the whole cut across this boundary. The typed action separately times delivery and flooding.
     max_outage_s: *silence-limits
     expected: Delivery resumes and unknown-unicast flooding stops within one second of the first host frame.

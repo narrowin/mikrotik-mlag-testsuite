@@ -9,8 +9,8 @@ Medium and small-mac-move have both for the MLAG primary and the MLAG secondary,
 MLAG detects a dead peer differently in each.
 In a CHR reboot the cables stay up, so the surviving peer must notice the missing MLAG heartbeat, and the partners notice it only through the LACP timeout.
 In a power loss every neighbour sees its cable go down at once.
-Power loss keeps the switch off for 20 s, well past the 3 s fast LACP timeout, so the survivor has fully taken over before the switch returns. The [bridge CLI reference](https://manual.mikrotik.com/docs/cli-reference/interface/bridge/) says a peer logs a warning after three missed heartbeat intervals; the labs keep the default interval, which the manual does not state.
-Both tests then go through the same rejoin and the default 60 s MLAG initialisation delay.
+Power loss keeps the switch off for 20 s, well past the 3 s fast LACP timeout, to measure the survivor before the switch returns. The [bridge CLI reference](https://manual.mikrotik.com/docs/cli-reference/interface/bridge/) says a peer logs a warning after three missed heartbeat intervals; saved lab state shows a 5 s interval. The nominal 15 s warning scale is not a documented forwarding deadline.
+Both tests then go through rejoin. The configured MLAG initialisation delay is 60 s, but peer system-ID synchronization can admit returning members earlier. Neither setting establishes a universal outage maximum; the 5 s outage limit remains a local acceptance criterion.
 
 On 2026-11-25 the operator noticed that a CHR is back about 15 s after `/system reboot` and asked: "So yeah, we should use the power loss case then, not do the reboot at all, right?"
 On 2026-11-27 the operator kept both.

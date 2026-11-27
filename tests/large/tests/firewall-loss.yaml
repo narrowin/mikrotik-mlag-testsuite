@@ -29,8 +29,8 @@ steps:
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: 0
       dc2-to-dc1-over-dci: 0
-      # RFC 5798 Master_Down_Interval for the dc2 firewall: 3 x 1 s advertisements + (256 - 100) / 256 s skew = 3.61 s, rounded up to cover one ping interval and the host-table move.
-      # The same bound applies when dc1 preempts the address on return.
+      # RFC 9568 section 6.1 down interval for the dc2 firewall: 3 x 1 s advertisements + (256 - 100) / 256 s skew = 3.61 s, rounded up to cover one ping interval and the host-table move.
+      # The retained 4 s return limit is a separate local acceptance criterion, not a bound derived from this failover calculation.
       dc1-traffic-to-vrrp: &vrrp-move 4
       dc2-traffic-to-vrrp: *vrrp-move
     expected: Both dc1 cores see carrier go down and the dc2 firewall becomes VRRP master.

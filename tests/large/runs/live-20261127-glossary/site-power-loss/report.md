@@ -2,9 +2,20 @@
 
 Cut power to the whole dc1 site at once: both cores, both distribution switches, the firewall and both hosts. dc2 must keep forwarding inside its site, and the dc2 firewall must take over the VRRP address. After power returns, dc1 must boot, rejoin the DCI and take the VRRP address back.
 
-## Traffic
+## Forwarding and failover during power loss
 
-| Step | Stream | Limit | Total lost pings | Longest measured stop | Verdict |
+**dc1 power lost**
+
+Expected: The dc2 cores see both DCI members go down, dc2 keeps forwarding its site VLAN and the dc2 firewall becomes VRRP master.
+
+| Stream | Measured outage | Limit | Lost pings | Verdict |
+| --- | --- | --- | --- | --- |
+| dc2-traffic-to-dc2-service | 0 s | 0 s | 0 | pass |
+| dc2-traffic-to-vrrp | 3.02886 to 3.23489 s | 4 s | 30 | pass |
+
+## Traffic details
+
+| Step | Stream | Limit | Total lost pings | Longest measured outage | Verdict |
 | --- | --- | --- | --- | --- | --- |
 | Baseline | dc1-traffic:bond0 → dc1-service:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Baseline | dc2-traffic:bond0 → dc2-service:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
@@ -12,17 +23,9 @@ Cut power to the whole dc1 site at once: both cores, both distribution switches,
 | Baseline | dc2-traffic:vlan390 → dc1-traffic:vlan390 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Baseline | dc1-traffic:vlan390 → 198.18.40.1 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Baseline | dc2-traffic:vlan390 → 198.18.40.1 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
-| dc1 power lost | dc1-traffic:bond0 → dc1-service:bond0 | 216 s | 2 at one ping every 100 ms | 0.104128 to 40.6992 s | pass |
 | dc1 power lost | dc2-traffic:bond0 → dc2-service:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
-| dc1 power lost | dc1-traffic:vlan390 → dc2-traffic:vlan390 | 216 s | 3 at one ping every 100 ms | 0.219082 to 40.996 s | pass |
-| dc1 power lost | dc2-traffic:vlan390 → dc1-traffic:vlan390 | 216 s | 393 at one ping every 100 ms | 40.9326 to 41.1381 s | pass |
-| dc1 power lost | dc1-traffic:vlan390 → 198.18.40.1 | 216 s | 3 at one ping every 100 ms | 0.207691 to 42.8146 s | pass |
 | dc1 power lost | dc2-traffic:vlan390 → 198.18.40.1 | 4 s | 30 at one ping every 100 ms | 3.02886 to 3.23489 s | pass |
-| dc1 power restored | dc1-traffic:bond0 → dc1-service:bond0 | 216 s | 2 at one ping every 100 ms | 0 to 40.4914 s | pass |
 | dc1 power restored | dc2-traffic:bond0 → dc2-service:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
-| dc1 power restored | dc1-traffic:vlan390 → dc2-traffic:vlan390 | 216 s | 0 at one ping every 100 ms | 0 to 40.6757 s | pass |
-| dc1 power restored | dc2-traffic:vlan390 → dc1-traffic:vlan390 | 216 s | 393 at one ping every 100 ms | 40.9326 to 41.1381 s | pass |
-| dc1 power restored | dc1-traffic:vlan390 → 198.18.40.1 | 216 s | 0 at one ping every 100 ms | 0 to 42.5059 s | pass |
 | dc1 power restored | dc2-traffic:vlan390 → 198.18.40.1 | 4 s | 0 at one ping every 100 ms | 0 s | pass |
 | Power recovery | dc1-traffic:bond0 → dc1-service:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Power recovery | dc2-traffic:bond0 → dc2-service:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
@@ -31,8 +34,29 @@ Cut power to the whole dc1 site at once: both cores, both distribution switches,
 | Power recovery | dc1-traffic:vlan390 → 198.18.40.1 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Power recovery | dc2-traffic:vlan390 → 198.18.40.1 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 
+## Intentional interruptions
+
+These measured interruptions include deliberate host silence or power loss at a host. The combined interruption limits remain in force; they are not failover limits for a path that should stay available. Recovery is checked separately below.
+
+| Step | Stream | Cause | Combined limit | Total lost pings | Longest measured interruption | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| dc1 power lost | dc1-traffic:bond0 → dc1-service:bond0 | Host power loss | 216 s | 2 at one ping every 100 ms | 0.104128 to 40.6992 s | pass |
+| dc1 power lost | dc1-traffic:vlan390 → dc2-traffic:vlan390 | Host power loss | 216 s | 3 at one ping every 100 ms | 0.219082 to 40.996 s | pass |
+| dc1 power lost | dc2-traffic:vlan390 → dc1-traffic:vlan390 | Host power loss | 216 s | 393 at one ping every 100 ms | 40.9326 to 41.1381 s | pass |
+| dc1 power lost | dc1-traffic:vlan390 → 198.18.40.1 | Host power loss | 216 s | 3 at one ping every 100 ms | 0.207691 to 42.8146 s | pass |
+| dc1 power restored | dc1-traffic:bond0 → dc1-service:bond0 | Host power loss | 216 s | 2 at one ping every 100 ms | 0 to 40.4914 s | pass |
+| dc1 power restored | dc1-traffic:vlan390 → dc2-traffic:vlan390 | Host power loss | 216 s | 0 at one ping every 100 ms | 0 to 40.6757 s | pass |
+| dc1 power restored | dc2-traffic:vlan390 → dc1-traffic:vlan390 | Host power loss | 216 s | 393 at one ping every 100 ms | 40.9326 to 41.1381 s | pass |
+| dc1 power restored | dc1-traffic:vlan390 → 198.18.40.1 | Host power loss | 216 s | 0 at one ping every 100 ms | 0 to 42.5059 s | pass |
+
+## State checks
+
 **dc1 power lost state** · pass
 - The dc2 firewall owns the VRRP address. · pass
+
+## Restart and rejoin after power returns
+
+Boot and rejoin times start at power-on dispatch.
 
 **Power loss of dc1-core1, dc1-core2, dc1-dist1, dc1-dist2, dc1-firewall, dc1-traffic, dc1-service** · pass
 
@@ -42,7 +66,7 @@ Cut power to the whole dc1 site at once: both cores, both distribution switches,
 - dc1-dist1 showed a new boot at +47.820 s.
 - dc1-dist2 showed a new boot at +40.833 s.
 - dc1-firewall showed a new boot at +41.368 s.
-- All lab checks passed at +50.623 s.
+- All lab checks passed at +50.623 s after power-on dispatch, against a 180 s recovery deadline.
 
 **quiet window** · pass
 
@@ -108,7 +132,7 @@ Times are relative to the start of the quiet window or, if it never started, the
 | 4.151 | step | Baseline |
 | 8.154 | step | dc1 power lost |
 | 8.543 | dc2-to-dc1-over-dci | 393 pings lost at one ping every 100 ms, traffic stopped for 40.933 to 41.138 s, reply absent at destination, reply absent at source, request absent at destination |
-| 8.544 | power | withdrawing the data cables of dc1-core1, dc1-core2, dc1-dist1, dc1-dist2, dc1-firewall, dc1-traffic, dc1-service (dc1-core1, dc1-core2, dc1-dist1, dc1-dist2, dc1-firewall, dc1-traffic, dc1-service) and stopping the RouterOS guests |
+| 8.544 | power | taking down the data cables of dc1-core1, dc1-core2, dc1-dist1, dc1-dist2, dc1-firewall, dc1-traffic, dc1-service (dc1-core1, dc1-core2, dc1-dist1, dc1-dist2, dc1-firewall, dc1-traffic, dc1-service) and stopping the RouterOS guests |
 | 8.623 | dc2-traffic-to-vrrp | 30 pings lost at one ping every 100 ms, traffic stopped for 3.029 to 3.235 s, reply absent at source |
 | 8.626 | dc1-to-dc2-over-dci | 3 pings lost at one ping every 100 ms, traffic stopped for 0.219 to 40.996 s, request absent at destination |
 | 8.637 | dc1-traffic-to-vrrp | 3 pings lost at one ping every 100 ms, traffic stopped for 0.208 to 42.815 s, reply absent at source |
@@ -137,7 +161,7 @@ Times are relative to the start of the quiet window or, if it never started, the
 | 50.351 | dc1-traffic-to-dc1-service | 1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.207 s, reply absent at source |
 | 63.178 | dc1-firewall log | vrrp,info vrrp390 now MASTER, master down timer |
 | 63.189 | dc2-firewall log | vrrp,info vrrp390 now BACKUP, got higher priority 150 from 198.18.40.2 |
-| 79.654 | recovery | full lab state after power restoration of dc1-core1, dc1-core2, dc1-dist1, dc1-dist2, dc1-firewall, dc1-traffic, dc1-service: pass |
+| 79.654 | recovery | full lab state after the power loss of dc1-core1, dc1-core2, dc1-dist1, dc1-dist2, dc1-firewall, dc1-traffic, dc1-service: pass |
 | 95.655 | step | Power recovery |
 | 98.657 | steps | last step ended |
 | 102.010 | state | check after the steps: pass |

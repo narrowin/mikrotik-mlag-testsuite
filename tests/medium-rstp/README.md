@@ -18,6 +18,8 @@ Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2, after the gl
 - [PASS — secondary-power-loss](runs/live-20261127-glossary/secondary-power-loss/report.md)
 - [FAIL — secondary-reboot](runs/live-20261127-glossary/secondary-reboot/report.md)
 
+The [27 November RSTP agreement investigation](../medium-rstp-access-root/README.md#rstp-agreement-investigation-27-november-2026) also started a fresh Medium RSTP lab as a control. Its unchanged [baseline passed](runs/rstp-agreement-control-20261127/baseline/report.md), using RouterOS 7.26beta7 and pinned Networka `03f61c3`; the saved result and report replayed byte for byte. The other tests listed above were not repeated as part of this control.
+
 ## Commands
 
 Start, run, replay and remove the lab as in [Run a lab](../../docs/tests/README.md#run-a-lab), with these values.

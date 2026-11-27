@@ -25,7 +25,7 @@ steps:
     # Continue through the post-boot observation, beyond five fast LACP timeouts.
     hold_s: 16
     max_outage_s: &reboot-limits
-      dc1-traffic-to-dc1-service: &reboot-limit 5  # Three fast LACP intervals plus two for forwarding.
+      dc1-traffic-to-dc1-service: &reboot-limit 5  # Local availability limit retained from the original tests, not a RouterOS maximum; see docs/adr/0003.
       dc2-traffic-to-dc2-service: 0
       dc1-to-dc2-over-dci: *reboot-limit
       dc2-to-dc1-over-dci: *reboot-limit

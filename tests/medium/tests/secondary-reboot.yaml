@@ -26,7 +26,7 @@ steps:
     # Continue through the post-boot observation, beyond five fast LACP timeouts.
     hold_s: 16
     max_outage_s:
-      host1-to-host2: &reboot-limit 5  # Three fast LACP intervals plus two for forwarding.
+      host1-to-host2: &reboot-limit 5  # Local availability limit retained from the original tests, not a RouterOS maximum; see docs/adr/0003.
       host2-to-host1: *reboot-limit
     expected: The MLAG secondary has a new boot, and the access switch uplink and the host2 bond return to service.
   - name: Reboot recovery

@@ -11,7 +11,7 @@ steps:
     # Give ICCP and fast LACP 15 s to converge with the link absent.
     hold_s: 15
     max_outage_s: &limits
-      host1-to-mac-move-host: &peer-limit 5  # One fast LACP timeout plus time for MLAG fallback and forwarding.
+      host1-to-mac-move-host: &peer-limit 5  # Local availability limit for peer link interruption, not a documented MLAG maximum; see docs/adr/0003.
       host2-to-mac-move-host: *peer-limit
       mac-move-host-to-host1: *peer-limit
       mac-move-host-to-host2: *peer-limit

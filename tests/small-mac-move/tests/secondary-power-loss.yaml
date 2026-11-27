@@ -18,7 +18,7 @@ steps:
       power_off: switch2
     hold_s: 20  # Keep the switch off well past the fast LACP and ICCP timers.
     max_outage_s: &limits
-      host1-to-host2: &power-limit 5  # Three fast LACP intervals plus two for forwarding.
+      host1-to-host2: &power-limit 5  # Local availability limit retained from the original tests, not a RouterOS maximum; see docs/adr/0003.
       host2-to-host1: *power-limit
     expected: Every neighbour sees carrier go down and switched traffic recovers through the survivor.
   - name: switch2 power restored

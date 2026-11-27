@@ -3,6 +3,8 @@
 Each lab is one folder under `tests/`: [Small](../../tests/small/README.md), [Small with a MAC-move host](../../tests/small-mac-move/README.md), [Medium](../../tests/medium/README.md), [Two-pair](../../tests/two-pair/README.md), [Two-pair strict](../../tests/two-pair-strict/README.md) and [Large](../../tests/large/README.md), each with spanning tree off. Three labs repeat a base lab with RSTP and the MLAG pair as root: [Small RSTP](../../tests/small-rstp/README.md), [Medium RSTP](../../tests/medium-rstp/README.md) and [Two-pair RSTP](../../tests/two-pair-rstp/README.md). [Medium RSTP with the access switch as root](../../tests/medium-rstp-access-root/README.md) repeats Medium with a switch outside the pair as root.
 Networka runs the tests. This repository holds only the labs, the test files and their limits.
 
+Numerical limits are local acceptance criteria with their reason beside them; a protocol detection interval is not automatically an end-to-end outage maximum. See [the limit rationale](../adr/0003-a-test-is-a-yaml-file-and-every-limit-carries-its-reason-next-to-it.md). MAC ageing and whole-site power loss deliberately interrupt hosts. The local Networka reporting change shows their combined interruption allowances separately from MAC relearning and power recovery, retaining every numerical limit and verdict check. Passing intentional interruptions do not compete with failover outages in the results summary; confirmed breaches remain visible. The pinned Networka revision below does not yet include that reporting change.
+
 ## Layout
 
 | File | Job |

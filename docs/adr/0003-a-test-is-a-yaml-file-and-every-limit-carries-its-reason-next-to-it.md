@@ -5,9 +5,15 @@ The expected state, the limits and the timing live in that file and in the lab f
 Running a test needs no AI and no judgement by a person.
 
 Every limit and every hold has a comment next to the number that says where it comes from.
-Limits come from protocol timers, not from a target.
-For example, a reboot allows 5 s per host stream: three fast LACP intervals of 1 s plus 2 s for forwarding.
+Limits are local acceptance criteria, informed by configured protocol timers where those timers apply.
+For example, the retained 5 s reboot limit is a local availability requirement. Its original rationale was three fast LACP intervals of 1 s plus 2 s for forwarding; neither IEEE LACP nor MikroTik documents that sum as a universal MLAG outage maximum.
 A stream that the fault does not touch, such as `host2-to-host3` in the Small cable test, gets 0 s.
+
+The documentation audit of 27 November 2026 distinguished detection, attachment, deliberate downtime and measured interruption. The [MikroTik bridge reference](https://manual.mikrotik.com/docs/cli-reference/interface/bridge/) documents a warning after three missed MLAG heartbeat intervals; saved lab state shows an interval of 5 s. That warning is not a forwarding deadline. The [MLAG guide](https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/) also describes LACP system-ID changes and renegotiation on rejoin without promising a numerical outage maximum. The audit corrects the rationale without changing any numerical outage limit.
+
+The 4 s VRRP failover limit is informed by the actual 1 s advertisement interval and backup priority 100: the down interval is 3.609375 s under [RFC 9568, section 6.1](https://www.rfc-editor.org/rfc/rfc9568.html#section-6.1), rounded up with a local margin. Keeping 4 s for return/preemption is a separate local acceptance criterion; the abrupt-failover calculation does not establish a return outage bound.
+
+MAC ageing's 26 s and site power loss's 216 s include intentional downtime. Reports retain these combined interruption limits and show the existing 1 s MAC relearning limit and 180 s power recovery deadline separately. An intentional interruption within its allowance does not compete with failover outages in the results summary; a breach remains visible.
 
 ## Why
 

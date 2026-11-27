@@ -28,7 +28,7 @@ steps:
       # The site VLAN never reaches the cores.
       dc1-traffic-to-dc1-service: 0
       dc2-traffic-to-dc2-service: 0
-      dc1-to-dc2-over-dci: &reboot-limit 5  # Three fast LACP intervals plus two for forwarding.
+      dc1-to-dc2-over-dci: &reboot-limit 5  # Local availability limit retained from the original tests, not a RouterOS maximum; see docs/adr/0003.
       dc2-to-dc1-over-dci: *reboot-limit
       # Both firewalls hang off the dc1 cores while dc1 owns the VRRP address, so both VRRP streams cross dc1-core1.
       dc1-traffic-to-vrrp: *reboot-limit

@@ -42,4 +42,41 @@ Every test stopped before its first step: the state check before the test failed
 The access switch is root and both MLAG peers reach it through their MLAG bond, but the `uplink` port of the access switch never forwards.
 The switch logs show both MLAG peers putting their bond port `access-switch` back into the proposed root role every 2 s, and their peer link `ether2` back into the designated discarding state each time.
 The old suite saw VLAN 110 not forward with this root placement on 2026-11-24 ([ADR 0006](../../docs/adr/0006-spanning-tree-off-is-the-reference-and-rstp-is-tested-with-the-root-on-and-outside-the-mlag-pair.md)).
-Whether RouterOS or the lab causes it is not proven yet.
+The investigation below attributes the blocker to RouterOS RSTP/MLAG agreement handling on this CHR build; it found no lab correction that preserves the intended non-edge, rapid RSTP behaviour.
+
+## RSTP agreement investigation, 27 November 2026
+
+The investigation used RouterOS 7.26beta7, the pinned CHR image and qualified containerlab build from [Run a lab](../../docs/tests/README.md#run-a-lab), and Networka at `03f61c33145a51cd714774e5d92bd4735d6196f0`.
+It started its own lab, left other deployed labs untouched, and used the existing `baseline` test without changing its state checks, streams, flood check or limits.
+The generated reports distinguish an ERROR before traffic starts from a measured FAIL.
+
+| Lab settings | Baseline report | What it establishes |
+| --- | --- | --- |
+| Original startup config, fresh deployment | [ERROR](runs/rstp-agreement-original-20261127/baseline/report.md) | The access switch is root, MLAG is connected and LACP members are distributing, but the access uplink does not forward. |
+| Default `edge=auto` on both MLAG peer ports, fresh deployment | [ERROR](runs/rstp-agreement-peer-default-20261127/baseline/report.md) | Restoring the default peer-port setting does not correct startup. |
+| Original settings except `point-to-point=no` on the access uplink | [PASS](runs/rstp-agreement-timer-control-20261127/baseline/report.md) | With timer-based forwarding, both streams and the flood check pass. VLAN membership, the cables and the existing state checks can work unchanged. |
+| Original rapid RSTP settings restored after the timer control | [ERROR](runs/rstp-agreement-restored-20261127/baseline/report.md) | The passing control did not repair the original RSTP behaviour. |
+| Medium RSTP with the MLAG pair as root, fresh deployment | [PASS](../medium-rstp/runs/rstp-agreement-control-20261127/baseline/report.md) | The same shared startup config and baseline work with the other root placement. |
+
+Full evidence, diagnostic bridge and bond state, and BPDU captures stay in `test-results/rstp-access-root-20261127/`, outside git.
+The `original`, `clean-original`, `peer-edge-no-restored`, `peer-default-cold`, `timer-control` and `original-final` folders record the controls; `peer-edge-auto` records a passing live change that did not survive a fresh deployment.
+The `pair-root-control` folder holds the Medium RSTP control. Replaying the investigation evidence reproduced `result.json` and `report.md` byte for byte, checked with SHA-256 before and after replay.
+
+### What isolated the cause
+
+- Disabling the host-facing bridge ports leaves the access uplink blocked. The symptom does not require ping traffic or Networka's judge.
+- A single access-uplink bond member still blocks with MLAG enabled. Temporarily disabling MLAG on both peers lets ordinary RSTP forward on that same single-member path.
+- Admitting untagged frames on the peer ports does not clear the blocker.
+- The blocked access switch repeatedly sends RSTP proposals. A capture at the CHR tap of the receiving MLAG peer sees those proposals, but no agreement reply during the capture. This places the missing reply inside RouterOS rather than in containerlab's virtual cable.
+- Both MLAG peers report the correct access-switch root ID and forwarding root ports while their STP logs repeatedly return those ports to the proposed-root role. The access-switch designated uplink remains non-forwarding.
+
+This configuration follows the [MikroTik MLAG requirements](https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/): matching priorities and STP settings on both MLAG peers, matching MLAG bond IDs and VLAN 110 tagged on the peer link.
+The [bridge-port reference](https://manual.mikrotik.com/docs/cli-reference/interface/bridge/port/) distinguishes a non-edge port from default edge discovery and timer-based forwarding.
+The evidence isolates a RouterOS RSTP/MLAG agreement problem; it does not identify an internal RouterOS code defect, and it does not establish the behaviour of CRS switch hardware or another RouterOS build.
+
+### Controls that are not a lab fix
+
+Changing peer-port settings on a live lab can clear the blocked state temporarily. Removing the peer-port override from the startup config did not pass after a fresh deployment, so that proposed correction was reverted.
+Default discovery on the access uplink makes it report `edge-port: yes` even though it connects to the MLAG pair and receives no agreement. That conceals the missing agreement by treating the uplink as an edge port.
+Setting `point-to-point=no` keeps it non-edge and allows timer-based forwarding, but changes the rapid RSTP behaviour this lab is meant to measure.
+The startup config and state checks are therefore retained, and this root placement remains blocked pending a RouterOS correction.

@@ -47,4 +47,8 @@ sudo env SMALL_MAC_MOVE_AGE=10s "$CLAB" destroy -t "$LAB/lab/topology.clab.yml" 
 
 ## Observation limits
 
+MAC ageing deliberately silences the MAC-move host for 25 s. The retained 26 s combined interruption limit includes that silence; it is not a 26 s relearning allowance. The typed action separately requires delivery and the end of unknown-unicast flooding within the existing 1 s `relearn_s`, measured from the first returning host frame at a switch TAP. The unaffected host1-to-host2 stream and the subsequent recovery step retain their 0 s limits.
+
+Reports show those deliberate interruptions separately from ordinary traffic outages. The results summary excludes them while they remain within their combined limits, and still highlights a confirmed limit breach. The linked MAC-ageing report has been regenerated from the unchanged saved `result.json` with the local Networka reporting change; no new live run or verdict is implied.
+
 The cable tests record switch log events and state samples. Precise guest carrier deadlines, withdrawn member TAP observations and per-port LACP frame histories remain open. The secondary reboot checks baseline flood copies at host2. The historical receiver checks also watched the MAC-move host.

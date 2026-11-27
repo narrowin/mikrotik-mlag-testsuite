@@ -32,14 +32,14 @@ steps:
     hold_s: 20
     max_outage_s: &site-limits
       # dc1 has no power, so these streams have no path until it is back.
-      # The limit spans this hold, the power return deadline and the hold after it, 20 + 180 + 16 s, so it only requires that dc1 traffic returns within the test.
+      # The retained 216 s allowance spans the 20 s intentional hold, 180 s recovery deadline and 16 s hold after it; recovery is reported separately.
       dc1-traffic-to-dc1-service: &dc1-back 216
       dc1-to-dc2-over-dci: *dc1-back
       dc2-to-dc1-over-dci: *dc1-back
       dc1-traffic-to-vrrp: *dc1-back
       # The dc2 site VLAN stays on the dc2 distribution pair, which keeps its power.
       dc2-traffic-to-dc2-service: 0
-      # RFC 5798 Master_Down_Interval for the dc2 firewall: 3 x 1 s advertisements + (256 - 100) / 256 s skew = 3.61 s, rounded up to cover one ping interval and the host-table move. The same bound applies when dc1 preempts the address on return.
+      # RFC 9568 section 6.1 down interval for the dc2 firewall: 3 x 1 s advertisements + (256 - 100) / 256 s skew = 3.61 s, rounded up to cover one ping interval and the host-table move. The retained 4 s return limit is a separate local acceptance criterion, not a bound derived from this failover calculation.
       dc2-traffic-to-vrrp: &vrrp-move 4
     expected: The dc2 cores see both DCI members go down, dc2 keeps forwarding its site VLAN and the dc2 firewall becomes VRRP master.
     check_state:

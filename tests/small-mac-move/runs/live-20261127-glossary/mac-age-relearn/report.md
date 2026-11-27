@@ -4,28 +4,37 @@ Silence the active-backup host beyond the bridge ageing interval and measure how
 
 ## Traffic
 
-| Step | Stream | Limit | Total lost pings | Longest measured stop | Verdict |
+| Step | Stream | Limit | Total lost pings | Longest measured outage | Verdict |
 | --- | --- | --- | --- | --- | --- |
 | Mobile learned | host1:bond0 → mac-move-host:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Mobile learned | host2:bond0 → mac-move-host:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Mobile learned | mac-move-host:bond0 → host1:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Mobile learned | mac-move-host:bond0 → host2:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Mobile learned | host1:bond0 → host2:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
-| Mobile silent | host1:bond0 → mac-move-host:bond0 | 26 s | 240 at one ping every 100 ms | 24.9253 to 25.1364 s | pass |
-| Mobile silent | host2:bond0 → mac-move-host:bond0 | 26 s | 241 at one ping every 100 ms | 25.0096 to 25.2132 s | pass |
-| Mobile silent | mac-move-host:bond0 → host1:bond0 | 26 s | 245 at one ping every 100 ms | 24.9555 to 25.1607 s | pass |
-| Mobile silent | mac-move-host:bond0 → host2:bond0 | 26 s | 245 at one ping every 100 ms | 24.9517 to 25.1622 s | pass |
 | Mobile silent | host1:bond0 → host2:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
-| Mobile sends again | host1:bond0 → mac-move-host:bond0 | 26 s | 0 at one ping every 100 ms | 0 s | pass |
-| Mobile sends again | host2:bond0 → mac-move-host:bond0 | 26 s | 0 at one ping every 100 ms | 0 s | pass |
-| Mobile sends again | mac-move-host:bond0 → host1:bond0 | 26 s | 0 at one ping every 100 ms | 0 s | pass |
-| Mobile sends again | mac-move-host:bond0 → host2:bond0 | 26 s | 0 at one ping every 100 ms | 0 s | pass |
 | Mobile sends again | host1:bond0 → host2:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Mobile recovery | host1:bond0 → mac-move-host:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Mobile recovery | host2:bond0 → mac-move-host:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Mobile recovery | mac-move-host:bond0 → host1:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Mobile recovery | mac-move-host:bond0 → host2:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
 | Mobile recovery | host1:bond0 → host2:bond0 | 0 s | 0 at one ping every 100 ms | 0 s | pass |
+
+## Intentional interruptions
+
+These measured interruptions include deliberate host silence or power loss at a host. The combined interruption limits remain in force; they are not failover limits for a path that should stay available. Recovery is checked separately below.
+
+| Step | Stream | Cause | Combined limit | Total lost pings | Longest measured interruption | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| Mobile silent | host1:bond0 → mac-move-host:bond0 | Host silence | 26 s | 240 at one ping every 100 ms | 24.9253 to 25.1364 s | pass |
+| Mobile silent | host2:bond0 → mac-move-host:bond0 | Host silence | 26 s | 241 at one ping every 100 ms | 25.0096 to 25.2132 s | pass |
+| Mobile silent | mac-move-host:bond0 → host1:bond0 | Host silence | 26 s | 245 at one ping every 100 ms | 24.9555 to 25.1607 s | pass |
+| Mobile silent | mac-move-host:bond0 → host2:bond0 | Host silence | 26 s | 245 at one ping every 100 ms | 24.9517 to 25.1622 s | pass |
+| Mobile sends again | host1:bond0 → mac-move-host:bond0 | Host silence | 26 s | 0 at one ping every 100 ms | 0 s | pass |
+| Mobile sends again | host2:bond0 → mac-move-host:bond0 | Host silence | 26 s | 0 at one ping every 100 ms | 0 s | pass |
+| Mobile sends again | mac-move-host:bond0 → host1:bond0 | Host silence | 26 s | 0 at one ping every 100 ms | 0 s | pass |
+| Mobile sends again | mac-move-host:bond0 → host2:bond0 | Host silence | 26 s | 0 at one ping every 100 ms | 0 s | pass |
+
+## Recovery and state checks
 
 **Mobile learned state** · pass
 - Both switches use the ten-second ageing profile and know the MAC address of the MAC-move host. · pass
@@ -38,7 +47,8 @@ Silence the active-backup host beyond the bridge ageing interval and measure how
 
 **Mobile sends again** · pass
 
-- The hold was 25.081 s. The first host frame reached a switch TAP at 33.072 s from the start of the quiet window.
+- The deliberate silence lasted 25.081 s. The first host frame reached a switch TAP at 33.072 s from the start of the quiet window.
+- The relearning limit is 1 s from that first returning host frame, for delivery and the end of unknown-unicast flooding.
 - host1:bond0 → mac-move-host:bond0 · first reply 0.000 s after the first host frame.
 - host2:bond0 → mac-move-host:bond0 · first reply 0.079 s after the first host frame.
 - mac-move-host:bond0 → host1:bond0 · first reply 0.002 s after the first host frame.

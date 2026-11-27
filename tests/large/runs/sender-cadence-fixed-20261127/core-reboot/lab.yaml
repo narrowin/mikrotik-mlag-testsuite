@@ -1,0 +1,218 @@
+streams:
+  # The site VLAN stays on the distribution pair at each site.
+  - name: dc1-traffic-to-dc1-service
+    from: dc1-traffic:bond0
+    to: dc1-service:bond0
+  - name: dc2-traffic-to-dc2-service
+    from: dc2-traffic:bond0
+    to: dc2-service:bond0
+  # VLAN 390 crosses both distribution pairs, both core pairs and the DCI.
+  - name: dc1-to-dc2-over-dci
+    from: dc1-traffic:vlan390
+    to: dc2-traffic:vlan390
+  - name: dc2-to-dc1-over-dci
+    from: dc2-traffic:vlan390
+    to: dc1-traffic:vlan390
+  # The VRRP address answers from whichever firewall is master, so these pings are judged at the sender.
+  - name: dc1-traffic-to-vrrp
+    from: dc1-traffic:vlan390
+    to: 198.18.40.1
+  - name: dc2-traffic-to-vrrp
+    from: dc2-traffic:vlan390
+    to: 198.18.40.1
+state:
+  - name: All four MLAG pairs are connected with peer 1 as MLAG primary.
+    checks:
+      - device: dc1-core1
+        check: mlag
+        params: &bridge
+          bridge: bridge
+        expected: &primary
+          connected: true
+          role: primary
+      - device: dc1-core2
+        check: mlag
+        params: *bridge
+        expected: &secondary
+          connected: true
+          role: secondary
+      - device: dc1-dist1
+        check: mlag
+        params: *bridge
+        expected: *primary
+      - device: dc1-dist2
+        check: mlag
+        params: *bridge
+        expected: *secondary
+      - device: dc2-core1
+        check: mlag
+        params: *bridge
+        expected: *primary
+      - device: dc2-core2
+        check: mlag
+        params: *bridge
+        expected: *secondary
+      - device: dc2-dist1
+        check: mlag
+        params: *bridge
+        expected: *primary
+      - device: dc2-dist2
+        check: mlag
+        params: *bridge
+        expected: *secondary
+  - name: Every switch runs with spanning tree off.
+    checks:
+      - device: dc1-core1
+        check: stp_mode
+        params: *bridge
+        expected: &off none
+      - device: dc1-core2
+        check: stp_mode
+        params: *bridge
+        expected: *off
+      - device: dc1-dist1
+        check: stp_mode
+        params: *bridge
+        expected: *off
+      - device: dc1-dist2
+        check: stp_mode
+        params: *bridge
+        expected: *off
+      - device: dc2-core1
+        check: stp_mode
+        params: *bridge
+        expected: *off
+      - device: dc2-core2
+        check: stp_mode
+        params: *bridge
+        expected: *off
+      - device: dc2-dist1
+        check: stp_mode
+        params: *bridge
+        expected: *off
+      - device: dc2-dist2
+        check: stp_mode
+        params: *bridge
+        expected: *off
+  - name: Both members of the DCI and of each distribution-to-core trunk are in use.
+    checks:
+      - device: dc1-core1
+        check: lacp_member
+        params: &dci
+          bond: dci
+          member: ether4
+        expected: &in-use
+          synchronization: true
+          collecting: true
+          distributing: true
+      - device: dc1-core2
+        check: lacp_member
+        params: *dci
+        expected: *in-use
+      - device: dc2-core1
+        check: lacp_member
+        params: *dci
+        expected: *in-use
+      - device: dc2-core2
+        check: lacp_member
+        params: *dci
+        expected: *in-use
+      - device: dc1-dist1
+        check: lacp_member
+        params: &uplink
+          bond: core
+          member: ether3
+        expected: *in-use
+      - device: dc1-dist2
+        check: lacp_member
+        params: *uplink
+        expected: *in-use
+      - device: dc2-dist1
+        check: lacp_member
+        params: *uplink
+        expected: *in-use
+      - device: dc2-dist2
+        check: lacp_member
+        params: *uplink
+        expected: *in-use
+  - name: Both cables of each firewall are in use in its LACP bond to the local cores.
+    checks:
+      - device: dc1-firewall
+        check: lacp_member
+        params: &firewall-first
+          bond: cores
+          member: ether2
+        expected: *in-use
+      - device: dc1-firewall
+        check: lacp_member
+        params: &firewall-second
+          bond: cores
+          member: ether3
+        expected: *in-use
+      - device: dc2-firewall
+        check: lacp_member
+        params: *firewall-first
+        expected: *in-use
+      - device: dc2-firewall
+        check: lacp_member
+        params: *firewall-second
+        expected: *in-use
+  # RouterOS lists the master and backup flags only while they are set, so each firewall is checked for the flag it should hold.
+  - name: The dc1 firewall owns the VRRP address and the dc2 firewall is backup.
+    checks:
+      - device: dc1-firewall
+        check: property
+        params:
+          menu: /interface/vrrp
+          where:
+            name: vrrp390
+          name: master
+        expected: true
+      - device: dc2-firewall
+        check: property
+        params:
+          menu: /interface/vrrp
+          where:
+            name: vrrp390
+          name: backup
+        expected: true
+  - name: Both cables of every host are eligible in its LACP bond.
+    checks:
+      - device: dc1-traffic
+        check: bond_member
+        params: &first-member
+          bond: bond0
+          member: eth1
+        expected: &eligible
+          eligible: true
+      - device: dc1-traffic
+        check: bond_member
+        params: &second-member
+          bond: bond0
+          member: eth2
+        expected: *eligible
+      - device: dc1-service
+        check: bond_member
+        params: *first-member
+        expected: *eligible
+      - device: dc1-service
+        check: bond_member
+        params: *second-member
+        expected: *eligible
+      - device: dc2-traffic
+        check: bond_member
+        params: *first-member
+        expected: *eligible
+      - device: dc2-traffic
+        check: bond_member
+        params: *second-member
+        expected: *eligible
+      - device: dc2-service
+        check: bond_member
+        params: *first-member
+        expected: *eligible
+      - device: dc2-service
+        check: bond_member
+        params: *second-member
+        expected: *eligible
+switch_log: syslog/switches.log
