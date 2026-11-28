@@ -8,10 +8,11 @@ topology:
     mikrotik_chr:
       image: ghcr.io/narrowin/vrnetlab_mikrotik_routeros@sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10
       startup-config: switch.rsc
-      # The startup config reads the collector address and the spanning tree mode from here.
+      # The startup config reads the collector address, the spanning tree mode and the host-bond lacp-strict value from here.
       env:
         COLLECTOR: 172.30.100.10
         STP_MODE: none
+        LACP_STRICT: "no"
   groups:
     hosts:
       kind: linux

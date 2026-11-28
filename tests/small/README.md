@@ -4,21 +4,19 @@ The lab is two MikroTik CHR switches, `switch1` and `switch2`, joined by a peer 
 Three Linux hosts, `host1` to `host3`, each have one cable to each switch, bonded with LACP.
 A collector node, `syslog`, receives the log of both switches.
 
-The host bonds use independent LACP control (`coupled_control off`). The RouterOS
-host bonds use `lacp-strict=yes min-links=1`, so an unusable local member withdraws
-the bond and MLAG forwards through the peer link. These settings address one-way
-packet-loss failover; they do not change the tests' limits. Historical runs below
-used the earlier startup config. See [the current qualification](../../notes/final-qualification.md)
-for the passing four-test run and recovery verification details.
-
 ## Live runs
 
-Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2, after the glossary renames. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports; full evidence stays in `test-results/live-20261127-glossary/small/`.
+Run on 28 November 2026 with RouterOS 7.26beta7 in our CHR image `ghcr.io/narrowin/vrnetlab_mikrotik_routeros@sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10` and Networka 0.5.2+chr.5, in five fresh-deploy rounds; each round ran all four tests once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports, and `image-proof.json` in each run folder records the image of every node; full evidence stays in `test-results/live-20261128-image-dbd8a548/small/` and in `test-results/live-20261128-image-dbd8a548-r2/small/` to `-r5/small/`. The [results table](../../README.md#results) shows round 1, because a summary cell takes one run per test.
 
-- [FAIL — bond-member-loss](runs/live-20261127-glossary/bond-member-loss/report.md)
-- [PASS — cable-delay](runs/live-20261127-glossary/cable-delay/report.md)
-- [ERROR — cable-packet-loss](runs/live-20261127-glossary/cable-packet-loss/report.md)
-- [PASS — switch-reboot](runs/live-20261127-glossary/switch-reboot/report.md)
+| Test | Round 1 | Round 2 | Round 3 | Round 4 | Round 5 |
+| --- | --- | --- | --- | --- | --- |
+| bond-member-loss | [PASS](runs/live-20261128-image-dbd8a548/bond-member-loss/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r2/bond-member-loss/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r3/bond-member-loss/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r4/bond-member-loss/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r5/bond-member-loss/report.md) |
+| cable-delay | [PASS](runs/live-20261128-image-dbd8a548/cable-delay/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r2/cable-delay/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r3/cable-delay/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r4/cable-delay/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r5/cable-delay/report.md) |
+| cable-packet-loss | [ERROR](runs/live-20261128-image-dbd8a548/cable-packet-loss/report.md) | [ERROR](runs/live-20261128-image-dbd8a548-r2/cable-packet-loss/report.md) | [ERROR](runs/live-20261128-image-dbd8a548-r3/cable-packet-loss/report.md) | [ERROR](runs/live-20261128-image-dbd8a548-r4/cable-packet-loss/report.md) | [ERROR](runs/live-20261128-image-dbd8a548-r5/cable-packet-loss/report.md) |
+| switch-reboot | [PASS](runs/live-20261128-image-dbd8a548/switch-reboot/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r2/switch-reboot/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r3/switch-reboot/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r4/switch-reboot/report.md) | [PASS](runs/live-20261128-image-dbd8a548-r5/switch-reboot/report.md) |
+
+bond-member-loss passed in all five rounds. On 27 November 2026 with the official `mikrotik/chr` image and Networka 0.5.2 it failed.
+cable-packet-loss is ERROR in all five rounds; each report gives its reasons. [Small strict](../small-strict/README.md) runs the same tests with `lacp-strict=yes min-links=1` on the host bonds and coupled LACP control off on the hosts.
 
 ## Commands
 

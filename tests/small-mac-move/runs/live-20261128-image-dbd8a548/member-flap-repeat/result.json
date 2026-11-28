@@ -1,0 +1,2456 @@
+{
+  "name": "member-flap-repeat",
+  "purpose": "Flap the cable from host1 to switch1 five times. Measure each flap and check that the streams that do not cross this cable keep delivering.",
+  "source": "https://forum.mikrotik.com/t/7-25-1-stable-is-released/274226/22",
+  "verdict": "pass",
+  "reasons": [],
+  "state": {
+    "before": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "The primary and secondary peers are connected and run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of host1 and host2 are eligible in their LACP bonds.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "The primary and secondary peers are connected and run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bridge",
+                "where": {
+                  "name": "bridge"
+                },
+                "name": "mlag-lacp-fallback"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of host1 and host2 are eligible in their LACP bonds.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quiet": {
+    "window": "quiet window",
+    "start_s": 0.0,
+    "end_s": 3.909366,
+    "verdict": "pass",
+    "streams": {
+      "host1-to-mac-move-host": {
+        "delivered": 37,
+        "min_delivered": 34,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host2-to-mac-move-host": {
+        "delivered": 37,
+        "min_delivered": 34,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mac-move-host-to-host1": {
+        "delivered": 38,
+        "min_delivered": 34,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mac-move-host-to-host2": {
+        "delivered": 37,
+        "min_delivered": 34,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host1-to-host2": {
+        "delivered": 37,
+        "min_delivered": 34,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "name": "Flap 1 down",
+      "expected": "Host1 uses its other cable and the unaffected streams lose nothing.",
+      "cable": "host1:eth1",
+      "state": "down",
+      "hold_s": 1.0,
+      "start_s": 3.909366,
+      "end_s": 4.936298,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.204948,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.204948 s",
+          "duplicates": 0,
+          "sent": 11,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.204948 s, within 3 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 11,
+          "delivered": 11,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.212264,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.212264 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.212264 s, within 3 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.209626,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.209626 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.209626 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 4.417138,
+              "switch": "switch1",
+              "text": "interface,info ether3 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 1 up",
+      "expected": "The restored cable rejoins host1's bond without disrupting the unaffected streams.",
+      "cable": "host1:eth1",
+      "state": "up",
+      "hold_s": 3.0,
+      "start_s": 4.936298,
+      "end_s": 7.962252,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 3.0,
+          "lower_s": 2.391027,
+          "upper_s": 2.594138,
+          "lost": 24,
+          "summary": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.39103 to 2.59414 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 5,
+          "verdict": "pass",
+          "reason": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.39103 to 2.59414 s, within 3 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 3.0,
+          "lower_s": 2.401393,
+          "upper_s": 2.607686,
+          "lost": 24,
+          "summary": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.40139 to 2.60769 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 5,
+          "verdict": "pass",
+          "reason": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.40139 to 2.60769 s, within 3 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 30,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 3.0,
+          "lower_s": 2.299967,
+          "upper_s": 2.506794,
+          "lost": 23,
+          "summary": "23 pings lost in total at one ping every 100 ms, longest measured outage 2.29997 to 2.50679 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 6,
+          "verdict": "pass",
+          "reason": "23 pings lost in total at one ping every 100 ms, longest measured outage 2.29997 to 2.50679 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 5.423387,
+              "switch": "switch1",
+              "text": "interface,info ether3 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 2 down",
+      "expected": "Host1 uses its other cable and the unaffected streams lose nothing.",
+      "cable": "host1:eth1",
+      "state": "down",
+      "hold_s": 1.0,
+      "start_s": 7.962252,
+      "end_s": 8.982057,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.211628,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.211628 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.211628 s, within 3 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.21197,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.21197 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.21197 s, within 3 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 9,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.208886,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.208886 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.208886 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 8.416601,
+              "switch": "switch1",
+              "text": "interface,info ether3 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 2 up",
+      "expected": "The restored cable rejoins host1's bond without disrupting the unaffected streams.",
+      "cable": "host1:eth1",
+      "state": "up",
+      "hold_s": 3.0,
+      "start_s": 8.982057,
+      "end_s": 12.001069,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 3.0,
+          "lower_s": 2.292623,
+          "upper_s": 2.499595,
+          "lost": 23,
+          "summary": "23 pings lost in total at one ping every 100 ms, longest measured outage 2.29262 to 2.49959 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 6,
+          "verdict": "pass",
+          "reason": "23 pings lost in total at one ping every 100 ms, longest measured outage 2.29262 to 2.49959 s, within 3 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 3.0,
+          "lower_s": 2.284855,
+          "upper_s": 2.491506,
+          "lost": 23,
+          "summary": "23 pings lost in total at one ping every 100 ms, longest measured outage 2.28485 to 2.49151 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 6,
+          "verdict": "pass",
+          "reason": "23 pings lost in total at one ping every 100 ms, longest measured outage 2.28485 to 2.49151 s, within 3 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 30,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 3.0,
+          "lower_s": 2.288411,
+          "upper_s": 2.490522,
+          "lost": 23,
+          "summary": "23 pings lost in total at one ping every 100 ms, longest measured outage 2.28841 to 2.49052 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 6,
+          "verdict": "pass",
+          "reason": "23 pings lost in total at one ping every 100 ms, longest measured outage 2.28841 to 2.49052 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 9.422663,
+              "switch": "switch1",
+              "text": "interface,info ether3 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 3 down",
+      "expected": "Host1 uses its other cable and the unaffected streams lose nothing.",
+      "cable": "host1:eth1",
+      "state": "down",
+      "hold_s": 1.0,
+      "start_s": 12.001069,
+      "end_s": 13.022209,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 12.426456,
+              "switch": "switch1",
+              "text": "interface,info ether3 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 3 up",
+      "expected": "The restored cable rejoins host1's bond without disrupting the unaffected streams.",
+      "cable": "host1:eth1",
+      "state": "up",
+      "hold_s": 3.0,
+      "start_s": 13.022209,
+      "end_s": 16.060178,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 3.0,
+          "lower_s": 2.494722,
+          "upper_s": 2.699899,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured outage 2.49472 to 2.6999 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured outage 2.49472 to 2.6999 s, within 3 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 3.0,
+          "lower_s": 2.50379,
+          "upper_s": 2.709181,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured outage 2.50379 to 2.70918 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured outage 2.50379 to 2.70918 s, within 3 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 3.0,
+          "lower_s": 2.500566,
+          "upper_s": 2.704952,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured outage 2.50057 to 2.70495 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 5,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured outage 2.50057 to 2.70495 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 13.423024,
+              "switch": "switch1",
+              "text": "interface,info ether3 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 4 down",
+      "expected": "Host1 uses its other cable and the unaffected streams lose nothing.",
+      "cable": "host1:eth1",
+      "state": "down",
+      "hold_s": 1.0,
+      "start_s": 16.060178,
+      "end_s": 17.076921,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.211154,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.211154 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.211154 s, within 3 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.21206,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.21206 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.21206 s, within 3 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 16.429631,
+              "switch": "switch1",
+              "text": "interface,info ether3 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 4 up",
+      "expected": "The restored cable rejoins host1's bond without disrupting the unaffected streams.",
+      "cable": "host1:eth1",
+      "state": "up",
+      "hold_s": 3.0,
+      "start_s": 17.076921,
+      "end_s": 20.097075,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 3.0,
+          "lower_s": 2.406255,
+          "upper_s": 2.618476,
+          "lost": 24,
+          "summary": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.40625 to 2.61848 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 5,
+          "verdict": "pass",
+          "reason": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.40625 to 2.61848 s, within 3 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 3.0,
+          "lower_s": 2.507966,
+          "upper_s": 2.713196,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured outage 2.50797 to 2.7132 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 4,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured outage 2.50797 to 2.7132 s, within 3 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 3.0,
+          "lower_s": 2.512699,
+          "upper_s": 2.720989,
+          "lost": 25,
+          "summary": "25 pings lost in total at one ping every 100 ms, longest measured outage 2.5127 to 2.72099 s",
+          "duplicates": 0,
+          "sent": 28,
+          "delivered": 3,
+          "verdict": "pass",
+          "reason": "25 pings lost in total at one ping every 100 ms, longest measured outage 2.5127 to 2.72099 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 17.430296,
+              "switch": "switch1",
+              "text": "interface,info ether3 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 5 down",
+      "expected": "Host1 uses its other cable and the unaffected streams lose nothing.",
+      "cable": "host1:eth1",
+      "state": "down",
+      "hold_s": 1.0,
+      "start_s": 20.097075,
+      "end_s": 21.114896,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.208256,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.208256 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.208256 s, within 3 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.209964,
+          "lost": 1,
+          "summary": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.209964 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "1 ping lost in total at one ping every 100 ms, longest measured outage 0 to 0.209964 s, within 3 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 9,
+          "delivered": 9,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 3.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 10,
+          "delivered": 10,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link down",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 20.440651,
+              "switch": "switch1",
+              "text": "interface,info ether3 link down"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap 5 up",
+      "expected": "The restored cable rejoins host1's bond without disrupting the unaffected streams.",
+      "cable": "host1:eth1",
+      "state": "up",
+      "hold_s": 8.0,
+      "start_s": 21.114896,
+      "end_s": 29.134783,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 3.0,
+          "lower_s": 2.400971,
+          "upper_s": 2.603078,
+          "lost": 24,
+          "summary": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.40097 to 2.60308 s",
+          "duplicates": 0,
+          "sent": 77,
+          "delivered": 53,
+          "verdict": "pass",
+          "reason": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.40097 to 2.60308 s, within 3 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 77,
+          "delivered": 77,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 3.0,
+          "lower_s": 2.395175,
+          "upper_s": 2.60247,
+          "lost": 24,
+          "summary": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.39518 to 2.60247 s",
+          "duplicates": 0,
+          "sent": 77,
+          "delivered": 53,
+          "verdict": "pass",
+          "reason": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.39518 to 2.60247 s, within 3 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 78,
+          "delivered": 78,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 3.0,
+          "lower_s": 2.406559,
+          "upper_s": 2.62113,
+          "lost": 24,
+          "summary": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.40656 to 2.62113 s",
+          "duplicates": 0,
+          "sent": 77,
+          "delivered": 53,
+          "verdict": "pass",
+          "reason": "24 pings lost in total at one ping every 100 ms, longest measured outage 2.40656 to 2.62113 s, within 3 s"
+        }
+      },
+      "log": [
+        {
+          "kind": "must",
+          "switch": "switch1",
+          "text": "ether3 link up",
+          "verdict": "pass",
+          "reason": "logged",
+          "lines": [
+            {
+              "time_s": 21.447768,
+              "switch": "switch1",
+              "text": "interface,info ether3 link up (speed 10G, full duplex)"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Flap recovery",
+      "expected": "Every stream delivers after the fifth flap.",
+      "hold_s": 3.0,
+      "start_s": 29.134783,
+      "end_s": 32.137976,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host2-to-mac-move-host": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host1": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "mac-move-host-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 28,
+          "delivered": 28,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host1-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    }
+  ],
+  "log": [
+    {
+      "kind": "must_not",
+      "switch": "every",
+      "text": "heartbeat timeout",
+      "verdict": "pass",
+      "reason": "not logged",
+      "lines": []
+    }
+  ],
+  "switch_log": {
+    "file": "syslog/switches.log",
+    "saved": true,
+    "lines": {
+      "switch1": 22,
+      "switch2": 2
+    },
+    "markers": {
+      "switch1": {
+        "start": -1.895187,
+        "end": 34.148665
+      },
+      "switch2": {
+        "start": -1.535491,
+        "end": 34.198217
+      }
+    }
+  },
+  "validity": [
+    {
+      "check": "capture at host1:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at host2:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at mac-move-host:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "every stream and its captures stayed up",
+      "ok": true
+    },
+    {
+      "check": "every cable set down was set up again",
+      "ok": true
+    },
+    {
+      "check": "the wall clock and the monotonic clock of the lab host agree within 50 ms",
+      "ok": true
+    },
+    {
+      "check": "host1-to-mac-move-host sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "host1-to-mac-move-host shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host2-to-mac-move-host sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "host2-to-mac-move-host shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "mac-move-host-to-host1 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "mac-move-host-to-host1 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "mac-move-host-to-host2 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "mac-move-host-to-host2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host1-to-mac-move-host delivered 34 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "host2-to-mac-move-host delivered 34 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "mac-move-host-to-host1 delivered 34 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "mac-move-host-to-host2 delivered 34 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 delivered 34 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    }
+  ],
+  "traffic": {
+    "start_ns": 1795849594815825000,
+    "end_ns": 1795849628420598050,
+    "interval_s": 0.1,
+    "streams": {
+      "host1-to-mac-move-host": {
+        "ident": 1,
+        "source": "host1:bond0",
+        "destination": "mac-move-host:bond0",
+        "sent": 324,
+        "delivered": 200,
+        "lost_seqs": [
+          40,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          79,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          157,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          196,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 40,
+            "last_seq": 40,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.204948,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.205 s",
+            "begins_s": 4.015966,
+            "ends_s": 4.015966,
+            "windows": [
+              "Flap 1 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 51,
+            "last_seq": 74,
+            "lost": 24,
+            "lower_s": 2.391027,
+            "upper_s": 2.594138,
+            "summary": "24 pings lost at one ping every 100 ms, traffic stopped for 2.391 to 2.594 s",
+            "begins_s": 5.136383,
+            "ends_s": 7.52741,
+            "windows": [
+              "Flap 1 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 79,
+            "last_seq": 79,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.211628,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.212 s",
+            "begins_s": 8.046521,
+            "ends_s": 8.046521,
+            "windows": [
+              "Flap 2 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 90,
+            "last_seq": 112,
+            "lost": 23,
+            "lower_s": 2.292623,
+            "upper_s": 2.499595,
+            "summary": "23 pings lost at one ping every 100 ms, traffic stopped for 2.293 to 2.5 s",
+            "begins_s": 9.161956,
+            "ends_s": 11.454579,
+            "windows": [
+              "Flap 2 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 129,
+            "last_seq": 153,
+            "lost": 25,
+            "lower_s": 2.494722,
+            "upper_s": 2.699899,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.495 to 2.7 s",
+            "begins_s": 13.207882,
+            "ends_s": 15.702604,
+            "windows": [
+              "Flap 3 up"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 157,
+            "last_seq": 157,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.211154,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.211 s",
+            "begins_s": 16.11802,
+            "ends_s": 16.11802,
+            "windows": [
+              "Flap 4 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 168,
+            "last_seq": 191,
+            "lost": 24,
+            "lower_s": 2.406255,
+            "upper_s": 2.618476,
+            "summary": "24 pings lost at one ping every 100 ms, traffic stopped for 2.406 to 2.618 s",
+            "begins_s": 17.235733,
+            "ends_s": 19.641988,
+            "windows": [
+              "Flap 4 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 196,
+            "last_seq": 196,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.208256,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.208 s",
+            "begins_s": 20.165843,
+            "ends_s": 20.165843,
+            "windows": [
+              "Flap 5 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 207,
+            "last_seq": 230,
+            "lost": 24,
+            "lower_s": 2.400971,
+            "upper_s": 2.603078,
+            "summary": "24 pings lost at one ping every 100 ms, traffic stopped for 2.401 to 2.603 s",
+            "begins_s": 21.287911,
+            "ends_s": 23.688882,
+            "windows": [
+              "Flap 5 up"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ],
+        "max_send_interval_s": 0.138295,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      },
+      "host2-to-mac-move-host": {
+        "ident": 2,
+        "source": "host2:bond0",
+        "destination": "mac-move-host:bond0",
+        "sent": 324,
+        "delivered": 324,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [],
+        "max_send_interval_s": 0.115662,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      },
+      "mac-move-host-to-host1": {
+        "ident": 3,
+        "source": "mac-move-host:bond0",
+        "destination": "host1:bond0",
+        "sent": 324,
+        "delivered": 199,
+        "lost_seqs": [
+          40,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          79,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          157,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          196,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 40,
+            "last_seq": 40,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.212264,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.212 s",
+            "begins_s": 4.014661,
+            "ends_s": 4.014661,
+            "windows": [
+              "Flap 1 down"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 51,
+            "last_seq": 74,
+            "lost": 24,
+            "lower_s": 2.401393,
+            "upper_s": 2.607686,
+            "summary": "24 pings lost at one ping every 100 ms, traffic stopped for 2.401 to 2.608 s",
+            "begins_s": 5.133114,
+            "ends_s": 7.534507,
+            "windows": [
+              "Flap 1 up"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 79,
+            "last_seq": 79,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.21197,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.212 s",
+            "begins_s": 8.055656,
+            "ends_s": 8.055656,
+            "windows": [
+              "Flap 2 down"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 90,
+            "last_seq": 112,
+            "lost": 23,
+            "lower_s": 2.284855,
+            "upper_s": 2.491506,
+            "summary": "23 pings lost at one ping every 100 ms, traffic stopped for 2.285 to 2.492 s",
+            "begins_s": 9.169247,
+            "ends_s": 11.454102,
+            "windows": [
+              "Flap 2 up"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 129,
+            "last_seq": 153,
+            "lost": 25,
+            "lower_s": 2.50379,
+            "upper_s": 2.709181,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.504 to 2.709 s",
+            "begins_s": 13.19978,
+            "ends_s": 15.70357,
+            "windows": [
+              "Flap 3 up"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 157,
+            "last_seq": 157,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.21206,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.212 s",
+            "begins_s": 16.117571,
+            "ends_s": 16.117571,
+            "windows": [
+              "Flap 4 down"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 167,
+            "last_seq": 191,
+            "lost": 25,
+            "lower_s": 2.507966,
+            "upper_s": 2.713196,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.508 to 2.713 s",
+            "begins_s": 17.147164,
+            "ends_s": 19.65513,
+            "windows": [
+              "Flap 4 up"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 196,
+            "last_seq": 196,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.209964,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.21 s",
+            "begins_s": 20.170931,
+            "ends_s": 20.170931,
+            "windows": [
+              "Flap 5 down"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 206,
+            "last_seq": 229,
+            "lost": 24,
+            "lower_s": 2.395175,
+            "upper_s": 2.60247,
+            "summary": "24 pings lost at one ping every 100 ms, traffic stopped for 2.395 to 2.602 s",
+            "begins_s": 21.203084,
+            "ends_s": 23.598259,
+            "windows": [
+              "Flap 5 up"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          }
+        ],
+        "max_send_interval_s": 0.121126,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      },
+      "mac-move-host-to-host2": {
+        "ident": 4,
+        "source": "mac-move-host:bond0",
+        "destination": "host2:bond0",
+        "sent": 324,
+        "delivered": 324,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [],
+        "max_send_interval_s": 0.129004,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      },
+      "host1-to-host2": {
+        "ident": 5,
+        "source": "host1:bond0",
+        "destination": "host2:bond0",
+        "sent": 323,
+        "delivered": 201,
+        "lost_seqs": [
+          40,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          79,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 40,
+            "last_seq": 40,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.209626,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.21 s",
+            "begins_s": 4.019153,
+            "ends_s": 4.019153,
+            "windows": [
+              "Flap 1 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 51,
+            "last_seq": 73,
+            "lost": 23,
+            "lower_s": 2.299967,
+            "upper_s": 2.506794,
+            "summary": "23 pings lost at one ping every 100 ms, traffic stopped for 2.3 to 2.507 s",
+            "begins_s": 5.148363,
+            "ends_s": 7.44833,
+            "windows": [
+              "Flap 1 up"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 79,
+            "last_seq": 79,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.208886,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.209 s",
+            "begins_s": 8.070511,
+            "ends_s": 8.070511,
+            "windows": [
+              "Flap 2 down"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 90,
+            "last_seq": 112,
+            "lost": 23,
+            "lower_s": 2.288411,
+            "upper_s": 2.490522,
+            "summary": "23 pings lost at one ping every 100 ms, traffic stopped for 2.288 to 2.491 s",
+            "begins_s": 9.199687,
+            "ends_s": 11.488098,
+            "windows": [
+              "Flap 2 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 129,
+            "last_seq": 153,
+            "lost": 25,
+            "lower_s": 2.500566,
+            "upper_s": 2.704952,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.501 to 2.705 s",
+            "begins_s": 13.227343,
+            "ends_s": 15.727909,
+            "windows": [
+              "Flap 3 up"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 167,
+            "last_seq": 191,
+            "lost": 25,
+            "lower_s": 2.512699,
+            "upper_s": 2.720989,
+            "summary": "25 pings lost at one ping every 100 ms, traffic stopped for 2.513 to 2.721 s",
+            "begins_s": 17.174522,
+            "ends_s": 19.687221,
+            "windows": [
+              "Flap 4 up"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 206,
+            "last_seq": 229,
+            "lost": 24,
+            "lower_s": 2.406559,
+            "upper_s": 2.62113,
+            "summary": "24 pings lost at one ping every 100 ms, traffic stopped for 2.407 to 2.621 s",
+            "begins_s": 21.248454,
+            "ends_s": 23.655013,
+            "windows": [
+              "Flap 5 up"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ],
+        "max_send_interval_s": 0.115323,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      }
+    }
+  },
+  "closing": {
+    "window": "after the steps",
+    "start_s": 32.137976,
+    "end_s": 33.604773,
+    "verdict": "pass",
+    "streams": {
+      "host1-to-mac-move-host": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host2-to-mac-move-host": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mac-move-host-to-host1": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "mac-move-host-to-host2": {
+        "delivered": 15,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host1-to-host2": {
+        "delivered": 14,
+        "min_delivered": 12,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "host_watch": {
+    "verdict": "pass",
+    "interval_s": 0.35,
+    "devices": {
+      "switch1": {
+        "samples_per_step": {
+          "Flap 1 down": 2,
+          "Flap 1 up": 8,
+          "Flap 2 down": 3,
+          "Flap 2 up": 8,
+          "Flap 3 down": 2,
+          "Flap 3 up": 8,
+          "Flap 4 down": 3,
+          "Flap 4 up": 9,
+          "Flap 5 down": 2,
+          "Flap 5 up": 22,
+          "Flap recovery": 9
+        },
+        "missing_samples_s": {
+          "02:00:00:11:00:12": [],
+          "02:00:00:11:00:50": []
+        },
+        "max_sample_interval_s": 0.353528
+      },
+      "switch2": {
+        "samples_per_step": {
+          "Flap 1 down": 2,
+          "Flap 1 up": 8,
+          "Flap 2 down": 3,
+          "Flap 2 up": 8,
+          "Flap 3 down": 2,
+          "Flap 3 up": 8,
+          "Flap 4 down": 3,
+          "Flap 4 up": 9,
+          "Flap 5 down": 2,
+          "Flap 5 up": 22,
+          "Flap recovery": 9
+        },
+        "missing_samples_s": {
+          "02:00:00:11:00:12": [],
+          "02:00:00:11:00:50": []
+        },
+        "max_sample_interval_s": 0.353172
+      }
+    }
+  }
+}

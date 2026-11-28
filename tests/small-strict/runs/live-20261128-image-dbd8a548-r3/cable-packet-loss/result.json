@@ -1,0 +1,1086 @@
+{
+  "name": "cable-packet-loss",
+  "purpose": "Check failover when every frame leaving host1 on its cable to switch2 is lost. The link keeps carrier and frames in the reverse direction are left unfiltered.",
+  "source": null,
+  "verdict": "pass",
+  "reasons": [],
+  "state": {
+    "before": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "Both switches show MLAG connected.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true
+              },
+              "observed": {
+                "connected": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true
+              },
+              "observed": {
+                "connected": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both switches run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Every host bond runs with lacp-strict=yes and min-links=1 on both switches.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host1"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host1"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host2"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host2"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host3"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host3"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host1"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host1"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host2"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host2"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host3"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host3"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of every host are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host3",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host3",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "Both switches show MLAG connected.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true
+              },
+              "observed": {
+                "connected": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true
+              },
+              "observed": {
+                "connected": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both switches run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Every host bond runs with lacp-strict=yes and min-links=1 on both switches.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host1"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host1"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host2"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host2"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host3"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host3"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host1"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host1"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host2"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host2"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host3"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "host3"
+                },
+                "name": "min-links"
+              },
+              "expected": 1,
+              "observed": 1,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of every host are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host3",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host3",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quiet": {
+    "window": "quiet window",
+    "start_s": 0.0,
+    "end_s": 3.800689,
+    "verdict": "pass",
+    "streams": {
+      "host1-to-host2": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host2-to-host3": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "name": "One-way cable loss",
+      "expected": "Host1 fails over to its other cable while the independent host stream stays up.",
+      "fault": {
+        "target": "host1:eth2",
+        "verdict": "pass",
+        "points": [
+          "host1:eth2"
+        ],
+        "held_s": 25.001126939,
+        "dropped": {
+          "host1:eth2": 39
+        },
+        "recovered_s": 14.590290521
+      },
+      "hold_s": 25.0,
+      "start_s": 3.800689,
+      "end_s": 28.805315,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 4.0,
+          "lower_s": 2.29693,
+          "upper_s": 2.50627,
+          "lost": 23,
+          "summary": "23 pings lost in total at one ping every 100 ms, longest measured outage 2.29693 to 2.50627 s",
+          "duplicates": 0,
+          "sent": 241,
+          "delivered": 218,
+          "verdict": "pass",
+          "reason": "23 pings lost in total at one ping every 100 ms, longest measured outage 2.29693 to 2.50627 s, within 4 s"
+        },
+        "host2-to-host3": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 238,
+          "delivered": 238,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "Cable loss cleared",
+      "expected": "The cable returns to its default queue and both streams deliver again.",
+      "fault": {
+        "target": "host1:eth2",
+        "verdict": "pass",
+        "points": [
+          "host1:eth2"
+        ],
+        "held_s": 25.001126939,
+        "dropped": {
+          "host1:eth2": 39
+        },
+        "recovered_s": 14.590290521
+      },
+      "hold_s": 5.0,
+      "start_s": 28.805315,
+      "end_s": 48.397116,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 4.0,
+          "lower_s": 0.315194,
+          "upper_s": 0.520808,
+          "lost": 4,
+          "summary": "4 pings lost in total at one ping every 100 ms, longest measured outage 0.315194 to 0.520808 s",
+          "duplicates": 0,
+          "sent": 188,
+          "delivered": 184,
+          "verdict": "pass",
+          "reason": "4 pings lost in total at one ping every 100 ms, longest measured outage 0.315194 to 0.520808 s, within 4 s"
+        },
+        "host2-to-host3": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 188,
+          "delivered": 188,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    }
+  ],
+  "log": [],
+  "switch_log": {
+    "file": "syslog/switches.log",
+    "saved": true,
+    "lines": {
+      "switch1": 2,
+      "switch2": 4
+    },
+    "markers": {
+      "switch1": {
+        "start": -2.496787,
+        "end": 51.039048
+      },
+      "switch2": {
+        "start": -2.221989,
+        "end": 51.087
+      }
+    }
+  },
+  "validity": [
+    {
+      "check": "capture at host1:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at host2:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at host3:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "every stream and its captures stayed up",
+      "ok": true
+    },
+    {
+      "check": "every cable set down was set up again",
+      "ok": true
+    },
+    {
+      "check": "the wall clock and the monotonic clock of the lab host agree within 50 ms",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host3 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host3 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host3 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    }
+  ],
+  "traffic": {
+    "start_ns": 1795851231340302000,
+    "end_ns": 1795851281835397195,
+    "interval_s": 0.1,
+    "streams": {
+      "host1-to-host2": {
+        "ident": 1,
+        "source": "host1:bond0",
+        "destination": "host2:bond0",
+        "sent": 485,
+        "delivered": 458,
+        "lost_seqs": [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          412,
+          413,
+          414,
+          415
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 38,
+            "last_seq": 60,
+            "lost": 23,
+            "lower_s": 2.29693,
+            "upper_s": 2.50627,
+            "summary": "23 pings lost at one ping every 100 ms, traffic stopped for 2.297 to 2.506 s",
+            "begins_s": 3.864437,
+            "ends_s": 6.161367,
+            "windows": [
+              "One-way cable loss"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 412,
+            "last_seq": 415,
+            "lost": 4,
+            "lower_s": 0.315194,
+            "upper_s": 0.520808,
+            "summary": "4 pings lost at one ping every 100 ms, traffic stopped for 0.315 to 0.521 s",
+            "begins_s": 42.649211,
+            "ends_s": 42.964405,
+            "windows": [
+              "Cable loss cleared"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ],
+        "max_send_interval_s": 0.113003,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      },
+      "host2-to-host3": {
+        "ident": 2,
+        "source": "host2:bond0",
+        "destination": "host3:bond0",
+        "sent": 482,
+        "delivered": 482,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [],
+        "max_send_interval_s": 0.179792,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      }
+    }
+  },
+  "closing": {
+    "window": "after the steps",
+    "start_s": 48.397116,
+    "end_s": 50.495095,
+    "verdict": "pass",
+    "streams": {
+      "host1-to-host2": {
+        "delivered": 20,
+        "min_delivered": 18,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host2-to-host3": {
+        "delivered": 20,
+        "min_delivered": 18,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  }
+}

@@ -1,0 +1,136 @@
+streams:
+  - name: host1-to-host2
+    from: host1:bond0
+    to: host2:bond0
+  - name: host2-to-host3
+    from: host2:bond0
+    to: host3:bond0
+state:
+  - name: Both switches show MLAG connected.
+    checks:
+      - device: switch1
+        check: mlag
+        params: &bridge
+          bridge: bridge
+        expected: &connected
+          connected: true
+      - device: switch2
+        check: mlag
+        params: *bridge
+        expected: *connected
+  - name: Both switches run with spanning tree off.
+    checks:
+      - device: switch1
+        check: stp_mode
+        params: *bridge
+        expected: none
+      - device: switch2
+        check: stp_mode
+        params: *bridge
+        expected: none
+  - name: Every host bond runs with lacp-strict=yes and min-links=1 on both switches.
+    checks:
+      - device: switch1
+        check: property
+        params: &strict-host1
+          menu: /interface/bonding
+          where:
+            name: host1
+          name: lacp-strict
+        expected: true
+      - device: switch1
+        check: property
+        params: &min-links-host1
+          menu: /interface/bonding
+          where:
+            name: host1
+          name: min-links
+        expected: 1
+      - device: switch1
+        check: property
+        params: &strict-host2
+          menu: /interface/bonding
+          where:
+            name: host2
+          name: lacp-strict
+        expected: true
+      - device: switch1
+        check: property
+        params: &min-links-host2
+          menu: /interface/bonding
+          where:
+            name: host2
+          name: min-links
+        expected: 1
+      - device: switch1
+        check: property
+        params: &strict-host3
+          menu: /interface/bonding
+          where:
+            name: host3
+          name: lacp-strict
+        expected: true
+      - device: switch1
+        check: property
+        params: &min-links-host3
+          menu: /interface/bonding
+          where:
+            name: host3
+          name: min-links
+        expected: 1
+      - device: switch2
+        check: property
+        params: *strict-host1
+        expected: true
+      - device: switch2
+        check: property
+        params: *min-links-host1
+        expected: 1
+      - device: switch2
+        check: property
+        params: *strict-host2
+        expected: true
+      - device: switch2
+        check: property
+        params: *min-links-host2
+        expected: 1
+      - device: switch2
+        check: property
+        params: *strict-host3
+        expected: true
+      - device: switch2
+        check: property
+        params: *min-links-host3
+        expected: 1
+  - name: Both cables of every host are eligible in its LACP bond.
+    checks:
+      - device: host1
+        check: bond_member
+        params: &first-member
+          bond: bond0
+          member: eth1
+        expected: &eligible
+          eligible: true
+      - device: host1
+        check: bond_member
+        params: &second-member
+          bond: bond0
+          member: eth2
+        expected: *eligible
+      - device: host2
+        check: bond_member
+        params: *first-member
+        expected: *eligible
+      - device: host2
+        check: bond_member
+        params: *second-member
+        expected: *eligible
+      - device: host3
+        check: bond_member
+        params: *first-member
+        expected: *eligible
+      - device: host3
+        check: bond_member
+        params: *second-member
+        expected: *eligible
+switch_log: syslog/switches.log

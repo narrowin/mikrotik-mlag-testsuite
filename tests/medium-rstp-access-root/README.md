@@ -18,13 +18,15 @@ The startup config, host setup and inventory are the base lab's files in [tests/
 
 ## Live runs
 
-Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2, after the glossary renames. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports; full evidence stays in `test-results/live-20261127-glossary/medium-rstp-access-root/`.
+Run on 28 November 2026 with RouterOS 7.26beta7 in our CHR image `ghcr.io/narrowin/vrnetlab_mikrotik_routeros@sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10` and Networka 0.5.2+chr.5. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports, and [image-proof.json](runs/live-20261128-image-dbd8a548/image-proof.json) records the image of every node; full evidence stays in `test-results/live-20261128-image-dbd8a548/medium-rstp-access-root/`.
 
-- [FAIL — baseline](runs/live-20261127-glossary/baseline/report.md)
-- [FAIL — primary-power-loss](runs/live-20261127-glossary/primary-power-loss/report.md)
-- [FAIL — primary-reboot](runs/live-20261127-glossary/primary-reboot/report.md)
-- [FAIL — secondary-power-loss](runs/live-20261127-glossary/secondary-power-loss/report.md)
-- [FAIL — secondary-reboot](runs/live-20261127-glossary/secondary-reboot/report.md)
+- [ERROR — baseline](runs/live-20261128-image-dbd8a548/baseline/report.md)
+- [ERROR — primary-power-loss](runs/live-20261128-image-dbd8a548/primary-power-loss/report.md)
+- [ERROR — primary-reboot](runs/live-20261128-image-dbd8a548/primary-reboot/report.md)
+- [ERROR — secondary-power-loss](runs/live-20261128-image-dbd8a548/secondary-power-loss/report.md)
+- [ERROR — secondary-reboot](runs/live-20261128-image-dbd8a548/secondary-reboot/report.md)
+
+Every test is ERROR, because the state check before the test failed and its steps did not run. On 27 November 2026 with the official `mikrotik/chr` image and Networka 0.5.2 every test failed on the same state check.
 
 ## Commands
 

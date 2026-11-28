@@ -5,9 +5,9 @@ set -eu
 n=$(hostname)
 n=${n#host}
 
-# Independent LACP control stops transmitting when the partner stops collecting.
-# The fixed MAC keeps the bond's cable choice in every run.
-ip link add bond0 address "02:00:00:00:00:0$n" type bond mode 802.3ad miimon 100 lacp_rate fast coupled_control off
+# miimon 100 stops sending on a cut cable, lacp_rate fast matches the switches, and the fixed MAC keeps the bond's cable choice in every run.
+# COUPLED_CONTROL, set to off in Small strict only, makes the bond stop sending when the partner stops collecting.
+ip link add bond0 address "02:00:00:00:00:0$n" type bond mode 802.3ad miimon 100 lacp_rate fast${COUPLED_CONTROL:+ coupled_control $COUPLED_CONTROL}
 # A cable joins a bond only while it is down.
 for cable in eth1 eth2; do
     ip link set "$cable" down

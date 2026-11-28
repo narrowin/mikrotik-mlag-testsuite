@@ -1,5 +1,7 @@
 # Final CHR integration qualification
 
+This qualification ran before Small strict was split off from the Small lab; its settings and results now apply to the [Small strict lab](../tests/small-strict/README.md), and Small runs with the RouterOS and Linux bond defaults.
+
 All four existing Small tests pass with the final reviewed Networka `0.5.2+chr.5` artifact, the unchanged public CHR image and published ARM64 containerlab client. No test action, hold, traffic limit, state expectation or recovery deadline changed.
 
 | Small test | Verdict | Generated report |

@@ -54,7 +54,7 @@ _Avoid_: bridge mode, setup
 ### Labs and devices
 
 **Lab size**:
-Small (one **MLAG pair**, three **hosts**), Medium (one pair with an **access switch**) or Large (two sites, each with a core pair and a distribution pair); most **labs** are one of these sizes in one **STP mode**.
+Small (one **MLAG pair**, three **hosts**), Medium (one pair with an **access switch**) or Large (two sites, each with a core pair and a distribution pair); most **labs** are one of these sizes in one **STP mode**; the Small strict lab is the Small lab with **lacp-strict** and `min-links=1` on the host bonds and coupled LACP control off on the **hosts**.
 _Avoid_: simple, core lab, two-site lab, external root lab
 
 **Two-pair lab**:

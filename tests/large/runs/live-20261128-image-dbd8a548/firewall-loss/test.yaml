@@ -1,0 +1,61 @@
+name: firewall-loss
+purpose: >-
+  Withdraw all data links of the dc1 firewall and pause its guest before a cold reset.
+  The dc2 firewall must take over the VRRP address, and dc1 must take it back after power returns.
+  The streams between hosts cross no firewall and must continue; the pings to the VRRP address may stop only while the address moves.
+source: https://manual.mikrotik.com/docs/high-availability-solutions/user-guides/vrrp-configuration-examples/
+lab: ../lab/lab.yaml
+steps:
+  - name: Baseline
+    action:
+      observe: true
+    hold_s: 4  # Four seconds of steady traffic before power loss.
+    max_outage_s: &loss-free
+      dc1-traffic-to-dc1-service: 0
+      dc2-traffic-to-dc2-service: 0
+      dc1-to-dc2-over-dci: 0
+      dc2-to-dc1-over-dci: 0
+      dc1-traffic-to-vrrp: 0
+      dc2-traffic-to-vrrp: 0
+    expected: Every ping arrives once before power loss.
+  - name: dc1-firewall power lost
+    action:
+      power_off: dc1-firewall
+    # Keep the firewall off well past three missed one-second VRRP advertisements and the fast LACP timeout.
+    hold_s: 20
+    max_outage_s: &vrrp-limits
+      # No stream between hosts crosses a firewall.
+      dc1-traffic-to-dc1-service: 0
+      dc2-traffic-to-dc2-service: 0
+      dc1-to-dc2-over-dci: 0
+      dc2-to-dc1-over-dci: 0
+      # RFC 9568 section 6.1 down interval for the dc2 firewall: 3 x 1 s advertisements + (256 - 100) / 256 s skew = 3.61 s, rounded up to cover one ping interval and the host-table move.
+      # The retained 4 s return limit is a separate local acceptance criterion, not a bound derived from this failover calculation.
+      dc1-traffic-to-vrrp: &vrrp-move 4
+      dc2-traffic-to-vrrp: *vrrp-move
+    expected: Both dc1 cores see carrier go down and the dc2 firewall becomes VRRP master.
+    check_state:
+      - name: The dc2 firewall owns the VRRP address.
+        checks:
+          - device: dc2-firewall
+            check: property
+            params:
+              menu: /interface/vrrp
+              where:
+                name: vrrp390
+              name: master
+            expected: true
+  - name: dc1-firewall power restored
+    action:
+      power_on: dc1-firewall
+    # The Small power-loss recovery deadline: CHR cold boot, SSH cooldown and the default 60 s MLAG initialisation interval.
+    recovery_deadline_s: 180
+    hold_s: 16  # Continue through the observation after boot, beyond five fast LACP timeouts.
+    max_outage_s: *vrrp-limits
+    expected: The dc1 firewall has a new boot, rejoins its bond and preempts the VRRP address from dc2.
+  - name: Power recovery
+    action:
+      observe: true
+    hold_s: 3  # A fast LACP timeout yields 30 pings at the 100 ms cadence.
+    max_outage_s: *loss-free
+    expected: Every stream keeps delivering after power returns.

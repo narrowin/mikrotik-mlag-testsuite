@@ -1,0 +1,1525 @@
+{
+  "name": "primary-power-loss",
+  "purpose": "Withdraw all data links of switch1 in its checked MLAG primary role and pause the guest before a cold reset. Measure both directions between host1 and host2.",
+  "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
+  "verdict": "fail",
+  "reasons": [
+    "Step switch1 power lost is fail."
+  ],
+  "state": {
+    "before": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "Switch1 is the connected MLAG primary and switch2 the connected MLAG secondary.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "All three switches run RSTP.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "The MLAG pair is the RSTP root bridge with switch1's bridge ID, and the access switch reaches it through its uplink.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": true,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01"
+              },
+              "observed": {
+                "root_bridge": true,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": true,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01"
+              },
+              "observed": {
+                "root_bridge": true,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": false,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01",
+                "root_port": "uplink"
+              },
+              "observed": {
+                "root_bridge": false,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01",
+                "root_port": "uplink"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Every bridge port of the three switches forwards, and the host ports are edge ports.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "access-switch"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host2"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "access-switch"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host2"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "uplink"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether4"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both bond members of the access switch uplink are synchronized, collecting and distributing.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "lacp_member",
+              "params": {
+                "bond": "uplink",
+                "member": "ether2"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "lacp_member",
+              "params": {
+                "bond": "uplink",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both bond members of host2 have carrier and are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "Switch1 is the connected MLAG primary and switch2 the connected MLAG secondary.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "All three switches run RSTP.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "The MLAG pair is the RSTP root bridge with switch1's bridge ID, and the access switch reaches it through its uplink.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": true,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01"
+              },
+              "observed": {
+                "root_bridge": true,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": true,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01"
+              },
+              "observed": {
+                "root_bridge": true,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": false,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01",
+                "root_port": "uplink"
+              },
+              "observed": {
+                "root_bridge": false,
+                "root_bridge_id": "0x1000.02:00:00:21:01:01",
+                "root_port": "uplink"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Every bridge port of the three switches forwards, and the host ports are edge ports.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "access-switch"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host2"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "access-switch"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host2"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "uplink"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether4"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both bond members of the access switch uplink are synchronized, collecting and distributing.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "lacp_member",
+              "params": {
+                "bond": "uplink",
+                "member": "ether2"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "access-switch",
+              "check": "lacp_member",
+              "params": {
+                "bond": "uplink",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both bond members of host2 have carrier and are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quiet": {
+    "window": "quiet window",
+    "start_s": 0.0,
+    "end_s": 3.846014,
+    "verdict": "pass",
+    "streams": {
+      "host1-to-host2": {
+        "delivered": 37,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host2-to-host1": {
+        "delivered": 37,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "name": "Baseline",
+      "expected": "Every ping arrives once before power loss.",
+      "hold_s": 4.0,
+      "start_s": 3.846014,
+      "end_s": 7.848478,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 40,
+          "delivered": 40,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host2-to-host1": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 40,
+          "delivered": 40,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "switch1 power lost",
+      "expected": "Every neighbour sees carrier go down and switched traffic recovers through the surviving peer.",
+      "power": {
+        "switch": "switch1",
+        "verdict": "pass",
+        "limit_s": 180.0,
+        "ports": [
+          "switch1:eth1",
+          "switch1:eth2",
+          "switch1:eth3"
+        ],
+        "held_s": 20.015072568,
+        "before_uptime_s": 87.0,
+        "after_uptime_s": 37.0,
+        "elapsed_s": 45.266722784,
+        "recovered_s": 47.068056227,
+        "state": "off"
+      },
+      "hold_s": 20.0,
+      "start_s": 7.848478,
+      "end_s": 28.149084,
+      "verdict": "fail",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 5.0,
+          "lower_s": 9.940067,
+          "upper_s": 10.145752,
+          "lost": 97,
+          "summary": "97 pings lost in total at one ping every 100 ms, longest measured outage 9.94007 to 10.1458 s",
+          "duplicates": 0,
+          "sent": 196,
+          "delivered": 99,
+          "verdict": "fail",
+          "reason": "97 pings lost in total at one ping every 100 ms, longest measured outage 9.94007 to 10.1458 s, above 5 s"
+        },
+        "host2-to-host1": {
+          "limit_s": 5.0,
+          "lower_s": 10.103625,
+          "upper_s": 10.311916,
+          "lost": 98,
+          "summary": "98 pings lost in total at one ping every 100 ms, longest measured outage 10.1036 to 10.3119 s",
+          "duplicates": 0,
+          "sent": 197,
+          "delivered": 99,
+          "verdict": "fail",
+          "reason": "98 pings lost in total at one ping every 100 ms, longest measured outage 10.1036 to 10.3119 s, above 5 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "switch1 power restored",
+      "expected": "The MLAG primary has a new boot, and the access switch uplink and the host2 bond return to service.",
+      "power": {
+        "switch": "switch1",
+        "verdict": "pass",
+        "limit_s": 180.0,
+        "ports": [
+          "switch1:eth1",
+          "switch1:eth2",
+          "switch1:eth3"
+        ],
+        "held_s": 20.015072568,
+        "before_uptime_s": 87.0,
+        "after_uptime_s": 37.0,
+        "elapsed_s": 45.266722784,
+        "recovered_s": 47.068056227,
+        "state": "on"
+      },
+      "hold_s": 16.0,
+      "start_s": 28.149084,
+      "end_s": 91.232497,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 5.0,
+          "lower_s": 0.834621,
+          "upper_s": 1.04477,
+          "lost": 12,
+          "summary": "12 pings lost in total at one ping every 100 ms, longest measured outage 0.834621 to 1.04477 s",
+          "duplicates": 0,
+          "sent": 621,
+          "delivered": 609,
+          "verdict": "pass",
+          "reason": "12 pings lost in total at one ping every 100 ms, longest measured outage 0.834621 to 1.04477 s, within 5 s"
+        },
+        "host2-to-host1": {
+          "limit_s": 5.0,
+          "lower_s": 0.840017,
+          "upper_s": 1.04852,
+          "lost": 12,
+          "summary": "12 pings lost in total at one ping every 100 ms, longest measured outage 0.840017 to 1.04852 s",
+          "duplicates": 0,
+          "sent": 621,
+          "delivered": 609,
+          "verdict": "pass",
+          "reason": "12 pings lost in total at one ping every 100 ms, longest measured outage 0.840017 to 1.04852 s, within 5 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "Power recovery",
+      "expected": "Every stream keeps delivering after power returns.",
+      "hold_s": 3.0,
+      "start_s": 91.232497,
+      "end_s": 94.23676,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 30,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host2-to-host1": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 30,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    }
+  ],
+  "log": [],
+  "switch_log": {
+    "file": "syslog/switches.log",
+    "saved": true,
+    "lines": {
+      "access-switch": 133,
+      "switch1": 53,
+      "switch2": 61
+    },
+    "markers": {
+      "access-switch": {
+        "start": -2.809605,
+        "end": 97.062919
+      },
+      "switch1": {
+        "start": -2.472337,
+        "end": 97.108572
+      },
+      "switch2": {
+        "start": -2.069551,
+        "end": 97.150432
+      }
+    }
+  },
+  "validity": [
+    {
+      "check": "capture at host1:eth1 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at host2:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "every stream and its captures stayed up",
+      "ok": true
+    },
+    {
+      "check": "every cable set down was set up again",
+      "ok": true
+    },
+    {
+      "check": "the wall clock and the monotonic clock of the lab host agree within 50 ms",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host1 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host1 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host1 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    }
+  ],
+  "traffic": {
+    "start_ns": 1795849825018470000,
+    "end_ns": 1795849921534524942,
+    "interval_s": 0.1,
+    "streams": {
+      "host1-to-host2": {
+        "ident": 1,
+        "source": "host1:eth1",
+        "destination": "host2:bond0",
+        "sent": 946,
+        "delivered": 837,
+        "lost_seqs": [
+          80,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          609,
+          610,
+          611,
+          618,
+          619,
+          620,
+          621,
+          622,
+          623,
+          624,
+          625,
+          626
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 80,
+            "last_seq": 80,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.204607,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.205 s",
+            "begins_s": 8.029604,
+            "ends_s": 8.029604,
+            "windows": [
+              "switch1 power lost"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          },
+          {
+            "first_seq": 83,
+            "last_seq": 178,
+            "lost": 96,
+            "lower_s": 9.940067,
+            "upper_s": 10.145752,
+            "summary": "96 pings lost at one ping every 100 ms, traffic stopped for 9.94 to 10.146 s",
+            "begins_s": 8.334949,
+            "ends_s": 18.275016,
+            "windows": [
+              "switch1 power lost"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 609,
+            "last_seq": 611,
+            "lost": 3,
+            "lower_s": 0.208929,
+            "upper_s": 0.414562,
+            "summary": "3 pings lost at one ping every 100 ms, traffic stopped for 0.209 to 0.415 s",
+            "begins_s": 62.043607,
+            "ends_s": 62.252536,
+            "windows": [
+              "switch1 power restored"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 618,
+            "last_seq": 626,
+            "lost": 9,
+            "lower_s": 0.834621,
+            "upper_s": 1.04477,
+            "summary": "9 pings lost at one ping every 100 ms, traffic stopped for 0.835 to 1.045 s",
+            "begins_s": 62.969267,
+            "ends_s": 63.803888,
+            "windows": [
+              "switch1 power restored"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ],
+        "max_send_interval_s": 0.14112,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      },
+      "host2-to-host1": {
+        "ident": 2,
+        "source": "host2:bond0",
+        "destination": "host1:eth1",
+        "sent": 947,
+        "delivered": 837,
+        "lost_seqs": [
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          610,
+          611,
+          612,
+          618,
+          619,
+          620,
+          621,
+          622,
+          623,
+          624,
+          625,
+          626
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 82,
+            "last_seq": 179,
+            "lost": 98,
+            "lower_s": 10.103625,
+            "upper_s": 10.311916,
+            "summary": "98 pings lost at one ping every 100 ms, traffic stopped for 10.104 to 10.312 s",
+            "begins_s": 8.251485,
+            "ends_s": 18.35511,
+            "windows": [
+              "switch1 power lost"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 610,
+            "last_seq": 612,
+            "lost": 3,
+            "lower_s": 0.208037,
+            "upper_s": 0.417555,
+            "summary": "3 pings lost at one ping every 100 ms, traffic stopped for 0.208 to 0.418 s",
+            "begins_s": 62.075411,
+            "ends_s": 62.283448,
+            "windows": [
+              "switch1 power restored"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          },
+          {
+            "first_seq": 618,
+            "last_seq": 626,
+            "lost": 9,
+            "lower_s": 0.840017,
+            "upper_s": 1.04852,
+            "summary": "9 pings lost at one ping every 100 ms, traffic stopped for 0.84 to 1.049 s",
+            "begins_s": 62.900027,
+            "ends_s": 63.740044,
+            "windows": [
+              "switch1 power restored"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          }
+        ],
+        "max_send_interval_s": 0.121209,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      }
+    }
+  },
+  "closing": {
+    "window": "after the steps",
+    "start_s": 94.23676,
+    "end_s": 96.516055,
+    "verdict": "pass",
+    "streams": {
+      "host1-to-host2": {
+        "delivered": 22,
+        "min_delivered": 19,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host2-to-host1": {
+        "delivered": 22,
+        "min_delivered": 19,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  }
+}

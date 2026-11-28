@@ -4,19 +4,21 @@ Both switches run with spanning tree off. Switch1 is configured as MLAG primary 
 
 ## Live runs
 
-Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2, after the glossary renames. Each listed test ran once. `mac-age-relearn` ran with the ageing profile. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports; full evidence stays in `test-results/live-20261127-glossary/small-mac-move/` and `test-results/live-20261127-glossary/small-mac-move-age/`.
+Run on 28 November 2026 with RouterOS 7.26beta7 in our CHR image `ghcr.io/narrowin/vrnetlab_mikrotik_routeros@sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10` and Networka 0.5.2+chr.5. Each listed test ran once. `mac-age-relearn` ran with the ageing profile. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports, and [image-proof.json](runs/live-20261128-image-dbd8a548/image-proof.json) and [image-proof-age.json](runs/live-20261128-image-dbd8a548/image-proof-age.json) record the image of every node; full evidence stays in `test-results/live-20261128-image-dbd8a548/small-mac-move/` and `test-results/live-20261128-image-dbd8a548/small-mac-move-age/`.
 
-- [PASS — baseline](runs/live-20261127-glossary/baseline/report.md)
-- [PASS — bond-member-loss](runs/live-20261127-glossary/bond-member-loss/report.md)
-- [FAIL — lacp-timeout](runs/live-20261127-glossary/lacp-timeout/report.md)
-- [PASS — mac-age-relearn](runs/live-20261127-glossary/mac-age-relearn/report.md)
-- [PASS — mac-move](runs/live-20261127-glossary/mac-move/report.md)
-- [PASS — member-flap-repeat](runs/live-20261127-glossary/member-flap-repeat/report.md)
-- [PASS — peer-link-loss](runs/live-20261127-glossary/peer-link-loss/report.md)
-- [PASS — primary-power-loss](runs/live-20261127-glossary/primary-power-loss/report.md)
-- [PASS — primary-reboot](runs/live-20261127-glossary/primary-reboot/report.md)
-- [PASS — secondary-power-loss](runs/live-20261127-glossary/secondary-power-loss/report.md)
-- [FAIL — secondary-reboot](runs/live-20261127-glossary/secondary-reboot/report.md)
+- [PASS — baseline](runs/live-20261128-image-dbd8a548/baseline/report.md)
+- [PASS — bond-member-loss](runs/live-20261128-image-dbd8a548/bond-member-loss/report.md)
+- [ERROR — lacp-timeout](runs/live-20261128-image-dbd8a548/lacp-timeout/report.md)
+- [PASS — mac-age-relearn](runs/live-20261128-image-dbd8a548/mac-age-relearn/report.md)
+- [PASS — mac-move](runs/live-20261128-image-dbd8a548/mac-move/report.md)
+- [PASS — member-flap-repeat](runs/live-20261128-image-dbd8a548/member-flap-repeat/report.md)
+- [PASS — peer-link-loss](runs/live-20261128-image-dbd8a548/peer-link-loss/report.md)
+- [PASS — primary-power-loss](runs/live-20261128-image-dbd8a548/primary-power-loss/report.md)
+- [PASS — primary-reboot](runs/live-20261128-image-dbd8a548/primary-reboot/report.md)
+- [PASS — secondary-power-loss](runs/live-20261128-image-dbd8a548/secondary-power-loss/report.md)
+- [FAIL — secondary-reboot](runs/live-20261128-image-dbd8a548/secondary-reboot/report.md)
+
+lacp-timeout is ERROR. On 27 November 2026 with the official `mikrotik/chr` image and Networka 0.5.2 it failed.
 
 ## Run a test
 
@@ -49,6 +51,6 @@ sudo env SMALL_MAC_MOVE_AGE=10s "$CLAB" destroy -t "$LAB/lab/topology.clab.yml" 
 
 MAC ageing deliberately silences the MAC-move host for 25 s. The retained 26 s combined interruption limit includes that silence; it is not a 26 s relearning allowance. The typed action separately requires delivery and the end of unknown-unicast flooding within the existing 1 s `relearn_s`, measured from the first returning host frame at a switch TAP. The unaffected host1-to-host2 stream and the subsequent recovery step retain their 0 s limits.
 
-Reports show those deliberate interruptions separately from ordinary traffic outages. The results summary excludes them while they remain within their combined limits, and still highlights a confirmed limit breach. The linked MAC-ageing report has been regenerated from the unchanged saved `result.json` with the reporting change now included in pinned Networka `30e706a`; no new live run or verdict is implied.
+Reports show those deliberate interruptions separately from ordinary traffic outages. The results summary excludes them while they remain within their combined limits, and still highlights a confirmed limit breach.
 
 The cable tests record switch log events and state samples. Precise guest carrier deadlines, withdrawn member TAP observations and per-port LACP frame histories remain open. The secondary reboot checks baseline flood copies at host2. The historical receiver checks also watched the MAC-move host.

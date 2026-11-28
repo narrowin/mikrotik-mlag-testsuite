@@ -4,8 +4,9 @@ chart_alt: Worst outage per lab with RSTP off and on, against its limit
 pass_icon: ../docs/diagrams/result-pass.svg
 fail_icon: ../docs/diagrams/result-fail.svg
 caption: RSTP off means no spanning tree on any bridge (`protocol-mode=none`). RSTP on has the MLAG pair
-  as root; RSTP, access switch root has the Medium access switch as root. RouterOS 7.26beta7; live runs of
-  27 November 2026 with Networka 0.5.2
+  as root; RSTP, access switch root has the Medium access switch as root. RouterOS 7.26beta7 in our CHR image
+  pinned by digest; live runs of 28 November 2026 with Networka 0.5.2+chr.5; Small and Small strict show
+  round 1 of five
 modes:
 - RSTP off
 - RSTP on
@@ -17,32 +18,40 @@ rows:
   cells:
     RSTP off:
       runs:
-      - small/runs/live-20261127-glossary
+      - small/runs/live-20261128-image-dbd8a548
     RSTP on:
       runs:
-      - small-rstp/runs/live-20261127-glossary
+      - small-rstp/runs/live-20261128-image-dbd8a548
       link: small-rstp/README.md
+- lab: Small strict
+  topology: One MLAG pair + `lacp-strict`
+  label: One MLAG pair, lacp-strict
+  link: small-strict/README.md
+  cells:
+    RSTP off:
+      runs:
+      - small-strict/runs/live-20261128-image-dbd8a548
 - lab: Small with MAC-move host
   topology: One MLAG pair + MAC-move host
   link: small-mac-move/README.md
   cells:
     RSTP off:
       runs:
-      - small-mac-move/runs/live-20261127-glossary
+      - small-mac-move/runs/live-20261128-image-dbd8a548
 - lab: Medium
   topology: One MLAG pair + access switch
   link: medium/README.md
   cells:
     RSTP off:
       runs:
-      - medium/runs/live-20261127-glossary
+      - medium/runs/live-20261128-image-dbd8a548
     RSTP on:
       runs:
-      - medium-rstp/runs/live-20261127-glossary
+      - medium-rstp/runs/live-20261128-image-dbd8a548
       link: medium-rstp/README.md
     RSTP, access switch root:
       runs:
-      - medium-rstp-access-root/runs/live-20261127-glossary
+      - medium-rstp-access-root/runs/live-20261128-image-dbd8a548
       link: medium-rstp-access-root/README.md
 - lab: Two-pair
   topology: Two MLAG pairs
@@ -50,10 +59,10 @@ rows:
   cells:
     RSTP off:
       runs:
-      - two-pair/runs/live-20261127-glossary
+      - two-pair/runs/live-20261128-image-dbd8a548
     RSTP on:
       runs:
-      - two-pair-rstp/runs/live-20261127-glossary
+      - two-pair-rstp/runs/live-20261128-image-dbd8a548
       link: two-pair-rstp/README.md
 - lab: Two-pair strict
   topology: Two MLAG pairs + `lacp-strict`
@@ -62,11 +71,11 @@ rows:
   cells:
     RSTP off:
       runs:
-      - two-pair-strict/runs/live-20261127-glossary
+      - two-pair-strict/runs/live-20261128-image-dbd8a548
 - lab: Large
   topology: Two sites, four MLAG pairs
   link: large/README.md
   cells:
     RSTP off:
       runs:
-      - large/runs/live-20261127-glossary
+      - large/runs/live-20261128-image-dbd8a548

@@ -10,14 +10,14 @@ The startup config, host setup and inventory are the base lab's files in [tests/
 
 ## Live runs
 
-Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2, after the glossary renames. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports; full evidence stays in `test-results/live-20261127-glossary/two-pair-rstp/`.
+Run on 28 November 2026 with RouterOS 7.26beta7 in our CHR image `ghcr.io/narrowin/vrnetlab_mikrotik_routeros@sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10` and Networka 0.5.2+chr.5. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports, and [image-proof.json](runs/live-20261128-image-dbd8a548/image-proof.json) records the image of every node; full evidence stays in `test-results/live-20261128-image-dbd8a548/two-pair-rstp/`.
 
-- [PASS — baseline](runs/live-20261127-glossary/baseline/report.md)
-- [FAIL — inter-pair-member-flap](runs/live-20261127-glossary/inter-pair-member-flap/report.md)
-- [FAIL — reboot-a-primary](runs/live-20261127-glossary/reboot-a-primary/report.md)
-- [PASS — reboot-a-secondary](runs/live-20261127-glossary/reboot-a-secondary/report.md)
-- [FAIL — reboot-b-primary](runs/live-20261127-glossary/reboot-b-primary/report.md)
-- [PASS — reboot-b-secondary](runs/live-20261127-glossary/reboot-b-secondary/report.md)
+- [PASS — baseline](runs/live-20261128-image-dbd8a548/baseline/report.md)
+- [FAIL — inter-pair-member-flap](runs/live-20261128-image-dbd8a548/inter-pair-member-flap/report.md)
+- [FAIL — reboot-a-primary](runs/live-20261128-image-dbd8a548/reboot-a-primary/report.md)
+- [PASS — reboot-a-secondary](runs/live-20261128-image-dbd8a548/reboot-a-secondary/report.md)
+- [FAIL — reboot-b-primary](runs/live-20261128-image-dbd8a548/reboot-b-primary/report.md)
+- [PASS — reboot-b-secondary](runs/live-20261128-image-dbd8a548/reboot-b-secondary/report.md)
 
 ## Commands
 

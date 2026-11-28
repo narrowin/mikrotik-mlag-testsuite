@@ -11,14 +11,14 @@ The [strict variant](../two-pair-strict/README.md) is the same lab with `lacp-st
 
 ## Live runs
 
-Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2, after the glossary renames. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports; full evidence stays in `test-results/live-20261127-glossary/two-pair/`.
+Run on 28 November 2026 with RouterOS 7.26beta7 in our CHR image `ghcr.io/narrowin/vrnetlab_mikrotik_routeros@sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10` and Networka 0.5.2+chr.5. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports, and [image-proof.json](runs/live-20261128-image-dbd8a548/image-proof.json) records the image of every node; full evidence stays in `test-results/live-20261128-image-dbd8a548/two-pair/`.
 
-- [PASS — baseline](runs/live-20261127-glossary/baseline/report.md)
-- [PASS — inter-pair-member-flap](runs/live-20261127-glossary/inter-pair-member-flap/report.md)
-- [FAIL — reboot-a-primary](runs/live-20261127-glossary/reboot-a-primary/report.md)
-- [PASS — reboot-a-secondary](runs/live-20261127-glossary/reboot-a-secondary/report.md)
-- [FAIL — reboot-b-primary](runs/live-20261127-glossary/reboot-b-primary/report.md)
-- [PASS — reboot-b-secondary](runs/live-20261127-glossary/reboot-b-secondary/report.md)
+- [PASS — baseline](runs/live-20261128-image-dbd8a548/baseline/report.md)
+- [PASS — inter-pair-member-flap](runs/live-20261128-image-dbd8a548/inter-pair-member-flap/report.md)
+- [FAIL — reboot-a-primary](runs/live-20261128-image-dbd8a548/reboot-a-primary/report.md)
+- [PASS — reboot-a-secondary](runs/live-20261128-image-dbd8a548/reboot-a-secondary/report.md)
+- [FAIL — reboot-b-primary](runs/live-20261128-image-dbd8a548/reboot-b-primary/report.md)
+- [PASS — reboot-b-secondary](runs/live-20261128-image-dbd8a548/reboot-b-secondary/report.md)
 
 ## Commands
 
@@ -54,19 +54,19 @@ Old stops are the worst graded stream per phase. The old suite graded a reboot's
 | Test | Old verdict and loss | New verdict and loss | Reason for the difference |
 | --- | --- | --- | --- |
 | baseline | d1, d2, t1 pass, no loss. g1 error: the bridge priority gate withheld the fault. | PASS, no loss | Same |
-| inter-pair-member-flap | f1 pass, down 0.212446 to 0.417557 s, back 0.104846 to 0.310466 s. d1 pass, down 0.102805 to 0.308185 s, back 0.104577 to 0.309174 s. d2 pass, down 0.316025 to 0.527068 s, back 0.206342 to 0.411297 s. | PASS. Down: host1 to host2 2.60961 to 2.81365 s (26 lost), host2 to host1 2.51186 to 2.71573 s (25 lost). Back: 0.107042 to 0.312346 s (2 lost) and 0 to 0.210702 s (2 lost) | Same verdict; the stop at member down is longer than the old 0.1 to 0.5 s. See the flap section below. |
-| reboot-a-primary | faults.tsv: loss over the limit in Pair A primary down, 3 of 3 runs, 19.668 to 23.344 s | FAIL, 19.1492 to 19.4559 s | Same fault, just below the old range. |
+| inter-pair-member-flap | f1 pass, down 0.212446 to 0.417557 s, back 0.104846 to 0.310466 s. d1 pass, down 0.102805 to 0.308185 s, back 0.104577 to 0.309174 s. d2 pass, down 0.316025 to 0.527068 s, back 0.206342 to 0.411297 s. | PASS. Down: host1 to host2 0 to 0.202643 s (1 lost), host2 to host1 0.103072 to 0.309124 s (2 lost). Back: host1 to host2 1.45541 to 1.66019 s (15 lost), host2 to host1 1.35402 to 1.56082 s (14 lost) | Same verdict; the stop at member down is within the old 0.1 to 0.5 s, and the stop at member back is longer than the old 0.1 to 0.4 s. See the flap section below. |
+| reboot-a-primary | faults.tsv: loss over the limit in Pair A primary down, 3 of 3 runs, 19.668 to 23.344 s | FAIL, 16.2435 to 16.4562 s | Same fault, below the old range. |
 | reboot-a-secondary | d1, d2 pass, no loss in either phase. t1 did not reach evaluation. | PASS, 0 lost | Same |
-| reboot-b-primary | faults.tsv: loss over the limit in Pair B primary down, 2 of 2 runs, 20.664 to 22.177 s | FAIL, 24.0736 to 24.3146 s | Same fault. The stop is 2 to 4 s longer than the old range. |
+| reboot-b-primary | faults.tsv: loss over the limit in Pair B primary down, 2 of 2 runs, 20.664 to 22.177 s | FAIL, 16.5525 to 16.8001 s | Same fault, below the old range. |
 | reboot-b-secondary | d1, d2 pass, no loss in either phase | PASS, 0 lost | Same |
 
 Primary reboots: the other pair keeps sending into the rebooting switch, as in the old suite. [Finding 2](../../docs/findings/mlag-bond-without-lacp-partner-keeps-forwarding.md#finding-2-two-mlag-pairs-keep-sending-into-a-rebooting-switch)
-The stop ends when the rebooted switch forwards again, about 1 s after its peer logged `"bridge" peer link down`.
-In one run each, the Pair A stop is just below the old range and the Pair B stop is above it.
+The stop ends within about 0.2 s of its peer logging `"bridge" peer link down`.
+In one run each, both stops are below the old ranges.
 
 ### Inter-pair member flap
 
 Before the bypass cable was removed ([ADR 0018](../../docs/adr/0018-labs-have-no-bypass-cable-between-hosts.md)), the flap stopped the host streams for the whole 8 s down hold in every recorded run, and the cause was not found.
-The two runs without the bypass cable pass: the Networka 0.5.2 run of 27 November 2026 and the live run listed above, where member down stopped the host streams for 2.5 to 2.8 s against the 3 s limit.
+The runs without the bypass cable pass: the Networka 0.5.2 run of 27 November 2026 and the live run listed above, where member down stopped the host streams for at most 0.31 s against the 3 s limit.
 Whether the bypass cable caused the 8 s stop is not proven, because no run tested that alone.
 The diagnosis of the 8 s stop stays in the evidence under `test-results/medium-two-pair/`.

@@ -1,0 +1,3960 @@
+{
+  "name": "site-power-loss",
+  "purpose": "Cut power to the whole dc1 site at once: both cores, both distribution switches, the firewall and both hosts. dc2 must keep forwarding inside its site, and the dc2 firewall must take over the VRRP address. After power returns, dc1 must boot, rejoin the DCI and take the VRRP address back.",
+  "source": "https://manual.mikrotik.com/docs/high-availability-solutions/user-guides/vrrp-configuration-examples/",
+  "verdict": "pass",
+  "reasons": [],
+  "state": {
+    "before": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "All four MLAG pairs are connected with peer 1 as MLAG primary.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Every switch runs with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both members of the DCI and of each distribution-to-core trunk are in use.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of each firewall are in use in its LACP bond to the local cores.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether2"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether2"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "The dc1 firewall owns the VRRP address and the dc2 firewall is backup.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "property",
+              "params": {
+                "menu": "/interface/vrrp",
+                "where": {
+                  "name": "vrrp390"
+                },
+                "name": "master"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "property",
+              "params": {
+                "menu": "/interface/vrrp",
+                "where": {
+                  "name": "vrrp390"
+                },
+                "name": "backup"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of every host are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "All four MLAG pairs are connected with peer 1 as MLAG primary.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Every switch runs with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both members of the DCI and of each distribution-to-core trunk are in use.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-core1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-core2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-core2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "dci",
+                "member": "ether4"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-dist2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-dist2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "core",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of each firewall are in use in its LACP bond to the local cores.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether2"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether2"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "lacp_member",
+              "params": {
+                "bond": "cores",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "The dc1 firewall owns the VRRP address and the dc2 firewall is backup.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-firewall",
+              "check": "property",
+              "params": {
+                "menu": "/interface/vrrp",
+                "where": {
+                  "name": "vrrp390"
+                },
+                "name": "master"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-firewall",
+              "check": "property",
+              "params": {
+                "menu": "/interface/vrrp",
+                "where": {
+                  "name": "vrrp390"
+                },
+                "name": "backup"
+              },
+              "expected": true,
+              "observed": true,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of every host are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "dc1-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc1-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-traffic",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "dc2-service",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quiet": {
+    "window": "quiet window",
+    "start_s": 0.0,
+    "end_s": 4.123835,
+    "verdict": "pass",
+    "streams": {
+      "dc1-traffic-to-dc1-service": {
+        "delivered": 40,
+        "min_delivered": 36,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-traffic-to-dc2-service": {
+        "delivered": 40,
+        "min_delivered": 36,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc1-to-dc2-over-dci": {
+        "delivered": 40,
+        "min_delivered": 36,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-to-dc1-over-dci": {
+        "delivered": 40,
+        "min_delivered": 36,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc1-traffic-to-vrrp": {
+        "delivered": 40,
+        "min_delivered": 36,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-traffic-to-vrrp": {
+        "delivered": 40,
+        "min_delivered": 36,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "name": "Baseline",
+      "expected": "Every ping arrives once before power loss.",
+      "hold_s": 4.0,
+      "start_s": 4.123835,
+      "end_s": 8.124137,
+      "verdict": "pass",
+      "streams": {
+        "dc1-traffic-to-dc1-service": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 38,
+          "delivered": 38,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc2-traffic-to-dc2-service": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 39,
+          "delivered": 39,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc1-to-dc2-over-dci": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 40,
+          "delivered": 40,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc2-to-dc1-over-dci": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 39,
+          "delivered": 39,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc1-traffic-to-vrrp": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 40,
+          "delivered": 40,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc2-traffic-to-vrrp": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 40,
+          "delivered": 40,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "dc1 power lost",
+      "expected": "The dc2 cores see both DCI members go down, dc2 keeps forwarding its site VLAN and the dc2 firewall becomes VRRP master.",
+      "power": {
+        "switch": "dc1-core1, dc1-core2, dc1-dist1, dc1-dist2, dc1-firewall, dc1-traffic, dc1-service",
+        "verdict": "pass",
+        "limit_s": 180.0,
+        "nodes": [
+          "dc1-core1",
+          "dc1-core2",
+          "dc1-dist1",
+          "dc1-dist2",
+          "dc1-firewall",
+          "dc1-traffic",
+          "dc1-service"
+        ],
+        "ports": [
+          "dc1-core1:eth1",
+          "dc1-core2:eth1",
+          "dc1-dist1:eth1",
+          "dc1-dist2:eth1",
+          "dc1-core1:eth2",
+          "dc1-dist1:eth2",
+          "dc1-core2:eth2",
+          "dc1-dist2:eth2",
+          "dc1-firewall:eth1",
+          "dc1-core1:eth4",
+          "dc1-firewall:eth2",
+          "dc1-core2:eth4",
+          "dc1-traffic:eth1",
+          "dc1-dist1:eth3",
+          "dc1-traffic:eth2",
+          "dc1-dist2:eth3",
+          "dc1-service:eth1",
+          "dc1-dist1:eth4",
+          "dc1-service:eth2",
+          "dc1-dist2:eth4",
+          "dc1-core1:eth3",
+          "dc1-core2:eth3"
+        ],
+        "held_s": 20.096009913,
+        "boots": {
+          "dc1-core1": {
+            "before_uptime_s": 370.0,
+            "after_uptime_s": 39.0,
+            "elapsed_s": 47.388577685
+          },
+          "dc1-core2": {
+            "before_uptime_s": 472.0,
+            "after_uptime_s": 40.0,
+            "elapsed_s": 47.913120009
+          },
+          "dc1-dist1": {
+            "before_uptime_s": 218.0,
+            "after_uptime_s": 40.0,
+            "elapsed_s": 48.412029787
+          },
+          "dc1-dist2": {
+            "before_uptime_s": 171.0,
+            "after_uptime_s": 41.0,
+            "elapsed_s": 49.033836966
+          },
+          "dc1-firewall": {
+            "before_uptime_s": 75.0,
+            "after_uptime_s": 34.0,
+            "elapsed_s": 41.88296123
+          }
+        },
+        "recovered_s": 52.673345492,
+        "state": "off"
+      },
+      "state_check": {
+        "verdict": "pass",
+        "state_checks": [
+          {
+            "name": "The dc2 firewall owns the VRRP address.",
+            "source": null,
+            "verdict": "pass",
+            "checks": [
+              {
+                "name": null,
+                "device": "dc2-firewall",
+                "check": "property",
+                "params": {
+                  "menu": "/interface/vrrp",
+                  "where": {
+                    "name": "vrrp390"
+                  },
+                  "name": "master"
+                },
+                "expected": true,
+                "observed": true,
+                "verdict": "pass",
+                "reason": null
+              }
+            ]
+          }
+        ]
+      },
+      "hold_s": 20.0,
+      "start_s": 8.124137,
+      "end_s": 29.227742,
+      "verdict": "pass",
+      "streams": {
+        "dc1-traffic-to-dc1-service": {
+          "limit_s": 216.0,
+          "lower_s": 44.915044,
+          "upper_s": 45.121104,
+          "lost": 231,
+          "summary": "231 pings lost in total at one ping every 100 ms, longest measured outage 44.915 to 45.1211 s",
+          "duplicates": 0,
+          "sent": 8,
+          "delivered": 7,
+          "verdict": "pass",
+          "reason": "231 pings lost in total at one ping every 100 ms, longest measured outage 44.915 to 45.1211 s, within 216 s"
+        },
+        "dc2-traffic-to-dc2-service": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 203,
+          "delivered": 203,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc1-to-dc2-over-dci": {
+          "limit_s": 216.0,
+          "lower_s": 45.389434,
+          "upper_s": 45.59572,
+          "lost": 235,
+          "summary": "235 pings lost in total at one ping every 100 ms, longest measured outage 45.3894 to 45.5957 s",
+          "duplicates": 0,
+          "sent": 8,
+          "delivered": 5,
+          "verdict": "pass",
+          "reason": "235 pings lost in total at one ping every 100 ms, longest measured outage 45.3894 to 45.5957 s, within 216 s"
+        },
+        "dc2-to-dc1-over-dci": {
+          "limit_s": 216.0,
+          "lower_s": 45.358234,
+          "upper_s": 45.563635,
+          "lost": 435,
+          "summary": "435 pings lost in total at one ping every 100 ms, longest measured outage 45.3582 to 45.5636 s",
+          "duplicates": 0,
+          "sent": 202,
+          "delivered": 5,
+          "verdict": "pass",
+          "reason": "435 pings lost in total at one ping every 100 ms, longest measured outage 45.3582 to 45.5636 s, within 216 s"
+        },
+        "dc1-traffic-to-vrrp": {
+          "limit_s": 216.0,
+          "lower_s": 46.106102,
+          "upper_s": 46.308539,
+          "lost": 242,
+          "summary": "242 pings lost in total at one ping every 100 ms, longest measured outage 46.1061 to 46.3085 s",
+          "duplicates": 0,
+          "sent": 8,
+          "delivered": 5,
+          "verdict": "pass",
+          "reason": "242 pings lost in total at one ping every 100 ms, longest measured outage 46.1061 to 46.3085 s, within 216 s"
+        },
+        "dc2-traffic-to-vrrp": {
+          "limit_s": 4.0,
+          "lower_s": 3.509639,
+          "upper_s": 3.715848,
+          "lost": 34,
+          "summary": "34 pings lost in total at one ping every 100 ms, longest measured outage 3.50964 to 3.71585 s",
+          "duplicates": 0,
+          "sent": 205,
+          "delivered": 171,
+          "verdict": "pass",
+          "reason": "34 pings lost in total at one ping every 100 ms, longest measured outage 3.50964 to 3.71585 s, within 4 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "dc1 power restored",
+      "expected": "Every dc1 CHR has a new boot, both dc1 pairs and the DCI return, and the dc1 firewall preempts the VRRP address from dc2.",
+      "power": {
+        "switch": "dc1-core1, dc1-core2, dc1-dist1, dc1-dist2, dc1-firewall, dc1-traffic, dc1-service",
+        "verdict": "pass",
+        "limit_s": 180.0,
+        "nodes": [
+          "dc1-core1",
+          "dc1-core2",
+          "dc1-dist1",
+          "dc1-dist2",
+          "dc1-firewall",
+          "dc1-traffic",
+          "dc1-service"
+        ],
+        "ports": [
+          "dc1-core1:eth1",
+          "dc1-core2:eth1",
+          "dc1-dist1:eth1",
+          "dc1-dist2:eth1",
+          "dc1-core1:eth2",
+          "dc1-dist1:eth2",
+          "dc1-core2:eth2",
+          "dc1-dist2:eth2",
+          "dc1-firewall:eth1",
+          "dc1-core1:eth4",
+          "dc1-firewall:eth2",
+          "dc1-core2:eth4",
+          "dc1-traffic:eth1",
+          "dc1-dist1:eth3",
+          "dc1-traffic:eth2",
+          "dc1-dist2:eth3",
+          "dc1-service:eth1",
+          "dc1-dist1:eth4",
+          "dc1-service:eth2",
+          "dc1-dist2:eth4",
+          "dc1-core1:eth3",
+          "dc1-core2:eth3"
+        ],
+        "held_s": 20.096009913,
+        "boots": {
+          "dc1-core1": {
+            "before_uptime_s": 370.0,
+            "after_uptime_s": 39.0,
+            "elapsed_s": 47.388577685
+          },
+          "dc1-core2": {
+            "before_uptime_s": 472.0,
+            "after_uptime_s": 40.0,
+            "elapsed_s": 47.913120009
+          },
+          "dc1-dist1": {
+            "before_uptime_s": 218.0,
+            "after_uptime_s": 40.0,
+            "elapsed_s": 48.412029787
+          },
+          "dc1-dist2": {
+            "before_uptime_s": 171.0,
+            "after_uptime_s": 41.0,
+            "elapsed_s": 49.033836966
+          },
+          "dc1-firewall": {
+            "before_uptime_s": 75.0,
+            "after_uptime_s": 34.0,
+            "elapsed_s": 41.88296123
+          }
+        },
+        "recovered_s": 52.673345492,
+        "state": "on"
+      },
+      "hold_s": 16.0,
+      "start_s": 29.227742,
+      "end_s": 97.912542,
+      "verdict": "pass",
+      "streams": {
+        "dc1-traffic-to-dc1-service": {
+          "limit_s": 216.0,
+          "lower_s": 44.915044,
+          "upper_s": 45.121104,
+          "lost": 233,
+          "summary": "233 pings lost in total at one ping every 100 ms, longest measured outage 44.915 to 45.1211 s",
+          "duplicates": 0,
+          "sent": 657,
+          "delivered": 425,
+          "verdict": "pass",
+          "reason": "233 pings lost in total at one ping every 100 ms, longest measured outage 44.915 to 45.1211 s, within 216 s"
+        },
+        "dc2-traffic-to-dc2-service": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 667,
+          "delivered": 667,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc1-to-dc2-over-dci": {
+          "limit_s": 216.0,
+          "lower_s": 45.389434,
+          "upper_s": 45.59572,
+          "lost": 235,
+          "summary": "235 pings lost in total at one ping every 100 ms, longest measured outage 45.3894 to 45.5957 s",
+          "duplicates": 0,
+          "sent": 663,
+          "delivered": 431,
+          "verdict": "pass",
+          "reason": "235 pings lost in total at one ping every 100 ms, longest measured outage 45.3894 to 45.5957 s, within 216 s"
+        },
+        "dc2-to-dc1-over-dci": {
+          "limit_s": 216.0,
+          "lower_s": 45.358234,
+          "upper_s": 45.563635,
+          "lost": 435,
+          "summary": "435 pings lost in total at one ping every 100 ms, longest measured outage 45.3582 to 45.5636 s",
+          "duplicates": 0,
+          "sent": 670,
+          "delivered": 432,
+          "verdict": "pass",
+          "reason": "435 pings lost in total at one ping every 100 ms, longest measured outage 45.3582 to 45.5636 s, within 216 s"
+        },
+        "dc1-traffic-to-vrrp": {
+          "limit_s": 216.0,
+          "lower_s": 46.106102,
+          "upper_s": 46.308539,
+          "lost": 243,
+          "summary": "243 pings lost in total at one ping every 100 ms, longest measured outage 46.1061 to 46.3085 s",
+          "duplicates": 0,
+          "sent": 663,
+          "delivered": 423,
+          "verdict": "pass",
+          "reason": "243 pings lost in total at one ping every 100 ms, longest measured outage 46.1061 to 46.3085 s, within 216 s"
+        },
+        "dc2-traffic-to-vrrp": {
+          "limit_s": 4.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 677,
+          "delivered": 677,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "Power recovery",
+      "expected": "Every stream keeps delivering after power returns.",
+      "hold_s": 3.0,
+      "start_s": 97.912542,
+      "end_s": 100.92159,
+      "verdict": "pass",
+      "streams": {
+        "dc1-traffic-to-dc1-service": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 30,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc2-traffic-to-dc2-service": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc1-to-dc2-over-dci": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 30,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc2-to-dc1-over-dci": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 29,
+          "delivered": 29,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc1-traffic-to-vrrp": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 30,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "dc2-traffic-to-vrrp": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 30,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    }
+  ],
+  "log": [],
+  "switch_log": {
+    "file": "syslog/switches.log",
+    "saved": true,
+    "lines": {
+      "dc1-core1": 2,
+      "dc1-core2": 2,
+      "dc1-dist1": 2,
+      "dc1-dist2": 2,
+      "dc1-firewall": 3,
+      "dc2-core1": 6,
+      "dc2-core2": 6,
+      "dc2-dist1": 2,
+      "dc2-dist2": 2,
+      "dc2-firewall": 4
+    },
+    "markers": {
+      "dc1-core1": {
+        "start": -6.950488,
+        "end": 105.915633
+      },
+      "dc1-core2": {
+        "start": -6.585886,
+        "end": 105.984575
+      },
+      "dc1-dist1": {
+        "start": -6.194149,
+        "end": 106.072513
+      },
+      "dc1-dist2": {
+        "start": -5.863338,
+        "end": 106.265248
+      },
+      "dc1-firewall": {
+        "start": -5.493829,
+        "end": 106.335331
+      },
+      "dc2-core1": {
+        "start": -5.157047,
+        "end": 106.387927
+      },
+      "dc2-core2": {
+        "start": -4.802174,
+        "end": 106.467091
+      },
+      "dc2-dist1": {
+        "start": -4.450392,
+        "end": 106.532509
+      },
+      "dc2-dist2": {
+        "start": -4.111264,
+        "end": 106.601497
+      },
+      "dc2-firewall": {
+        "start": -3.802996,
+        "end": 106.648753
+      }
+    }
+  },
+  "validity": [
+    {
+      "check": "capture at dc1-service:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at dc1-traffic:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at dc1-traffic:vlan390 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at dc2-service:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at dc2-traffic:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at dc2-traffic:vlan390 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "every stream and its captures stayed up",
+      "ok": true
+    },
+    {
+      "check": "every cable set down was set up again",
+      "ok": true
+    },
+    {
+      "check": "the wall clock and the monotonic clock of the lab host agree within 50 ms",
+      "ok": true
+    },
+    {
+      "check": "dc1-traffic-to-dc1-service paused sending only inside steps with a non-zero limit",
+      "ok": true
+    },
+    {
+      "check": "dc1-traffic-to-dc1-service shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "dc2-traffic-to-dc2-service sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "dc2-traffic-to-dc2-service shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "dc1-to-dc2-over-dci paused sending only inside steps with a non-zero limit",
+      "ok": true
+    },
+    {
+      "check": "dc1-to-dc2-over-dci shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "dc2-to-dc1-over-dci sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "dc2-to-dc1-over-dci shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "dc1-traffic-to-vrrp paused sending only inside steps with a non-zero limit",
+      "ok": true
+    },
+    {
+      "check": "dc2-traffic-to-vrrp sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "dc1-traffic-to-dc1-service delivered 36 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "dc2-traffic-to-dc2-service delivered 36 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "dc1-to-dc2-over-dci delivered 36 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "dc2-to-dc1-over-dci delivered 36 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "dc1-traffic-to-vrrp delivered 36 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "dc2-traffic-to-vrrp delivered 36 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    }
+  ],
+  "traffic": {
+    "start_ns": 1795849760591851000,
+    "end_ns": 1795849865940910038,
+    "interval_s": 0.1,
+    "streams": {
+      "dc1-traffic-to-dc1-service": {
+        "ident": 1,
+        "source": "dc1-traffic:bond0",
+        "destination": "dc1-service:bond0",
+        "sent": 816,
+        "delivered": 583,
+        "lost_seqs": [
+          87,
+          289,
+          289,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332,
+          333,
+          334,
+          335,
+          336,
+          337,
+          338,
+          339,
+          340,
+          341,
+          342,
+          343,
+          344,
+          345,
+          346,
+          347,
+          348,
+          349,
+          350,
+          351,
+          352,
+          353,
+          354,
+          355,
+          356,
+          357,
+          358,
+          359,
+          360,
+          361,
+          362,
+          363,
+          364,
+          365,
+          366,
+          367,
+          368,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375,
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383,
+          384,
+          385,
+          386,
+          387,
+          388,
+          389,
+          390,
+          391,
+          392,
+          393,
+          394,
+          395,
+          396,
+          397,
+          398,
+          399,
+          400,
+          401,
+          402,
+          403,
+          404,
+          405,
+          406,
+          407,
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415,
+          416,
+          417,
+          418,
+          419,
+          420,
+          421,
+          422,
+          423,
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          439,
+          440,
+          441,
+          442,
+          443,
+          444,
+          445,
+          446,
+          447,
+          448,
+          449,
+          450,
+          451,
+          452,
+          453,
+          454,
+          455,
+          456,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          463,
+          464,
+          465,
+          466,
+          467,
+          468,
+          469,
+          470,
+          471,
+          472,
+          473,
+          474,
+          475,
+          476,
+          477,
+          478,
+          479,
+          480,
+          481,
+          482,
+          483,
+          484,
+          485,
+          486,
+          487,
+          488,
+          489,
+          490,
+          491,
+          492,
+          493,
+          494,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          499,
+          500
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 87,
+            "last_seq": 495,
+            "lost": 231,
+            "lower_s": 44.915044,
+            "upper_s": 45.121104,
+            "summary": "231 pings lost at one ping every 100 ms, traffic stopped for 44.915 to 45.121 s",
+            "begins_s": 8.883913,
+            "ends_s": 53.798957,
+            "windows": [
+              "dc1 power lost",
+              "dc1 power restored"
+            ],
+            "where": [
+              "request absent at destination"
+            ],
+            "not_sent": 201
+          },
+          {
+            "first_seq": 499,
+            "last_seq": 500,
+            "lost": 2,
+            "lower_s": 0.10275,
+            "upper_s": 0.317936,
+            "summary": "2 pings lost at one ping every 100 ms, traffic stopped for 0.103 to 0.318 s",
+            "begins_s": 54.310956,
+            "ends_s": 54.413706,
+            "windows": [
+              "dc1 power restored"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ],
+        "max_send_interval_s": 21.065648,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [
+          {
+            "from_s": 8.883913,
+            "to_s": 29.949561,
+            "gap_s": 21.065648,
+            "after_seq": 87,
+            "before_seq": 289
+          }
+        ],
+        "cadence_ok": false
+      },
+      "dc2-traffic-to-dc2-service": {
+        "ident": 2,
+        "source": "dc2-traffic:bond0",
+        "destination": "dc2-service:bond0",
+        "sent": 1022,
+        "delivered": 1022,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [],
+        "max_send_interval_s": 0.168928,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      },
+      "dc1-to-dc2-over-dci": {
+        "ident": 3,
+        "source": "dc1-traffic:vlan390",
+        "destination": "dc2-traffic:vlan390",
+        "sent": 825,
+        "delivered": 590,
+        "lost_seqs": [
+          87,
+          88,
+          89,
+          290,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332,
+          333,
+          334,
+          335,
+          336,
+          337,
+          338,
+          339,
+          340,
+          341,
+          342,
+          343,
+          344,
+          345,
+          346,
+          347,
+          348,
+          349,
+          350,
+          351,
+          352,
+          353,
+          354,
+          355,
+          356,
+          357,
+          358,
+          359,
+          360,
+          361,
+          362,
+          363,
+          364,
+          365,
+          366,
+          367,
+          368,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375,
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383,
+          384,
+          385,
+          386,
+          387,
+          388,
+          389,
+          390,
+          391,
+          392,
+          393,
+          394,
+          395,
+          396,
+          397,
+          398,
+          399,
+          400,
+          401,
+          402,
+          403,
+          404,
+          405,
+          406,
+          407,
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415,
+          416,
+          417,
+          418,
+          419,
+          420,
+          421,
+          422,
+          423,
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          439,
+          440,
+          441,
+          442,
+          443,
+          444,
+          445,
+          446,
+          447,
+          448,
+          449,
+          450,
+          451,
+          452,
+          453,
+          454,
+          455,
+          456,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          463,
+          464,
+          465,
+          466,
+          467,
+          468,
+          469,
+          470,
+          471,
+          472,
+          473,
+          474,
+          475,
+          476,
+          477,
+          478,
+          479,
+          480,
+          481,
+          482,
+          483,
+          484,
+          485,
+          486,
+          487,
+          488,
+          489,
+          490,
+          491,
+          492,
+          493,
+          494,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          496,
+          497
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 87,
+            "last_seq": 497,
+            "lost": 235,
+            "lower_s": 45.389434,
+            "upper_s": 45.59572,
+            "summary": "235 pings lost at one ping every 100 ms, traffic stopped for 45.389 to 45.596 s",
+            "begins_s": 8.712712,
+            "ends_s": 54.102146,
+            "windows": [
+              "dc1 power lost",
+              "dc1 power restored"
+            ],
+            "where": [
+              "request absent at destination"
+            ],
+            "not_sent": 200
+          }
+        ],
+        "max_send_interval_s": 21.112127,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [
+          {
+            "from_s": 8.918523,
+            "to_s": 30.03065,
+            "gap_s": 21.112127,
+            "after_seq": 89,
+            "before_seq": 290
+          }
+        ],
+        "cadence_ok": false
+      },
+      "dc2-to-dc1-over-dci": {
+        "ident": 4,
+        "source": "dc2-traffic:vlan390",
+        "destination": "dc1-traffic:vlan390",
+        "sent": 1024,
+        "delivered": 589,
+        "lost_seqs": [
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263,
+          264,
+          265,
+          266,
+          267,
+          268,
+          269,
+          270,
+          271,
+          272,
+          273,
+          274,
+          275,
+          276,
+          277,
+          278,
+          279,
+          280,
+          281,
+          282,
+          283,
+          284,
+          285,
+          286,
+          287,
+          288,
+          289,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332,
+          333,
+          334,
+          335,
+          336,
+          337,
+          338,
+          339,
+          340,
+          341,
+          342,
+          343,
+          344,
+          345,
+          346,
+          347,
+          348,
+          349,
+          350,
+          351,
+          352,
+          353,
+          354,
+          355,
+          356,
+          357,
+          358,
+          359,
+          360,
+          361,
+          362,
+          363,
+          364,
+          365,
+          366,
+          367,
+          368,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375,
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383,
+          384,
+          385,
+          386,
+          387,
+          388,
+          389,
+          390,
+          391,
+          392,
+          393,
+          394,
+          395,
+          396,
+          397,
+          398,
+          399,
+          400,
+          401,
+          402,
+          403,
+          404,
+          405,
+          406,
+          407,
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415,
+          416,
+          417,
+          418,
+          419,
+          420,
+          421,
+          422,
+          423,
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          439,
+          440,
+          441,
+          442,
+          443,
+          444,
+          445,
+          446,
+          447,
+          448,
+          449,
+          450,
+          451,
+          452,
+          453,
+          454,
+          455,
+          456,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          463,
+          464,
+          465,
+          466,
+          467,
+          468,
+          469,
+          470,
+          471,
+          472,
+          473,
+          474,
+          475,
+          476,
+          477,
+          478,
+          479,
+          480,
+          481,
+          482,
+          483,
+          484,
+          485,
+          486,
+          487,
+          488,
+          489,
+          490,
+          491,
+          492,
+          493,
+          494,
+          495,
+          496,
+          497,
+          498,
+          499,
+          500,
+          501,
+          502,
+          503,
+          504,
+          505,
+          506,
+          507,
+          508,
+          509,
+          510,
+          511,
+          512,
+          513,
+          514,
+          515,
+          516,
+          517,
+          518,
+          519,
+          520
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 86,
+            "last_seq": 520,
+            "lost": 435,
+            "lower_s": 45.358234,
+            "upper_s": 45.563635,
+            "summary": "435 pings lost at one ping every 100 ms, traffic stopped for 45.358 to 45.564 s",
+            "begins_s": 8.664308,
+            "ends_s": 54.022542,
+            "windows": [
+              "dc1 power lost",
+              "dc1 power restored"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          }
+        ],
+        "max_send_interval_s": 0.168458,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      },
+      "dc1-traffic-to-vrrp": {
+        "ident": 5,
+        "source": "dc1-traffic:vlan390",
+        "destination": "198.18.40.1",
+        "sent": 824,
+        "delivered": 581,
+        "lost_seqs": [
+          87,
+          88,
+          89,
+          290,
+          290,
+          291,
+          292,
+          293,
+          294,
+          295,
+          296,
+          297,
+          298,
+          299,
+          300,
+          301,
+          302,
+          303,
+          304,
+          305,
+          306,
+          307,
+          308,
+          309,
+          310,
+          311,
+          312,
+          313,
+          314,
+          315,
+          316,
+          317,
+          318,
+          319,
+          320,
+          321,
+          322,
+          323,
+          324,
+          325,
+          326,
+          327,
+          328,
+          329,
+          330,
+          331,
+          332,
+          333,
+          334,
+          335,
+          336,
+          337,
+          338,
+          339,
+          340,
+          341,
+          342,
+          343,
+          344,
+          345,
+          346,
+          347,
+          348,
+          349,
+          350,
+          351,
+          352,
+          353,
+          354,
+          355,
+          356,
+          357,
+          358,
+          359,
+          360,
+          361,
+          362,
+          363,
+          364,
+          365,
+          366,
+          367,
+          368,
+          369,
+          370,
+          371,
+          372,
+          373,
+          374,
+          375,
+          376,
+          377,
+          378,
+          379,
+          380,
+          381,
+          382,
+          383,
+          384,
+          385,
+          386,
+          387,
+          388,
+          389,
+          390,
+          391,
+          392,
+          393,
+          394,
+          395,
+          396,
+          397,
+          398,
+          399,
+          400,
+          401,
+          402,
+          403,
+          404,
+          405,
+          406,
+          407,
+          408,
+          409,
+          410,
+          411,
+          412,
+          413,
+          414,
+          415,
+          416,
+          417,
+          418,
+          419,
+          420,
+          421,
+          422,
+          423,
+          424,
+          425,
+          426,
+          427,
+          428,
+          429,
+          430,
+          431,
+          432,
+          433,
+          434,
+          435,
+          436,
+          437,
+          438,
+          439,
+          440,
+          441,
+          442,
+          443,
+          444,
+          445,
+          446,
+          447,
+          448,
+          449,
+          450,
+          451,
+          452,
+          453,
+          454,
+          455,
+          456,
+          457,
+          458,
+          459,
+          460,
+          461,
+          462,
+          463,
+          464,
+          465,
+          466,
+          467,
+          468,
+          469,
+          470,
+          471,
+          472,
+          473,
+          474,
+          475,
+          476,
+          477,
+          478,
+          479,
+          480,
+          481,
+          482,
+          483,
+          484,
+          485,
+          486,
+          487,
+          488,
+          489,
+          490,
+          491,
+          492,
+          493,
+          494,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          495,
+          496,
+          497,
+          498,
+          499,
+          500,
+          501,
+          502,
+          503,
+          504,
+          576
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 87,
+            "last_seq": 504,
+            "lost": 242,
+            "lower_s": 46.106102,
+            "upper_s": 46.308539,
+            "summary": "242 pings lost at one ping every 100 ms, traffic stopped for 46.106 to 46.309 s",
+            "begins_s": 8.718265,
+            "ends_s": 54.824367,
+            "windows": [
+              "dc1 power lost",
+              "dc1 power restored"
+            ],
+            "where": [
+              "reply absent at source"
+            ],
+            "not_sent": 200
+          },
+          {
+            "first_seq": 576,
+            "last_seq": 576,
+            "lost": 1,
+            "lower_s": 0.0,
+            "upper_s": 0.208741,
+            "summary": "1 ping lost at one ping every 100 ms, traffic stopped for 0 to 0.209 s",
+            "begins_s": 62.130781,
+            "ends_s": 62.130781,
+            "windows": [
+              "dc1 power restored"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ],
+        "max_send_interval_s": 21.102994,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [
+          {
+            "from_s": 8.927786,
+            "to_s": 30.03078,
+            "gap_s": 21.102994,
+            "after_seq": 89,
+            "before_seq": 290
+          }
+        ],
+        "cadence_ok": false
+      },
+      "dc2-traffic-to-vrrp": {
+        "ident": 6,
+        "source": "dc2-traffic:vlan390",
+        "destination": "198.18.40.1",
+        "sent": 1036,
+        "delivered": 1002,
+        "lost_seqs": [
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 87,
+            "last_seq": 120,
+            "lost": 34,
+            "lower_s": 3.509639,
+            "upper_s": 3.715848,
+            "summary": "34 pings lost at one ping every 100 ms, traffic stopped for 3.51 to 3.716 s",
+            "begins_s": 8.711879,
+            "ends_s": 12.221518,
+            "windows": [
+              "dc1 power lost"
+            ],
+            "where": [
+              "reply absent at source"
+            ]
+          }
+        ],
+        "max_send_interval_s": 0.182364,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      }
+    }
+  },
+  "closing": {
+    "window": "after the steps",
+    "start_s": 100.92159,
+    "end_s": 105.349059,
+    "verdict": "pass",
+    "streams": {
+      "dc1-traffic-to-dc1-service": {
+        "delivered": 43,
+        "min_delivered": 39,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-traffic-to-dc2-service": {
+        "delivered": 44,
+        "min_delivered": 39,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc1-to-dc2-over-dci": {
+        "delivered": 44,
+        "min_delivered": 39,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-to-dc1-over-dci": {
+        "delivered": 44,
+        "min_delivered": 39,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc1-traffic-to-vrrp": {
+        "delivered": 43,
+        "min_delivered": 39,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "dc2-traffic-to-vrrp": {
+        "delivered": 44,
+        "min_delivered": 39,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  }
+}

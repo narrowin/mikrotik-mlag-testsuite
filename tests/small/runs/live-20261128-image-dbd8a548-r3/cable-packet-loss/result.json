@@ -1,0 +1,878 @@
+{
+  "name": "cable-packet-loss",
+  "purpose": "Check failover when every frame leaving host1 on its cable to switch2 is lost. The link keeps carrier and frames in the reverse direction are left unfiltered.",
+  "source": null,
+  "verdict": "error",
+  "reasons": [
+    "Step One-way cable loss is error.",
+    "Step Cable loss cleared is error."
+  ],
+  "state": {
+    "before": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "Both switches show MLAG connected.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true
+              },
+              "observed": {
+                "connected": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true
+              },
+              "observed": {
+                "connected": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both switches run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of every host are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host3",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host3",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "Both switches show MLAG connected.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true
+              },
+              "observed": {
+                "connected": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true
+              },
+              "observed": {
+                "connected": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both switches run with spanning tree off.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "none",
+              "observed": "none",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of every host are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host3",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host3",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "eligible": true
+              },
+              "observed": {
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quiet": {
+    "window": "quiet window",
+    "start_s": 0.0,
+    "end_s": 3.813316,
+    "verdict": "pass",
+    "streams": {
+      "host1-to-host2": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host2-to-host3": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "name": "One-way cable loss",
+      "expected": "Host1 fails over to its other cable while the independent host stream stays up.",
+      "fault": {
+        "target": "host1:eth2",
+        "verdict": "pass",
+        "points": [
+          "host1:eth2"
+        ],
+        "held_s": 25.003598816,
+        "dropped": {
+          "host1:eth2": 95
+        },
+        "recovered_s": 14.359705779
+      },
+      "hold_s": 25.0,
+      "start_s": 3.813316,
+      "end_s": 28.820642,
+      "verdict": "error",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 4.0,
+          "lower_s": 22.635598,
+          "upper_s": 39.330198,
+          "lost": 218,
+          "summary": "Diagnostic only: 218 pings recorded lost, 218 sent in this step (configured interval 100 ms)",
+          "duplicates": 0,
+          "sent": 218,
+          "delivered": 0,
+          "verdict": "error",
+          "reason": "Sender cadence was invalid in this step.",
+          "diagnostic_only": true
+        },
+        "host2-to-host3": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 239,
+          "delivered": 239,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "Cable loss cleared",
+      "expected": "The cable returns to its default queue and both streams deliver again.",
+      "fault": {
+        "target": "host1:eth2",
+        "verdict": "pass",
+        "points": [
+          "host1:eth2"
+        ],
+        "held_s": 25.003598816,
+        "dropped": {
+          "host1:eth2": 95
+        },
+        "recovered_s": 14.359705779
+      },
+      "hold_s": 5.0,
+      "start_s": 28.820642,
+      "end_s": 48.18604,
+      "verdict": "error",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 4.0,
+          "lower_s": null,
+          "upper_s": null,
+          "lost": 0,
+          "summary": "Diagnostic only: 0 pings recorded lost, 53 sent in this step (configured interval 100 ms)",
+          "duplicates": 0,
+          "sent": 53,
+          "delivered": 53,
+          "verdict": "error",
+          "reason": "Sender cadence was invalid in this step.",
+          "diagnostic_only": true
+        },
+        "host2-to-host3": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 186,
+          "delivered": 186,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    }
+  ],
+  "log": [],
+  "switch_log": {
+    "file": "syslog/switches.log",
+    "saved": true,
+    "lines": {
+      "switch1": 2,
+      "switch2": 2
+    },
+    "markers": {
+      "switch1": {
+        "start": -2.02614,
+        "end": 50.31541
+      },
+      "switch2": {
+        "start": -1.74788,
+        "end": 50.362757
+      }
+    }
+  },
+  "validity": [
+    {
+      "check": "capture at host1:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at host2:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at host3:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "every stream and its captures stayed up",
+      "ok": true
+    },
+    {
+      "check": "every cable set down was set up again",
+      "ok": true
+    },
+    {
+      "check": "the wall clock and the monotonic clock of the lab host agree within 50 ms",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 paused sending only inside steps with a non-zero limit",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host3 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host3 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host3 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    }
+  ],
+  "traffic": {
+    "start_ns": 1795853198944111000,
+    "end_ns": 1795853248719629299,
+    "interval_s": 0.1,
+    "streams": {
+      "host1-to-host2": {
+        "ident": 1,
+        "source": "host1:bond0",
+        "destination": "host2:bond0",
+        "sent": 323,
+        "delivered": 105,
+        "lost_seqs": [
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50,
+          51,
+          52,
+          53,
+          54,
+          55,
+          56,
+          57,
+          58,
+          59,
+          60,
+          61,
+          62,
+          63,
+          64,
+          65,
+          66,
+          67,
+          68,
+          69,
+          70,
+          71,
+          72,
+          73,
+          74,
+          75,
+          76,
+          77,
+          78,
+          79,
+          80,
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 38,
+            "last_seq": 277,
+            "lost": 218,
+            "lower_s": 22.635598,
+            "upper_s": 39.330198,
+            "summary": "218 pings lost at one ping every 100 ms, traffic stopped for 22.636 to 39.33 s",
+            "begins_s": 3.861432,
+            "ends_s": 26.49703,
+            "windows": [
+              "One-way cable loss"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ],
+            "not_sent": 22
+          }
+        ],
+        "max_send_interval_s": 16.59039,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [
+          {
+            "from_s": 26.49703,
+            "to_s": 43.08742,
+            "gap_s": 16.59039,
+            "after_seq": 255,
+            "before_seq": 278
+          }
+        ],
+        "cadence_ok": false
+      },
+      "host2-to-host3": {
+        "ident": 2,
+        "source": "host2:bond0",
+        "destination": "host3:bond0",
+        "sent": 476,
+        "delivered": 476,
+        "lost_seqs": [],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [],
+        "max_send_interval_s": 0.113291,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      }
+    }
+  },
+  "closing": {
+    "window": "after the steps",
+    "start_s": 48.18604,
+    "end_s": 49.775518,
+    "verdict": "pass",
+    "streams": {
+      "host1-to-host2": {
+        "delivered": 16,
+        "min_delivered": 13,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host2-to-host3": {
+        "delivered": 15,
+        "min_delivered": 13,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  }
+}

@@ -25,9 +25,11 @@ commits establish provenance, not a timed requirement.
 The [test](../tests/small/tests/cable-packet-loss.yaml) suppresses every frame
 leaving `host1:eth2` for 25 s, including LACPDUs, while carrier stays up. Clearing
 the impairment does not produce a carrier transition that would restart LACP.
-The [host startup config](../tests/small/lab/host-setup.sh) requests fast LACP
-and uses `coupled_control off`. The [RouterOS startup config](../tests/small/lab/switch.rsc)
-sets `lacp-rate=1sec lacp-strict=yes min-links=1`.
+The [host startup config](../tests/small/lab/host-setup.sh) requests fast LACP,
+and in the [Small strict lab](../tests/small-strict/README.md) uses `coupled_control off`.
+The [RouterOS startup config](../tests/small/lab/switch.rsc) sets `lacp-rate=1sec`,
+and in the Small strict lab adds `lacp-strict=yes min-links=1`. When this note was
+written, the Small lab itself used those Small strict settings.
 
 The [lab state](../tests/small/lab/lab.yaml) requires both bond members of every
 host to be eligible, both MLAG peers connected, and spanning tree off. Networka's

@@ -32,3 +32,8 @@ All current topologies use the public CHR startup-hooks image pinned to
 It adds tc and optional startup hooks; the RouterOS 7.26beta7 disk is unchanged.
 This changes container packaging and the data path, not the campaign version.
 Historical run records retain their original image and client identities.
+
+## Update: every lab on our image, 28 November 2026
+
+Every lab now runs our CHR image by digest, `ghcr.io/narrowin/vrnetlab_mikrotik_routeros@sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10`, not the official `mikrotik/chr` image named above; the campaign version stays RouterOS 7.26beta7.
+Every lab was rerun on it on 28 November 2026 with Networka 0.5.2+chr.5, as each lab README lists under Live runs.

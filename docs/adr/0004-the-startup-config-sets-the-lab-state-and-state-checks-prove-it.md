@@ -29,3 +29,7 @@ A lab with different settings is its own folder, with its own name and managemen
 A test that leaves the lab broken shows up as an ERROR in the next test's starting state checks.
 
 See also [Networka ADR 0003](https://narrowin.github.io/networka/adr/0003-a-lab-test-pushes-no-configuration-and-state-checks-prove-the-lab-state/).
+
+## Update: Small strict lab, 28 November 2026
+
+`tests/small-strict/` follows the same pattern: it sets `lacp-strict=yes min-links=1` on the Small host bonds through a topology variable, turns off coupled LACP control on the hosts through a host variable, and links to the Small tests, so Small keeps the RouterOS and Linux defaults.

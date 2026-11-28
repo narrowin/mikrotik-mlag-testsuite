@@ -1,6 +1,6 @@
 # Labs and tests under tests/
 
-Each lab is one folder under `tests/`: [Small](../../tests/small/README.md), [Small with a MAC-move host](../../tests/small-mac-move/README.md), [Medium](../../tests/medium/README.md), [Two-pair](../../tests/two-pair/README.md), [Two-pair strict](../../tests/two-pair-strict/README.md) and [Large](../../tests/large/README.md), each with spanning tree off. Three labs repeat a base lab with RSTP and the MLAG pair as root: [Small RSTP](../../tests/small-rstp/README.md), [Medium RSTP](../../tests/medium-rstp/README.md) and [Two-pair RSTP](../../tests/two-pair-rstp/README.md). [Medium RSTP with the access switch as root](../../tests/medium-rstp-access-root/README.md) repeats Medium with a switch outside the pair as root.
+Each lab is one folder under `tests/`: [Small](../../tests/small/README.md), [Small with a MAC-move host](../../tests/small-mac-move/README.md), [Medium](../../tests/medium/README.md), [Two-pair](../../tests/two-pair/README.md), [Two-pair strict](../../tests/two-pair-strict/README.md), [Small strict](../../tests/small-strict/README.md) and [Large](../../tests/large/README.md), each with spanning tree off. Three labs repeat a base lab with RSTP and the MLAG pair as root: [Small RSTP](../../tests/small-rstp/README.md), [Medium RSTP](../../tests/medium-rstp/README.md) and [Two-pair RSTP](../../tests/two-pair-rstp/README.md). [Medium RSTP with the access switch as root](../../tests/medium-rstp-access-root/README.md) repeats Medium with a switch outside the pair as root.
 Networka runs the tests. This repository holds only the labs, the test files and their limits.
 
 Numerical limits are local acceptance criteria with their reason beside them; a protocol detection interval is not automatically an end-to-end outage maximum. See [the limit rationale](../adr/0003-a-test-is-a-yaml-file-and-every-limit-carries-its-reason-next-to-it.md). MAC ageing and whole-site power loss deliberately interrupt hosts. The pinned Networka revision shows their combined interruption allowances separately from MAC relearning and power recovery, retaining every numerical limit and verdict check. Passing intentional interruptions do not compete with failover outages in the results summary; confirmed breaches remain visible.
@@ -18,7 +18,7 @@ Numerical limits are local acceptance criteria with their reason beside them; a 
 | `tests/*.yaml` | One test each. The `lab` field names the lab file relative to the test file, for example `../lab/lab.yaml`. |
 
 Containerlab writes the running lab to `lab/clab-<name>/`, which the root `.gitignore` ignores.
-Two-pair strict and the MAC-move lab use some files of another lab, as their READMEs say.
+Two-pair strict, Small strict and the MAC-move lab use some files of another lab, as their READMEs say.
 
 Every lab uses the files in [tests/shared](../../tests/shared): the [Dockerfile](../../tests/shared/host.Dockerfile) of the host image, the collector config [rsyslog.conf](../../tests/shared/rsyslog.conf) and [start.sh](../../tests/shared/start.sh).
 `tests/shared/start.sh <lab-folder> [age]` builds the host image `mlag-host:local`, creates the collector folder and deploys the lab. It returns once every Linux host has finished its host setup and its bond is up, or fails after 60 s and names the host. Only the MAC-move lab takes the `age` profile.
@@ -82,7 +82,7 @@ A test is a list of steps. This step from [tests/medium/tests/primary-reboot.yam
 
 ## Add a lab
 
-1. Choose a new lab name and an unused management subnet `172.30.x.0/24`, with the collector at `.10`. The labs in use take 100, 101, 102, 110, 111, 112, 113, 114, 115 and 120.
+1. Choose a new lab name and an unused management subnet `172.30.x.0/24`, with the collector at `.10`. The labs in use take 100, 101, 102, 103, 110, 111, 112, 113, 114, 115 and 120.
 2. Create the folder `tests/<lab>/` with the subfolders `lab/` and `tests/`.
 3. Write the startup config in `lab/` with `protocol-mode=none` on every bridge. Copy the remote logging and the `refresh-collector` scheduler from [tests/small/lab/switch.rsc](../../tests/small/lab/switch.rsc) and set the collector address.
 4. Write the topology, `devices.yml`, `host-setup.sh` and `lab.yaml` in `lab/`. The topology binds the collector config as `../../shared/rsyslog.conf`. In `lab.yaml`, check `stp_mode: none` on every bridge and MLAG connected on every peer.

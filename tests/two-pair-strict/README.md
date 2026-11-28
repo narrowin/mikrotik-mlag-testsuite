@@ -10,14 +10,16 @@ The startup config, host setup and inventory are the two-pair lab's files in [te
 
 ## Live runs
 
-Run on 27 November 2026 with RouterOS 7.26beta7 and Networka 0.5.2, after the glossary renames. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports; full evidence stays in `test-results/live-20261127-glossary/two-pair-strict/`.
+Run on 28 November 2026 with RouterOS 7.26beta7 in our CHR image `ghcr.io/narrowin/vrnetlab_mikrotik_routeros@sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10` and Networka 0.5.2+chr.5. Each listed test ran once. Every replay produced byte-identical `result.json` and `report.md`. The links open the generated reports, and [image-proof.json](runs/live-20261128-image-dbd8a548/image-proof.json) records the image of every node; full evidence stays in `test-results/live-20261128-image-dbd8a548/two-pair-strict/`.
 
-- [PASS — baseline](runs/live-20261127-glossary/baseline/report.md)
-- [FAIL — inter-pair-member-flap](runs/live-20261127-glossary/inter-pair-member-flap/report.md)
-- [FAIL — reboot-a-primary](runs/live-20261127-glossary/reboot-a-primary/report.md)
-- [PASS — reboot-a-secondary](runs/live-20261127-glossary/reboot-a-secondary/report.md)
-- [FAIL — reboot-b-primary](runs/live-20261127-glossary/reboot-b-primary/report.md)
-- [PASS — reboot-b-secondary](runs/live-20261127-glossary/reboot-b-secondary/report.md)
+- [PASS — baseline](runs/live-20261128-image-dbd8a548/baseline/report.md)
+- [PASS — inter-pair-member-flap](runs/live-20261128-image-dbd8a548/inter-pair-member-flap/report.md)
+- [FAIL — reboot-a-primary](runs/live-20261128-image-dbd8a548/reboot-a-primary/report.md)
+- [PASS — reboot-a-secondary](runs/live-20261128-image-dbd8a548/reboot-a-secondary/report.md)
+- [FAIL — reboot-b-primary](runs/live-20261128-image-dbd8a548/reboot-b-primary/report.md)
+- [PASS — reboot-b-secondary](runs/live-20261128-image-dbd8a548/reboot-b-secondary/report.md)
+
+inter-pair-member-flap passed. On 27 November 2026 with the official `mikrotik/chr` image and Networka 0.5.2 it failed.
 
 ## Commands
 
@@ -36,10 +38,10 @@ Old values are quoted from the results index at commit `3af4cd8` (`results/index
 | Test | Old verdict and loss | New verdict and loss | Reason for the difference |
 | --- | --- | --- | --- |
 | baseline | Run 01 pass, no loss | PASS, no loss | Same |
-| inter-pair-member-flap | No old result | FAIL. Down: host1 to host2 5.40884 to 5.61424 s (53 lost), host2 to host1 5.41469 to 5.62633 s (53 lost), against 3 s. Back: 0.318171 to 0.523095 s and 0.419289 to 0.621454 s | Not comparable. Shorter than the whole 8 s down hold of the runs recorded with the bypass cable; the two-pair lab without `lacp-strict` passes this test. |
-| reboot-a-primary | Run 01 INVALID: Pair A primary down 1.912816 to 2.591661 s, back 16.447632 to 16.650563 s; the management TAP showed one closed guest absence | FAIL, 17.796 to 18.1021 s | No valid old result. The old invalid run also lost about 16.5 s. |
+| inter-pair-member-flap | No old result | PASS. Down: host1 to host2 0.10558 to 0.309641 s (2 lost), host2 to host1 0 to 0.202416 s (1 lost). Back: host1 to host2 1.15043 to 1.35714 s (15 lost), host2 to host1 1.14592 to 1.34826 s (15 lost) | Not comparable. On 27 November 2026 with the official `mikrotik/chr` image and Networka 0.5.2 it failed. |
+| reboot-a-primary | Run 01 INVALID: Pair A primary down 1.912816 to 2.591661 s, back 16.447632 to 16.650563 s; the management TAP showed one closed guest absence | FAIL, 19.1532 to 19.3626 s | No valid old result. The old invalid run also lost about 16.5 s. |
 | reboot-a-secondary | Run 01 did not reach evaluation | PASS, 0 lost | No valid old result |
-| reboot-b-primary | No old result | FAIL, 23.38 to 23.7188 s | Not comparable |
+| reboot-b-primary | No old result | FAIL, 18.6762 to 18.9601 s | Not comparable |
 | reboot-b-secondary | No old result | PASS, 0 lost | Not comparable |
 
-In one run each, `lacp-strict=yes` changed one verdict: the inter-pair member flap fails here and passes in the two-pair lab. The primary reboot stops of 17.8 to 23.7 s are close to the two-pair lab's 19.1 to 24.3 s.
+In one run each, `lacp-strict=yes` changed no verdict: every test has the verdict it has in the two-pair lab. The primary reboot stops of 18.7 to 19.4 s are about 2 to 3 s longer than the two-pair lab's 16.2 to 16.8 s.

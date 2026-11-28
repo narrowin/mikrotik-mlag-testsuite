@@ -1,0 +1,2228 @@
+{
+  "name": "reboot-a-primary",
+  "purpose": "Reboot switch-a1 in its checked MLAG primary role of pair A and measure both directions between the hosts.",
+  "source": "https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/",
+  "verdict": "fail",
+  "reasons": [
+    "Step Reboot switch-a1 is fail."
+  ],
+  "state": {
+    "before": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "Both MLAG pairs are connected, with switch-a1 and switch-b1 as MLAG primaries.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "All four switches run RSTP.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Pair A is the RSTP root bridge with switch-a1's bridge ID, and pair B reaches it through the inter-pair bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": true,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11"
+              },
+              "observed": {
+                "root_bridge": true,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": true,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11"
+              },
+              "observed": {
+                "root_bridge": true,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": false,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11",
+                "root_port": "inter-pair"
+              },
+              "observed": {
+                "root_bridge": false,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11",
+                "root_port": "inter-pair"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": false,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11",
+                "root_port": "inter-pair"
+              },
+              "observed": {
+                "root_bridge": false,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11",
+                "root_port": "inter-pair"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Every bridge port of the four switches forwards, and the host ports are edge ports.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "inter-pair"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host2"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "inter-pair"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host2"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "inter-pair"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host1"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "inter-pair"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host1"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "The inter-pair bond runs with lacp-strict=no on all four switches.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "inter-pair"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": false,
+              "observed": false,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "inter-pair"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": false,
+              "observed": false,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "inter-pair"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": false,
+              "observed": false,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "inter-pair"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": false,
+              "observed": false,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both inter-pair bond members are synchronized, collecting and distributing at all four ends.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "inter-pair",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "inter-pair",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "inter-pair",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "inter-pair",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of every host are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    },
+    "after": {
+      "verdict": "pass",
+      "state_checks": [
+        {
+          "name": "Both MLAG pairs are connected, with switch-a1 and switch-b1 as MLAG primaries.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "primary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "primary"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "mlag",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "observed": {
+                "connected": true,
+                "role": "secondary"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "All four switches run RSTP.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "stp_mode",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": "rstp",
+              "observed": "rstp",
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Pair A is the RSTP root bridge with switch-a1's bridge ID, and pair B reaches it through the inter-pair bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": true,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11"
+              },
+              "observed": {
+                "root_bridge": true,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": true,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11"
+              },
+              "observed": {
+                "root_bridge": true,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": false,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11",
+                "root_port": "inter-pair"
+              },
+              "observed": {
+                "root_bridge": false,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11",
+                "root_port": "inter-pair"
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "stp_bridge",
+              "params": {
+                "bridge": "bridge"
+              },
+              "expected": {
+                "root_bridge": false,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11",
+                "root_port": "inter-pair"
+              },
+              "observed": {
+                "root_bridge": false,
+                "root_bridge_id": "0x2000.02:00:00:21:00:11",
+                "root_port": "inter-pair"
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Every bridge port of the four switches forwards, and the host ports are edge ports.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "inter-pair"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host2"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "inter-pair"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host2"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "inter-pair"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host1"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "ether2"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "inter-pair"
+              },
+              "expected": {
+                "forwarding": true
+              },
+              "observed": {
+                "forwarding": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "bridge_port",
+              "params": {
+                "bridge": "bridge",
+                "port": "host1"
+              },
+              "expected": {
+                "forwarding": true,
+                "edge": true
+              },
+              "observed": {
+                "forwarding": true,
+                "edge": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "The inter-pair bond runs with lacp-strict=no on all four switches.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "inter-pair"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": false,
+              "observed": false,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "inter-pair"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": false,
+              "observed": false,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "inter-pair"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": false,
+              "observed": false,
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "property",
+              "params": {
+                "menu": "/interface/bonding",
+                "where": {
+                  "name": "inter-pair"
+                },
+                "name": "lacp-strict"
+              },
+              "expected": false,
+              "observed": false,
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both inter-pair bond members are synchronized, collecting and distributing at all four ends.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "switch-a1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "inter-pair",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-a2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "inter-pair",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b1",
+              "check": "lacp_member",
+              "params": {
+                "bond": "inter-pair",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "switch-b2",
+              "check": "lacp_member",
+              "params": {
+                "bond": "inter-pair",
+                "member": "ether3"
+              },
+              "expected": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "observed": {
+                "actor": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                },
+                "partner": {
+                  "synchronization": true,
+                  "collecting": true,
+                  "distributing": true
+                }
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        },
+        {
+          "name": "Both cables of every host are eligible in its LACP bond.",
+          "source": null,
+          "verdict": "pass",
+          "checks": [
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host1",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth1"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            },
+            {
+              "name": null,
+              "device": "host2",
+              "check": "bond_member",
+              "params": {
+                "bond": "bond0",
+                "member": "eth2"
+              },
+              "expected": {
+                "carrier": true,
+                "eligible": true
+              },
+              "observed": {
+                "carrier": true,
+                "eligible": true
+              },
+              "verdict": "pass",
+              "reason": null
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "quiet": {
+    "window": "quiet window",
+    "start_s": 0.0,
+    "end_s": 3.747952,
+    "verdict": "pass",
+    "streams": {
+      "host1-to-host2": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host2-to-host1": {
+        "delivered": 36,
+        "min_delivered": 33,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  },
+  "steps": [
+    {
+      "name": "Baseline",
+      "expected": "Every ping arrives once before the reboot.",
+      "hold_s": 4.0,
+      "start_s": 3.747952,
+      "end_s": 7.748753,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 39,
+          "delivered": 39,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host2-to-host1": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 39,
+          "delivered": 39,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "Reboot switch-a1",
+      "expected": "switch-a1 has a new boot. Its peer reverts the MLAG bonds to its own LACP system ID, so pair B and host2 renegotiate LACP, and every bond returns to service under the shared system ID.",
+      "reboot": "switch-a1",
+      "hold_s": 16.0,
+      "start_s": 7.748753,
+      "end_s": 49.362664,
+      "verdict": "fail",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 5.0,
+          "lower_s": 21.539121,
+          "upper_s": 21.749891,
+          "lost": 208,
+          "summary": "208 pings lost in total at one ping every 100 ms, longest measured outage 21.5391 to 21.7499 s",
+          "duplicates": 0,
+          "sent": 404,
+          "delivered": 196,
+          "verdict": "fail",
+          "reason": "208 pings lost in total at one ping every 100 ms, longest measured outage 21.5391 to 21.7499 s, above 5 s"
+        },
+        "host2-to-host1": {
+          "limit_s": 5.0,
+          "lower_s": 21.572008,
+          "upper_s": 21.7756,
+          "lost": 208,
+          "summary": "208 pings lost in total at one ping every 100 ms, longest measured outage 21.572 to 21.7756 s",
+          "duplicates": 0,
+          "sent": 404,
+          "delivered": 196,
+          "verdict": "fail",
+          "reason": "208 pings lost in total at one ping every 100 ms, longest measured outage 21.572 to 21.7756 s, above 5 s"
+        }
+      },
+      "log": []
+    },
+    {
+      "name": "Reboot recovery",
+      "expected": "Every stream keeps delivering after the reboot.",
+      "hold_s": 3.0,
+      "start_s": 49.362664,
+      "end_s": 52.365688,
+      "verdict": "pass",
+      "streams": {
+        "host1-to-host2": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 30,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        },
+        "host2-to-host1": {
+          "limit_s": 0.0,
+          "lower_s": 0.0,
+          "upper_s": 0.0,
+          "lost": 0,
+          "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+          "duplicates": 0,
+          "sent": 30,
+          "delivered": 30,
+          "verdict": "pass",
+          "reason": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s"
+        }
+      },
+      "log": []
+    }
+  ],
+  "log": [],
+  "switch_log": {
+    "file": "syslog/switches.log",
+    "saved": true,
+    "lines": {
+      "switch-a1": 32,
+      "switch-a2": 25,
+      "switch-b1": 205,
+      "switch-b2": 196
+    },
+    "markers": {
+      "switch-a1": {
+        "start": -4.158883,
+        "end": 56.336301
+      },
+      "switch-a2": {
+        "start": -3.857293,
+        "end": 56.376892
+      },
+      "switch-b1": {
+        "start": -3.553448,
+        "end": 56.408479
+      },
+      "switch-b2": {
+        "start": -3.244398,
+        "end": 56.470543
+      }
+    }
+  },
+  "validity": [
+    {
+      "check": "capture at host1:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "capture at host2:bond0 is complete and dropped no packet",
+      "ok": true
+    },
+    {
+      "check": "every stream and its captures stayed up",
+      "ok": true
+    },
+    {
+      "check": "every cable set down was set up again",
+      "ok": true
+    },
+    {
+      "check": "the wall clock and the monotonic clock of the lab host agree within 50 ms",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host1 sent a ping at least every 450 ms",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host1 shows the same replies at both capture points",
+      "ok": true
+    },
+    {
+      "check": "host1-to-host2 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    },
+    {
+      "check": "host2-to-host1 delivered 33 pings or more in the quiet window at one ping every 100 ms, none lost or duplicated",
+      "ok": true
+    }
+  ],
+  "traffic": {
+    "start_ns": 1795850295352904000,
+    "end_ns": 1795850351089276667,
+    "interval_s": 0.1,
+    "streams": {
+      "host1-to-host2": {
+        "ident": 1,
+        "source": "host1:bond0",
+        "destination": "host2:bond0",
+        "sent": 542,
+        "delivered": 334,
+        "lost_seqs": [
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234,
+          235,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263,
+          264,
+          265,
+          266,
+          267,
+          268,
+          269,
+          270,
+          271,
+          272,
+          273,
+          274,
+          275,
+          276,
+          277,
+          278,
+          279,
+          280,
+          281,
+          282,
+          283,
+          284,
+          285,
+          286,
+          287,
+          288
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 81,
+            "last_seq": 288,
+            "lost": 208,
+            "lower_s": 21.539121,
+            "upper_s": 21.749891,
+            "summary": "208 pings lost at one ping every 100 ms, traffic stopped for 21.539 to 21.75 s",
+            "begins_s": 8.189883,
+            "ends_s": 29.729004,
+            "windows": [
+              "Reboot switch-a1"
+            ],
+            "where": [
+              "request absent at destination"
+            ]
+          }
+        ],
+        "max_send_interval_s": 0.110026,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      },
+      "host2-to-host1": {
+        "ident": 2,
+        "source": "host2:bond0",
+        "destination": "host1:bond0",
+        "sent": 542,
+        "delivered": 334,
+        "lost_seqs": [
+          81,
+          82,
+          83,
+          84,
+          85,
+          86,
+          87,
+          88,
+          89,
+          90,
+          91,
+          92,
+          93,
+          94,
+          95,
+          96,
+          97,
+          98,
+          99,
+          100,
+          101,
+          102,
+          103,
+          104,
+          105,
+          106,
+          107,
+          108,
+          109,
+          110,
+          111,
+          112,
+          113,
+          114,
+          115,
+          116,
+          117,
+          118,
+          119,
+          120,
+          121,
+          122,
+          123,
+          124,
+          125,
+          126,
+          127,
+          128,
+          129,
+          130,
+          131,
+          132,
+          133,
+          134,
+          135,
+          136,
+          137,
+          138,
+          139,
+          140,
+          141,
+          142,
+          143,
+          144,
+          145,
+          146,
+          147,
+          148,
+          149,
+          150,
+          151,
+          152,
+          153,
+          154,
+          155,
+          156,
+          157,
+          158,
+          159,
+          160,
+          161,
+          162,
+          163,
+          164,
+          165,
+          166,
+          167,
+          168,
+          169,
+          170,
+          171,
+          172,
+          173,
+          174,
+          175,
+          176,
+          177,
+          178,
+          179,
+          180,
+          181,
+          182,
+          183,
+          184,
+          185,
+          186,
+          187,
+          188,
+          189,
+          190,
+          191,
+          192,
+          193,
+          194,
+          195,
+          196,
+          197,
+          198,
+          199,
+          200,
+          201,
+          202,
+          203,
+          204,
+          205,
+          206,
+          207,
+          208,
+          209,
+          210,
+          211,
+          212,
+          213,
+          214,
+          215,
+          216,
+          217,
+          218,
+          219,
+          220,
+          221,
+          222,
+          223,
+          224,
+          225,
+          226,
+          227,
+          228,
+          229,
+          230,
+          231,
+          232,
+          233,
+          234,
+          235,
+          236,
+          236,
+          236,
+          236,
+          236,
+          236,
+          236,
+          236,
+          237,
+          238,
+          239,
+          240,
+          241,
+          242,
+          243,
+          244,
+          245,
+          246,
+          247,
+          248,
+          249,
+          250,
+          251,
+          252,
+          253,
+          254,
+          255,
+          256,
+          257,
+          258,
+          259,
+          260,
+          261,
+          262,
+          263,
+          264,
+          265,
+          266,
+          267,
+          268,
+          269,
+          270,
+          271,
+          272,
+          273,
+          274,
+          275,
+          276,
+          277,
+          278,
+          279,
+          280,
+          281
+        ],
+        "duplicates": [],
+        "capture_mismatches": [],
+        "outages": [
+          {
+            "first_seq": 81,
+            "last_seq": 281,
+            "lost": 208,
+            "lower_s": 21.572008,
+            "upper_s": 21.7756,
+            "summary": "208 pings lost at one ping every 100 ms, traffic stopped for 21.572 to 21.776 s",
+            "begins_s": 8.217979,
+            "ends_s": 29.789987,
+            "windows": [
+              "Reboot switch-a1"
+            ],
+            "where": [
+              "reply absent at source",
+              "request absent at destination"
+            ]
+          }
+        ],
+        "max_send_interval_s": 0.111106,
+        "send_gap_limit_s": 0.45,
+        "send_pauses": [],
+        "cadence_ok": true
+      }
+    }
+  },
+  "reboots": {
+    "Reboot switch-a1": {
+      "switch": "switch-a1",
+      "verdict": "pass",
+      "limit_s": 60.0,
+      "before_uptime_s": 113.0,
+      "after_uptime_s": 16.0,
+      "elapsed_s": 22.953363984,
+      "recovered_s": 25.554310861,
+      "state": "pass"
+    }
+  },
+  "closing": {
+    "window": "after the steps",
+    "start_s": 52.365688,
+    "end_s": 55.736373,
+    "verdict": "pass",
+    "streams": {
+      "host1-to-host2": {
+        "delivered": 33,
+        "min_delivered": 29,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      },
+      "host2-to-host1": {
+        "delivered": 33,
+        "min_delivered": 29,
+        "lost": 0,
+        "duplicates": 0,
+        "summary": "0 pings lost at one ping every 100 ms, traffic stopped for 0 s",
+        "ok": true
+      }
+    }
+  }
+}

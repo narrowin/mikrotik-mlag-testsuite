@@ -1,0 +1,78 @@
+name: small-strict
+mgmt:
+  network: small-strict-mgmt
+  # A separate subnet keeps lab management traffic off the host's other Docker networks.
+  ipv4-subnet: 172.30.103.0/24
+topology:
+  kinds:
+    mikrotik_chr:
+      image: ghcr.io/narrowin/vrnetlab_mikrotik_routeros@sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10
+      startup-config: ../../small/lab/switch.rsc
+      # The startup config reads the collector address, the spanning tree mode and the host-bond lacp-strict value from here.
+      env:
+        COLLECTOR: 172.30.103.10
+        STP_MODE: none
+        LACP_STRICT: "yes"
+  groups:
+    hosts:
+      kind: linux
+      image: mlag-host:local
+      binds:
+        - ../../small/lab/host-setup.sh:/lab/host-setup.sh:ro
+      # The host setup turns off coupled LACP control on the bond.
+      env:
+        COUPLED_CONTROL: "off"
+      exec:
+        - sh /lab/host-setup.sh
+      # The deploy returns only when both switches answer.
+      stages:
+        create:
+          wait-for:
+            - node: switch1
+              stage: healthy
+            - node: switch2
+              stage: healthy
+  nodes:
+    syslog:
+      kind: linux
+      image: rsyslog/rsyslog@sha256:cac80b5513d78de76c301151e4d248547bcf2b5161d9c891a4b10c302f76dd56
+      # The image's own user cannot write into the lab folder that containerlab creates as root.
+      user: "0"
+      # Both switches send their log to this fixed collector address.
+      mgmt-ipv4: 172.30.103.10
+      binds:
+        - ../../shared/rsyslog.conf:/etc/rsyslog.conf:ro
+        - __clabNodeDir__:/logs
+    switch1:
+      kind: mikrotik_chr
+    switch2:
+      kind: mikrotik_chr
+    host1:
+      group: hosts
+    host2:
+      group: hosts
+    host3:
+      group: hosts
+  links:
+    # A CHR's ethN maps to RouterOS ether(N+1) because ether1 is management.
+    - endpoints:
+        - switch1:eth1
+        - switch2:eth1
+    - endpoints:
+        - host1:eth1
+        - switch1:eth2
+    - endpoints:
+        - host1:eth2
+        - switch2:eth2
+    - endpoints:
+        - host2:eth1
+        - switch1:eth3
+    - endpoints:
+        - host2:eth2
+        - switch2:eth3
+    - endpoints:
+        - host3:eth1
+        - switch1:eth4
+    - endpoints:
+        - host3:eth2
+        - switch2:eth4

@@ -1,0 +1,58 @@
+name: bond-member-loss
+purpose: >-
+  Check that host1 stays reachable when each of its two cables goes down and comes back.
+  The stream from host2 to host3 crosses neither cable and must continue throughout.
+source: https://manual.mikrotik.com/docs/high-availability-solutions/multi-chassis-link-aggregation-group/
+lab: ../lab/lab.yaml
+log:
+  # RouterOS has logged "bridge,warning MLAG: remote heartbeat timeout" on peer loss.
+  must_not:
+    - switch: every
+      text: heartbeat timeout
+steps:
+  - name: Cable host1 to switch1 down
+    cable: host1:eth1
+    state: down
+    # Hold past the 3 s fast LACP timeout so a delayed failure is measured.
+    hold_s: &down-hold 5
+    max_outage_s: &down-limits
+      host1-to-host2: 1  # Allow carrier detection and failover within one second, before an LACP timeout.
+      host2-to-host3: &unaffected 0  # Neither end uses the failing cable.
+    expected: host1 reaches host2 through switch2.
+    log:
+      must:
+        - switch: switch1
+          text: ether3 link down
+  - name: Cable host1 to switch1 back
+    cable: host1:eth1
+    state: up
+    # The return limit plus one LACP timeout keeps late recovery inside the step.
+    hold_s: &back-hold 7
+    max_outage_s: &back-limits
+      host1-to-host2: 4  # Three fast LACP messages, one per second, plus one late message.
+      host2-to-host3: *unaffected
+    expected: &rejoined The returning cable rejoins the LACP bond.
+    log:
+      must:
+        - switch: switch1
+          text: ether3 link up
+  - name: Cable host1 to switch2 down
+    cable: host1:eth2
+    state: down
+    hold_s: *down-hold
+    max_outage_s: *down-limits
+    expected: host1 reaches host2 through switch1.
+    log:
+      must:
+        - switch: switch2
+          text: ether3 link down
+  - name: Cable host1 to switch2 back
+    cable: host1:eth2
+    state: up
+    hold_s: *back-hold
+    max_outage_s: *back-limits
+    expected: *rejoined
+    log:
+      must:
+        - switch: switch2
+          text: ether3 link up

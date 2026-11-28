@@ -1,0 +1,91 @@
+name: mac-age-relearn
+purpose: >-
+  Silence the active-backup host beyond the bridge ageing interval and measure
+  how quickly flooding stops once its first frame returns.
+source: https://forum.mikrotik.com/t/strange-traffic-flooding-in-mlag-setup/271419
+lab: ../lab/link-lab.yaml
+steps:
+  - name: Mobile learned
+    action:
+      observe: true
+    hold_s: 4  # Give both peers several seconds of continuous traffic before the silence.
+    max_outage_s: &clean
+      host1-to-mac-move-host: 0
+      host2-to-mac-move-host: 0
+      mac-move-host-to-host1: 0
+      mac-move-host-to-host2: 0
+      host1-to-host2: 0
+    expected: Every stream delivers and both switches hold a host entry for the MAC-move host.
+    check_state:
+      - name: Both switches use the ten-second ageing profile and know the MAC address of the MAC-move host.
+        checks:
+          - device: switch1
+            check: property
+            params: &age
+              menu: /interface/bridge
+              where:
+                name: bridge
+              name: ageing-time
+            expected: "00:00:10"
+          - device: switch2
+            check: property
+            params: *age
+            expected: "00:00:10"
+          - device: switch1
+            check: host_entry
+            params: &host
+              bridge: bridge
+              mac: "02:00:00:11:00:50"
+            expected: ether5
+          - device: switch2
+            check: host_entry
+            params: *host
+            expected: ether2
+  - name: Mobile silent
+    action:
+      silence_host: &mac-move-host mac-move-host:bond0
+      relearn_s: 1  # Local relearning limit measured from the first returning host frame at a switch TAP.
+    hold_s: 25  # Let the ten-second bridge timer expire and continue probing through unknown-unicast flooding.
+    max_outage_s: &silence-limits
+      host1-to-mac-move-host: &intentional-silence 26  # Combined interruption allowance: 25 s intentional silence plus the existing 1 s relearning limit.
+      host2-to-mac-move-host: *intentional-silence
+      mac-move-host-to-host1: *intentional-silence
+      mac-move-host-to-host2: *intentional-silence
+      host1-to-host2: 0
+    expected: The MAC-move host sends no frame to either switch, both switches age out its address and other streams continue.
+    check_state:
+      - name: Neither switch holds the MAC address of the MAC-move host during the silence.
+        checks:
+          - device: switch1
+            check: host_entry
+            params: *host
+            expected: null
+          - device: switch2
+            check: host_entry
+            params: *host
+            expected: null
+  - name: Mobile sends again
+    action:
+      silence_host: *mac-move-host
+      clear: true
+    hold_s: 5  # Observe delivery and any flooding after the existing one-second relearning limit.
+    # The capture tracks the whole cut across this boundary. The typed action separately times delivery and flooding.
+    max_outage_s: *silence-limits
+    expected: Delivery resumes and unknown-unicast flooding stops within one second of the first host frame.
+    check_state:
+      - name: Both switches relearned the MAC address of the MAC-move host on the original path.
+        checks:
+          - device: switch1
+            check: host_entry
+            params: *host
+            expected: ether5
+          - device: switch2
+            check: host_entry
+            params: *host
+            expected: ether2
+  - name: Mobile recovery
+    action:
+      observe: true
+    hold_s: 3  # Verify there is no repeated stop during three more seconds of recovery.
+    max_outage_s: *clean
+    expected: Every stream keeps delivering and the relearned destination stays unicast.

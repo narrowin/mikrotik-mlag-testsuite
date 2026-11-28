@@ -1,0 +1,24 @@
+name: cable-packet-loss
+purpose: >-
+  Check failover when every frame leaving host1 on its cable to switch2 is lost.
+  The link keeps carrier and frames in the reverse direction are left unfiltered.
+lab: ../lab/lab.yaml
+steps:
+  - name: One-way cable loss
+    action:
+      impair: &cable host1:eth2
+      direction: out
+      loss_percent: 100  # Suppress every outgoing frame, including LACPDUs.
+    hold_s: 25  # Match the observed sustained black-hole trial and outlast fast LACP.
+    max_outage_s: &limits
+      host1-to-host2: 4  # Require failover after one three-second fast LACP timeout plus one message interval.
+      host2-to-host3: 0
+    expected: Host1 fails over to its other cable while the independent host stream stays up.
+  - name: Cable loss cleared
+    action:
+      impair: *cable
+      clear: true
+    recovery_deadline_s: 15  # Allow time for LACP to negotiate both members again after the sustained outage.
+    hold_s: 5  # Watch for delayed loss beyond one fast LACP timeout.
+    max_outage_s: *limits
+    expected: The cable returns to its default queue and both streams deliver again.

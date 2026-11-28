@@ -24,3 +24,8 @@ Fixes that only matter on hardware are marked as hardware only.
 The operator's own results on CRS326 and CCR2004 switches are cited, not reproduced, when a reader objects that CHR results do not hold on hardware.
 
 See also [Networka ADR 0004](https://narrowin.github.io/networka/adr/0004-lab-actions-run-on-containerlab-only/).
+
+## Update: every lab on our image, 28 November 2026
+
+Every switch in every lab now runs our CHR image by digest, `ghcr.io/narrowin/vrnetlab_mikrotik_routeros@sha256:dbd8a548b23d2009372ff20dcd8f345cc3eaf31b39422b0e659c1f72e2656f10`, not the official `mikrotik/chr` image named above, still with containerlab's `mikrotik_chr` kind and RouterOS 7.26beta7.
+Every lab was rerun on it on 28 November 2026 with Networka 0.5.2+chr.5, as each lab README lists under Live runs.

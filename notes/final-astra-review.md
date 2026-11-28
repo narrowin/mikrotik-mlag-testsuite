@@ -1,5 +1,7 @@
 # Final review of the CHR startup proposal
 
+This review ran before Small strict was split off from the Small lab; its statements about the Small startup config now apply to the [Small strict lab](../tests/small-strict/README.md), and Small runs with the RouterOS and Linux bond defaults.
+
 **Resume normal lab testing on the qualified branch.** The public prototype works now. This review found no defect that requires another lab run before using the branch.
 
 ## What MikroTik would maintain

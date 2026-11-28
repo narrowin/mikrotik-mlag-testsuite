@@ -1,0 +1,112 @@
+name: member-flap-repeat
+purpose: >-
+  Flap the cable from host1 to switch1 five times. Measure each flap and check
+  that the streams that do not cross this cable keep delivering.
+source: https://forum.mikrotik.com/t/7-25-1-stable-is-released/274226/22
+lab: ../lab/link-lab.yaml
+watch_host_entries:
+  interval_s: 0.35  # Sample at least twice within a one-second flap when the switch responds on time.
+  bridge: bridge
+  devices:
+    - switch1
+    - switch2
+  macs:
+    - "02:00:00:11:00:12"  # Host2
+    - "02:00:00:11:00:50"  # The MAC-move host
+log:
+  must_not:
+    - switch: every
+      text: heartbeat timeout
+steps:
+  - name: Flap 1 down
+    cable: &cable host1:eth1
+    state: down
+    hold_s: &down-hold 1  # One fast LACP interval, shorter than its three-interval timeout.
+    max_outage_s: &limits
+      host1-to-mac-move-host: &member-limit 3  # The per-flap limit is one fast LACP timeout.
+      mac-move-host-to-host1: *member-limit
+      host1-to-host2: *member-limit
+      host2-to-mac-move-host: 0
+      mac-move-host-to-host2: 0
+    expected: &withdrawal Host1 uses its other cable and the unaffected streams lose nothing.
+    log: &down-log
+      must:
+        - switch: switch1
+          text: ether3 link down
+  - name: Flap 1 up
+    cable: *cable
+    state: up
+    hold_s: &up-hold 3  # Allow one fast LACP timeout before the next flap.
+    max_outage_s: *limits
+    expected: &restoration The restored cable rejoins host1's bond without disrupting the unaffected streams.
+    log: &up-log
+      must:
+        - switch: switch1
+          text: ether3 link up
+  - name: Flap 2 down
+    cable: *cable
+    state: down
+    hold_s: *down-hold
+    max_outage_s: *limits
+    expected: *withdrawal
+    log: *down-log
+  - name: Flap 2 up
+    cable: *cable
+    state: up
+    hold_s: *up-hold
+    max_outage_s: *limits
+    expected: *restoration
+    log: *up-log
+  - name: Flap 3 down
+    cable: *cable
+    state: down
+    hold_s: *down-hold
+    max_outage_s: *limits
+    expected: *withdrawal
+    log: *down-log
+  - name: Flap 3 up
+    cable: *cable
+    state: up
+    hold_s: *up-hold
+    max_outage_s: *limits
+    expected: *restoration
+    log: *up-log
+  - name: Flap 4 down
+    cable: *cable
+    state: down
+    hold_s: *down-hold
+    max_outage_s: *limits
+    expected: *withdrawal
+    log: *down-log
+  - name: Flap 4 up
+    cable: *cable
+    state: up
+    hold_s: *up-hold
+    max_outage_s: *limits
+    expected: *restoration
+    log: *up-log
+  - name: Flap 5 down
+    cable: *cable
+    state: down
+    hold_s: *down-hold
+    max_outage_s: *limits
+    expected: *withdrawal
+    log: *down-log
+  - name: Flap 5 up
+    cable: *cable
+    state: up
+    hold_s: 8  # Watch for delayed member rejoin beyond two fast LACP timeouts.
+    max_outage_s: *limits
+    expected: *restoration
+    log: *up-log
+  - name: Flap recovery
+    action:
+      observe: true
+    hold_s: 3  # Continue for one fast LACP timeout after the last flap observation.
+    max_outage_s:
+      host1-to-mac-move-host: 0
+      host2-to-mac-move-host: 0
+      mac-move-host-to-host1: 0
+      mac-move-host-to-host2: 0
+      host1-to-host2: 0
+    expected: Every stream delivers after the fifth flap.
